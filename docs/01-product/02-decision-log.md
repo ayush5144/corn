@@ -157,4 +157,45 @@ Every product question asked and the founder's answer, in order. Settled answers
 
 ---
 
-## Round 2 — pending
+## Round 2 — 2026-11-01
+
+### Q1 Protecting the Kept Session
+- **Recommended:** Keep the engine; Corn encrypts its own Session records; backups off; suggest App Lock.
+- **Answer:** Not answered.
+- **Status:** 🟡 Carried to Round 3.
+
+### Q2 Auto-Flush presets
+- **Recommended:** When I leave / 5 min after / 30 min after; separate inactivity switch (10/30/60 min).
+- **Answer:** Not answered.
+- **Status:** 🟡 Carried to Round 3.
+
+### Q3 Keep List vs saved passwords
+- **Recommended:** Keep List + Android autofill in v1; Corn's own password store later.
+- **Answer:** Both (a) Keep List and (b) Corn's own password store, in v1 or v1.1.
+- **Status:** ✅ Both are in. 🟡 Whether the password store lands in v1 or v1.1. Android autofill support not chosen.
+
+### Q4 Tab Groups and Flush
+- **Recommended:** Flush wipes every Tab Group; "Save group to Vault" turns a group into a Collection.
+- **Answer:** "I don't know."
+- **Status:** 🟡 Carried to Round 3, with the clarified Tab Group model.
+
+### Q5 How Tab Groups work
+- **Recommended:** Long-press menu, auto-named groups, rows of previews, swipe on the toolbar.
+- **Answer:** Shared a Chrome Android screenshot instead. A Tab Group is a **strip at the bottom of the screen** with one round site icon per tab in the group. Tap an icon to switch instantly. `^` expands the group, `+` adds a tab, `×` closes the current tab.
+- **Status:** ✅ Chrome-style Tab Group Strip. 🟡 Naming/colours (Round 3).
+
+### Q6 Default thumbnail in the Vault
+- **Answer:** Thumbnails are a later feature, not v1. v1 Vault = links, titles, Collections, optional tags.
+- **Status:** ⏭️ Thumbnails to backlog.
+
+### Q7 Flush Button placement and feedback
+- **Answer:** Bottom toolbar (or search bar), ideally **bottom-right or second from the right** of the bottom toolbar.
+- **Status:** ✅ Placement. 🟡 Animation/haptics/sound not addressed.
+
+### Q8 Mockup tool
+- **Answer:** Clickable web prototype. Plain HTML preferred, Next.js static export if necessary. Mobile viewport size.
+- **Status:** ✅
+
+---
+
+## Round 3 — pending

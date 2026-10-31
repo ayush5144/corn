@@ -38,8 +38,12 @@ _Avoid_: Fireproof, whitelist, allowlist
 One open web page in the Session.
 
 **Tab Group**:
-A named set of Tabs the user browses together, opened by sending a link into a new group.
+A set of Tabs the user browses together, opened from one another, switchable in one tap from the Tab Group Strip.
 _Avoid_: Tab stack, tab folder, workspace
+
+**Tab Group Strip**:
+The bar at the bottom of the screen showing one round site icon per Tab in the current Tab Group.
+_Avoid_: Tab bar, group bar, bubbles
 
 ## Vault
 

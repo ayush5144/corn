@@ -63,11 +63,13 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 
 | Requirement | Status |
 |---|---|
-| Open a link in a **new tab** or a **new Tab Group** | ✅ |
+| Open a link in a **new tab** or a **new tab in the current Tab Group** | ✅ |
+| **Tab Group Strip** at the bottom (like Chrome Android): one round site icon per tab in the group; tap to switch instantly | ✅ |
+| Strip controls: `^` opens the group's tab grid with previews, `+` adds a tab to the group, `×` closes the current tab | ✅ |
 | Swipe between tabs; click around freely | ✅ |
-| Tab previews in the switcher | ✅ |
-| Instant switching | ✅ |
-| Group naming, colours, save a group to the Vault, how groups behave on Flush | 🟡 Round 2 |
+| Tab previews in the switcher grid | ✅ |
+| How Tab Groups behave on Flush; "Save group to Vault" | 🟡 Round 3 |
+| Group naming and colours | 🟡 Round 3 |
 
 ### 6.3 Search
 
@@ -84,14 +86,15 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 |---|---|
 | **Flush Button**: one tap, no confirmation, wipes the Session (tabs, Tab Groups, cookies, cache, history, previews) | ✅ |
 | Flush Button is a **toilet/flush** button (not a power button); visual styling is open | ✅ (styling 🟡) |
+| Flush Button sits in the **bottom toolbar, at the far right or second from the right** | ✅ |
 | Default: **Kept Session**: the Session survives until the user flushes | ✅ |
 | Setting: **Auto-Flush after leaving Corn**, user chooses the delay or never | ✅ |
-| Three preset choices for the delay | ✅ (exact presets 🟡 Round 2) |
+| Three preset choices for the delay | ✅ (exact presets 🟡 Round 3) |
 | Setting: **Auto-Flush after inactivity** | ✅ |
 | **A playing video counts as activity** | ✅ |
 | "Leaving Corn" = switching apps, going home or locking the phone | ✅ |
 | **Keep List**: chosen sites stay logged in across Flushes | ✅ v1 |
-| **Saved passwords** that survive a Flush | ✅ v1 (design 🟡 Round 2) |
+| **Corn's own password store** (inside the Vault), survives a Flush | ✅ (v1 or v1.1 🟡) |
 
 ### 6.5 Vault
 
@@ -100,7 +103,7 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | Save links with their titles | ✅ |
 | Optional tags | ✅ |
 | **Collections**: one level, each item in exactly one Collection (default "Unsorted"); tags cut across | ✅ |
-| Thumbnails optional: screenshot at save time, a default placeholder, or none | ✅ (default choice 🟡) |
+| Thumbnails (screenshot, placeholder or none) | ⏭️ Not v1 |
 | Encrypted on device | ✅ |
 | **Vault locked by default** with PIN or biometrics | ✅ |
 | Export, import, permanent delete | 🟡 |
@@ -114,7 +117,7 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | **App Lock** (PIN/biometrics to open Corn): optional, off by default | ✅ |
 | **No notifications while Corn is closed**; media controls (if background playback is on) show only "Corn — playing" | ✅ |
 | Session data excluded from phone/cloud backups | ✅ (from Round 1 Q7 discussion) |
-| Corn encrypts the Session data it controls (tab list, URLs, previews) | 🟡 Round 2 |
+| Corn encrypts the Session data it controls (tab list, URLs, previews) | 🟡 Round 3 |
 | One-time 18+ confirmation on first launch | ✅ |
 | Disguised app icon | ⏭️ |
 

@@ -20,7 +20,8 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [x] | Pick the architecture (OS web engine + Rust core) | Both | [ADR 0001](../adr/0001-os-web-engine-not-brave-fork.md) written |
 | [x] | Organise docs, README, glossary | Claude | `docs/README.md` indexes every doc |
 | [x] | Round 0 + Round 1 product Q&A | Both | Answers in the decision log |
-| [ ] | Round 2: Tab Groups, Flush presets, Keep List / passwords, Session encryption, thumbnails default | Both | Answers in the decision log |
+| [x] | Round 2: Tab Groups model, Keep List / passwords, thumbnails, Flush placement, prototype tool | Both | Answers in the decision log |
+| [ ] | Round 3: Session protection, Flush presets, Tab Groups on Flush, toolbar layout | Both | Answers in the decision log |
 | [ ] | PRD v2 sign-off: no 🟡 left that blocks v1 | Founder | Founder says "PRD approved" |
 | [ ] | Research donation platforms that accept an adult-adjacent product | Claude | Shortlist with policy links in `04-reference/` |
 
@@ -46,7 +47,7 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [ ] | Brand voice: cool, funny, modern — sample copy (onboarding, Flush, empty states) | Both | Copy sheet approved |
 | [ ] | Low-fi wireframes: browser, tab switcher + Tab Groups, Flush, Vault + Collections, settings, onboarding | Claude | Wireframes reviewed |
 | [ ] | Visual style: black + yellow, Flush Button look, icons, type | Both | Style sheet approved |
-| [ ] | Clickable prototype that runs on a phone | Claude | Founder has tapped through it on a real phone |
+| [ ] | Clickable prototype (plain HTML, Next.js static only if needed), mobile viewport, in `design/prototype/` | Claude | Founder has tapped through it on a real phone |
 | [ ] | Prototype test with 3–5 target users | Founder | Notes recorded; changes fed back into the PRD |
 
 ## Phase 2B — Technical spike (one weekend, throwaway code)
@@ -72,12 +73,13 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [ ] | Browsing basics: address bar, back/forward/reload/share, fullscreen, PiP | Claude | Works on the test sites |
 | [ ] | Blocking + per-site toggle | Claude | Spike metrics hold in the real app |
 | [ ] | Search: built-in engines, DuckDuckGo default, search-bar dropdown switcher | Claude | Switch engine in one tap |
-| [ ] | Tabs + **Tab Groups**: new tab / new group, swipe, previews, instant switching | Claude | 20+ tabs across groups without lag on a mid-range phone |
+| [ ] | Tabs + **Tab Groups**: Tab Group Strip (icons, `^` grid, `+`, `×`), swipe, previews, instant switching | Claude | 20+ tabs across groups without lag on a mid-range phone |
 | [ ] | Tab freezing (memory policy) | Claude | No crashes with 30 tabs |
 | [ ] | **Flush Button** + Kept Session (default) + Auto-Flush (leave delay, inactivity; video counts as activity) | Claude | Flush tests in [05-flush-model](../02-technical/05-flush-model.md) pass |
-| [ ] | **Keep List** + saved passwords surviving Flush | Claude | Keep List site still logged in after Flush |
+| [ ] | **Keep List**: chosen sites stay logged in across Flush | Claude | Keep List site still logged in after Flush |
+| [ ] | **Corn password store** in the Vault, survives Flush (v1 or v1.1, timing open) | Claude | Saved password fills a login after Flush |
 | [ ] | Corn-encrypted Session data + backups disabled | Claude | No readable URLs in app files on a debug dump |
-| [ ] | **Vault**: save link + title, tags, optional thumbnail, **Collections**, PIN/biometric lock | Claude | Save, find, lock, delete all work |
+| [ ] | **Vault**: save link + title, optional tags, **Collections**, PIN/biometric lock | Claude | Save, find, lock, delete all work |
 | [ ] | Privacy: black recents screen, optional App Lock, no notifications while closed | Claude | Verified on a real phone |
 | [ ] | Onboarding: 18+ confirmation, privacy explainer, fun tone | Claude | Founder approves the flow |
 | [ ] | Settings screen for every option above | Claude | Every setting in the PRD is reachable |
@@ -105,6 +107,7 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | **File downloads** | Private storage, not the phone gallery |
 | **Cloud Vault** (~$3–5/month) | Opt-in, end-to-end encrypted; needs a payment provider that accepts it |
 | Save downloaded files into the Vault | After downloads ship |
+| Vault thumbnails (screenshot / placeholder / none) | Founder decision, Round 2 |
 | Custom search engines | |
 | Disguised app icon | |
 | Vault export / import | Needs a format decision first |
