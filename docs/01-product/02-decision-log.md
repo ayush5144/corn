@@ -254,5 +254,16 @@ Every product question asked and the founder's answer, in order. Settled answers
 ### Licence for Corn's own code
 - **Founder asked:** What licence should Corn be published under?
 - **Recommended:** **MPL-2.0** for the app and Rust core (same as Brave, Firefox and adblock-rust; App Store compatible). "Corn" name and logo stay trademarks, not covered by the licence. Server code for a future Cloud Vault decided separately.
-- **Status:** 🟡 Awaiting founder decision. No LICENSE file added yet. Legal review before public launch.
+- **Answer:** Keep it MPL-2.0.
+- **Status:** ✅ MPL-2.0. `LICENSE` and `TRADEMARKS.md` added. Repository made public by the founder on 2026-11-01. Legal review before public launch.
+
+### Google sign-in inside WebView
+- **Issue:** Google blocks account sign-in from embedded WebViews ("disallowed_useragent").
+- **How DuckDuckGo handles it (read from duckduckgo/Android source):** it rebuilds the user agent to look like regular Chrome (reduced Chrome UA, no WebView markers, Chrome version shortened to `NNN.0.0.0`), keeps per-site exceptions, and allows third-party cookies only on `accounts.google.com` flows.
+- **Status:** ✅ Corn does the same. Tested in the spike.
+
+### WebView vs GeckoView (final)
+- **Founder asked:** Keep WebView or switch to GeckoView?
+- **Answer given:** Keep WebView. GeckoView stays plan B with one trigger: the spike shows WebView blocking clearly worse than Brave on the founder's test sites. No more engine debate before the spike results.
+- **Status:** ✅ WebView. Re-confirmed.
 

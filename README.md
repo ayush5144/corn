@@ -27,6 +27,8 @@ Why this and not a Brave fork: [ADR 0001](docs/adr/0001-os-web-engine-not-brave-
 corn/
 ├── README.md      this file
 ├── AGENTS.md      rules for AI coding agents (CLAUDE.md imports it)
+├── LICENSE        MPL-2.0
+├── TRADEMARKS.md  the name and logo aren't covered by the licence
 ├── GLOSSARY.md    product vocabulary (Session, Flush, Vault, …)
 ├── brand/         logo files
 ├── mockups/       clickable phone-size HTML mockups (open in a browser)
@@ -42,3 +44,8 @@ Planned later: `core/` (Rust), `android/`, `ios/`, `desktop/`.
 - No accounts, ads or tracking. Free, funded by donations.
 - Flush clears this device only. Corn never claims to erase what websites, networks or the OS recorded.
 - Corn is a browser. It does not host, index or recommend content.
+
+## Licence
+
+Code: [MPL-2.0](LICENSE). The Corn name and logo are trademarks and aren't covered by the licence; see [TRADEMARKS.md](TRADEMARKS.md).
+
