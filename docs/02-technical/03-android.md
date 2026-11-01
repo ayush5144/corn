@@ -18,11 +18,11 @@
 | Filter lists | EasyList, EasyPrivacy, uBlock filters, Peter Lowe's list | The block rules. They update on device; the download sends no browsing data. |
 | Vault storage | **Rust core: rusqlite (plain SQLite)** (see [04](04-rust-core.md), [10](10-storage.md)) | Local database for saved items, tags, Keep List and session. One format on every platform. |
 | Vault files | ⏭️ Later (downloads aren't in v1) | |
-| Keys and lock | **Android Keystore + BiometricPrompt** | Holds the Vault key in secure hardware; unlocks with fingerprint, face or PIN |
+| Lock | **4-digit PIN** (salted PBKDF2 hash in app settings) | Gates the Vault and App Lock. Fingerprint unlock is in the backlog. |
 | Settings | **DataStore** | Corn preferences |
 | Downloads | **OkHttp + WorkManager** | Saves files into private app storage, not the public Downloads folder |
 | Video extras | Built into WebView + Android **Picture-in-Picture** | Fullscreen, PiP, background playback |
-| Privacy screen | `FLAG_SECURE` | App looks blank in recent apps; blocks screenshots of the Vault |
+| Privacy screen | `setRecentsScreenshotEnabled(false)` (Android 13+), `FLAG_SECURE` on older versions | App looks blank in recent apps |
 | Build | Android Studio, Gradle, Rust toolchain | All of it runs on a Mac |
 | Testing | JUnit, Compose UI tests, **Macrobenchmark** | Correctness, plus memory and speed with many tabs |
 | Distribution | Signed APK via website, GitHub Releases or Obtainium, plus an in-app update check | Works around the Play Store's adult-content policy |
@@ -33,11 +33,12 @@
 
 | Threat | WebView hook | Corn's action |
 |---|---|---|
-| Ads and trackers | `shouldInterceptRequest` (+ `ServiceWorkerControllerCompat` for service workers) | Ask Rust; return an empty response if blocked |
-| Pop-up windows | `onCreateWindow` | Deny by default; allow only on a real user tap, if the user opts in |
+| Ads and trackers | `shouldInterceptRequest` | Ask the trackers engine, then the ads engine (each only if switched on for this site); return an empty response if blocked |
+| Pop-up windows | `onCreateWindow` (every pop-up, tapped or scripted, reaches it) | Deny and count by default; if the site allows pop-ups, open it as a new tab |
 | Redirect hijacks | `shouldOverrideUrlLoading` + user-gesture check | Stop top-level navigations the user didn't trigger |
 | Hidden ads, anti-adblock walls | `addDocumentStartJavaScript` (androidx.webkit 1.9+) | Inject cosmetic CSS and scriptlets before page scripts run |
-| Tracking parameters | `shouldOverrideUrlLoading` | Rust strips `utm_*`, `fbclid` etc. and unwraps `out.php?url=` style redirects |
+| Tracking parameters | `shouldOverrideUrlLoading` | ⏳ Not built: Rust will strip `utm_*`, `fbclid` etc. and unwrap `out.php?url=` style redirects |
+| Page process crash | `onRenderProcessGone` | Drop the dead WebView and show a "This page stopped · Reload" card instead of crashing the app |
 
 ## What Corn builds itself
 

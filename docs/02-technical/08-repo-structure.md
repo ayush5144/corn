@@ -17,7 +17,7 @@ corn/
 │   ├── dependabot.yml         ✅ weekly PRs for new Rust + Android dependency versions
 │   └── workflows/             ⏭️ CI: Rust tests, Android build, iOS build
 │
-├── docs/                      ✅ product, technical, planning, reference, ADRs (see docs/README.md)
+├── docs/                      ✅ product, technical, planning, reference, reviews, ADRs (see docs/README.md)
 ├── brand/                     ✅ logo source files
 ├── mockups/                   ✅ clickable HTML mockups (never hosted as artifacts)
 │   └── prototype.html
@@ -37,15 +37,19 @@ corn/
 ├── android/                   ✅ ANDROID APP (Kotlin + Jetpack Compose + System WebView)
 │   ├── settings.gradle.kts, build.gradle.kts, gradle/libs.versions.toml, gradlew
 │   └── app/
-│       ├── build.gradle.kts   ✅ runs scripts/build-android-core.sh before every build
+│       ├── build.gradle.kts   ✅ runs scripts/build-android-core.sh before every build; release = R8 + arm64 only
+│       ├── proguard-rules.pro ✅ keeps JNA + UniFFI classes through R8
 │       └── src/main/
-│           ├── AndroidManifest.xml          ✅ no backups, internet only
+│           ├── AndroidManifest.xml          ✅ no backups, http allowed, WebView metrics opt-out
 │           ├── java/app/cornbrowser/        ✅ Corn's Kotlin code
-│           │   ├── MainActivity.kt          ✅ spike UI
-│           │   ├── CornTab.kt               ✅ one tab: WebView + blocking hooks
-│           │   ├── CornEngine.kt            ✅ loads/caches the shared blocking engine
-│           │   └── BrowserIdentity.kt       ✅ Chrome-style user agent
-│           └── res/                         ✅ icons, theme, backup exclusion rules
+│           │   ├── MainActivity.kt          ✅ lifecycle, back button, recents privacy, fullscreen
+│           │   ├── CornController.kt        ✅ app state: screens, sheets, Flush, Auto-Flush, shields, totals
+│           │   ├── browser/                 ✅ CornTab (WebView + hooks), TabManager (tabs, groups, live-tab rule),
+│           │   │                               CornEngine (ads + trackers engines), Flusher, BrowserIdentity
+│           │   ├── data/                    ✅ CornData (corn.db), CornSettings, SearchEngines
+│           │   └── ui/                      ✅ Compose screens, sheets, components, theme, icons
+│           ├── assets/licenses/             ✅ font licences (OFL)
+│           └── res/                         ✅ icons, fonts, engine favicons, logo, theme, backup exclusion rules
 │
 ├── ios/                       ⏭️ IPHONE APP (Swift + SwiftUI + WKWebView)
 │   ├── Corn.xcodeproj
@@ -95,6 +99,7 @@ Does every platform need the same behaviour?
 | Rust tests | `cd core && cargo test` |
 | Engine benchmark | `cd core && cargo run --release -p corn-block --example bench -- easylist.txt easyprivacy.txt` |
 | Android debug app | `cd android && ./gradlew assembleDebug` (also builds the Rust core) |
+| Android release app (6.0 MB, unsigned) | `cd android && ./gradlew assembleRelease` |
 | Install on phone/emulator | `cd android && ./gradlew installDebug` |
 | Open in Android Studio | Open the `android/` folder |
 

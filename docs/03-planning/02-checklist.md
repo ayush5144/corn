@@ -59,7 +59,7 @@ The single list of what's done, what's next and who owns it. Product decisions l
 |---|---|---|---|
 | [x] | Minimal Android app: one WebView, URL bar | Claude | Runs on emulator |
 | [x] | adblock-rust via cargo-ndk + UniFFI, EasyList + EasyPrivacy | Claude | Requests blocked in logs |
-| [ ] | Pop-up denial (`onCreateWindow`) + redirect guard. **Built, not yet verified** | Claude | Test pages can't open pop-ups |
+| [x] | Pop-up denial (`onCreateWindow`) + redirect guard. Verified: test page pop-up stopped and counted | Claude | Test pages can't open pop-ups |
 | [ ] | Pick 15–20 real test sites | Founder | List saved (privately, not in the repo) |
 | [ ] | Measure block rate vs Brave, video, memory with 10 tabs. **Emulator half done:** [03-spike-results.md](03-spike-results.md) | Both | Results table in `03-planning/` |
 | [ ] | Go / no-go on WebView | Founder | Recorded as an ADR |
@@ -72,7 +72,7 @@ The single list of what's done, what's next and who owns it. Product decisions l
 |---|---|---|---|
 | [x] | Project skeleton: `android/` (Kotlin + Compose), `core/` (Rust workspace) | Claude | Builds from a clean checkout |
 | [ ] | Browsing basics: address bar, back/forward/reload/share, fullscreen, PiP | Claude | Works on the test sites |
-| [ ] | Blocking + per-site toggle | Claude | Spike metrics hold in the real app |
+| [x] | Blocking + per-site switches (main + Advanced: ads, trackers, pop-ups). Verified: 5/5 on a known test page | Claude | Spike metrics hold in the real app |
 | [x] | Search: built-in engines, DuckDuckGo default, search-bar dropdown switcher | Claude | Switch engine in one tap |
 | [ ] | Tabs + **Tab Groups**: Tab Group Strip (icons, `^` grid, `+`, `×`), swipe, previews, instant switching | Claude | 20+ tabs across groups without lag on a mid-range phone |
 | [ ] | Tab freezing (memory policy) | Claude | No crashes with 30 tabs |
@@ -87,7 +87,9 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [ ] | Privacy: black recents screen, optional App Lock, no notifications while closed | Claude | Verified on a real phone |
 | [ ] | Onboarding: 18+ confirmation, privacy explainer, fun tone. **Built, awaiting founder approval** | Claude | Founder approves the flow |
 | [ ] | Settings screen for every option above | Claude | Every setting in the PRD is reachable |
-| [ ] | In-app update check + signed release APK | Both | Founder installs a signed build |
+| [ ] | In-app update check + signed release APK (release build works: 6.0 MB, R8, tested with a debug-key signature) | Both | Founder installs a signed build |
+| [ ] | Decide Google Safe Browsing default, onboarding mention and setting | Founder | Recorded in the decision log |
+| [ ] | Delete a Vault item | Claude | A saved link can be removed permanently |
 
 ## Phase 4 — Beta
 

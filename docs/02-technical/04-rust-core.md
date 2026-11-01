@@ -72,7 +72,7 @@ corn-core/                      (Rust workspace, separate from the app shells)
 
 - Pass plain strings (URL, source URL, request type); return a small enum (`Allow`, `Block`, `Redirect(stub)`).
 - Load the engine once at startup from the precompiled binary; never parse filter lists on the request path.
-- One shared engine instance, read-only during browsing; swap it atomically when lists update.
+- Two engine instances (ads, trackers), each shared by all tabs and read-only during browsing; swap them atomically when lists update.
 
 ## Decision: Vault in Rust or in Kotlin?
 

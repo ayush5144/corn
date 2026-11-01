@@ -77,7 +77,7 @@ Brave writes Java on Android only because it inherited Chromium's Android code. 
                    ▼
 ┌──────────────────────────────────────────────────────────────────┐
 │     CORN BLOCKER  (Kotlin hooks → UniFFI → Rust corn-block)      │
-│                                                                  │
+│   two engines: ads (EasyList) + trackers (EasyPrivacy), per site │
 │   ads / trackers ......... shouldInterceptRequest  → BLOCK       │
 │   pop-up windows ......... onCreateWindow          → DENY        │
 │   redirect hijacks ....... shouldOverrideUrlLoading→ STOP        │

@@ -39,6 +39,13 @@ Read in folder order. Start with the product, then the technical plan.
 | 01 | [Sources](04-reference/01-sources.md) | Every external fact and where it came from |
 | 02 | [Open source we build on](04-reference/02-open-source.md) | What Corn takes from Brave, DuckDuckGo, Mozilla and others, with licences |
 
+## 05 — Reviews and audits
+
+| # | Doc | What it covers |
+|---|---|---|
+| 01 | [Privacy & efficiency audit, 2026-11-01](05-review/01-audit-2026-11-01.md) | What Corn stores, logs and sends; size and memory measured; fixes |
+| 02 | [Build review, 2026-11-01](05-review/02-review-2026-11-01.md) | Mockup parity, what's verified, bugs fixed, what's not built and whether it's needed |
+
 ## ADRs — Architecture decisions
 
 Short records of hard-to-reverse choices and why they were made.

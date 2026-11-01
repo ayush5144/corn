@@ -16,8 +16,8 @@ example.org##.ad-banner            ← on example.org, hide elements with class 
 
 | List | Purpose | Size (Nov 2026) | Licence | Status |
 |---|---|---|---|---|
-| EasyList | Ads | ~77,000 lines | GPL-3.0 or CC BY-SA 3.0+ | ✅ in spike |
-| EasyPrivacy | Trackers | ~57,000 lines | GPL-3.0 or CC BY-SA 3.0+ | ✅ in spike |
+| EasyList | Ads (+ element hiding) → the **ads** engine | ~77,000 lines | GPL-3.0 or CC BY-SA 3.0+ | ✅ in app |
+| EasyPrivacy | Trackers → the **trackers** engine | ~57,000 lines | GPL-3.0 or CC BY-SA 3.0+ | ✅ in app |
 | EasyList Cookie List | Cookie banners (hiding) | | GPL-3.0 or CC BY-SA 3.0+ | 🔜 |
 | uBlock Origin filters | Annoyances, malware, unbreak fixes | | GPL-3.0 | 🔜 |
 | Brave lists + resources | Extra rules; scriptlets against anti-adblock | | MPL-2.0 | 🔜 |
@@ -34,10 +34,12 @@ example.org##.ad-banner            ← on example.org, hide elements with class 
 ## Lifecycle on the phone
 
 ```
-First launch:  download lists → engine parses them → save compact engine to app storage
-Every launch:  load the saved engine (~1 ms on an M4 Mac; a few ms on a phone)
-Every few days, on Wi-Fi: download fresh lists → rebuild in the background → swap engines
+First launch:  download lists → build two engines (ads = EasyList, trackers = EasyPrivacy) → save ads-v1.dat, trackers-v1.dat
+Every launch:  load the saved engines (~1 ms on an M4 Mac; a few ms on a phone)
+Every few days, on Wi-Fi: download fresh lists → rebuild in the background → swap engines   (⏳ not built yet)
 ```
+
+**Why two engines:** each site can switch ads and trackers off separately (shield → Advanced) without changing adblock-rust. Both are the same unmodified engine loaded with a different list. The lists overlap slightly, so the split is close but not exact.
 
 Corn's own servers are never involved. Downloading a list sends no browsing data.
 

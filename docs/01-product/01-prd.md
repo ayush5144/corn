@@ -55,7 +55,9 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | Address bar: URL and search | ✅ |
 | Back, forward, reload, share | ✅ |
 | Blocking of ads, trackers, pop-ups and redirect abuse, on by default | ✅ |
-| Per-site blocking toggle when a page breaks | ✅ |
+| Per-site blocking: one main switch, plus **Advanced** switches for Ads, Trackers and Pop-ups & redirects | ✅ |
+| Home page **stats**: two all-time totals (trackers & ads blocked, pop-ups & redirects stopped), counts only | ✅ |
+| Google Safe Browsing (WebView default: on) | 🟡 decide default + setting |
 | Cookie-banner auto-dismiss (DuckDuckGo autoconsent) | 🟡 proposed |
 | Fingerprinting protection + Global Privacy Control (DuckDuckGo content-scope-scripts) | 🟡 proposed |
 | Strip tracking parameters and unwrap redirect links (ClearURLs rules) | 🟡 proposed |
@@ -67,7 +69,8 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 
 | Requirement | Status |
 |---|---|
-| Open a link in a **new tab** or a **new tab in the current Tab Group** | ✅ |
+| Open a link in a **new tab** or a **new tab in the current Tab Group** (or a **new tab group** when not in one) | ✅ |
+| Menu: **New tab group** when the current tab isn't in a group | ✅ |
 | **Tab Group Strip** at the bottom (like Chrome Android): one round icon per tab showing the site's **real favicon**; tap to switch instantly | ✅ |
 | Strip controls: `^` opens the group's tab grid with previews, `+` adds a tab to the group, `×` closes the current tab | ✅ |
 | Swipe between tabs; click around freely | ✅ |
@@ -92,7 +95,7 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | Requirement | Status |
 |---|---|
 | Several built-in engines: DuckDuckGo, Google, Brave Search, Startpage, Bing | ✅ |
-| Switch engine from **one dropdown inside the search bar** | ✅ |
+| Switch engine from **one dropdown inside the search bar**, each engine shown with its favicon | ✅ |
 | Default engine: **DuckDuckGo**, safe search off where the engine allows | ✅ |
 | User-added custom engines | ⏭️ |
 
@@ -175,7 +178,7 @@ What a new user gets before changing anything.
 | Backups | Off, always | ✅ |
 | Search engine | DuckDuckGo, safe search off where the engine allows | ✅ |
 | Address bar position | Top | ✅ |
-| Ad / tracker / pop-up blocking | On for every site | ✅ |
+| Ad / tracker / pop-up blocking | On for every site (each can be switched off per site) | ✅ |
 | Redirect guard | On | ✅ |
 | Third-party cookies | Blocked | ✅ |
 | Where Vault saves land | Unsorted | ✅ |

@@ -24,4 +24,5 @@ Corn is a free, private, mobile-first browser for adults. Start with `README.md`
 - **Use the glossary's terms** (Session, Flush, Flush Button, Kept Session, Keep List, Vault, Collection, Tab Group, Tab Group Strip…). Add a term the moment it's resolved.
 - **Tick a checklist box only when its "Done when" is true.**
 - **Privacy is a product requirement:** never add code that sends URLs, searches, titles, tabs or Vault contents off the device.
+- **Never log URLs, titles, searches or site names**, not even in debug builds. Blocking stats are plain counts only; Corn keeps no record of what was blocked where.
 - Mockups use fake, neutral sites only. No adult content in the repo, mockups, icons or store assets.
