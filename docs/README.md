@@ -8,6 +8,7 @@ Read in folder order. Start with the product, then the technical plan.
 |---|---|---|
 | 01 | [PRD](01-product/01-prd.md) | What Corn is, who it's for, every feature with ✅ settled / 🟡 open status |
 | 02 | [Decision log](01-product/02-decision-log.md) | Every question asked and the founder's answer, round by round |
+| 03 | [Features](01-product/03-features.md) | Every built feature, its user benefit, and the evidence (verified / tested / built) |
 
 ## 02 — Technical: *how* we build it
 

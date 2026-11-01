@@ -47,6 +47,11 @@ class CornData(context: Context) {
     fun search(query: String): List<VaultItem> = store.search(query)
     fun isSaved(url: String): Boolean = url.isNotBlank() && store.containsUrl(url)
 
+    /** The Collection with this name, created if it doesn't exist yet. */
+    fun collectionNamed(name: String): Collection? = runCatching { store.collectionNamed(name) }
+        .onSuccess { changed() }
+        .getOrNull()
+
     fun createCollection(name: String): Collection? = runCatching { store.createCollection(name) }
         .onSuccess { changed() }
         .onFailure { Log.w(TAG, "create collection", it) }

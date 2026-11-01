@@ -20,3 +20,9 @@
 - Updated `docs/04-reference/02-open-source.md` (autoconsent in use, pinned version).
 - Updated `docs/01-product/01-prd.md`, `02-decision-log.md` (Round 7), `docs/03-planning/02-checklist.md`.
 
+## 2026-11-01 — Collection save fix, search words in the address bar, features file
+
+- Code: `ui/Sheets.kt` (Save uses a typed new Collection), `data/CornData.kt` (`collectionNamed`), `data/SearchEngines.kt` (`searchTermsIn`), `ui/BrowserScreen.kt` (address bar shows search words).
+- Added `docs/01-product/03-features.md`; indexed in `docs/README.md`.
+- Updated `docs/01-product/02-decision-log.md` (Round 8).
+

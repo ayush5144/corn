@@ -180,7 +180,13 @@ private fun SaveSheet(c: CornController, s: Sheet.Save) {
     })
     Spacer(Modifier.height(18.dp))
     BigButton("Save", {
-        val col = collections.firstOrNull { it.id == chosen } ?: c.data.collections().first { it.id == chosen }
+        // A new Collection typed but not confirmed with the keyboard's Done key still counts.
+        val typed = newName.trim()
+        val col = (if (naming && typed.isNotEmpty()) c.data.collectionNamed(typed) else null)
+            ?: collections.firstOrNull { it.id == chosen } ?: c.data.collections().first { it.id == chosen }
+        // Same for a tag still in the box.
+        val t = tagInput.trim().lowercase()
+        if (t.isNotEmpty() && t !in tags) tags += t
         c.save(col.id, col.name, title, s.url, tags.toList())
     }, icon = CornIcons.VaultAdd)
     T("You can save while the Vault is locked. Seeing what's inside needs your PIN.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 10.dp))

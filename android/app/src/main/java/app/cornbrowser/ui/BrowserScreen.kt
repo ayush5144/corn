@@ -86,7 +86,11 @@ fun BrowserScreen(c: CornController) {
 @Composable
 private fun AddressBar(c: CornController, cur: TabEntry) {
     val focus = LocalFocusManager.current
-    val shown = if (cur.isNewTab) "" else cur.url
+    // Like Firefox's "show search terms": on a built-in engine's results page, show just the words.
+    val shown = when {
+        cur.isNewTab -> ""
+        else -> app.cornbrowser.data.SearchEngines.searchTermsIn(cur.url) ?: cur.url
+    }
     // Not editing: show the page's URL. Editing: the user's own text, starting with the URL selected.
     var editing by remember { mutableStateOf(false) }
     var field by remember { mutableStateOf(TextFieldValue("")) }

@@ -362,3 +362,22 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Findings:** Chrome, Brave and DuckDuckGo all have built-in password managers. Download "vaults" are rarer: Aloha Browser offers passcode-locked folders for downloads (listed as a Premium feature on its site).
 - **Status:** ✅ Informational. Password store stays v1.1; downloads stay in the backlog.
 
+## Round 8 — 2026-11-01
+
+### Saving to a Collection went to Unsorted
+- **Cause:** a new Collection typed in the save sheet was only created when the keyboard's Done key was pressed; tapping Save without it fell back to Unsorted.
+- **Status:** ✅ Fixed: Save creates (or reuses) the typed Collection; a tag still in the box is also kept.
+
+### Search engine address in the address bar
+- **Founder asked:** On a results page, why show `https://duckduckgo.com/?q=…`?
+- **Findings:** Firefox has "Show search terms in the address bar on results pages instead of URL"; Safari shows only the site name.
+- **Status:** ✅ On a built-in engine's results page the bar shows just the search words; tapping lets you edit them.
+
+### Link cleaning in other browsers
+- **Findings:** Brave (on by default, query string filter), Firefox 102+ (Strict mode), Safari iOS 17+ (Link Tracking Protection, ~25 click IDs).
+- **Status:** ✅ Informational.
+
+### Features file
+- **Answer:** A features file listing every built feature, its benefit and data-backed evidence, no assumptions.
+- **Status:** ✅ [03-features.md](03-features.md), with evidence levels (verified / tested / built).
+
