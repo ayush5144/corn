@@ -154,7 +154,36 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | **iPhone** | ✅ Committed next; mobile-first means both |
 | Laptop | ⏭️ Later |
 
-## 8. Success measures (draft)
+## 8. Defaults
+
+What a new user gets before changing anything.
+
+| Setting | Default | Status |
+|---|---|---|
+| Session | Keep my session until I flush (Kept Session) | ✅ |
+| Auto-Flush after Leaving Corn | Off (options: when I leave / 5 min / 30 min) | ✅ |
+| Flush after inactivity | Off (10 / 30 / 60 min; a playing video counts as activity) | ✅ |
+| Flush sound | Off | ✅ |
+| Flush confirmation | None (one tap) | ✅ |
+| Keep List | Empty | ✅ |
+| Vault lock | On (PIN or biometrics) | ✅ |
+| App Lock | Off | ✅ |
+| Black screen in recent apps | On | ✅ |
+| Notifications while closed | None | ✅ |
+| Backups | Off, always | ✅ |
+| Search engine | DuckDuckGo, safe search off where the engine allows | ✅ |
+| Address bar position | Top | ✅ |
+| Ad / tracker / pop-up blocking | On for every site | ✅ |
+| Redirect guard | On | ✅ |
+| Third-party cookies | Blocked | ✅ |
+| Where Vault saves land | Unsorted | ✅ |
+| Cookie banners | Auto-reject | 🟡 proposed |
+| Fingerprinting protection + Global Privacy Control | On | 🟡 proposed |
+| Link cleaning | On | 🟡 proposed |
+| HTTPS upgrade | On | 🟡 proposed |
+| Live tabs | 1 active + up to 2 paused; the rest frozen | 🟡 open |
+
+## 9. Success measures (draft)
 
 - A new user can browse, open a Tab Group, save to the Vault and flush within a minute of first launch, with no account.
 - Switching between tabs and groups feels instant on a mid-range Android phone.

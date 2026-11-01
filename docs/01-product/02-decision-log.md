@@ -267,3 +267,14 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Answer given:** Keep WebView. GeckoView stays plan B with one trigger: the spike shows WebView blocking clearly worse than Brave on the founder's test sites. No more engine debate before the spike results.
 - **Status:** ✅ WebView. Re-confirmed.
 
+### How many tabs stay live
+- **Founder asked:** How many background tabs do Chrome and Brave keep live? Suggested one live tab (the current one) is enough.
+- **Facts found:** Chrome on Android (and Brave, built on Chromium) has no fixed count. Background tabs stay in memory until the phone runs low, then Chrome kills them "aggressively" and reloads them when tapped. The spike measured ~1 GB with 10 live tabs.
+- **Recommended:** 1 active tab + up to 2 recently used tabs paused (scripts and media stopped, still in memory) + every other tab frozen (preview screenshot + saved state, reloads on tap). Under memory pressure, drop to 1 active. One live tab alone would make every Tab Group Strip switch a 1–3 s reload, which conflicts with "instant switching".
+- **Status:** 🟡 Awaiting founder decision.
+
+### Spike scope vs mockup
+- **Founder asked:** Where are settings, tab previews and the other mockup features?
+- **Answer given:** Only the engine proof is built (blocking, basic tabs, address bar, fullscreen video). Every mockup feature is still to build, after planning. Founder wants to plan before building anything more.
+- **Status:** ✅ No new building until the plan is agreed.
+
