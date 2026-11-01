@@ -20,6 +20,8 @@ Read in folder order. Start with the product, then the technical plan.
 | 05 | [Flush model](02-technical/05-flush-model.md) | How Flush works on each platform |
 | 06 | [iPhone](02-technical/06-iphone.md) | iOS stack and App Store notes |
 | 07 | [Desktop](02-technical/07-desktop.md) | Laptop stack: Electron vs Tauri vs native |
+| 08 | [Repo structure](02-technical/08-repo-structure.md) | Every folder (Android, iPhone, desktop, Rust core), where new code goes, how to build |
+| 09 | [Filter lists](02-technical/09-filter-lists.md) | What filter lists are, which ones Corn uses, why they're fetched not stored |
 
 ## 03 — Planning: *when* we build it
 

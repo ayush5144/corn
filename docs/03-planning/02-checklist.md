@@ -81,6 +81,7 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [ ] | **Corn password store** in the Vault, survives Flush (v1 or v1.1, timing open) | Claude | Saved password fills a login after Flush |
 | [ ] | Corn-encrypted Session data + backups disabled | Claude | No readable URLs in app files on a debug dump |
 | [ ] | Filter lists refresh automatically (every few days, on Wi-Fi), engine rebuilt in the background | Claude | Lists newer than 4 days after a week of use |
+| [ ] | Starter engine bundled in the app for first launch without internet | Claude | Fresh install in airplane mode still blocks ads |
 | [ ] | **Vault**: save link + title, optional tags, **Collections**, PIN/biometric lock | Claude | Save, find, lock, delete all work |
 | [ ] | Privacy: black recents screen, optional App Lock, no notifications while closed | Claude | Verified on a real phone |
 | [ ] | Onboarding: 18+ confirmation, privacy explainer, fun tone | Claude | Founder approves the flow |

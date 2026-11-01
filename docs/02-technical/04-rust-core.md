@@ -28,7 +28,8 @@ Rust earns its place in three ways:
 | `corn-url` | Strip tracking parameters, unwrap redirect links, compute site keys (eTLD+1 via the Public Suffix List) | Parses untrusted input; shared rules | 1 |
 | `corn-flush` | Flush **policy**: what to clear, when, and which Keep-list sites to spare | Same rules on every platform | 2 |
 | `corn-vault` | Encrypted database (rusqlite + SQLCipher), file encryption (XChaCha20-Poly1305), local search, import/export format | One Vault format everywhere; security-critical | 2 |
-| `corn-ffi` | UniFFI bindings (Kotlin, Swift) and napi-rs bindings (Electron) | Generated glue; keeps the API small | 1 |
+| `corn-ffi` | UniFFI bindings (Kotlin, Swift) | Generated glue; keeps the API small | 1 |
+| `corn-node` | napi-rs bindings for the Electron desktop app | UniFFI doesn't target Node.js | Desktop |
 
 ## What stays out of Rust ❌
 
@@ -52,7 +53,8 @@ corn-core/                      (Rust workspace, separate from the app shells)
 │   ├── corn-url/               URL cleaning
 │   ├── corn-flush/             flush policy
 │   ├── corn-vault/             encrypted storage
-│   └── corn-ffi/               UniFFI + napi-rs bindings
+│   ├── corn-ffi/               UniFFI bindings (Kotlin, Swift)
+│   └── corn-node/              napi-rs bindings (Electron)
 └── Cargo.toml
 
         corn-ffi

@@ -6,7 +6,7 @@ Every session can start empty, one tap flushes it, and an encrypted local Vault 
 
 ## Status
 
-Planning. No app code yet. The product is being shaped through Q&A rounds, recorded in the [decision log](docs/01-product/02-decision-log.md).
+Early build. The Rust core and an Android proof-of-concept exist; the product is still being shaped. The product is being shaped through Q&A rounds, recorded in the [decision log](docs/01-product/02-decision-log.md).
 
 ## How it's built (planned)
 
@@ -25,18 +25,20 @@ Why this and not a Brave fork: [ADR 0001](docs/adr/0001-os-web-engine-not-brave-
 
 ```
 corn/
-├── README.md      this file
-├── AGENTS.md      rules for AI coding agents (CLAUDE.md imports it)
-├── LICENSE        MPL-2.0
-├── TRADEMARKS.md  the name and logo aren't covered by the licence
-├── GLOSSARY.md    product vocabulary (Session, Flush, Vault, …)
-├── brand/         logo files
-├── mockups/       clickable phone-size HTML mockups (open in a browser)
-└── docs/          product, technical, planning, reference, ADRs
-    └── README.md  docs index — start here
+├── README.md       this file
+├── AGENTS.md       rules for AI coding agents (CLAUDE.md imports it)
+├── GLOSSARY.md     product vocabulary (Session, Flush, Vault, …)
+├── LICENSE         MPL-2.0
+├── TRADEMARKS.md   the name and logo aren't covered by the licence
+├── docs/           product, technical, planning, reference, ADRs (start at docs/README.md)
+├── core/           shared Rust core: Brave's ad-block engine + Corn logic
+├── android/        Android app (Kotlin + Compose + WebView)
+├── scripts/        build glue between the Rust core and the apps
+├── mockups/        clickable HTML mockups
+└── brand/          logo files
 ```
 
-Planned later: `core/` (Rust), `android/`, `ios/`, `desktop/`.
+Planned: `ios/` (Swift) and `desktop/` (Electron). Full layout and rules: [docs/02-technical/08-repo-structure.md](docs/02-technical/08-repo-structure.md).
 
 ## Principles
 

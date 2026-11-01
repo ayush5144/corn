@@ -60,15 +60,6 @@ Spike result
 - Any sync, accounts or diagnostics. None are in the MVP.
 - Whether a Mac-native app replaces Electron on macOS.
 
-## Repository layout (proposed)
+## Repository layout
 
-```
-corn/
-├── README.md      project overview
-├── GLOSSARY.md    shared product vocabulary
-├── docs/          product, technical, planning, reference, ADRs
-├── core/          Rust workspace (corn-block, corn-lists, corn-url, corn-flush, corn-vault, corn-ffi)
-├── android/       Kotlin + Compose app
-├── ios/           Swift app (later)
-└── desktop/       Electron app (later)
-```
+See [../02-technical/08-repo-structure.md](../02-technical/08-repo-structure.md).
