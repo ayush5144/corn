@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:28 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:38 IST
 
 Every feature in the Android app today, what it does for the user, and the evidence behind it. Nothing here is planned-only; planned work lives in the [checklist](../03-planning/02-checklist.md).
 
@@ -111,6 +111,8 @@ Every feature in the Android app today, what it does for the user, and the evide
   - *What:* screenshots of tabs in the Tabs screen and group view, kept in memory only (~0.25 MB each).
   - *Evidence:* seen in the Tabs screen.
 
+- **Toasts sit next to what you tapped** ✅: just above the bottom bar (measured, so the Tab Group strip and a bottom address bar count), above an open sheet, or 16 dp above the bottom edge on screens without a bar. Seen in all three cases on the emulator.
+
 - **Background tabs** 🔨
   - *What:* Settings → Advanced → Background tabs. **Automatic by phone memory** (default: 1 recent tab kept in memory on 4 GB, 2 on 6 GB, 3 on 8 GB, 5 on 12 GB+, all unloaded when Android warns memory is low), **Keep recent tabs** (0/1/2/3/5) or **Keep all** (asks first: battery, heat, Android may close Corn, one crash reloads every tab). Kept tabs reopen instantly; their videos stay paused and can't restart. Unloaded tabs run nothing and reload with their scroll position.
   - *Benefit:* lower memory and battery use. 10 tabs: **~644 MB** with 2 kept vs **~1.05 GB** all loaded (measured earlier).
@@ -171,6 +173,6 @@ Every feature in the Android app today, what it does for the user, and the evide
 
 | | Measured |
 |---|---|
-| Release APK (shrunk, phones only, includes starter lists + cookie-banner script) | **8.6 MB** |
+| Release APK (shrunk, phones only, includes starter lists + cookie-banner script) | **8.7 MB** |
 | App data after first run | ~11 MB (block lists 5.9 MB + WebView data); grows with browsing, cleared by Flush |
 | App process memory, 1 tab | 139 MB (page content runs in WebView's own process) |

@@ -21,6 +21,10 @@ Native app on each device, using the device's own web engine, plus one shared Ru
 
 Why this and not a Brave fork: [ADR 0001](docs/adr/0001-os-web-engine-not-brave-fork.md).
 
+## Docs and code
+
+The code is always the source of truth. The docs in [`docs/`](docs/README.md) explain how and why things work, but they can fall behind: if a doc and the code disagree, trust the code. Each doc shows when it was created and last updated.
+
 ## Repository
 
 ```

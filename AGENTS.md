@@ -17,6 +17,7 @@ Corn is a free, private, mobile-first browser for adults. Start with `README.md`
 
 ## Rules
 
+- **The code is the source of truth.** Docs explain the code; when a doc and the code disagree, trust the code and fix the doc. Every doc's banner says this (see below).
 - **Mockups are HTML files in `mockups/`.** Never publish mockups or prototypes as claude.ai Artifacts or any other hosted page. Plain HTML first; Next.js static export only if necessary. Design at mobile viewport size.
 - **Docs are numbered** in reading order inside their folder. Keep `docs/README.md` indexing every doc.
 - **Every doc carries the developer banner** (each file in `docs/` and `GLOSSARY.md`, right under the title): the "For developers and AI Agents" note plus **Created** and **Last updated** in IST. When you edit a doc, update its "Last updated" (run `python3 scripts/doc-banner.py` before committing; it reads the dates from git). New docs get the banner too. Not used on `README.md`, `AGENTS.md`, `LICENSE` or `TRADEMARKS.md`.

@@ -2,9 +2,11 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:28 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:38 IST
 
 Read in folder order. Start with the product, then the technical plan.
+
+**The code is the source of truth.** These docs explain the code and the decisions behind it; if a doc and the code disagree, trust the code and fix the doc. Each doc's banner shows when it was created and last updated (IST).
 
 ## 01 — Product: *what* we're building
 

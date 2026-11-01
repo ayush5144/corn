@@ -92,3 +92,10 @@
 
 - Code: `ui/CornApp.kt` (toast offset from measured heights), `ui/BrowserScreen.kt` and `ui/Components.kt` (report bottom-bar and sheet heights), `ui/Sheets.kt`, `CornController.kt` (`bottomBarHeightPx`, `sheetHeightPx`).
 - No doc sections affected (UI spacing only). Verified on the emulator: browser (8 dp above the bar), open shield sheet (above the sheet), Settings (16 dp above the edge).
+
+## 2026-11-01 — "Code is the source of truth" stated; sizes and phone test list updated
+
+- Updated `AGENTS.md` (first rule), `README.md` (Docs and code section), `docs/README.md` (intro): the code is the source of truth.
+- Updated `docs/03-planning/04-testing-on-a-phone.md` (APK sizes 8.7 / 28.1 MB; what to test: Keep List switch, History, Delete browsing data, background tabs, ↩).
+- Updated sizes in `docs/02-technical/08-repo-structure.md`, `docs/05-review/01-audit-2026-11-01.md`, `docs/01-product/03-features.md`; features: toast placement.
+

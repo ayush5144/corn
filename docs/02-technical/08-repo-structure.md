@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:08 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:38 IST
 
 One public repository, `ayush5144/corn`, holds everything: docs, the shared Rust core, and every platform app.
 
@@ -107,7 +107,7 @@ Does every platform need the same behaviour?
 | Rust tests | `cd core && cargo test` |
 | Engine benchmark | `cd core && cargo run --release -p corn-block --example bench -- easylist.txt easyprivacy.txt` |
 | Android debug app | `cd android && ./gradlew assembleDebug` (also builds the Rust core) |
-| Android release app (8.6 MB, unsigned) | `cd android && ./gradlew assembleRelease` |
+| Android release app (8.7 MB, unsigned) | `cd android && ./gradlew assembleRelease` |
 | Android unit tests | `cd android && ./gradlew testDebugUnitTest` |
 | Test APK for a phone (release build signed with the debug key) | see [../03-planning/04-testing-on-a-phone.md](../03-planning/04-testing-on-a-phone.md) |
 | Install on phone/emulator | `cd android && ./gradlew installDebug` |
