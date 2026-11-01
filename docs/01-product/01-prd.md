@@ -125,7 +125,8 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | **Collections**: one level, each item in exactly one Collection (default "Unsorted"); tags cut across | ✅ |
 | Thumbnails (screenshot, placeholder or none) | ⏭️ Not v1 |
 | Stored only on the device (app-private SQLite, protected by Android's sandbox and phone encryption) | ✅ (SQLCipher dropped, see decision log) |
-| **Vault locked by default** with PIN or biometrics | ✅ |
+| **Vault locked by default** with a 4-digit PIN | ✅ |
+| Fingerprint / face unlock | ⏭️ Later |
 | Export, import, permanent delete | 🟡 |
 | Saving downloaded files into the Vault | ⏭️ |
 
@@ -134,7 +135,7 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | Requirement | Status |
 |---|---|
 | **Black screen in the recent-apps view** | ✅ default on |
-| **App Lock** (PIN/biometrics to open Corn): optional, off by default | ✅ |
+| **App Lock** (PIN to open Corn): optional, off by default | ✅ |
 | **No notifications while Corn is closed**; media controls (if background playback is on) show only "Corn — playing" | ✅ |
 | **No backups of any kind**: Corn turns off Android's automatic Google Drive backup | ✅ |
 | Kept Session data stored in app-private SQLite (not separately encrypted) | ✅ |
@@ -167,7 +168,7 @@ What a new user gets before changing anything.
 | Flush sound | Off | ✅ |
 | Flush confirmation | Off (one tap); a Settings toggle turns on an "Are you sure?" step | ✅ |
 | Keep List | Empty | ✅ |
-| Vault lock | On (PIN or biometrics) | ✅ |
+| Vault lock | On (4-digit PIN) | ✅ |
 | App Lock | Off | ✅ |
 | Black screen in recent apps | On | ✅ |
 | Notifications while closed | None | ✅ |

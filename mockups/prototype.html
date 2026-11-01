@@ -612,7 +612,7 @@ const LOGO = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ct
           { title: VIDS[2][0], url: "streamhut.tv/w/2", tags: ["fails"] } ] }
       ],
       set: {
-        flushMode: "keep", inactivity: false, inactMin: 30, sound: false,
+        flushMode: "keep", inactivity: false, inactMin: 30, sound: false, flushConfirm: false,
         appLock: false, blackRecents: true, vaultLock: true,
         engine: "ddg", addrBottom: false,
         keep: ["mail.example.com", "forum.example.org"]
@@ -862,8 +862,8 @@ const LOGO = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ct
       return `<div class="screen"><div class="shead"><button class="iconbtn" data-act="done" aria-label="Back">${ic("back")}</button><h2></h2></div>
         <div class="lock"><div class="safe">${ic("lock", 34)}</div><h3>Vault is locked</h3><p>Enter your PIN · any 4 digits work here</p>
         <div class="pins">${[0, 1, 2, 3].map(i => `<i class="${i < S.pin.length ? "on" : ""}"></i>`).join("")}</div>
-        <div class="keypad">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button data-pin="${n}">${n}</button>`).join("")}<button data-act="fp" aria-label="Use fingerprint">${ic("fp", 26)}</button><button data-pin="0">0</button><button data-act="bksp" aria-label="Delete digit">${ic("bksp", 24)}</button></div>
-        <button class="fp" data-act="fp">${ic("fp", 20)} Use fingerprint</button></div></div>`;
+        <div class="keypad">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button data-pin="${n}">${n}</button>`).join("")}<span></span><button data-pin="0">0</button><button data-act="bksp" aria-label="Delete digit">${ic("bksp", 24)}</button></div>
+      </div></div>`;
     }
     if (S.vaultColl) {
       const c = S.colls.find(x => x.id === S.vaultColl);
@@ -913,6 +913,7 @@ const LOGO = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ct
           ${sw("inactivity", "Flush after inactivity", "A playing video counts as activity.")}
           ${s.inactivity ? `<div class="row"><span class="grow">After</span><div class="seg">${[10, 30, 60].map(m => `<button class="${s.inactMin === m ? "on" : ""}" data-inact="${m}">${m} min</button>`).join("")}</div></div>` : ""}
           ${sw("sound", "Flush sound", "Off by default, so it never goes off in public.")}
+          ${sw("flushConfirm", "Ask before flushing", "Off by default. When on, Corn asks before wiping.")}
         </div>
         <div class="label">Keep List</div>
         <div class="sgroup">
@@ -922,8 +923,8 @@ const LOGO = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ct
         <p class="scap">These sites stay logged in after a Flush.</p>
         <div class="label">Privacy</div>
         <div class="sgroup">
-          ${sw("appLock", "App Lock", "Ask for PIN or fingerprint to open Corn.")}
-          ${sw("vaultLock", "Lock the Vault", "PIN or fingerprint to see saved links.")}
+          ${sw("appLock", "App Lock", "Ask for your PIN to open Corn.")}
+          ${sw("vaultLock", "Lock the Vault", "Your PIN to see saved links.")}
           ${sw("blackRecents", "Black screen in recent apps", "Hides what's on screen in the app switcher.")}
           <div class="row"><span style="color:var(--muted)">${ic("bell")}</span><span class="grow">Notifications<br><span class="hint">Corn never notifies you while it's closed.</span></span></div>
         </div>
@@ -984,6 +985,9 @@ const LOGO = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ct
         <form data-form="tag"><input class="field" id="tagin" placeholder="Type a tag and press enter" autocomplete="off" enterkeyhint="done"></form>
         <div class="stack"><button class="btn" data-act="commitsave">${ic("vaultAdd", 20)} Save</button></div>
         <p class="fine">You can save while the Vault is locked. Seeing what's inside needs your PIN.</p>`;
+    } else if (sh.type === "confirmflush") {
+      inner = `<h3>Flush everything?</h3><p class="sub">All tabs and groups, cookies, cache and history go. Your Vault and Keep List stay.</p>
+        <div class="stack"><button class="btn" data-act="flush">${ic("toilet", 20)} Flush</button><button class="btn ghost" data-act="closesheet">Cancel</button></div>`;
     } else if (sh.type === "group") {
       const g = group(sh.gid);
       if (!g) { S.sheet = null; return ""; }
@@ -1072,7 +1076,7 @@ const LOGO = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ct
       case "vault": S.screen = "vault"; S.sheet = null; render(); break;
       case "tabs": S.screen = "tabs"; render(); break;
       case "done": S.screen = "browser"; S.vaultColl = null; S.sheet = null; render(); break;
-      case "flush": flush(); break;
+      case "flush": if (S.set.flushConfirm && !(S.sheet && S.sheet.type === "confirmflush")) { S.sheet = { type: "confirmflush" }; render(); } else flush(); break;
       case "menu": S.sheet = { type: "menu" }; render(); break;
       case "engine": S.sheet = { type: "engine" }; render(); break;
       case "shield": if (parse(urlOf(t)).kind === "site") { S.sheet = { type: "shield" }; render(); } else toast("Nothing to block on this page"); break;

@@ -306,3 +306,13 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Answer:** Build every feature from the mockup into the Android app, matching its UI and UX. Don't assume things; brief the founder on the changes.
 - **Status:** ✅ In progress.
 
+### Fingerprint unlock
+- **Answer:** Skip fingerprint unlock for now.
+- **Status:** ⏭️ Backlog. The Vault and App Lock use a 4-digit PIN (stored as a salted PBKDF2 hash).
+
+### Rendering differences on DuckDuckGo
+- **Founder asked:** Is WebView rendering correctly? DuckDuckGo looked different from Chrome.
+- **Findings:** (1) "Get it on Google Play" is DuckDuckGo's mobile page; Chrome on the same emulator shows it too. (2) Dark vs light is the app's dark theme vs the emulator's light mode. (3) Black and blank areas came from a Corn bug (an always-on animation layer around the page made WebView skip painting) plus a page-process crash on a 2 GB emulator.
+- **Founder decision:** Don't make site-specific fixes; if filter rules hide something on a site, leave it for now.
+- **Status:** ✅ General fixes only: animation layer applied only during Flush; Corn now recovers from page crashes with a reload card.
+

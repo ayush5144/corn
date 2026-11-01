@@ -70,10 +70,10 @@ The single list of what's done, what's next and who owns it. Product decisions l
 
 | ✓ | Task | Owner | Done when |
 |---|---|---|---|
-| [ ] | Project skeleton: `android/` (Kotlin + Compose), `core/` (Rust workspace) | Claude | Builds from a clean checkout |
+| [x] | Project skeleton: `android/` (Kotlin + Compose), `core/` (Rust workspace) | Claude | Builds from a clean checkout |
 | [ ] | Browsing basics: address bar, back/forward/reload/share, fullscreen, PiP | Claude | Works on the test sites |
 | [ ] | Blocking + per-site toggle | Claude | Spike metrics hold in the real app |
-| [ ] | Search: built-in engines, DuckDuckGo default, search-bar dropdown switcher | Claude | Switch engine in one tap |
+| [x] | Search: built-in engines, DuckDuckGo default, search-bar dropdown switcher | Claude | Switch engine in one tap |
 | [ ] | Tabs + **Tab Groups**: Tab Group Strip (icons, `^` grid, `+`, `×`), swipe, previews, instant switching | Claude | 20+ tabs across groups without lag on a mid-range phone |
 | [ ] | Tab freezing (memory policy) | Claude | No crashes with 30 tabs |
 | [ ] | **Flush Button** + Kept Session (default) + Auto-Flush (leave delay, inactivity; video counts as activity) | Claude | Flush tests in [05-flush-model](../02-technical/05-flush-model.md) pass |
@@ -85,7 +85,7 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [ ] | Revisit how many tabs stay live (now 1 active + 2 paused) after real-phone testing | Both | Number confirmed or changed in the decision log |
 | [ ] | **Vault**: save link + title, optional tags, **Collections**, PIN/biometric lock | Claude | Save, find, lock, delete all work |
 | [ ] | Privacy: black recents screen, optional App Lock, no notifications while closed | Claude | Verified on a real phone |
-| [ ] | Onboarding: 18+ confirmation, privacy explainer, fun tone | Claude | Founder approves the flow |
+| [ ] | Onboarding: 18+ confirmation, privacy explainer, fun tone. **Built, awaiting founder approval** | Claude | Founder approves the flow |
 | [ ] | Settings screen for every option above | Claude | Every setting in the PRD is reachable |
 | [ ] | In-app update check + signed release APK | Both | Founder installs a signed build |
 
