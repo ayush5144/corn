@@ -25,23 +25,6 @@ object SearchEngines {
 
     fun byId(id: String) = all.firstOrNull { it.id == id } ?: all.first()
 
-    /** Results-page addresses of the built-in engines: host → paths that carry the query in `q`. */
-    private val resultPages = mapOf(
-        "duckduckgo.com" to setOf("/", ""),
-        "google.com" to setOf("/search"),
-        "search.brave.com" to setOf("/search"),
-        "startpage.com" to setOf("/do/search", "/sp/search", "/search"),
-        "bing.com" to setOf("/search"),
-    )
-
-    /** The search words if `url` is a built-in engine's results page, else null. */
-    fun searchTermsIn(url: String): String? {
-        val uri = android.net.Uri.parse(url)
-        val host = uri.host?.removePrefix("www.") ?: return null
-        val paths = resultPages[host] ?: return null
-        if ((uri.path ?: "") !in paths) return null
-        return runCatching { uri.getQueryParameter("q") }.getOrNull()?.trim()?.takeIf { it.isNotEmpty() }
-    }
 
     /** Turn what the user typed into a URL: a web address as-is, anything else as a search. */
     fun resolve(input: String, engine: SearchEngine): String {

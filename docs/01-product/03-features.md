@@ -136,7 +136,7 @@ Last updated: 2026-11-01.
 ## Search and navigation
 
 - **Five search engines with a one-tap switcher** ✅: DuckDuckGo (default), Google, Brave Search, Startpage, Bing, each with its favicon (bundled, never fetched). Seen in the address bar and the engine sheet.
-- **Search words in the address bar** ✅: on a built-in engine's results page, the bar shows your words (e.g. `corn browser`), not the long URL. Firefox offers the same as a setting. Seen on DuckDuckGo.
+- **Full address in the address bar** ✅: always shows the page's full URL (e.g. `https://duckduckgo.com/?q=corn+browser`), like Brave.
 - **Address bar top or bottom** 🔨: a Settings choice.
 - **Opens links from other apps** ✅: tested with links sent to Corn.
 - **`http://` sites load** ✅: the Android default would block them; the count-test page loaded over http.

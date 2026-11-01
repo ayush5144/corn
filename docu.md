@@ -26,3 +26,8 @@
 - Added `docs/01-product/03-features.md`; indexed in `docs/README.md`.
 - Updated `docs/01-product/02-decision-log.md` (Round 8).
 
+## 2026-11-01 — Address bar shows the full URL again
+
+- Code: reverted search-words display in `ui/BrowserScreen.kt`; removed `searchTermsIn` from `data/SearchEngines.kt`.
+- Updated `docs/01-product/03-features.md` (Search and navigation) and `docs/01-product/02-decision-log.md` (Round 8, reversed).
+

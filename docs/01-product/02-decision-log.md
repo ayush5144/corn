@@ -372,6 +372,7 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Founder asked:** On a results page, why show `https://duckduckgo.com/?q=…`?
 - **Findings:** Firefox has "Show search terms in the address bar on results pages instead of URL"; Safari shows only the site name.
 - **Status:** ✅ On a built-in engine's results page the bar shows just the search words; tapping lets you edit them.
+- **Reversed (same day):** Founder: keep showing the full URL, as Brave does. The search-words display was removed.
 
 ### Link cleaning in other browsers
 - **Findings:** Brave (on by default, query string filter), Firefox 102+ (Strict mode), Safari iOS 17+ (Link Tracking Protection, ~25 click IDs).
