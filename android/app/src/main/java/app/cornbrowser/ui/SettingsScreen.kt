@@ -55,7 +55,7 @@ fun SettingsScreen(c: CornController, onNeedPin: () -> Unit) {
             }
             Caption("Leaving Corn means switching apps, going home or locking your phone.")
             SettingsGroup {
-                ToggleRow("Flush after inactivity", "A playing video counts as activity.", s.inactivity) { s.inactivity = it }
+                ToggleRow("Flush after inactivity", "A playing video counts as activity.", s.inactivity) { s.inactivity = it; c.onInactivitySettingChanged() }
                 if (s.inactivity) {
                     SettingRow("After", trailing = {
                         val opts = listOf(10, 30, 60)
@@ -96,7 +96,7 @@ fun SettingsScreen(c: CornController, onNeedPin: () -> Unit) {
             Label("Search")
             SettingsGroup {
                 SearchEngines.all.forEach { e ->
-                    SettingRow(e.name, onClick = { s.engine = e.id; c.engineNow = e }, leading = { EngineBadge(e.letter, e.color) }, trailing = { Radio(s.engine == e.id) })
+                    SettingRow(e.name, onClick = { s.engine = e.id; c.engineNow = e }, leading = { EngineBadge(e) }, trailing = { Radio(s.engine == e.id) })
                 }
             }
             Caption("Default engine. You can switch for one search from the dropdown in the address bar.")

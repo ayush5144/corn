@@ -4,21 +4,23 @@
 
 package app.cornbrowser.data
 
+import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.Color
+import app.cornbrowser.R
 import java.net.URLEncoder
 
 /** A built-in search engine. `template` contains %s for the query; safe search is turned off where the engine allows it. */
-data class SearchEngine(val id: String, val name: String, val letter: String, val color: Color, val template: String) {
+data class SearchEngine(val id: String, val name: String, @DrawableRes val icon: Int, val color: Color, val template: String) {
     fun urlFor(query: String): String = template.replace("%s", URLEncoder.encode(query, "UTF-8"))
 }
 
 object SearchEngines {
     val all = listOf(
-        SearchEngine("ddg", "DuckDuckGo", "D", Color(0xFFDE5833), "https://duckduckgo.com/?q=%s&kp=-2"),
-        SearchEngine("google", "Google", "G", Color(0xFF4285F4), "https://www.google.com/search?q=%s&safe=off"),
-        SearchEngine("brave", "Brave Search", "B", Color(0xFFFB542B), "https://search.brave.com/search?q=%s&safesearch=off"),
-        SearchEngine("startpage", "Startpage", "S", Color(0xFF6573FF), "https://www.startpage.com/do/search?q=%s"),
-        SearchEngine("bing", "Bing", "b", Color(0xFF00809D), "https://www.bing.com/search?q=%s&adlt=off"),
+        SearchEngine("ddg", "DuckDuckGo", R.drawable.engine_ddg, Color(0xFFDE5833), "https://duckduckgo.com/?q=%s&kp=-2"),
+        SearchEngine("google", "Google", R.drawable.engine_google, Color(0xFF4285F4), "https://www.google.com/search?q=%s&safe=off"),
+        SearchEngine("brave", "Brave Search", R.drawable.engine_brave, Color(0xFFFB542B), "https://search.brave.com/search?q=%s&safesearch=off"),
+        SearchEngine("startpage", "Startpage", R.drawable.engine_startpage, Color(0xFF6573FF), "https://www.startpage.com/do/search?q=%s"),
+        SearchEngine("bing", "Bing", R.drawable.engine_bing, Color(0xFF00809D), "https://www.bing.com/search?q=%s&adlt=off"),
     )
 
     fun byId(id: String) = all.firstOrNull { it.id == id } ?: all.first()

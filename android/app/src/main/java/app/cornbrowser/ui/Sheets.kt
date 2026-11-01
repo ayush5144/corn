@@ -38,7 +38,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.cornbrowser.CornController
 import app.cornbrowser.Sheet
+import app.cornbrowser.data.SearchEngine
 import app.cornbrowser.data.SearchEngines
+import app.cornbrowser.data.Shields
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.res.painterResource
 
 /** Every bottom sheet, drawn over whichever screen is showing. */
 @Composable
@@ -63,11 +69,13 @@ fun BoxScope.Sheets(c: CornController) {
 
 @Composable
 private fun LinkSheet(c: CornController, s: Sheet.Link) {
-    val groupName = c.tabs.group(c.tabs.current?.groupId)?.name ?: "new group"
+    val group = c.tabs.group(c.tabs.current?.groupId)
     SheetTitle(s.title, s.url)
     Row50(CornIcons.ChevRight, "Open", { c.sheet = null; c.tabs.load(s.url) })
     Row50(CornIcons.TabNew, "Open in new tab", { c.openLinkInNewTab(s.url) })
-    Row50(CornIcons.GroupAdd, "Open in new tab in group", { c.openLinkInGroup(s.url) }, hint = groupName)
+    // Not in a group yet: this starts one. In a group: adds to it (its name shown on the right).
+    if (group == null) Row50(CornIcons.GroupAdd, "Open in new tab group", { c.openLinkInGroup(s.url) })
+    else Row50(CornIcons.GroupAdd, "Open in new tab in group", { c.openLinkInGroup(s.url) }, hint = group.name)
     Row50(CornIcons.VaultAdd, "Save link to Vault", { c.sheet = Sheet.Save(s.url, s.title) })
     Row50(CornIcons.Copy, "Copy link", { c.copyLink(s.url) })
 }
@@ -77,6 +85,7 @@ private fun MenuSheet(c: CornController) {
     val cur = c.tabs.current
     Row50(CornIcons.Forward, "Forward", { c.sheet = null; c.tabs.goForward() }, enabled = cur?.canGoForward == true)
     Row50(CornIcons.TabNew, "New tab", { c.newTab() })
+    if (cur?.groupId == null) Row50(CornIcons.GroupAdd, "New tab group", { c.newTabGroup() })
     Row50(CornIcons.Share, "Share page", { cur?.takeIf { !it.isNewTab }?.let { c.share(it.url) } ?: run { c.sheet = null } }, enabled = cur?.isNewTab == false)
     Row50(CornIcons.Sliders, "Settings", { c.sheet = null; c.screen = app.cornbrowser.Screen.Settings })
 }
@@ -88,7 +97,7 @@ private fun EngineSheet(c: CornController) {
         SettingRow(
             e.name,
             onClick = { c.engineNow = e; c.sheet = null; c.showToast("Searching with ${e.name}") },
-            leading = { EngineBadge(e.letter, e.color) },
+            leading = { EngineBadge(e) },
             trailing = { if (c.engineNow.id == e.id) CornIcon(CornIcons.Check, tint = C.Corn) },
         )
     }
@@ -98,14 +107,36 @@ private fun EngineSheet(c: CornController) {
 private fun ShieldSheet(c: CornController) {
     val cur = c.tabs.current ?: return
     val host = cur.host
-    val off = c.isBlockingOff(host)
+    val sh = remember(c.data.vaultVersion.intValue, host) { c.shields(host) }
+    var advanced by remember { mutableStateOf(!sh.allOn && !sh.allOff) }
     SheetTitle(
         "Blocking on $host",
-        if (off) "Blocking is off for this site."
-        else "Blocked on this page: ${cur.blocked} ads and trackers, ${cur.guarded} pop-ups and redirects.",
+        when {
+            sh.allOff -> "Blocking is off for this site."
+            else -> "Blocked on this page: ${cur.blocked} ads & trackers, ${cur.guarded} pop-ups & redirects."
+        },
     )
-    SettingRow("Block ads, trackers and pop-ups here", onClick = { c.setBlocking(host, on = off) }, trailing = { CornSwitch(!off) })
-    T("Only turn this off if the page breaks. It applies to this site only.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 10.dp))
+    SettingRow(
+        "Block ads, trackers and pop-ups here",
+        if (!sh.allOn && !sh.allOff) "Some blocking is off. See Advanced." else null,
+        onClick = { c.setShields(host, if (sh.allOff) Shields.ALL_ON else Shields.ALL_OFF) },
+        trailing = { CornSwitch(!sh.allOff) },
+    )
+    Row(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable { advanced = !advanced }.padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        T("Advanced", 15.sp, C.Corn, FontWeight.SemiBold, modifier = Modifier.weight(1f))
+        CornIcon(if (advanced) CornIcons.ChevUp else CornIcons.ChevDown, 18.dp, C.Corn)
+    }
+    AnimatedVisibility(advanced) {
+        Column {
+            SettingRow("Ads", "Ad networks and ad scripts (EasyList)", onClick = { c.setShields(host, sh.copy(ads = !sh.ads)) }, trailing = { CornSwitch(sh.ads) })
+            SettingRow("Trackers", "Analytics and tracking scripts (EasyPrivacy)", onClick = { c.setShields(host, sh.copy(trackers = !sh.trackers)) }, trailing = { CornSwitch(sh.trackers) })
+            SettingRow("Pop-ups & redirects", "New windows and pages jumping to other sites", onClick = { c.setShields(host, sh.copy(popups = !sh.popups)) }, trailing = { CornSwitch(sh.popups) })
+        }
+    }
+    T("Only turn things off if the page breaks. Changes apply to this site only and reload the page.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 10.dp))
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -194,9 +225,8 @@ private fun ConfirmFlushSheet(c: CornController) {
     BigButton("Cancel", { c.sheet = null }, ghost = true)
 }
 
+/** A search engine's favicon (bundled with the app, never fetched). */
 @Composable
-fun EngineBadge(letter: String, color: Color) {
-    Box(Modifier.size(22.dp).clip(CircleShape).background(color), contentAlignment = Alignment.Center) {
-        T(letter, 12.sp, Color.White, FontWeight.ExtraBold)
-    }
+fun EngineBadge(engine: SearchEngine, size: androidx.compose.ui.unit.Dp = 22.dp) {
+    Image(painterResource(engine.icon), engine.name, Modifier.size(size).clip(RoundedCornerShape(size * 0.25f)))
 }

@@ -21,9 +21,11 @@ import org.json.JSONObject
 const val NEW_TAB = "corn://new"
 
 /** A named set of tabs browsed together. */
-class TabGroup(val id: Int, name: String, color: Color) {
+class TabGroup(val id: Int, name: String, color: Color, autoNamed: Boolean = false) {
     var name by mutableStateOf(name)
     var color by mutableStateOf(color)
+    /** True while the group still has its placeholder name; it takes the first site's name. */
+    var autoNamed by mutableStateOf(autoNamed)
 }
 
 /** One tab. Always exists; its WebView (`live`) only exists while the tab is active or paused. */
@@ -33,8 +35,10 @@ class TabEntry(val id: Int, url: String, groupId: Int?) {
     var groupId by mutableStateOf(groupId)
     var favicon by mutableStateOf<Bitmap?>(null)
     var preview by mutableStateOf<Bitmap?>(null)
-    var blocked by mutableIntStateOf(0)
+    var blockedAds by mutableIntStateOf(0)
+    var blockedTrackers by mutableIntStateOf(0)
     var guarded by mutableIntStateOf(0)
+    val blocked: Int get() = blockedAds + blockedTrackers
     var canGoBack by mutableStateOf(false)
     var canGoForward by mutableStateOf(false)
 
@@ -100,11 +104,38 @@ class TabManager(private val context: Context, private val host: TabHost) {
         enforceLivePolicy()
     }
 
+    /** Start a new Tab Group holding one new tab. The group takes the first site's name. */
+    fun openNewGroup(): TabEntry {
+        val g = TabGroup(nextGroupId++, "Group ${groups.size + 1}", C.GroupColors[groups.size % C.GroupColors.size], autoNamed = true)
+        groups += g
+        val entry = TabEntry(nextTabId++, NEW_TAB, g.id)
+        val at = current?.let { tabs.indexOf(it) + 1 } ?: tabs.size
+        tabs.add(at.coerceIn(0, tabs.size), entry)
+        switchTo(entry.id)
+        return entry
+    }
+
+    /** A pop-up the site is allowed to open: becomes a new tab next to its opener. */
+    fun openPopup(opener: TabEntry, resultMsg: android.os.Message): Boolean {
+        val entry = TabEntry(nextTabId++, "about:blank", opener.groupId)
+        tabs.add((tabs.indexOf(opener) + 1).coerceIn(0, tabs.size), entry)
+        val live = newLive(entry)
+        val transport = resultMsg.obj as? android.webkit.WebView.WebViewTransport ?: return false
+        transport.webView = live.webView
+        resultMsg.sendToTarget()
+        switchTo(entry.id)
+        return true
+    }
+
     /** Load a URL in the current tab (creating its WebView if it's a new-tab page or frozen). */
     fun load(url: String) {
         val cur = current ?: open(NEW_TAB)
         cur.url = url
         cur.title = url
+        group(cur.groupId)?.takeIf { it.autoNamed }?.let { g ->
+            g.name = siteName(cur)
+            g.autoNamed = false
+        }
         val live = cur.live ?: newLive(cur)
         live.load(url)
         enforceLivePolicy()

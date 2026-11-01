@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import app.cornbrowser.browser.BlockKind
 import app.cornbrowser.browser.Flusher
 import app.cornbrowser.browser.NEW_TAB
 import app.cornbrowser.browser.TabEntry
@@ -22,6 +23,7 @@ import app.cornbrowser.data.CornData
 import app.cornbrowser.data.CornSettings
 import app.cornbrowser.data.FlushMode
 import app.cornbrowser.data.SearchEngines
+import app.cornbrowser.data.Shields
 import app.cornbrowser.ui.C
 import app.cornbrowser.ui.ToastMsg
 import java.util.concurrent.atomic.AtomicBoolean
@@ -62,8 +64,6 @@ class CornController(private val context: Context) : TabHost {
 
     /** Engine used for the next searches; resets to the default on Flush. */
     var engineNow by mutableStateOf(SearchEngines.byId(settings.engine))
-    var sessionBlocked by mutableIntStateOf(0)
-        private set
     var quip by mutableStateOf<String?>(null)
         private set
     /** True while the drain animation plays. */
@@ -75,12 +75,13 @@ class CornController(private val context: Context) : TabHost {
         private set
     private var exitFullscreen: (() -> Unit)? = null
 
-    @Volatile private var blockingOffHosts: Set<String> = emptySet()
-    private val blockedSinceSync = AtomicInteger(0)
+    @Volatile private var siteShields: Map<String, Shields> = emptyMap()
+    private val adsSinceSync = AtomicInteger(0)
+    private val trackersSinceSync = AtomicInteger(0)
     private val blockSyncPending = AtomicBoolean(false)
 
     init {
-        refreshBlockingOff()
+        refreshShields()
     }
 
     // ---------------- startup / lifecycle ----------------
@@ -112,6 +113,7 @@ class CornController(private val context: Context) : TabHost {
         main.removeCallbacks(inactivityTick)
         val now = System.currentTimeMillis()
         settings.leftAt = now
+        settings.persist()
         data.saveSession(tabs.toJson()) // a later Flush (manual or automatic) deletes it
         vaultUnlocked = false
         if (settings.appLock && settings.hasPin) appLocked = true
@@ -142,14 +144,18 @@ class CornController(private val context: Context) : TabHost {
                 flushNow(animate = false)
                 onUserActivity()
             }
-            main.postDelayed(this, 30_000L)
+            if (settings.inactivity) main.postDelayed(this, 30_000L)
         }
     }
 
+    /** Only runs while "Flush after inactivity" is on: no wake-ups otherwise. */
     private fun startInactivityTicker() {
         main.removeCallbacks(inactivityTick)
-        main.postDelayed(inactivityTick, 30_000L)
+        if (settings.inactivity) main.postDelayed(inactivityTick, 30_000L)
     }
+
+    /** Settings calls this when the inactivity switch changes. */
+    fun onInactivitySettingChanged() = startInactivityTicker()
 
     // ---------------- navigation ----------------
 
@@ -172,6 +178,12 @@ class CornController(private val context: Context) : TabHost {
 
     fun newTab() {
         tabs.open(NEW_TAB)
+        sheet = null
+        screen = Screen.Browser
+    }
+
+    fun newTabGroup() {
+        tabs.openNewGroup()
         sheet = null
         screen = Screen.Browser
     }
@@ -264,7 +276,6 @@ class CornController(private val context: Context) : TabHost {
         sheet = null
         val wipe = {
             Flusher.flush(context, tabs, data) {}
-            sessionBlocked = 0
             vaultUnlocked = false
             engineNow = SearchEngines.byId(settings.engine)
             quip = Flusher.QUIPS.random()
@@ -279,31 +290,46 @@ class CornController(private val context: Context) : TabHost {
 
     // ---------------- per-site blocking ----------------
 
-    /** corn.db holds the list; cache it so WebView's network threads never touch the database. */
-    private fun refreshBlockingOff() {
-        blockingOffHosts = data.blockingOffList().toSet()
+    /** corn.db holds per-site choices; cache them so WebView's network threads never touch the database. */
+    private fun refreshShields() {
+        siteShields = data.allSiteShields()
     }
 
-    fun setBlocking(host: String, on: Boolean) {
-        data.setBlockingOff(host, !on)
-        refreshBlockingOff()
+    /** Change what's blocked on one site, then reload the page so it takes effect. */
+    fun setShields(host: String, shields: Shields) {
+        data.setSiteShields(host, shields)
+        refreshShields()
         tabs.reload()
     }
 
-    override fun isBlockingOff(host: String): Boolean = host in blockingOffHosts
+    override fun shields(host: String): Shields = siteShields[host] ?: Shields.ALL_ON
 
-    override fun onRequestBlocked() {
-        blockedSinceSync.incrementAndGet()
+    override fun onBlocked(kind: BlockKind) {
+        when (kind) {
+            BlockKind.AD -> adsSinceSync.incrementAndGet()
+            BlockKind.TRACKER -> trackersSinceSync.incrementAndGet()
+            BlockKind.POPUP -> {}
+        }
         if (blockSyncPending.compareAndSet(false, true)) {
             main.post {
                 blockSyncPending.set(false)
-                sessionBlocked += blockedSinceSync.getAndSet(0)
+                val a = adsSinceSync.getAndSet(0)
+                val t = trackersSinceSync.getAndSet(0)
+                settings.totalBlocked += a + t
             }
         }
     }
 
-    override fun onBlockedPopup() = main.post { showToast("Blocked a pop-up") }.let { }
-    override fun onBlockedRedirect(target: String) = main.post { showToast("Blocked a redirect to $target") }.let { }
+    override fun onBlockedPopup() = main.post {
+        settings.totalPopups += 1
+        showToast("Blocked a pop-up")
+    }.let { }
+
+    override fun onPopupAllowed(opener: TabEntry, resultMsg: android.os.Message): Boolean = tabs.openPopup(opener, resultMsg)
+    override fun onBlockedRedirect(target: String) = main.post {
+        settings.totalPopups += 1
+        showToast("Blocked a redirect to $target")
+    }.let { }
 
     override fun onLinkLongPress(entry: TabEntry, url: String, title: String) {
         sheet = Sheet.Link(url, title)

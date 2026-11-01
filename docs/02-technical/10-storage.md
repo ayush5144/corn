@@ -8,7 +8,8 @@ Everything stays in Corn's **private app storage** on the phone. Other apps can'
 |---|---|---|---|
 | **Vault** (Collections, Vault Items, tags) | SQLite database `corn.db`, written by the Rust core (`corn-vault`) | ✅ Yes | One format for Android, iPhone and desktop |
 | **Keep List** (sites that stay logged in) | `corn.db`, key-value area | ✅ Yes | Reveals sites, so it lives with the Vault, not in plain settings |
-| **Per-site blocking choices** | `corn.db`, key-value area | ✅ Yes | Same reason |
+| **Per-site shields** (ads / trackers / pop-ups on or off) | `corn.db`, key-value area | ✅ Yes | Same reason |
+| **Totals** (trackers & ads blocked, pop-ups stopped) | Settings file: two numbers | ✅ Yes | Counts only: no URLs, sites or times |
 | **Kept Session** (open tabs, Tab Groups, their URLs) | `corn.db`, key-value area | ❌ Wiped by Flush | Restores your tabs after a restart when Kept Session is on |
 | **Settings** (Flush mode, toggles, default engine, address bar position) | Android app settings file (SharedPreferences) | ✅ Yes | Simple on/off values, no browsing data |
 | **Vault PIN** | Settings file, as a salted PBKDF2 hash (never the PIN itself) | ✅ Yes | Lets Corn check the PIN without storing it |
@@ -25,3 +26,9 @@ Founder decision (decision log, Round 5). SQLCipher would only add protection wh
 ## What the Vault lock does
 
 The Vault PIN or fingerprint is a gate in the app: nobody sees Vault contents in Corn without it. It does not scramble the file on disk.
+
+## What Corn never stores or logs
+
+- No list of blocked requests, sites or URLs, anywhere (database, files or Android's system log).
+- No browsing history beyond the open tabs of a Kept Session.
+- Corn's own log lines contain no URLs; WebView usage metrics to Google are opted out.

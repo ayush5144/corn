@@ -10,9 +10,21 @@ import android.util.Log
 import androidx.compose.runtime.mutableIntStateOf
 import java.io.File
 import org.json.JSONArray
+import org.json.JSONObject
 import uniffi.corn_ffi.Collection
 import uniffi.corn_ffi.CornStore
 import uniffi.corn_ffi.VaultItem
+
+/** What Corn blocks on a site. Default: everything on. */
+data class Shields(val ads: Boolean = true, val trackers: Boolean = true, val popups: Boolean = true) {
+    val allOn: Boolean get() = ads && trackers && popups
+    val allOff: Boolean get() = !ads && !trackers && !popups
+
+    companion object {
+        val ALL_ON = Shields()
+        val ALL_OFF = Shields(ads = false, trackers = false, popups = false)
+    }
+}
 
 /**
  * Corn's local store (corn.db, plain SQLite in app-private storage, via the Rust core).
@@ -75,13 +87,24 @@ class CornData(context: Context) {
 
     fun removeKeep(host: String) = writeList(KEEP, keepList() - host)
 
-    // ---------- Per-site blocking off ----------
-    fun blockingOff(host: String): Boolean = host in readList(BLOCK_OFF)
-    fun blockingOffList(): List<String> = readList(BLOCK_OFF)
+    // ---------- Per-site shields (what's blocked on each site) ----------
+    /** Every site whose shields differ from the default (all on). */
+    fun allSiteShields(): Map<String, Shields> {
+        val raw = store.kvGet(SITE_SHIELDS) ?: return emptyMap()
+        val o = runCatching { JSONObject(raw) }.getOrNull() ?: return emptyMap()
+        return o.keys().asSequence().associateWith { host ->
+            val s = o.getJSONObject(host)
+            Shields(s.optBoolean("ads", true), s.optBoolean("trackers", true), s.optBoolean("popups", true))
+        }
+    }
 
-    fun setBlockingOff(host: String, off: Boolean) {
-        val list = readList(BLOCK_OFF)
-        writeList(BLOCK_OFF, if (off) (list + host).distinct() else list - host)
+    fun setSiteShields(host: String, shields: Shields) {
+        val all = allSiteShields().toMutableMap()
+        if (shields == Shields.ALL_ON) all.remove(host) else all[host] = shields
+        val o = JSONObject()
+        all.forEach { (h, s) -> o.put(h, JSONObject().put("ads", s.ads).put("trackers", s.trackers).put("popups", s.popups)) }
+        store.kvSet(SITE_SHIELDS, o.toString())
+        changed()
     }
 
     // ---------- Kept Session ----------
@@ -102,7 +125,7 @@ class CornData(context: Context) {
     companion object {
         private const val TAG = "CornData"
         private const val KEEP = "keep_list"
-        private const val BLOCK_OFF = "blocking_off"
+        private const val SITE_SHIELDS = "site_shields"
         private const val SESSION = "kept_session"
 
         /** "https://Mail.Example.com/inbox" or "mail.example.com" → "mail.example.com". */

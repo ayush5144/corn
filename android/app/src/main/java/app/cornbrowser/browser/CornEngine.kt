@@ -12,63 +12,57 @@ import java.net.URL
 import uniffi.corn_ffi.CornBlocker
 
 /**
- * Owns the single shared blocking engine (Brave's adblock-rust, via Corn's Rust core).
+ * Owns Corn's blocking engines: Brave's adblock-rust, unmodified, loaded twice:
+ * - **ads**: EasyList (also supplies element hiding)
+ * - **trackers**: EasyPrivacy
+ * Two engines let each site turn ads and trackers on or off separately without
+ * changing the engine itself. (The lists overlap a little: EasyList has a few
+ * tracker rules and EasyPrivacy a few ad rules.)
  *
- * First launch: downloads the filter lists, builds the engine, caches it to disk.
- * Later launches: loads the cached engine in a few milliseconds.
- * Filter lists are fetched as data on the device; nothing about browsing is sent.
+ * First launch downloads the lists and caches the built engines; later launches load
+ * the cache in milliseconds. Lists are fetched as data; nothing about browsing is sent.
  */
 object CornEngine {
     private const val TAG = "CornEngine"
-    private const val CACHE = "engine-v1.dat"
 
-    val LISTS = listOf(
-        "https://easylist.to/easylist/easylist.txt",
-        "https://easylist.to/easylist/easyprivacy.txt",
-    )
+    private class Source(val name: String, val cache: String, val lists: List<String>)
 
-    @Volatile var blocker: CornBlocker? = null
+    private val ADS = Source("ads", "ads-v1.dat", listOf("https://easylist.to/easylist/easylist.txt"))
+    private val TRACKERS = Source("trackers", "trackers-v1.dat", listOf("https://easylist.to/easylist/easyprivacy.txt"))
+
+    @Volatile var ads: CornBlocker? = null
+        private set
+    @Volatile var trackers: CornBlocker? = null
         private set
 
-    @Volatile var status: String = "Loading filters…"
-        private set
-
-    private var listeners = mutableListOf<() -> Unit>()
-
-    fun onChange(listener: () -> Unit) { synchronized(this) { listeners += listener } }
-
-    private fun publish(newStatus: String) {
-        status = newStatus
-        val copy = synchronized(this) { listeners.toList() }
-        copy.forEach { it() }
-    }
+    @Volatile private var started = false
 
     fun start(context: Context) {
-        if (blocker != null) return
-        val cache = File(context.filesDir, CACHE)
+        if (started) return
+        started = true
+        File(context.filesDir, "engine-v1.dat").delete() // the spike's combined engine, no longer used
         Thread({
             try {
-                val t0 = System.nanoTime()
-                if (cache.exists()) {
-                    blocker = CornBlocker.fromSerialized(cache.readBytes())
-                    publish("Filters ready · cached load ${(System.nanoTime() - t0) / 1_000_000} ms")
-                    return@Thread
-                }
-                publish("Downloading filter lists…")
-                val texts = LISTS.map { download(it) }
-                val t1 = System.nanoTime()
-                val built = CornBlocker.fromLists(texts)
-                val buildMs = (System.nanoTime() - t1) / 1_000_000
-                cache.writeBytes(built.serialize())
-                blocker = built
-                val rules = texts.sumOf { it.lines().size }
-                publish("Filters ready · $rules rules · built in $buildMs ms")
+                ads = load(context, ADS)
+                trackers = load(context, TRACKERS)
             } catch (e: Exception) {
                 Log.e(TAG, "engine failed", e)
-                cache.delete()
-                publish("Filters failed: ${e.message}")
+                started = false
             }
         }, "corn-engine").start()
+    }
+
+    private fun load(context: Context, src: Source): CornBlocker {
+        val cache = File(context.filesDir, src.cache)
+        if (cache.exists()) {
+            runCatching { return CornBlocker.fromSerialized(cache.readBytes()) }
+                .onFailure { Log.w(TAG, "cached ${src.name} engine unreadable, rebuilding", it); cache.delete() }
+        }
+        val texts = src.lists.map { download(it) }
+        val built = CornBlocker.fromLists(texts)
+        cache.writeBytes(built.serialize())
+        Log.i(TAG, "built ${src.name} engine from ${texts.sumOf { it.lines().size }} lines")
+        return built
     }
 
     private fun download(url: String): String {

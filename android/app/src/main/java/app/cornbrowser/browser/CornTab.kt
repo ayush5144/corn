@@ -34,12 +34,17 @@ import org.json.JSONArray
 import org.json.JSONObject
 import uniffi.corn_ffi.Decision
 
+enum class BlockKind { AD, TRACKER, POPUP }
+
 /** What a live tab needs from the rest of the app. Called on the main thread unless noted. */
 interface TabHost {
-    /** Called from WebView's network threads. */
-    fun isBlockingOff(host: String): Boolean
-    fun onRequestBlocked()
+    /** What to block on a site. Called from WebView's network threads. */
+    fun shields(host: String): app.cornbrowser.data.Shields
+    /** Called from network threads for ads/trackers. */
+    fun onBlocked(kind: BlockKind)
     fun onBlockedPopup()
+    /** The site is allowed pop-ups: open this one as a new tab. Returns true if handled. */
+    fun onPopupAllowed(opener: TabEntry, resultMsg: Message): Boolean
     fun onBlockedRedirect(target: String)
     fun onLinkLongPress(entry: TabEntry, url: String, title: String)
     fun onMediaChanged()
@@ -57,7 +62,8 @@ interface TabHost {
 class CornTab(context: Context, private val entry: TabEntry, private val host: TabHost) {
     val webView = WebView(context)
 
-    private val blockedOnPage = AtomicInteger(0)
+    private val adsOnPage = AtomicInteger(0)
+    private val trackersOnPage = AtomicInteger(0)
     private val guardedOnPage = AtomicInteger(0)
     private val syncPending = AtomicBoolean(false)
     @Volatile private var pageUrl: String = entry.url
@@ -71,8 +77,10 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
         s.javaScriptEnabled = true
         s.domStorageEnabled = true
         s.mediaPlaybackRequiresUserGesture = true
-        s.setSupportMultipleWindows(true) // window.open() reaches onCreateWindow, where Corn denies it
-        s.javaScriptCanOpenWindowsAutomatically = false
+        // Every pop-up attempt (tapped or scripted) reaches onCreateWindow, where Corn decides
+        // per site and counts it. Left off, WebView would drop scripted pop-ups silently.
+        s.setSupportMultipleWindows(true)
+        s.javaScriptCanOpenWindowsAutomatically = true
         s.mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
         s.setGeolocationEnabled(false)
         s.userAgentString = BrowserIdentity.userAgent(s.userAgentString)
@@ -109,7 +117,7 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
         val w = webView.width
         val h = webView.height
         if (w <= 0 || h <= 0) return null
-        val scale = 0.35f
+        val scale = 0.25f // ~0.25 MB per preview; memory only
         return runCatching {
             val bmp = Bitmap.createBitmap((w * scale).toInt(), (h * scale).toInt(), Bitmap.Config.RGB_565)
             val c = Canvas(bmp)
@@ -130,7 +138,8 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
         if (syncPending.compareAndSet(false, true)) {
             main.post {
                 syncPending.set(false)
-                entry.blocked = blockedOnPage.get()
+                entry.blockedAds = adsOnPage.get()
+                entry.blockedTrackers = trackersOnPage.get()
                 entry.guarded = guardedOnPage.get()
                 entry.canGoBack = webView.canGoBack()
                 entry.canGoForward = webView.canGoForward()
@@ -174,21 +183,28 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
             if (request.isForMainFrame) {
                 // A new page is starting: reset per-page state before its sub-requests arrive.
                 pageUrl = reqUrl
-                blockedOnPage.set(0)
+                adsOnPage.set(0)
+                trackersOnPage.set(0)
                 guardedOnPage.set(0)
                 sync()
                 return null
             }
-            val pageHost = Uri.parse(pageUrl).host ?: return null
-            if (host.isBlockingOff(pageHost.removePrefix("www."))) return null
-            val blocker = CornEngine.blocker ?: return null
             if (!reqUrl.startsWith("http")) return null
-            if (blocker.check(reqUrl, pageUrl, request.requestHeaders["Accept"], false) == Decision.BLOCK) {
-                val n = blockedOnPage.incrementAndGet()
-                if (BuildConfig.DEBUG && n <= 3) Log.d(TAG, "blocked #$n $reqUrl")
-                host.onRequestBlocked()
+            val pageHost = Uri.parse(pageUrl).host?.removePrefix("www.") ?: return null
+            val sh = host.shields(pageHost)
+            val accept = request.requestHeaders["Accept"]
+            // Trackers (EasyPrivacy) first, then ads (EasyList): each only if this site has it switched on.
+            if (sh.trackers && CornEngine.trackers?.check(reqUrl, pageUrl, accept, false) == Decision.BLOCK) {
+                trackersOnPage.incrementAndGet()
+                host.onBlocked(BlockKind.TRACKER)
                 sync()
-                return WebResourceResponse("text/plain", "utf-8", ByteArrayInputStream(ByteArray(0)))
+                return empty()
+            }
+            if (sh.ads && CornEngine.ads?.check(reqUrl, pageUrl, accept, false) == Decision.BLOCK) {
+                adsOnPage.incrementAndGet()
+                host.onBlocked(BlockKind.AD)
+                sync()
+                return empty()
             }
             return null
         }
@@ -199,7 +215,7 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
             if (scheme != "http" && scheme != "https") return true // never jump out to other apps silently
             if (!request.isForMainFrame || request.isRedirect) return false
             val currentHost = Uri.parse(entry.url).host?.removePrefix("www.") ?: return false
-            if (host.isBlockingOff(currentHost)) return false
+            if (!host.shields(currentHost).popups) return false
             // Redirect guard: the page navigating the whole tab to another site with no recent tap.
             val recentTap = System.currentTimeMillis() - lastUserGestureAt < 1500
             if (!request.hasGesture() && !recentTap && !sameSite(target, Uri.parse(entry.url))) {
@@ -227,7 +243,7 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
 
         override fun onRenderProcessGone(view: WebView, detail: android.webkit.RenderProcessGoneDetail): Boolean {
             // Without this, Android kills the whole app when a page's process dies.
-            Log.w(TAG, "page process gone (crashed=${detail.didCrash()}) for ${entry.url}")
+            Log.w(TAG, "page process gone (crashed=${detail.didCrash()})") // never log URLs
             host.onPageCrashed(entry)
             return true
         }
@@ -240,6 +256,7 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
 
     private inner class Chrome : WebChromeClient() {
         override fun onCreateWindow(view: WebView, isDialog: Boolean, isUserGesture: Boolean, resultMsg: Message?): Boolean {
+            if (!shieldsHere().popups && resultMsg != null) return host.onPopupAllowed(entry, resultMsg)
             guardedOnPage.incrementAndGet()
             sync()
             host.onBlockedPopup()
@@ -284,23 +301,26 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
                 host.onMediaChanged()
             }
             "url" -> {
-                if (!isMainFrame || blockingOffHere()) return
-                val blocker = CornEngine.blocker ?: return
+                if (!isMainFrame || !shieldsHere().ads) return
+                val blocker = CornEngine.ads ?: return
                 val c = blocker.cosmetic(msg.optString("url"))
                 exceptions = c.exceptions
                 generichide = c.generichide
                 if (c.hideCss.isNotEmpty()) reply.postMessage(JSONObject().put("css", c.hideCss).toString())
             }
             "gen" -> {
-                if (!isMainFrame || generichide || blockingOffHere()) return
-                val blocker = CornEngine.blocker ?: return
+                if (!isMainFrame || generichide || !shieldsHere().ads) return
+                val blocker = CornEngine.ads ?: return
                 val css = blocker.genericCss(msg.optJSONArray("classes").toList(), msg.optJSONArray("ids").toList(), exceptions)
                 if (css.isNotEmpty()) reply.postMessage(JSONObject().put("css", css).toString())
             }
         }
     }
 
-    private fun blockingOffHere(): Boolean = Uri.parse(entry.url).host?.let { host.isBlockingOff(it.removePrefix("www.")) } ?: false
+    private fun shieldsHere(): app.cornbrowser.data.Shields =
+        Uri.parse(entry.url).host?.let { host.shields(it.removePrefix("www.")) } ?: app.cornbrowser.data.Shields.ALL_ON
+
+    private fun empty() = WebResourceResponse("text/plain", "utf-8", ByteArrayInputStream(ByteArray(0)))
 
     companion object {
         private const val TAG = "CornTab"

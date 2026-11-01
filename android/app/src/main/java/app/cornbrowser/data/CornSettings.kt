@@ -101,15 +101,31 @@ class CornSettings(context: Context) {
         }
     }
 
+    // ---------- all-time totals: two plain numbers, nothing about which site or what was blocked ----------
+
+    // Kept in memory while browsing and written to disk only when leaving Corn (see persist()).
+    /** Requests blocked by the ad + tracker filters (each blocked request counts once). */
+    var totalBlocked by mutableStateOf(prefs.getLong("total_blocked", 0L))
+    /** Pop-ups denied + redirects stopped. */
+    var totalPopups by mutableStateOf(prefs.getLong("total_popups", 0L))
+
+    /** Last touch or playing video. In memory; written on persist(). */
+    var lastActivityAt: Long = prefs.getLong("last_activity_at", System.currentTimeMillis())
+
+    /** Write the in-memory counters and timestamps in one go (called when leaving Corn). */
+    fun persist() {
+        prefs.edit()
+            .putLong("total_blocked", totalBlocked)
+            .putLong("total_popups", totalPopups)
+            .putLong("last_activity_at", lastActivityAt)
+            .apply()
+    }
+
     // ---------- timestamps used by Auto-Flush (not user settings) ----------
 
     var leftAt: Long
         get() = prefs.getLong("left_at", 0L)
         set(v) { prefs.edit().putLong("left_at", v).apply() }
-
-    var lastActivityAt: Long
-        get() = prefs.getLong("last_activity_at", System.currentTimeMillis())
-        set(v) { prefs.edit().putLong("last_activity_at", v).apply() }
 }
 
 private fun ByteArray.hex() = joinToString("") { "%02x".format(it) }

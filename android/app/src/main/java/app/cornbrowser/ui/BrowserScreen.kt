@@ -104,9 +104,7 @@ private fun AddressBar(c: CornController, cur: TabEntry) {
                 Modifier.height(32.dp).clip(RoundedCornerShape(16.dp)).clickable { c.sheet = Sheet.Engine }.padding(horizontal = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Box(Modifier.size(22.dp).clip(CircleShape).background(e.color), contentAlignment = Alignment.Center) {
-                    T(e.letter, 12.sp, Color.White, FontWeight.ExtraBold)
-                }
+                EngineBadge(e)
                 CornIcon(CornIcons.ChevDown, 14.dp, C.Muted)
             }
             Spacer(Modifier.width(4.dp))
@@ -127,7 +125,7 @@ private fun AddressBar(c: CornController, cur: TabEntry) {
                 )
             }
             // Blocking shield (right)
-            val off = !cur.isNewTab && c.isBlockingOff(cur.host)
+            val off = !cur.isNewTab && remember(c.data.vaultVersion.intValue, cur.host) { c.shields(cur.host).allOff }
             Row(
                 Modifier.height(32.dp).clip(RoundedCornerShape(16.dp))
                     .clickable { if (cur.isNewTab) c.showToast("Nothing to block on this page") else c.sheet = Sheet.Shield }
@@ -256,17 +254,23 @@ private fun NewTabPage(c: CornController) {
                 }
             }
         }
-        Row(
-            Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(C.Surface).padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            T(c.sessionBlocked.toString(), 34.sp, C.Leaf, FontWeight.ExtraBold, display = true)
-            Spacer(Modifier.width(14.dp))
-            T(
-                "ads, trackers and pop-ups blocked this session." + if (c.quip != null) " Your Vault and Keep List stayed put." else "",
-                14.sp, C.Muted,
-            )
+        // All-time totals: real counts of requests Corn blocked, kept across Flushes (numbers only).
+        Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(C.Surface).padding(18.dp)) {
+            T("STATS", 12.sp, C.Muted, FontWeight.Bold)
+            Spacer(Modifier.height(12.dp))
+            Row(Modifier.fillMaxWidth()) {
+                Stat(c.settings.totalBlocked, "Trackers & ads blocked", C.Corn, Modifier.weight(1f))
+                Stat(c.settings.totalPopups, "Pop-ups & redirects stopped", C.Leaf, Modifier.weight(1f))
+            }
         }
+    }
+}
+
+@Composable
+private fun Stat(value: Long, label: String, color: Color, modifier: Modifier) {
+    Column(modifier) {
+        T(java.text.NumberFormat.getIntegerInstance().format(value), 30.sp, color, FontWeight.ExtraBold, display = true)
+        T(label, 13.sp, C.Text)
     }
 }
 

@@ -316,3 +316,35 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Founder decision:** Don't make site-specific fixes; if filter rules hide something on a site, leave it for now.
 - **Status:** ✅ General fixes only: animation layer applied only during Flush; Corn now recovers from page crashes with a reload card.
 
+## Round 6 — 2026-11-01
+
+### Menu: new Tab Group
+- **Answer:** When the current tab isn't in a group, the menu offers "New tab group".
+- **Status:** ✅ Built. The group starts as "Group N" and takes the first site's name.
+
+### Search engine icons
+- **Answer:** Use favicons (or emoji) instead of letters.
+- **Status:** ✅ Favicons, bundled in the app (never fetched at runtime).
+
+### Shield sheet: Advanced
+- **Answer:** Add "Advanced" with separate toggles for ads, trackers and pop-ups, but only if possible without changing the blocker code.
+- **How:** Possible without touching adblock-rust: Corn runs two unmodified engines, one on EasyList (ads), one on EasyPrivacy (trackers); pop-ups and redirects are Corn's own guard. Limitation: the lists overlap slightly.
+- **Status:** ✅ Built, per site.
+
+### "new group" shown twice
+- **Cause:** the grey hint meant "this creates a new group" but read as a duplicate.
+- **Status:** ✅ Fixed: "Open in new tab group" (no group yet) vs "Open in new tab in group · <name>".
+
+### Toilet button
+- **Answer:** Founder likes it as is.
+- **Status:** ✅ No change.
+
+### Home page stats
+- **Answer:** Show totals in a Brave-like card, but only two numbers: trackers & ads blocked, pop-ups stopped. No who-blocked-what, no logs. Numbers must be real, not estimated.
+- **Status:** ✅ Built. Two counters only (no URLs, sites or timestamps). Verified with a test page containing exactly 5 ad/tracker requests and 1 pop-up: Corn showed 5 and 1, in both debug and release builds. Bandwidth/time-saved estimates deliberately left out.
+
+### Efficiency and privacy audit
+- **Findings and fixes:** crash log contained the page URL (removed); `http://` sites couldn't load at all (fixed); scripted pop-ups were blocked but not counted (fixed); last-activity time and totals were written to disk on every tap/batch (now in memory, written when leaving Corn); inactivity timer woke the app every 30 s even when off (now only when on); unused session counter and engine status removed; tab previews halved in memory (~0.25 MB each); WebView usage metrics to Google opted out (`MetricsOptOut`).
+- **Release build:** R8 shrinking + phones-only native library: 6.0 MB (debug 21.3 MB).
+- **Open:** Google Safe Browsing in WebView is on by default (it checks hashed URL prefixes with Google to warn about malware/phishing). Keep it or turn it off is a founder decision.
+

@@ -13,12 +13,17 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "0.2.0"
-        ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
     }
 
     buildTypes {
+        debug {
+            ndk { abiFilters += listOf("arm64-v8a", "x86_64") } // phone + Mac emulator
+        }
         release {
-            isMinifyEnabled = false
+            ndk { abiFilters += listOf("arm64-v8a") } // phones only; the x86_64 library is ~4.4 MB of emulator-only code
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
     compileOptions {
