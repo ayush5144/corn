@@ -109,3 +109,9 @@
 - Code: `ui/Theme.kt` (dark/light palette, Accent), `MainActivity.kt` (applyTheme, system bars), `data/CornSettings.kt` (`theme`), `browser/CornTab.kt` (page theme, darkening, error state, snapshot, hold), `browser/TabManager.kt` (background loading, snapshot, pause/resume timers, recreateAll; rules comment), `CornController.kt`, `data/SearchEngines.kt` (typed → http), `ui/BrowserScreen.kt` (error page, snapshot overlay), `ui/SettingsScreen.kt` (Appearance), `ui/Sheets.kt` (menu b), `res/values/themes.xml`; unit test for typed addresses.
 - Updated `docs/01-product/01-prd.md`, `02-decision-log.md` (Round 12), `03-features.md`, `docs/02-technical/03-android.md`, `docs/03-planning/02-checklist.md`.
 
+## 2026-11-01 — Docs sync after the QA round
+
+- Updated `docs/02-technical/10-storage.md` (settings now include theme and background tabs).
+- Updated `docs/03-planning/04-testing-on-a-phone.md` (what to test: background-loaded tabs, light mode).
+- Updated `docs/05-review/02-review-2026-11-01.md` (verified rows for this round) and `GLOSSARY.md` (Kept in memory: background-opened tabs).
+

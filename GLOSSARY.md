@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 15:18 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 20:14 IST
 
 Corn is a free, private, "use whenever you want" browser for adults. This glossary fixes the words we use for its product concepts so docs, UI copy and code all mean the same thing.
 
@@ -46,7 +46,7 @@ A set of Tabs the user browses together, opened from one another, switchable in 
 _Avoid_: Tab stack, tab folder, workspace
 
 **Kept in memory**:
-A tab other than the open one whose page stays loaded, so it reopens instantly where it was. Its videos stay paused; its scripts keep running, slowed down. How many: Settings → Advanced → Background tabs.
+A tab other than the open one whose page stays loaded, so it reopens instantly where it was. Its videos stay paused; its scripts keep running, slowed down. A tab opened in the background starts loading at once and counts as kept. How many: Settings → Advanced → Background tabs.
 _Avoid_: Paused, sleeping
 
 **Unloaded**:

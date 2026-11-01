@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:38 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 20:14 IST
 
 Two APKs can be built for a real Android phone. Neither is committed (APKs never go in the repo).
 
@@ -37,4 +37,4 @@ The debug key is only for testing. A public release needs a real signing key (se
 
 ## What to test first
 
-The 🔨 items in [../01-product/03-features.md](../01-product/03-features.md): Tab Groups and the strip, long-press menus, the Vault (save into a new Collection, delete), Settings, Auto-Flush, Kept Session after closing the app, Keep List (shield → "Stay logged in after Flush", then Flush and check you're still signed in), History (search, delete, clear) and Delete browsing data, background tabs (Settings → Advanced), Back from a page opened from the home page (↩), cookie banners on a European site, video fullscreen, and Google sign-in.
+The 🔨 items in [../01-product/03-features.md](../01-product/03-features.md): Tab Groups and the strip, long-press menus, the Vault (save into a new Collection, delete), Settings, Auto-Flush, Kept Session after closing the app, Keep List (shield → "Stay logged in after Flush", then Flush and check you're still signed in), History (search, delete, clear) and Delete browsing data, background tabs (Settings → Advanced; a link opened in a new tab should already be loaded when you tap it), light mode (Settings → Appearance), Back from a page opened from the home page (↩), cookie banners on a European site, video fullscreen, and Google sign-in.
