@@ -33,8 +33,8 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | ✓ | Task | Owner | Done when |
 |---|---|---|---|
 | [x] | Git repo pushed to GitHub (`ayush5144/corn`, private) | Claude | `main` on GitHub |
-| [ ] | Install Android Studio, SDK, NDK, an ARM "Google Play" emulator image | Claude | Emulator boots on the Mac |
-| [ ] | Install Rust (`rustup`), Android targets, `cargo-ndk` | Claude | `cargo ndk --version` works |
+| [x] | Install Android Studio, SDK, NDK, an ARM "Google Play" emulator image | Claude | Emulator boots on the Mac |
+| [x] | Install Rust (`rustup`), Android targets, `cargo-ndk` | Claude | `cargo ndk --version` works |
 | [ ] | Real Android phone with USB/wireless debugging on | Founder | Phone shows in `adb devices` |
 | [ ] | Free disk space to ≥ 40 GB before installs | Founder | `df -h /` shows ≥ 40 GB free |
 | [x] | `AGENTS.md` / `CLAUDE.md` with project rules for coding agents | Claude | File committed |
@@ -57,11 +57,11 @@ The single list of what's done, what's next and who owns it. Product decisions l
 
 | ✓ | Task | Owner | Done when |
 |---|---|---|---|
-| [ ] | Minimal Android app: one WebView, URL bar | Claude | Runs on emulator |
-| [ ] | adblock-rust via cargo-ndk + UniFFI, EasyList + EasyPrivacy | Claude | Requests blocked in logs |
-| [ ] | Pop-up denial (`onCreateWindow`) + redirect guard | Claude | Test pages can't open pop-ups |
+| [x] | Minimal Android app: one WebView, URL bar | Claude | Runs on emulator |
+| [x] | adblock-rust via cargo-ndk + UniFFI, EasyList + EasyPrivacy | Claude | Requests blocked in logs |
+| [ ] | Pop-up denial (`onCreateWindow`) + redirect guard. **Built, not yet verified** | Claude | Test pages can't open pop-ups |
 | [ ] | Pick 15–20 real test sites | Founder | List saved (privately, not in the repo) |
-| [ ] | Measure block rate vs Brave, video, memory with 10 tabs | Both | Results table in `03-planning/` |
+| [ ] | Measure block rate vs Brave, video, memory with 10 tabs. **Emulator half done:** [03-spike-results.md](03-spike-results.md) | Both | Results table in `03-planning/` |
 | [ ] | Go / no-go on WebView | Founder | Recorded as an ADR |
 
 ## Phase 3 — Android v1 build

@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "app.cornbrowser"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "app.cornbrowser"

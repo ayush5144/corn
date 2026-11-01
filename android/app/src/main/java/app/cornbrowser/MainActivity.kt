@@ -4,6 +4,7 @@
 
 package app.cornbrowser
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -73,7 +74,6 @@ private val Leaf = Color(0xFF86C64A)
 class MainActivity : ComponentActivity(), TabListener {
     private val tabs = mutableStateListOf<CornTab>()
     private var current by mutableIntStateOf(0)
-    private var tick by mutableIntStateOf(0)
     private var engineStatus by mutableStateOf(CornEngine.status)
     private var fullscreenView by mutableStateOf<View?>(null)
     private var exitFullscreen: (() -> Unit)? = null
@@ -84,9 +84,14 @@ class MainActivity : ComponentActivity(), TabListener {
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG) // chrome://inspect on the Mac
         CornEngine.onChange { runOnUiThread { engineStatus = CornEngine.status } }
         CornEngine.start(applicationContext)
-        if (tabs.isEmpty()) newTab("https://duckduckgo.com")
+        if (tabs.isEmpty()) newTab(intent?.dataString ?: "https://duckduckgo.com")
 
         setContent { Browser() }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        intent.dataString?.let { newTab(it) }
     }
 
     override fun onDestroy() {
@@ -118,9 +123,9 @@ class MainActivity : ComponentActivity(), TabListener {
     }
 
     // ---------------- TabListener ----------------
-    override fun onTabChanged(tab: CornTab) { runOnUiThread { tick++ } }
-    override fun onBlockedPopup(tab: CornTab) { runOnUiThread { tick++; toast("Blocked a pop-up") } }
-    override fun onBlockedRedirect(tab: CornTab, target: String) { runOnUiThread { tick++; toast("Blocked a redirect to $target") } }
+    override fun onTabChanged(tab: CornTab) = Unit
+    override fun onBlockedPopup(tab: CornTab) { runOnUiThread { toast("Blocked a pop-up") } }
+    override fun onBlockedRedirect(tab: CornTab, target: String) { runOnUiThread { toast("Blocked a redirect to $target") } }
     override fun onEnterFullscreen(view: View, exit: () -> Unit) {
         fullscreenView = view
         exitFullscreen = exit
@@ -138,7 +143,6 @@ class MainActivity : ComponentActivity(), TabListener {
     @Composable
     private fun Browser() {
         val tab = tabs.getOrNull(current) ?: return
-        @Suppress("UNUSED_EXPRESSION") tick // recompose when any tab reports a change
 
         BackHandler(enabled = fullscreenView != null || tab.webView.canGoBack()) {
             if (fullscreenView != null) exitFullscreen?.invoke() else tab.webView.goBack()
@@ -181,7 +185,9 @@ class MainActivity : ComponentActivity(), TabListener {
 
     @Composable
     private fun AddressBar(tab: CornTab) {
-        var text by remember(tab.id, tab.url) { mutableStateOf(tab.url) }
+        tab.version // reading the tab's version makes this redraw whenever the tab changes
+        val url = tab.url
+        var text by remember(tab.id, url) { mutableStateOf(url) }
         Row(
             Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -205,7 +211,7 @@ class MainActivity : ComponentActivity(), TabListener {
             val color = if (tab.shieldsUp) Leaf else Muted
             Box(
                 Modifier.height(44.dp).clip(RoundedCornerShape(22.dp)).background(Surface2)
-                    .clickable { tab.shieldsUp = !tab.shieldsUp; tab.webView.reload(); tick++ }
+                    .clickable { tab.shieldsUp = !tab.shieldsUp; tab.webView.reload(); tab.changed() }
                     .padding(horizontal = 12.dp),
                 contentAlignment = Alignment.Center,
             ) {
@@ -216,6 +222,7 @@ class MainActivity : ComponentActivity(), TabListener {
 
     @Composable
     private fun StatusLine(tab: CornTab) {
+        tab.version
         val text = buildString {
             append(engineStatus)
             if (tab.shieldsUp) append(" · blocked ${tab.blockedOnPage.get()} requests · stopped ${tab.guardedOnPage.get()} pop-ups/redirects")
@@ -242,6 +249,7 @@ class MainActivity : ComponentActivity(), TabListener {
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 tabs.forEachIndexed { i, t ->
+                    t.version // redraw the tab chips when any tab changes
                     val selected = i == current
                     Box(
                         Modifier.size(40.dp).clip(CircleShape)

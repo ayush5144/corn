@@ -29,6 +29,7 @@ Read in folder order. Start with the product, then the technical plan.
 |---|---|---|
 | 01 | [Roadmap](03-planning/01-roadmap.md) | Platform order, the first spike test, build steps, decision gates |
 | 02 | [Checklist](03-planning/02-checklist.md) | Every task by phase, with owner and "done when"; backlog |
+| 03 | [Spike results](03-planning/03-spike-results.md) | What the WebView + Brave-engine proof measured, what's left to test |
 
 ## 04 — Reference
 

@@ -18,12 +18,15 @@ import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
 import androidx.webkit.JavaScriptReplyProxy
 import androidx.webkit.WebMessageCompat
-import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
 import java.io.ByteArrayInputStream
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import org.json.JSONArray
 import org.json.JSONObject
@@ -55,6 +58,18 @@ class CornTab(context: Context, private val listener: TabListener) {
     /** When false, this tab loads everything (used to compare with blocking off). */
     @Volatile var shieldsUp: Boolean = true
 
+    /** Bumped on the main thread whenever url, title or counts change, so Compose redraws. */
+    var version by mutableIntStateOf(0)
+        private set
+    private val bumpPending = AtomicBoolean(false)
+
+    /** Safe from any thread; coalesces bursts (e.g. 30 blocked requests) into one redraw. */
+    fun changed() {
+        if (bumpPending.compareAndSet(false, true)) {
+            webView.post { bumpPending.set(false); version++ }
+        }
+    }
+
     /** The page that is currently loading: the "source" for third-party checks. */
     @Volatile private var pageUrl: String = ""
     @Volatile private var exceptions: List<String> = emptyList()
@@ -73,11 +88,6 @@ class CornTab(context: Context, private val listener: TabListener) {
         s.userAgentString = BrowserIdentity.userAgent(s.userAgentString)
 
         CookieManager.getInstance().setAcceptThirdPartyCookies(webView, false)
-
-        if (WebViewFeature.isFeatureSupported(WebViewFeature.REQUESTED_WITH_HEADER_ALLOW_LIST)) {
-            // Don't tell every site which app is browsing (X-Requested-With header).
-            WebSettingsCompat.setRequestedWithHeaderOriginAllowList(s, emptySet())
-        }
 
         installCosmeticBridge()
         webView.webViewClient = Client()
@@ -98,7 +108,11 @@ class CornTab(context: Context, private val listener: TabListener) {
         override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
             val reqUrl = request.url.toString()
             if (request.isForMainFrame) {
+                // A new page is starting: reset per-page state here, before its sub-requests arrive.
                 pageUrl = reqUrl
+                blockedOnPage.set(0)
+                guardedOnPage.set(0)
+                changed()
                 return null
             }
             if (!shieldsUp) return null
@@ -106,7 +120,9 @@ class CornTab(context: Context, private val listener: TabListener) {
             if (!reqUrl.startsWith("http")) return null
             val decision = blocker.check(reqUrl, pageUrl, request.requestHeaders["Accept"], false)
             if (decision == Decision.BLOCK) {
-                blockedOnPage.incrementAndGet()
+                val n = blockedOnPage.incrementAndGet()
+                if (BuildConfig.DEBUG) Log.d(TAG, "blocked #$n $reqUrl")
+                changed()
                 return EMPTY()
             }
             return null
@@ -124,6 +140,7 @@ class CornTab(context: Context, private val listener: TabListener) {
             val recentTap = System.currentTimeMillis() - lastUserGestureAt < 1500
             if (!request.hasGesture() && !recentTap && !sameSite(target, Uri.parse(url))) {
                 guardedOnPage.incrementAndGet()
+                changed()
                 listener.onBlockedRedirect(this@CornTab, target.host ?: target.toString())
                 return true
             }
@@ -131,18 +148,18 @@ class CornTab(context: Context, private val listener: TabListener) {
         }
 
         override fun onPageStarted(view: WebView, startUrl: String, favicon: Bitmap?) {
+            if (BuildConfig.DEBUG) Log.d(TAG, "page started $startUrl")
             url = startUrl
-            pageUrl = startUrl
-            blockedOnPage.set(0)
-            guardedOnPage.set(0)
             exceptions = emptyList()
             generichide = false
+            changed()
             listener.onTabChanged(this@CornTab)
         }
 
         override fun onPageFinished(view: WebView, finishedUrl: String) {
             url = finishedUrl
             title = view.title?.takeIf { it.isNotBlank() } ?: finishedUrl
+            changed()
             listener.onTabChanged(this@CornTab)
         }
     }
@@ -151,12 +168,14 @@ class CornTab(context: Context, private val listener: TabListener) {
         override fun onCreateWindow(view: WebView, isDialog: Boolean, isUserGesture: Boolean, resultMsg: Message?): Boolean {
             // Pop-ups and pop-unders: denied. (A later version opens user-tapped ones as a new tab.)
             guardedOnPage.incrementAndGet()
+            changed()
             listener.onBlockedPopup(this@CornTab)
             return false
         }
 
         override fun onReceivedTitle(view: WebView, newTitle: String?) {
             if (!newTitle.isNullOrBlank()) title = newTitle
+            changed()
             listener.onTabChanged(this@CornTab)
         }
 

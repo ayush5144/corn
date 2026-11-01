@@ -17,7 +17,12 @@ mkdir -p "$OUT/jniLibs" "$OUT/kotlin"
 
 cd "$ROOT/core"
 cargo ndk -t arm64-v8a -t x86_64 -P 26 -o "$OUT/jniLibs" build --release -p corn-ffi
-cargo run -q --release -p corn-ffi --bin uniffi-bindgen -- generate \
-  --library "$OUT/jniLibs/arm64-v8a/libcorn_ffi.so" \
+# Release .so files are stripped, so read the bindings metadata from an unstripped host build.
+cargo build -q -p corn-ffi --lib
+HOST_LIB=""
+for f in target/debug/libcorn_ffi.dylib target/debug/libcorn_ffi.so; do [ -f "$f" ] && HOST_LIB="$f" && break; done
+[ -n "$HOST_LIB" ] || { echo "host build of corn-ffi not found" >&2; exit 1; }
+cargo run -q -p corn-ffi --bin uniffi-bindgen -- generate \
+  --library "$HOST_LIB" \
   --language kotlin --out-dir "$OUT/kotlin" --no-format
 echo "Rust core built: $OUT"
