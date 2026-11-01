@@ -30,6 +30,14 @@ pub struct Cosmetic {
 pub enum CornError {
     #[error("{msg}")]
     EngineLoad { msg: String },
+    #[error("{msg}")]
+    Store { msg: String },
+}
+
+impl From<corn_vault::VaultError> for CornError {
+    fn from(e: corn_vault::VaultError) -> Self {
+        CornError::Store { msg: e.to_string() }
+    }
 }
 
 #[derive(uniffi::Object)]
@@ -76,5 +84,102 @@ impl CornBlocker {
 
     pub fn generic_css(&self, classes: Vec<String>, ids: Vec<String>, exceptions: Vec<String>) -> String {
         self.inner.generic_css(&classes, &ids, &exceptions)
+    }
+}
+
+// ---------------- Local store (Vault, Keep List, session) ----------------
+
+#[derive(Debug, Clone, uniffi::Record)]
+pub struct Collection {
+    pub id: i64,
+    pub name: String,
+    pub item_count: i64,
+}
+
+#[derive(Debug, Clone, uniffi::Record)]
+pub struct VaultItem {
+    pub id: i64,
+    pub collection_id: i64,
+    pub title: String,
+    pub url: String,
+    pub tags: Vec<String>,
+    pub created_at: i64,
+}
+
+impl From<corn_vault::Collection> for Collection {
+    fn from(c: corn_vault::Collection) -> Self {
+        Self { id: c.id, name: c.name, item_count: c.item_count }
+    }
+}
+
+impl From<corn_vault::VaultItem> for VaultItem {
+    fn from(i: corn_vault::VaultItem) -> Self {
+        Self { id: i.id, collection_id: i.collection_id, title: i.title, url: i.url, tags: i.tags, created_at: i.created_at }
+    }
+}
+
+#[derive(uniffi::Object)]
+pub struct CornStore {
+    inner: corn_vault::Store,
+}
+
+#[uniffi::export]
+impl CornStore {
+    /// Open (or create) the database file in the app's private storage.
+    #[uniffi::constructor]
+    pub fn open(path: String) -> Result<Arc<Self>, CornError> {
+        Ok(Arc::new(Self { inner: corn_vault::Store::open(&path)? }))
+    }
+
+    pub fn unsorted_id(&self) -> Result<i64, CornError> {
+        Ok(self.inner.unsorted_id()?)
+    }
+
+    pub fn collections(&self) -> Result<Vec<Collection>, CornError> {
+        Ok(self.inner.collections()?.into_iter().map(Into::into).collect())
+    }
+
+    pub fn create_collection(&self, name: String) -> Result<Collection, CornError> {
+        Ok(self.inner.create_collection(&name)?.into())
+    }
+
+    pub fn collection_named(&self, name: String) -> Result<Collection, CornError> {
+        Ok(self.inner.collection_named(&name)?.into())
+    }
+
+    pub fn add_item(&self, collection_id: i64, title: String, url: String, tags: Vec<String>) -> Result<VaultItem, CornError> {
+        Ok(self.inner.add_item(collection_id, &title, &url, &tags)?.into())
+    }
+
+    pub fn contains_url(&self, url: String) -> Result<bool, CornError> {
+        Ok(self.inner.contains_url(&url)?)
+    }
+
+    pub fn items(&self, collection_id: i64) -> Result<Vec<VaultItem>, CornError> {
+        Ok(self.inner.items(collection_id)?.into_iter().map(Into::into).collect())
+    }
+
+    pub fn recent_items(&self, limit: i64) -> Result<Vec<VaultItem>, CornError> {
+        Ok(self.inner.recent_items(limit)?.into_iter().map(Into::into).collect())
+    }
+
+    pub fn search(&self, query: String) -> Result<Vec<VaultItem>, CornError> {
+        Ok(self.inner.search(&query)?.into_iter().map(Into::into).collect())
+    }
+
+    pub fn delete_item(&self, id: i64) -> Result<(), CornError> {
+        Ok(self.inner.delete_item(id)?)
+    }
+
+    pub fn kv_get(&self, key: String) -> Result<Option<String>, CornError> {
+        Ok(self.inner.kv_get(&key)?)
+    }
+
+    pub fn kv_set(&self, key: String, value: String) -> Result<(), CornError> {
+        Ok(self.inner.kv_set(&key, &value)?)
+    }
+
+    pub fn kv_delete(&self, key: String) -> Result<(), CornError> {
+        Ok(self.inner.kv_delete(&key)?)
     }
 }

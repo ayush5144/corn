@@ -271,10 +271,38 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Founder asked:** How many background tabs do Chrome and Brave keep live? Suggested one live tab (the current one) is enough.
 - **Facts found:** Chrome on Android (and Brave, built on Chromium) has no fixed count. Background tabs stay in memory until the phone runs low, then Chrome kills them "aggressively" and reloads them when tapped. The spike measured ~1 GB with 10 live tabs.
 - **Recommended:** 1 active tab + up to 2 recently used tabs paused (scripts and media stopped, still in memory) + every other tab frozen (preview screenshot + saved state, reloads on tap). Under memory pressure, drop to 1 active. One live tab alone would make every Tab Group Strip switch a 1–3 s reload, which conflicts with "instant switching".
-- **Status:** 🟡 Awaiting founder decision.
+- **Answer:** Go with 1 active + 2 paused for now (paused tabs don't play media). Come back to the number later.
+- **Status:** ✅ 1 active + 2 paused. Revisit task added to the checklist.
 
 ### Spike scope vs mockup
 - **Founder asked:** Where are settings, tab previews and the other mockup features?
 - **Answer given:** Only the engine proof is built (blocking, basic tabs, address bar, fullscreen video). Every mockup feature is still to build, after planning. Founder wants to plan before building anything more.
 - **Status:** ✅ No new building until the plan is agreed.
+
+## Round 5 — 2026-11-01
+
+### Flush confirmation
+- **Answer:** Add a Settings toggle for a Flush confirmation.
+- **Status:** ✅ Toggle in Settings, **off by default** (one tap stays the default).
+
+### What the Keep List is
+- **Founder asked:** Is the Keep List history or saved passwords?
+- **Answer given:** Neither. It's the list of sites whose login cookies survive a Flush, so the user stays logged in to them. Passwords are the separate password store (v1.1).
+- **Status:** ✅ Definition confirmed in the glossary and PRD.
+
+### Favicons in the Tab Group Strip
+- **Founder asked:** Shouldn't the strip show favicons instead of letters?
+- **Answer given:** Yes. Letters in the mockup were stand-ins; the app shows each site's real favicon, with a coloured letter only as a fallback.
+- **Status:** ✅
+
+### Where data is stored, and SQLCipher
+- **Founder asked:** What does "Unsorted" mean, and what database do we use?
+- **Answer given:** "Unsorted" is the default Collection, not a location. Proposed SQLCipher (encrypted SQLite) for the Vault, Keep List and session, and plain app settings for toggles.
+- **Founder decision:** Use **plain SQLite** instead of SQLCipher, after weighing it: SQLCipher only adds protection against rooted phones and forensic tools; Android's sandbox and phone encryption already protect app-private files in normal use, the same level as Chrome's own bookmarks.
+- **Consequence:** The Vault and Kept Session are no longer separately encrypted by Corn (this reverses "Corn-encrypted Session records" from Round 3). The Vault PIN gates access in the app. Switching back later is a one-line change in `core/Cargo.toml` plus a key.
+- **Status:** ✅ Plain SQLite. Details: [../02-technical/10-storage.md](../02-technical/10-storage.md).
+
+### Build the mockup
+- **Answer:** Build every feature from the mockup into the Android app, matching its UI and UX. Don't assume things; brief the founder on the changes.
+- **Status:** ✅ In progress.
 

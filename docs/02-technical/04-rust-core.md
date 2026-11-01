@@ -27,7 +27,7 @@ Rust earns its place in three ways:
 | `corn-lists` | Download, verify, compile and cache filter lists as a compact binary engine | Off-main-thread, memory-compact, identical everywhere | 1 |
 | `corn-url` | Strip tracking parameters, unwrap redirect links, compute site keys (eTLD+1 via the Public Suffix List) | Parses untrusted input; shared rules | 1 |
 | `corn-flush` | Flush **policy**: what to clear, when, and which Keep-list sites to spare | Same rules on every platform | 2 |
-| `corn-vault` | Encrypted database (rusqlite + SQLCipher), file encryption (XChaCha20-Poly1305), local search, import/export format | One Vault format everywhere; security-critical | 2 |
+| `corn-vault` | SQLite database (rusqlite): Collections, Vault Items, tags, search, key-value area for Keep List / session | One Vault format everywhere; security-critical | 2 |
 | `corn-ffi` | UniFFI bindings (Kotlin, Swift) | Generated glue; keeps the API small | 1 |
 | `corn-node` | napi-rs bindings for the Electron desktop app | UniFFI doesn't target Node.js | Desktop |
 
@@ -52,7 +52,7 @@ corn-core/                      (Rust workspace, separate from the app shells)
 │   ├── corn-lists/             filter list manager
 │   ├── corn-url/               URL cleaning
 │   ├── corn-flush/             flush policy
-│   ├── corn-vault/             encrypted storage
+│   ├── corn-vault/             SQLite storage
 │   ├── corn-ffi/               UniFFI bindings (Kotlin, Swift)
 │   └── corn-node/              napi-rs bindings (Electron)
 └── Cargo.toml
@@ -76,7 +76,7 @@ corn-core/                      (Rust workspace, separate from the app shells)
 
 ## Decision: Vault in Rust or in Kotlin?
 
-| | Vault in Rust ✅ | Vault in Kotlin (Room + SQLCipher) |
+| | Vault in Rust ✅ | Vault in Kotlin (Room) |
 |---|---|---|
 | Same format on iPhone and laptop | Yes, one codebase | No, rewrite per platform |
 | Export from phone → open on laptop | Works by design | Needs a hand-written compatible format |

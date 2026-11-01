@@ -2,7 +2,7 @@
 
 ## The idea
 
-Corn's Flush Button works like DuckDuckGo's Fire Button: one tap wipes the Session, and only the encrypted Vault, settings and Keep List survive.
+Corn's Flush Button works like DuckDuckGo's Fire Button: one tap wipes the Session, and only the Vault, settings and Keep List survive.
 
 **Default (Round 1 decision): Kept Session.** The Session survives until the user flushes. Auto-Flush after Leaving Corn (user-chosen delay) and Auto-Flush after inactivity are opt-in settings. A playing video counts as activity. The lifecycle below shows the Auto-Flush path.
 
@@ -16,7 +16,7 @@ Corn's Flush Button works like DuckDuckGo's Fire Button: one tap wipes the Sessi
  │ Fresh, empty session │  no cookies, no history, no cache
  └──────────┬───────────┘
             ▼
-        Browse  ──── save something? ──► VAULT (encrypted, locked)
+        Browse  ──── save something? ──► VAULT (PIN-locked)
             │                              └─ survives every flush
             ▼
  ┌─────────────────────────────────────┐

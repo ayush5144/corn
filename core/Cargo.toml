@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/corn-block", "crates/corn-ffi"]
+members = ["crates/corn-block", "crates/corn-vault", "crates/corn-ffi"]
 
 [workspace.package]
 version = "0.1.0"
@@ -11,6 +11,9 @@ license = "MPL-2.0"
 adblock = { version = "0.13.5", default-features = false }
 uniffi = "0.32.2"
 thiserror = "2"
+# Plain SQLite, compiled from source so every platform gets the same version.
+# (SQLCipher was considered and dropped: see the decision log. Switching back = feature "bundled-sqlcipher-vendored-openssl" + PRAGMA key.)
+rusqlite = { version = "0.41.1", default-features = false, features = ["bundled"] }
 
 [profile.release]
 lto = true

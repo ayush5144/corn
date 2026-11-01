@@ -31,7 +31,7 @@ Filter lists are **downloaded on the device at runtime** as data and credited in
 | Project | Licence | What Corn uses |
 |---|---|---|
 | [mozilla/uniffi-rs](https://github.com/mozilla/uniffi-rs) | MPL-2.0 | Generates Kotlin and Swift bindings for the Rust core |
-| [sqlcipher/sqlcipher](https://github.com/sqlcipher/sqlcipher) | BSD-3-Clause | Encrypted database for the Vault |
+| [SQLite](https://sqlite.org) (via [rusqlite](https://github.com/rusqlite/rusqlite)) | Public domain / MIT | Local database for the Vault, Keep List and session |
 
 ## How each protection is built
 

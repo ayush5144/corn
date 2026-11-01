@@ -17,7 +17,7 @@ Mozilla shares code across its apps this way (application-services), and so does
                   │   • filter list updates                │
                   │   • URL cleaning                       │
                   │   • flush rules                        │
-                  │   • vault encryption + storage         │
+                  │   • Vault storage (SQLite)             │
                   └──────┬──────────────┬─────────────┬────┘
                  UniFFI  │      UniFFI  │      napi-rs│
                          ▼              ▼             ▼
@@ -130,7 +130,7 @@ Corn on device
 ├── Tab state + previews  # session only — wiped on Flush
 ├── Keep list             # sites allowed to stay logged in (optional)
 ├── Corn settings         # preferences
-└── Vault                 # encrypted, locked, survives every Flush
+└── Vault                 # PIN-locked, survives every Flush
 ```
 
 See [05-flush-model.md](05-flush-model.md) for the lifecycle and [04-rust-core.md](04-rust-core.md) for which parts are Rust.

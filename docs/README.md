@@ -22,6 +22,7 @@ Read in folder order. Start with the product, then the technical plan.
 | 07 | [Desktop](02-technical/07-desktop.md) | Laptop stack: Electron vs Tauri vs native |
 | 08 | [Repo structure](02-technical/08-repo-structure.md) | Every folder (Android, iPhone, desktop, Rust core), where new code goes, how to build |
 | 09 | [Filter lists](02-technical/09-filter-lists.md) | What filter lists are, which ones Corn uses, why they're fetched not stored |
+| 10 | [Storage](02-technical/10-storage.md) | What Corn keeps, where (SQLite, settings, WebView), and what survives a Flush |
 
 ## 03 — Planning: *when* we build it
 

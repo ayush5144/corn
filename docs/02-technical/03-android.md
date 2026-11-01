@@ -16,8 +16,8 @@
 | Ad blocking | **adblock-rust** (Brave's engine, MPL-2.0), wrapped in Corn's Rust core | Decides which requests and page elements to block |
 | Rust ↔ Kotlin bridge | **cargo-ndk + UniFFI** | Builds Rust for Android and generates the Kotlin bindings automatically |
 | Filter lists | EasyList, EasyPrivacy, uBlock filters, Peter Lowe's list | The block rules. They update on device; the download sends no browsing data. |
-| Vault storage | **Rust core: rusqlite + SQLCipher** (see [04](04-rust-core.md)) | Encrypted local database for saved items, tags and notes. One format on every platform. |
-| Vault files | **Rust core: XChaCha20-Poly1305** | Encrypts downloaded files and thumbnails |
+| Vault storage | **Rust core: rusqlite (plain SQLite)** (see [04](04-rust-core.md), [10](10-storage.md)) | Local database for saved items, tags, Keep List and session. One format on every platform. |
+| Vault files | ⏭️ Later (downloads aren't in v1) | |
 | Keys and lock | **Android Keystore + BiometricPrompt** | Holds the Vault key in secure hardware; unlocks with fingerprint, face or PIN |
 | Settings | **DataStore** | Corn preferences |
 | Downloads | **OkHttp + WorkManager** | Saves files into private app storage, not the public Downloads folder |
@@ -43,7 +43,7 @@
 
 1. **Tab manager.** Keep a few tabs live and freeze the rest to save memory. This is the hardest part.
 2. **Blocker glue.** Connect the Rust core to WebView's hooks.
-3. **Vault.** UI and locking in Kotlin; storage and encryption in Rust.
+3. **Vault.** UI and PIN lock in Kotlin; storage in Rust.
 4. **Corn UI.** Tab switcher, onboarding, flush controls and theme.
 
 ## Tab manager memory policy

@@ -68,7 +68,7 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | Requirement | Status |
 |---|---|
 | Open a link in a **new tab** or a **new tab in the current Tab Group** | ✅ |
-| **Tab Group Strip** at the bottom (like Chrome Android): one round site icon per tab in the group; tap to switch instantly | ✅ |
+| **Tab Group Strip** at the bottom (like Chrome Android): one round icon per tab showing the site's **real favicon**; tap to switch instantly | ✅ |
 | Strip controls: `^` opens the group's tab grid with previews, `+` adds a tab to the group, `×` closes the current tab | ✅ |
 | Swipe between tabs; click around freely | ✅ |
 | Tab previews in the switcher grid | ✅ |
@@ -100,7 +100,8 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 
 | Requirement | Status |
 |---|---|
-| **Flush Button**: one tap, no confirmation, wipes the Session (tabs, Tab Groups, cookies, cache, history, previews) | ✅ |
+| **Flush Button**: one tap wipes the Session (tabs, Tab Groups, cookies, cache, history, previews) | ✅ |
+| Setting: **Flush confirmation** toggle (off by default) | ✅ |
 | Flush Button is a **toilet/flush** button (not a power button); visual styling is open | ✅ (styling 🟡) |
 | Flush Button sits in the **bottom toolbar, at the far right or second from the right** | ✅ |
 | Default: **Kept Session**: the Session survives until the user flushes | ✅ |
@@ -110,7 +111,7 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | Flush feedback: quick swirl animation, vibration, funny one-liner on the empty page; sound is a setting, off by default | ✅ |
 | **A playing video counts as activity** | ✅ |
 | "Leaving Corn" = switching apps, going home or locking the phone | ✅ |
-| **Keep List**: chosen sites stay logged in across Flushes | ✅ v1 |
+| **Keep List**: sites whose login cookies survive a Flush, so they stay logged in. Not history, not passwords. | ✅ v1 |
 | **Corn's own password store** (inside the Vault), survives a Flush | ✅ (tentatively v1.1 🟡) |
 
 ### 6.5 Vault
@@ -123,7 +124,7 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | Optional tags | ✅ |
 | **Collections**: one level, each item in exactly one Collection (default "Unsorted"); tags cut across | ✅ |
 | Thumbnails (screenshot, placeholder or none) | ⏭️ Not v1 |
-| Encrypted on device | ✅ |
+| Stored only on the device (app-private SQLite, protected by Android's sandbox and phone encryption) | ✅ (SQLCipher dropped, see decision log) |
 | **Vault locked by default** with PIN or biometrics | ✅ |
 | Export, import, permanent delete | 🟡 |
 | Saving downloaded files into the Vault | ⏭️ |
@@ -136,7 +137,7 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | **App Lock** (PIN/biometrics to open Corn): optional, off by default | ✅ |
 | **No notifications while Corn is closed**; media controls (if background playback is on) show only "Corn — playing" | ✅ |
 | **No backups of any kind**: Corn turns off Android's automatic Google Drive backup | ✅ |
-| Corn encrypts the Session data it controls (tab list, Tab Groups, URLs) | ✅ |
+| Kept Session data stored in app-private SQLite (not separately encrypted) | ✅ |
 | One-time, lightweight 18+ confirmation on first launch | ✅ |
 | Disguised app icon | ⏭️ |
 
@@ -164,7 +165,7 @@ What a new user gets before changing anything.
 | Auto-Flush after Leaving Corn | Off (options: when I leave / 5 min / 30 min) | ✅ |
 | Flush after inactivity | Off (10 / 30 / 60 min; a playing video counts as activity) | ✅ |
 | Flush sound | Off | ✅ |
-| Flush confirmation | None (one tap) | ✅ |
+| Flush confirmation | Off (one tap); a Settings toggle turns on an "Are you sure?" step | ✅ |
 | Keep List | Empty | ✅ |
 | Vault lock | On (PIN or biometrics) | ✅ |
 | App Lock | Off | ✅ |
@@ -181,7 +182,7 @@ What a new user gets before changing anything.
 | Fingerprinting protection + Global Privacy Control | On | 🟡 proposed |
 | Link cleaning | On | 🟡 proposed |
 | HTTPS upgrade | On | 🟡 proposed |
-| Live tabs | 1 active + up to 2 paused; the rest frozen | 🟡 open |
+| Live tabs | 1 active + up to 2 paused (media stopped); the rest frozen | ✅ (revisit later) |
 
 ## 9. Success measures (draft)
 

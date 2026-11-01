@@ -30,7 +30,7 @@ corn/
 │       ├── corn-lists/        🔜 download, verify, cache and refresh filter lists
 │       ├── corn-url/          🔜 link cleaning, redirect unwrapping, site keys (Public Suffix List)
 │       ├── corn-flush/        ⏭️ Flush rules: what to clear, Keep List matching
-│       ├── corn-vault/        ⏭️ encrypted Vault storage (SQLCipher), search, export format
+│       ├── corn-vault/        ✅ SQLite: Vault, Collections, tags, search, Keep List, session
 │       ├── corn-ffi/          ✅ UniFFI bindings → Kotlin (Android) and Swift (iOS)
 │       └── corn-node/         ⏭️ napi-rs bindings → Node.js (desktop Electron app)
 │

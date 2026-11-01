@@ -2,7 +2,7 @@
 
 **A free, private, "use whenever you want" browser for adults.**
 
-Every session can start empty, one tap flushes it, and an encrypted local Vault keeps only what you choose to save. Ads, trackers, pop-ups and redirect abuse are blocked by default, and nothing about your browsing leaves your device.
+Every session can start empty, one tap flushes it, and a locked local Vault keeps only what you choose to save. Ads, trackers, pop-ups and redirect abuse are blocked by default, and nothing about your browsing leaves your device.
 
 ## Status
 
