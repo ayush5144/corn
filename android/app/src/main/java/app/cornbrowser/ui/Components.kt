@@ -172,9 +172,9 @@ fun CornSwitch(on: Boolean) {
 @Composable
 fun Radio(on: Boolean) {
     Box(
-        Modifier.size(22.dp).clip(CircleShape).border(2.dp, if (on) C.Corn else C.Muted, CircleShape),
+        Modifier.size(22.dp).clip(CircleShape).border(2.dp, if (on) C.Accent else C.Muted, CircleShape),
         contentAlignment = Alignment.Center,
-    ) { if (on) Box(Modifier.size(11.dp).clip(CircleShape).background(C.Corn)) }
+    ) { if (on) Box(Modifier.size(11.dp).clip(CircleShape).background(C.Accent)) }
 }
 
 @Composable
@@ -228,7 +228,7 @@ fun Field(value: String, onChange: (String) -> Unit, placeholder: String, modifi
             BasicTextField(
                 value, onChange, singleLine = true,
                 textStyle = TextStyle(color = C.Text, fontSize = 15.sp, fontFamily = Ui),
-                cursorBrush = SolidColor(C.Corn),
+                cursorBrush = SolidColor(C.Accent),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { onDone?.invoke() }),
                 modifier = Modifier.fillMaxWidth(),
@@ -384,7 +384,7 @@ fun BoxScope.ToastHost(msg: ToastMsg?, bottomPadding: Dp, onAction: () -> Unit) 
             verticalAlignment = Alignment.CenterVertically,
         ) {
             T(m.text, 14.sp, C.Bg, FontWeight.SemiBold, modifier = Modifier.weight(1f))
-            if (m.action != null) T(m.action, 14.sp, Color(0xFF8A5B00), FontWeight.ExtraBold, modifier = Modifier.clickable(onClick = onAction).padding(start = 12.dp))
+            if (m.action != null) T(m.action, 14.sp, if (C.light) C.Corn else Color(0xFF8A5B00), FontWeight.ExtraBold, modifier = Modifier.clickable(onClick = onAction).padding(start = 12.dp))
         }
     }
 }

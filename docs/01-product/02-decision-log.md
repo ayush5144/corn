@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:38 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 18:37 IST
 
 Every product question asked and the founder's answer, in order. Settled answers flow into [01-prd.md](01-prd.md). New rounds are appended at the bottom.
 
@@ -424,6 +424,15 @@ Every product question asked and the founder's answer, in order. Settled answers
 ### Keep List stays; A + B now, C + D later
 - **Answer:** Keep the Keep List (allowing a site's cookies is how you stay signed in; the password store is separate and stays on the checklist). Build **A** (keep Keep List sites' IndexedDB) and **B** ("Stay logged in after Flush" switch in the shield sheet); **C** (local storage via LevelDB) and **D** (prompt after login) later if needed.
 - **Status:** ✅ A and B built and verified on the emulator. Doc: [11-keep-list](../02-technical/11-keep-list.md).
+
+### Round 12 — QA fixes, light mode, background tabs (2026-11-01)
+- **Blank group tabs** (founder report): not slow loading. The server got the page in the same second; the page view was 0×0. Cause: SwipeRefreshLayout (pull to refresh) only measures the first child it saw. Fixed with one container per tab.
+- **Tab-count dropdown**: worked but invisible (light menu, light text). Fixed; the picker is always visible.
+- **Menu (founder chose b):** "New tab group" groups the current tab with a new tab beside it; inside a group, "New tab in this group".
+- **Light mode** (founder): Settings → Appearance, Dark default; pages follow the theme. Fixes black-on-black plain pages.
+- **Typed http-only sites** and **Corn's error page** (founder approved).
+- **Background tabs** (founder agreed): load at once like Chrome; show the saved picture while an unloaded tab reloads; `pauseTimers()` while Corn is in the background. Per-tab freezing isn't possible in WebView (`onPause` doesn't pause JavaScript; `pauseTimers` is global).
+- **Rename to "Flush"**: raised by the founder; discussion only, nothing renamed.
 
 ### "Unsorted" becomes "All"
 - **Answer:** Each link is saved once. Picking a Collection is optional. **All** is a view of every saved link, not a stored Collection, so nothing is ever saved twice. Existing Unsorted links moved to "no Collection" (they show in All); the Unsorted Collection was removed (database upgrade, unit-tested).

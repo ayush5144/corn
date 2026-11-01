@@ -47,7 +47,9 @@ object SearchEngines {
         val looksLikeUrl = !text.contains(' ') && (text.contains('.') || text.startsWith("localhost"))
         return when {
             text.startsWith("http://") || text.startsWith("https://") -> text
-            looksLikeUrl -> "https://$text"
+            // Typed without a scheme: start from http and let Corn's HTTPS upgrade try https first,
+            // falling back to http if the site has no https (as Chrome does for typed addresses).
+            looksLikeUrl -> "http://$text"
             else -> engine.urlFor(text, safeSearch)
         }
     }

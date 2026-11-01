@@ -56,6 +56,8 @@ interface TabHost {
     val cookieBannersEnabled: Boolean
     /** Settings → Privacy → Safe Browsing. */
     val safeBrowsingEnabled: Boolean
+    /** Settings → Appearance: pages in light mode (white background, prefers-color-scheme: light). */
+    val lightPages: Boolean
     /** A tab's address changed (for history). */
     fun onVisited(entry: TabEntry, url: String, title: String)
     /** A page's title became known (for history). */
@@ -68,7 +70,10 @@ interface TabHost {
  */
 @SuppressLint("SetJavaScriptEnabled", "ClickableViewAccessibility")
 class CornTab(context: Context, private val entry: TabEntry, private val host: TabHost) {
-    val webView = WebView(context)
+    // The WebView's context theme tells pages the user's preference (prefers-color-scheme).
+    val webView = WebView(
+        android.view.ContextThemeWrapper(context, if (host.lightPages) app.cornbrowser.R.style.Theme_Corn_LightPages else app.cornbrowser.R.style.Theme_Corn),
+    )
 
     private val adsOnPage = AtomicInteger(0)
     private val trackersOnPage = AtomicInteger(0)
@@ -93,7 +98,12 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
         s.setGeolocationEnabled(false)
         s.userAgentString = BrowserIdentity.userAgent(s.userAgentString)
         setSafeBrowsing(host.safeBrowsingEnabled)
-        webView.setBackgroundColor(0xFF0F0E0B.toInt())
+        // Light: white like other browsers. Dark: Corn's background, and WebView darkens pages that
+        // have no dark style of their own (otherwise their default black text sits on a dark page).
+        webView.setBackgroundColor(if (host.lightPages) android.graphics.Color.WHITE else 0xFF0F0E0B.toInt())
+        if (androidx.webkit.WebViewFeature.isFeatureSupported(androidx.webkit.WebViewFeature.ALGORITHMIC_DARKENING)) {
+            androidx.webkit.WebSettingsCompat.setAlgorithmicDarkeningAllowed(webView.settings, !host.lightPages)
+        }
 
         CookieManager.getInstance().setAcceptThirdPartyCookies(webView, false)
 
@@ -127,6 +137,16 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
         return u
     }
 
+    /** Plain-language reason for Corn's error page (WebViewClient error codes). */
+    private fun errorText(code: Int): String = when (code) {
+        WebViewClient.ERROR_HOST_LOOKUP -> "Corn couldn't find this site. Check the address, or your connection."
+        WebViewClient.ERROR_CONNECT, WebViewClient.ERROR_TIMEOUT -> "The site didn't respond. It may be down, or your connection is slow."
+        WebViewClient.ERROR_FAILED_SSL_HANDSHAKE -> "A secure connection to this site failed."
+        WebViewClient.ERROR_UNSUPPORTED_SCHEME -> "Corn can't open this kind of link."
+        WebViewClient.ERROR_TOO_MANY_REQUESTS -> "The site is getting too many requests. Try again in a moment."
+        else -> "This page couldn't be loaded."
+    }
+
     /** The secure version failed: remember the site has no https (for this session) and load http. */
     private fun fallBackToHttp(view: WebView, failedUrl: String): Boolean {
         val http = upgraded.remove(failedUrl) ?: return false
@@ -147,7 +167,11 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
      * (animations, geolocation). Scripts keep running, slowed down by Chromium for hidden pages;
      * see the rules at the top of [TabManager].
      */
+    /** True while the tab is kept in memory behind the open tab (media held paused). */
+    private var held = false
+
     fun keepInBackground() {
+        held = true
         webView.evaluateJavascript(
             "window.__cornHold=true;document.querySelectorAll('video,audio').forEach(function(m){m.pause()})", null,
         )
@@ -157,6 +181,7 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
 
     /** The tab is the open one again: allow media and resume. */
     fun bringToForeground() {
+        held = false
         webView.evaluateJavascript("window.__cornHold=false", null)
         webView.onResume()
     }
@@ -293,7 +318,13 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
             return false
         }
 
+        override fun onPageCommitVisible(view: WebView, url: String) {
+            entry.showingSnapshot = false // the page has drawn: drop the saved picture
+            if (held) view.evaluateJavascript("window.__cornHold=true", null) // still in the background
+        }
+
         override fun onPageStarted(view: WebView, startUrl: String, favicon: Bitmap?) {
+            entry.loadError = null
             entry.loading = true
             entry.url = startUrl
             entry.favicon = favicon
@@ -304,6 +335,7 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
 
         override fun onPageFinished(view: WebView, finishedUrl: String) {
             entry.loading = false
+            entry.showingSnapshot = false
             entry.url = finishedUrl
             view.title?.takeIf { it.isNotBlank() }?.let { entry.title = it }
             if (pendingScrollY > 0) {
@@ -315,12 +347,20 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
         }
 
         override fun onReceivedError(view: WebView, request: WebResourceRequest, error: android.webkit.WebResourceError) {
-            if (request.isForMainFrame) fallBackToHttp(view, request.url.toString())
+            if (!request.isForMainFrame || fallBackToHttp(view, request.url.toString())) return
+            entry.loadError = errorText(error.errorCode)
+            entry.showingSnapshot = false
+            entry.loading = false
         }
 
         override fun onReceivedSslError(view: WebView, handler: android.webkit.SslErrorHandler, error: android.net.http.SslError) {
             handler.cancel() // never load a page with a broken certificate
-            fallBackToHttp(view, error.url)
+            if (fallBackToHttp(view, error.url)) return
+            if (error.url == view.url || entry.url == error.url) {
+                entry.loadError = "This site's security certificate isn't valid, so Corn didn't open it."
+                entry.showingSnapshot = false
+                entry.loading = false
+            }
         }
 
         override fun onRenderProcessGone(view: WebView, detail: android.webkit.RenderProcessGoneDetail): Boolean {

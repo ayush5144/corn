@@ -129,7 +129,7 @@ private fun CollectionTile(col: Collection, modifier: Modifier, onOpen: () -> Un
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Box(Modifier.size(36.dp).clip(RoundedCornerShape(11.dp)).background(C.Surface2), contentAlignment = Alignment.Center) {
-            CornIcon(if (col.id == ALL) CornIcons.Vault else CornIcons.Folder, 20.dp, C.Corn)
+            CornIcon(if (col.id == ALL) CornIcons.Vault else CornIcons.Folder, 20.dp, C.Accent)
         }
         Column {
             T(col.name, 16.sp, weight = FontWeight.SemiBold, maxLines = 1)
@@ -254,12 +254,12 @@ fun PinGate(
 
     Column(Modifier.fillMaxSize().padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
         Box(Modifier.size(72.dp).clip(RoundedCornerShape(22.dp)).background(C.Surface2), contentAlignment = Alignment.Center) {
-            CornIcon(CornIcons.Lock, 34.dp, C.Corn)
+            CornIcon(CornIcons.Lock, 34.dp, C.Accent)
         }
         Spacer(Modifier.height(18.dp))
         T(title, 24.sp, weight = FontWeight.ExtraBold, display = true)
         Spacer(Modifier.height(6.dp))
-        T(sub, 14.sp, if (error != null) C.Corn else C.Muted)
+        T(sub, 14.sp, if (error != null) C.Accent else C.Muted)
         Spacer(Modifier.height(22.dp))
         PinPad(
             entered = digits.length,

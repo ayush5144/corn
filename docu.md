@@ -104,3 +104,8 @@
 - Code: `ui/BrowserScreen.kt` (one SwipeRefreshLayout per WebView via `key(live)`; it only measures its first child, so swapped-in pages stayed 0×0), `ui/SettingsScreen.kt` (dropdown uses Corn's dark menu colour; picker always visible, dimmed until chosen).
 - Updated `docs/01-product/03-features.md` (Pull to refresh, Background tabs evidence).
 
+## 2026-11-01 — QA round: light mode, background tabs, typed http fallback, error page, menu
+
+- Code: `ui/Theme.kt` (dark/light palette, Accent), `MainActivity.kt` (applyTheme, system bars), `data/CornSettings.kt` (`theme`), `browser/CornTab.kt` (page theme, darkening, error state, snapshot, hold), `browser/TabManager.kt` (background loading, snapshot, pause/resume timers, recreateAll; rules comment), `CornController.kt`, `data/SearchEngines.kt` (typed → http), `ui/BrowserScreen.kt` (error page, snapshot overlay), `ui/SettingsScreen.kt` (Appearance), `ui/Sheets.kt` (menu b), `res/values/themes.xml`; unit test for typed addresses.
+- Updated `docs/01-product/01-prd.md`, `02-decision-log.md` (Round 12), `03-features.md`, `docs/02-technical/03-android.md`, `docs/03-planning/02-checklist.md`.
+

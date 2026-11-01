@@ -4,4 +4,6 @@
         <item name="android:statusBarColor">#0F0E0B</item>
         <item name="android:navigationBarColor">#0F0E0B</item>
     </style>
+    <!-- Used only as the context theme for WebViews in light mode, so pages see prefers-color-scheme: light. -->
+    <style name="Theme.Corn.LightPages" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>

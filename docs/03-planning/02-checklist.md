@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:38 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 18:37 IST
 
 The single list of what's done, what's next and who owns it. Product decisions live in the [decision log](../01-product/02-decision-log.md); this file tracks **work**.
 
@@ -93,7 +93,12 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [x] | **Keep List A: keep Keep List sites' IndexedDB** on Flush / Delete browsing data (skip their `IndexedDB/<scheme>_<host>_<port>.indexeddb.*` folders; every other site's deleted). Verified: Keep List site kept cookie + IndexedDB (readable after restart), local storage gone; other site kept nothing | Claude | Keep List test site keeps cookie + IndexedDB after Flush; other site keeps nothing |
 | [x] | **Keep List B: "Stay logged in after Flush" switch in the shield sheet** (adds/removes the current site, one tap). Verified: tap added the site to the stored Keep List, second tap removed it | Claude | Switch adds and removes the site; Settings list matches |
 | [x] | Keep List doc: `docs/02-technical/11-keep-list.md` (what's kept, what's deleted, how, limits) | Claude | Doc indexed in docs/README.md |
-| [ ] | Back to home page (↩) from a tab's first page. **Built, not yet seen on device** | Claude | Back returns to the home page; Forward reopens the page |
+| [x] | Back to home page (↩) from a tab's first page. Verified on the emulator | Claude | Back returns to the home page; Forward reopens the page |
+| [x] | Fix blank page when switching tabs (pull-to-refresh container per tab). Verified: group tabs show full size | Claude | Switching tabs always shows the page |
+| [x] | Light mode (Settings → Appearance: Dark / Light / Phone), pages follow it. Verified both themes on a plain page | Claude | Plain pages readable in both themes |
+| [x] | Menu: New tab group (groups current tab) / New tab in this group. Verified | Claude | Group created with the current tab |
+| [x] | Typed addresses fall back to http; Corn error page. Verified with httpforever.com and a `.invalid` address | Claude | http-only sites open; failures show Corn's page |
+| [x] | Background tabs load at once; saved picture while reloading; pauseTimers in background. Verified with server timings | Claude | Background tab loaded before tap; no blank reload; 0 timers in background |
 | [ ] | **Vault**: save link + title, optional tags, **Collections**, PIN/biometric lock | Claude | Save, find, lock, delete all work |
 | [ ] | Privacy: black recents screen, optional App Lock, no notifications while closed | Claude | Verified on a real phone |
 | [ ] | Onboarding: 18+ confirmation, privacy explainer, fun tone. **Built, awaiting founder approval** | Claude | Founder approves the flow |

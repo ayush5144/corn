@@ -124,6 +124,15 @@ fun SettingsScreen(c: CornController, onNeedPin: () -> Unit) {
             }
             Caption("Default engine. You can switch for one search from the dropdown in the address bar.")
 
+            Label("Appearance")
+            SettingsGroup {
+                SettingRow("Theme", trailing = {
+                    val keys = listOf("dark", "light", "system")
+                    Segmented(listOf("Dark", "Light", "Phone"), keys.indexOf(s.theme).coerceAtLeast(0)) { s.theme = keys[it] }
+                })
+            }
+            Caption("Pages follow it too: in dark mode, pages without their own dark style are darkened. \"Phone\" matches your phone's dark mode.")
+
             Label("Layout")
             SettingsGroup {
                 SettingRow("Address bar", trailing = {
@@ -168,7 +177,7 @@ fun SettingsScreen(c: CornController, onNeedPin: () -> Unit) {
             Label("About")
             SettingsGroup {
                 SettingRow("Donate", "Corn is free. Donations keep it that way.", onClick = { c.showToast("Donations open at launch. Thank you! 🌽") },
-                    leading = { CornIcon(CornIcons.Heart, tint = C.Corn) }, trailing = { CornIcon(CornIcons.ChevRight, 18.dp, C.Muted) })
+                    leading = { CornIcon(CornIcons.Heart, tint = C.Accent) }, trailing = { CornIcon(CornIcons.ChevRight, 18.dp, C.Muted) })
                 SettingRow("Version", trailing = { T(BuildConfig.VERSION_NAME, 12.sp, C.Muted) })
             }
             Box(Modifier.height(8.dp))

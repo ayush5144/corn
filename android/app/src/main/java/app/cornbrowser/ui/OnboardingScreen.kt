@@ -59,7 +59,7 @@ fun OnboardingScreen(settings: app.cornbrowser.data.CornSettings, onStart: () ->
             Modifier.size(112.dp).offset(x = (-8).dp, y = (-6 * lift).dp).rotate(-4f * lift),
         )
         Spacer(Modifier.height(14.dp))
-        T("corn", 64.sp, C.Corn, FontWeight.ExtraBold, display = true)
+        T("corn", 64.sp, C.Accent, FontWeight.ExtraBold, display = true)
         Spacer(Modifier.height(10.dp))
         T("The private browser that keeps you organised.", 24.sp, weight = FontWeight.SemiBold, display = true)
         Spacer(Modifier.height(22.dp))
@@ -114,7 +114,7 @@ private fun OnboardingToggle(title: String, state: String, sub: String, on: Bool
 private fun Bullet(icon: ImageVector, text: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(Modifier.size(38.dp).clip(RoundedCornerShape(12.dp)).background(C.Surface2), contentAlignment = Alignment.Center) {
-            CornIcon(icon, 22.dp, C.Corn)
+            CornIcon(icon, 22.dp, C.Accent)
         }
         Spacer(Modifier.width(12.dp))
         T(text, 15.5.sp)

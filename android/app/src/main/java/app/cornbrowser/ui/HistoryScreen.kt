@@ -68,10 +68,10 @@ fun HistoryScreen(c: CornController) {
                 .combinedClickable(onClick = { c.sheet = Sheet.DeleteData }).padding(vertical = 10.dp, horizontal = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            CornIcon(CornIcons.Trash, 20.dp, C.Corn)
+            CornIcon(CornIcons.Trash, 20.dp, C.Accent)
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
-                T("Delete browsing data", 15.sp, C.Corn, FontWeight.SemiBold)
+                T("Delete browsing data", 15.sp, C.Accent, FontWeight.SemiBold)
                 T("Cookies, cache and tabs too", 12.5.sp, C.Muted)
             }
             CornIcon(CornIcons.ChevRight, 18.dp, C.Muted)

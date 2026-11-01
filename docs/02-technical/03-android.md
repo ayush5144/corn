@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:38 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 18:37 IST
 
 ## Summary
 
@@ -82,6 +82,8 @@ What "kept in memory" really means (Android's documentation and our measurements
 - `onPause()` "does not pause JavaScript" (Android docs). Measured: a hidden tab's timers slow about 5× but keep running.
 - `pauseTimers()` would stop scripts but is global ("for all WebViews"), so it would stop the open tab too. Corn never calls it.
 - All tabs share one page process (measured): one page crashing reloads every tab.
+- `pauseTimers()` is used where its global effect is right: while Corn is in the background (measured: page timers 20/20 s → 0/20 s).
+- Tabs opened in the background start loading at once and take a memory slot; an unloaded tab shows its saved picture until the page draws (`onPageCommitVisible`).
 
 The tab limit and the freeze policy make the biggest memory difference in the whole app. This is Kotlin's job, not Rust's.
 

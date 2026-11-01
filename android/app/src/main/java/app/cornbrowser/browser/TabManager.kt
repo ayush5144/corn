@@ -59,6 +59,10 @@ class TabEntry(val id: Int, url: String, groupId: Int?) {
     /** Last address recorded in history from this tab, and when (to merge address updates into one visit). */
     internal var lastVisitUrl: String? = null
     internal var lastVisitAt: Long = 0
+    /** True while an unloaded tab reloads: its saved picture covers the page until the page draws. */
+    var showingSnapshot by mutableStateOf(false)
+    /** Set when the page couldn't load (no connection, site not found…); shows Corn's error page. */
+    var loadError by mutableStateOf<String?>(null)
     /** Scroll position saved when the tab was unloaded, restored after it reloads. */
     internal var savedScrollY: Int = 0
     internal var live: CornTab? = null
@@ -82,6 +86,14 @@ class TabEntry(val id: Int, url: String, groupId: Int?) {
  * - **Unloaded**: every other tab. The WebView is destroyed (nothing runs), Corn keeps the
  *   preview picture, the back/forward history and the scroll position. Opening it reloads the
  *   page and scrolls back to where it was.
+ * - **Opened in the background** ("Open in new tab", "…in new tab group"): starts loading at once
+ *   (like Chrome) as the most recent tab after the open one, so it's ready when tapped. If that goes
+ *   over the limit, the oldest kept tab is unloaded. Not when the user keeps 0 tabs in memory.
+ * - **Reloading an unloaded tab** shows its saved picture until the page has drawn
+ *   (`showingSnapshot`, cleared in `onPageCommitVisible`), so there's no blank screen.
+ * - **Corn in the background:** `pauseTimers()` stops every page's timers (it's global, which is
+ *   exactly right here); `resumeTimers()` on return. Measured: 20 pings in 20 s on screen, 0 in the
+ *   background, back to normal on return.
  * - When Android warns that memory is low, Corn unloads every kept-in-memory tab ([trimMemory]).
  * - A tab on Corn's home page has no WebView at all and costs nothing.
  */
@@ -108,7 +120,8 @@ class TabManager(private val context: Context, private val host: TabHost) {
         var gid: Int? = null
         if (inGroup && cur != null) {
             if (cur.groupId == null) {
-                val g = TabGroup(nextGroupId++, siteName(cur), C.GroupColors[groups.size % C.GroupColors.size])
+                // From an empty new tab, the group takes the first site's name later.
+                val g = TabGroup(nextGroupId++, siteName(cur), C.GroupColors[groups.size % C.GroupColors.size], autoNamed = cur.isNewTab)
                 groups += g
                 cur.groupId = g.id
             }
@@ -117,7 +130,19 @@ class TabManager(private val context: Context, private val host: TabHost) {
         val entry = TabEntry(nextTabId++, url, gid)
         val at = cur?.let { tabs.indexOf(it) + 1 } ?: tabs.size
         tabs.add(at.coerceIn(0, tabs.size), entry)
-        if (switchTo) switchTo(entry.id) else if (url != NEW_TAB) entry.title = url
+        if (switchTo) {
+            switchTo(entry.id)
+        } else if (url != NEW_TAB) {
+            entry.title = url
+            // Opened in the background: start loading now (like Chrome), as the most recent tab after
+            // the open one, so it's ready when tapped. Not when the user keeps 0 tabs in memory.
+            if (keepInMemory() > 0) {
+                newLive(entry).load(url)
+                recent.remove(entry.id)
+                recent.add(if (recent.firstOrNull() == currentId) 1.coerceAtMost(recent.size) else 0, entry.id)
+                enforceLivePolicy()
+            }
+        }
         return entry
     }
 
@@ -129,17 +154,6 @@ class TabManager(private val context: Context, private val host: TabHost) {
         recent.addFirst(id)
         if (!target.isNewTab) ensureLive(target)
         enforceLivePolicy()
-    }
-
-    /** Start a new Tab Group holding one new tab. The group takes the first site's name. */
-    fun openNewGroup(): TabEntry {
-        val g = TabGroup(nextGroupId++, "Group ${groups.size + 1}", C.GroupColors[groups.size % C.GroupColors.size], autoNamed = true)
-        groups += g
-        val entry = TabEntry(nextTabId++, NEW_TAB, g.id)
-        val at = current?.let { tabs.indexOf(it) + 1 } ?: tabs.size
-        tabs.add(at.coerceIn(0, tabs.size), entry)
-        switchTo(entry.id)
-        return entry
     }
 
     /** A pop-up the site is allowed to open: becomes a new tab next to its opener. */
@@ -255,6 +269,8 @@ class TabManager(private val context: Context, private val host: TabHost) {
 
     private fun ensureLive(entry: TabEntry): CornTab {
         entry.live?.let { return it }
+        // Reloading an unloaded tab: show its saved picture until the page has drawn.
+        entry.showingSnapshot = entry.preview != null
         val live = newLive(entry)
         val state = entry.saved
         if (state != null) {
@@ -291,6 +307,17 @@ class TabManager(private val context: Context, private val host: TabHost) {
     /** Android says memory is low: unload every tab except the open one. */
     fun trimMemory() {
         tabs.filter { it.id != currentId }.forEach { unload(it) }
+    }
+
+    /** Corn left the screen: stop every page's timers (Android's global pause), resumed on return. */
+    fun pauseAllTimers() = tabs.firstNotNullOfOrNull { it.live }?.webView?.pauseTimers()
+
+    fun resumeAllTimers() = tabs.firstNotNullOfOrNull { it.live }?.webView?.resumeTimers()
+
+    /** Rebuild every page (theme change): unload all, then reload the open tab right away. */
+    fun recreateAll() {
+        tabs.forEach { unload(it) }
+        current?.takeIf { !it.isNewTab }?.let { ensureLive(it) }
     }
 
     /** Unload every tab, including the open one (before deleting cookies). The open tab reloads when shown. */

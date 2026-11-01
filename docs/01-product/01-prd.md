@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:38 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 18:37 IST
 
 - **Status:** Draft v2, being shaped through Q&A rounds ([02-decision-log.md](02-decision-log.md))
 - **Last updated:** 2026-11-01 (after Round 1)
@@ -128,6 +128,10 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | Time ranges for deleting history ("last hour" etc.) | ⏭️ Later (see checklist) |
 | **Background tabs** (Settings → Advanced): Automatic by phone memory (default), Keep recent tabs (0/1/2/3/5), Keep all (with a warning) | ✅ |
 | Back from a tab's first page opened from the home page returns to the home page (curved ↩ arrow) | ✅ |
+| **Appearance**: Dark (default), Light, or match the phone; pages follow it (light: white pages; dark: pages without a dark style are darkened) | ✅ |
+| Menu: "New tab group" groups the current tab with a new tab beside it; inside a group, "New tab in this group" | ✅ |
+| Tabs opened in the background start loading at once; an unloaded tab shows its saved picture while it reloads | ✅ |
+| Corn's own error page when a site can't load; typed addresses fall back to http when a site has no https | ✅ |
 | **Corn's own password store** (inside the Vault), survives a Flush | ✅ (tentatively v1.1 🟡) |
 
 ### 6.5 Vault
@@ -194,6 +198,7 @@ What a new user gets before changing anything.
 | Safe Search | Off | ✅ |
 | Safe Browsing | On | ✅ |
 | Address bar position | Top | ✅ |
+| Theme (Settings → Appearance) | Dark (also Light, or match the phone); pages follow it | ✅ |
 | Ad / tracker / pop-up blocking | On for every site (each can be switched off per site) | ✅ |
 | Redirect guard | On | ✅ |
 | Third-party cookies | Blocked | ✅ |

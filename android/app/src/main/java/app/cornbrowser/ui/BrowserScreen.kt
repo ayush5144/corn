@@ -46,6 +46,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
@@ -117,7 +119,7 @@ private fun AddressBar(c: CornController, cur: TabEntry) {
                     onValueChange = { if (editing) field = it },
                     singleLine = true,
                     textStyle = TextStyle(color = C.Text, fontSize = 15.sp, fontFamily = Ui),
-                    cursorBrush = SolidColor(C.Corn),
+                    cursorBrush = SolidColor(C.Accent),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Go),
                     keyboardActions = KeyboardActions(onGo = { c.go(field.text); focus.clearFocus() }),
                     modifier = Modifier.fillMaxWidth().onFocusChanged {
@@ -142,7 +144,7 @@ private fun AddressBar(c: CornController, cur: TabEntry) {
             }
         }
         // Vault save (far right)
-        IconBtn(if (saved) CornIcons.VaultSaved else CornIcons.VaultAdd, "Save page to Vault", { c.openSaveSheet() }, tint = if (saved) C.Corn else C.Text)
+        IconBtn(if (saved) CornIcons.VaultSaved else CornIcons.VaultAdd, "Save page to Vault", { c.openSaveSheet() }, tint = if (saved) C.Accent else C.Text)
     }
 }
 
@@ -181,7 +183,7 @@ private fun PageArea(c: CornController, cur: TabEntry) {
                     factory = { ctx ->
                         androidx.swiperefreshlayout.widget.SwipeRefreshLayout(ctx).apply {
                             setColorSchemeColors(0xFFFFC83D.toInt())               // corn yellow spinner
-                            setProgressBackgroundColorSchemeColor(0xFF25221B.toInt())
+                            setProgressBackgroundColorSchemeColor(C.Surface2.toArgb())
                             setOnRefreshListener {
                                 reload.value()
                                 postDelayed({ isRefreshing = false }, 15_000)      // never spin forever
@@ -193,6 +195,15 @@ private fun PageArea(c: CornController, cur: TabEntry) {
                     update = { swipe -> if (!cur.loading && swipe.isRefreshing) swipe.isRefreshing = false },
                 )
             }
+            // An unloaded tab reloading: its saved picture until the page has drawn (no blank flash).
+            val shot = cur.preview
+            if (cur.showingSnapshot && shot != null) {
+                androidx.compose.foundation.Image(
+                    shot.asImageBitmap(), null, Modifier.fillMaxSize(),
+                    contentScale = androidx.compose.ui.layout.ContentScale.FillWidth, alignment = Alignment.TopCenter,
+                )
+            }
+            cur.loadError?.let { reason -> ErrorPage(cur.host, reason) { cur.loadError = null; c.tabs.reload() } }
         }
     }
 }
@@ -207,6 +218,22 @@ private fun CrashedPage(host: String, onReload: () -> Unit) {
         T("$host ran out of memory or crashed. Your other tabs are fine.", 14.sp, C.Muted)
         Spacer(Modifier.height(20.dp))
         BigButton("Reload", onReload)
+    }
+}
+
+/** Corn's own page for a site that couldn't load, instead of WebView's plain grey one. */
+@Composable
+private fun ErrorPage(host: String, reason: String, onRetry: () -> Unit) {
+    Column(Modifier.fillMaxSize().background(C.Bg).padding(32.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+        T("🌽", 44.sp)
+        Spacer(Modifier.height(12.dp))
+        T("Can't open this page", 22.sp, weight = FontWeight.ExtraBold, display = true)
+        Spacer(Modifier.height(6.dp))
+        if (host.isNotBlank()) T(host, 14.sp, C.Text, FontWeight.SemiBold)
+        Spacer(Modifier.height(4.dp))
+        T(reason, 14.sp, C.Muted)
+        Spacer(Modifier.height(20.dp))
+        BigButton("Try again", onRetry)
     }
 }
 
@@ -229,9 +256,9 @@ private fun NewTabPage(c: CornController) {
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             Image(painterResource(R.drawable.corn_logo), null, Modifier.size(76.dp))
             Spacer(Modifier.height(8.dp))
-            T("corn", 44.sp, C.Corn, FontWeight.ExtraBold, display = true)
+            T("corn", 44.sp, C.Accent, FontWeight.ExtraBold, display = true)
             Spacer(Modifier.height(4.dp))
-            T(c.quip ?: "Browse. Save what matters. Flush the rest.", 19.sp, if (c.quip != null) C.Corn else C.Text, FontWeight.SemiBold, display = true)
+            T(c.quip ?: "Browse. Save what matters. Flush the rest.", 19.sp, if (c.quip != null) C.Accent else C.Text, FontWeight.SemiBold, display = true)
         }
         Row(
             Modifier.fillMaxWidth().height(52.dp).clip(RoundedCornerShape(16.dp)).background(C.Surface2).padding(horizontal = 14.dp),
@@ -244,7 +271,7 @@ private fun NewTabPage(c: CornController) {
                 BasicTextField(
                     q, { q = it }, singleLine = true,
                     textStyle = TextStyle(color = C.Text, fontSize = 16.sp, fontFamily = Ui),
-                    cursorBrush = SolidColor(C.Corn),
+                    cursorBrush = SolidColor(C.Accent),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Go),
                     keyboardActions = KeyboardActions(onGo = { c.go(q); focus.clearFocus() }),
                     modifier = Modifier.fillMaxWidth(),
@@ -263,7 +290,7 @@ private fun NewTabPage(c: CornController) {
             }
             QuickTile("Vault", { c.openVault() }) {
                 Box(Modifier.size(56.dp).clip(RoundedCornerShape(18.dp)).background(C.Surface2), contentAlignment = Alignment.Center) {
-                    CornIcon(CornIcons.Vault, 24.dp, C.Corn)
+                    CornIcon(CornIcons.Vault, 24.dp, C.Accent)
                 }
             }
         }
@@ -272,7 +299,7 @@ private fun NewTabPage(c: CornController) {
             T("STATS", 12.sp, C.Muted, FontWeight.Bold)
             Spacer(Modifier.height(12.dp))
             Row(Modifier.fillMaxWidth()) {
-                Stat(c.settings.totalBlocked, "Trackers & ads blocked", C.Corn, Modifier.weight(1f))
+                Stat(c.settings.totalBlocked, "Trackers & ads blocked", C.Accent, Modifier.weight(1f))
                 Stat(c.settings.totalPopups, "Pop-ups & redirects stopped", C.Leaf, Modifier.weight(1f))
             }
         }

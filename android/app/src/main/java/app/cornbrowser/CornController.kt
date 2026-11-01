@@ -150,6 +150,7 @@ class CornController(private val context: Context) : TabHost {
 
     fun onAppForeground() {
         inForeground = true
+        tabs.resumeAllTimers()
         app.cornbrowser.browser.CornEngine.refreshIfStale(context)
         if (shouldAutoFlushOnReturn()) flushNow(animate = false)
         main.removeCallbacks(leaveFlush)
@@ -160,6 +161,7 @@ class CornController(private val context: Context) : TabHost {
 
     fun onAppBackground() {
         inForeground = false
+        tabs.pauseAllTimers()
         main.removeCallbacks(inactivityTick)
         val now = System.currentTimeMillis()
         settings.leftAt = now
@@ -242,8 +244,9 @@ class CornController(private val context: Context) : TabHost {
         screen = Screen.Browser
     }
 
+    /** Put the current tab in a new group with a new tab beside it (like "Open in new tab group" for links). */
     fun newTabGroup() {
-        tabs.openNewGroup()
+        tabs.open(NEW_TAB, inGroup = true)
         sheet = null
         screen = Screen.Browser
     }
@@ -481,6 +484,12 @@ class CornController(private val context: Context) : TabHost {
         fullscreen = view
         exitFullscreen = exit
     }
+
+    /** Pages use the same theme as Corn (Settings → Appearance). */
+    override val lightPages: Boolean get() = app.cornbrowser.ui.C.light
+
+    /** Appearance changed: rebuild open pages so sites see the new light/dark preference. */
+    fun onThemeChanged() = tabs.recreateAll()
 
     override val cookieBannersEnabled: Boolean get() = settings.cookieBanners
     override val safeBrowsingEnabled: Boolean get() = settings.safeBrowsing

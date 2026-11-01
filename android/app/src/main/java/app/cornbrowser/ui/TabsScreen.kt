@@ -77,7 +77,7 @@ fun TabsScreen(c: CornController) {
                     .border(1.dp, C.Line, RoundedCornerShape(16.dp)).clickable { c.requestFlush() }.padding(14.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                CornIcon(CornIcons.Toilet, 26.dp, C.Corn)
+                CornIcon(CornIcons.Toilet, 26.dp, C.Accent)
                 Spacer(Modifier.width(12.dp))
                 Column {
                     T("Done with all of these?", 14.sp, weight = FontWeight.SemiBold)

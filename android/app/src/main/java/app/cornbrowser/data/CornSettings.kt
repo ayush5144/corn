@@ -62,6 +62,8 @@ class CornSettings(context: Context) {
     var safeBrowsing by pref("safe_browsing", true)
     /** Ask search engines to filter explicit results. Off by default. */
     var safeSearch by pref("safe_search", false)
+    /** Settings → Appearance: "dark" (default), "light" or "system" (match the phone). */
+    var theme by stringPref("theme", "dark")
     /** Record pages visited (on this phone only). On by default; Flush clears it. */
     var keepHistory by pref("keep_history", true)
     var tabMemory by mutableStateOf(TabMemory.of(prefs.getString("tab_memory", null)))

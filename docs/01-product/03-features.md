@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 15:18 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 18:37 IST
 
 Every feature in the Android app today, what it does for the user, and the evidence behind it. Nothing here is planned-only; planned work lives in the [checklist](../03-planning/02-checklist.md).
 
@@ -118,9 +118,17 @@ Every feature in the Android app today, what it does for the user, and the evide
   - *Benefit:* lower memory and battery use. 10 tabs: **~644 MB** with 2 kept vs **~1.05 GB** all loaded (measured earlier).
   - *Evidence:* tab counts checked through WebView's DevTools list: with 4 tabs open on the 4 GB emulator, 2 were in memory (the open tab + 1 recent), as designed. The tab-count picker is always visible (dimmed until "Keep recent tabs" is chosen; picking a count chooses it) and its menu is readable (it was light-on-light before). Scroll restore and video hold not yet tested on a device.
 
-- **Back to the home page** 🔨
+- **Menu: New tab group / New tab in this group** ✅: outside a group, "New tab group" puts the current tab in a new group with a new tab beside it; inside a group, the menu shows "New tab in this group". Verified on the emulator (group strip went from the page alone to page + new tab, then 3 tabs).
+
+- **Tabs opened in the background load at once** ✅: "Open in new tab" and "…in new tab group" start loading straight away (like Chrome), taking a memory slot as the most recent tab. Verified: the server got the page in the same second it was opened in the background, before any tap; opening it caused no new request and showed the time it loaded in the background.
+
+- **Saved picture while an unloaded tab reloads** ✅: no blank screen. Verified with a test site that takes 4 s to answer: 0.8 s after opening the unloaded tab, the screen showed its saved picture ("served 18:34:12"); the live page ("served 18:35:10") replaced it when it arrived.
+
+- **Pages pause when Corn is in the background** ✅: `pauseTimers()` (Android's global pause) while Corn is off screen, `resumeTimers()` on return. Measured with a page that pings every second: 20 pings in 20 s on screen, 0 in 20 s in the background, 9 in 10 s after returning.
+
+- **Back to the home page** ✅
   - *What:* on a tab's first page opened from Corn's home page, Back shows a curved ↩ and returns to the home page; Forward reopens the page.
-  - *Evidence:* built; not yet seen on a device.
+  - *Evidence:* seen on the emulator: ↩ shown on the first page, tapping it returned to the home page, Forward reopened the page.
 
 - **Page crash recovery** 🔨
   - *What:* if a page's process dies, the tab shows "This page stopped · Reload" instead of the app breaking.
@@ -158,6 +166,9 @@ Every feature in the Android app today, what it does for the user, and the evide
 - **Five search engines with a one-tap switcher** ✅: DuckDuckGo (default), Google, Brave Search, Startpage, Bing, each with its favicon (bundled, never fetched). Seen in the address bar and the engine sheet.
 - **Full address in the address bar** ✅: always shows the page's full URL (e.g. `https://duckduckgo.com/?q=corn+browser`), like Brave.
 - **Address bar top or bottom** 🔨: a Settings choice.
+- **Light and dark mode** ✅: Settings → Appearance: Dark (default), Light, or Phone (follows the phone's dark mode). Pages follow it: the WebView gets the matching theme, so sites see the user's preference (`prefers-color-scheme`); in dark mode WebView darkens pages that have no dark style (`setAlgorithmicDarkeningAllowed`); in light mode pages are white. Verified: a page with no background of its own showed black text on white in light mode and light text on dark in dark mode (before, it was black on near-black and unreadable); NeverSSL showed darkened in dark mode. Switching rebuilds open pages so they change immediately.
+- **Typed addresses fall back to http** ✅: typing `example.com` starts from `http://` and Corn's HTTPS upgrade tries https first. Verified: `httpforever.com` (https fails with a handshake error, checked from the Mac) opened at `http://httpforever.com/`; before, it showed a connection error. Unit-tested.
+- **Corn's error page** ✅: a site that can't load shows "Can't open this page" with a plain-language reason and Try again, instead of WebView's grey page. Verified with an address that can't exist (`.invalid`): "Corn couldn't find this site. Check the address, or your connection."
 - **Pull to refresh** ✅: pulling down while the page is at the top reloads it (Android's SwipeRefreshLayout, corn-yellow spinner). Each tab's page has its own pull container: SwipeRefreshLayout only ever measures the first child it saw, so swapping another tab's page into a shared one left it 0×0 and blank (bug from the first version, fixed; verified: switching between group tabs shows each page at full size, and pull still reloads after switching). Verified: the test server saw the page requested again after a pull (4 → 5); an upward scroll did not reload it. Like Chrome (since v41, 2015), Safari (iOS 15) and Firefox for Android (opt-in). Known limit: on pages that scroll inside their own box rather than the whole page, a pull at the top of the page can reload even if the inner box isn't at its top.
 - **Opens links from other apps** ✅: tested with links sent to Corn.
 - **`http://` sites load** ✅: the Android default would block them; the count-test page loaded over http.

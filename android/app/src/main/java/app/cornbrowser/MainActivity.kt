@@ -18,6 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -35,6 +36,7 @@ class MainActivity : ComponentActivity() {
         CornEngine.start(applicationContext)
 
         c = CornController(this)
+        applyTheme() // before tabs are restored, so their pages start in the right theme
         c.start(
             intent?.dataString,
             restartQuip = intent?.getStringExtra(RestartActivity.EXTRA_QUIP),
@@ -47,6 +49,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             LaunchedEffect(c.settings.blackRecents) { applyRecentsPrivacy(c.settings.blackRecents) }
+            LaunchedEffect(c.settings.theme) { applyTheme() }
             LaunchedEffect(c.fullscreen) { setSystemBarsHidden(c.fullscreen != null) }
             CornApp(
                 c, pinSetup,
@@ -70,6 +73,32 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         intent.dataString?.let { c.openInNewTab(it) }
+    }
+
+    /** "Match phone" follows the phone's dark mode, which can change while Corn is open. */
+    override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
+        super.onConfigurationChanged(newConfig)
+        applyTheme()
+    }
+
+    /** Light or dark palette, matching status/navigation bar icons, and pages in the same theme. */
+    private fun applyTheme() {
+        val phoneDark = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+            android.content.res.Configuration.UI_MODE_NIGHT_YES
+        val light = when (c.settings.theme) {
+            "light" -> true
+            "system" -> !phoneDark
+            else -> false
+        }
+        val changed = light != app.cornbrowser.ui.C.light
+        app.cornbrowser.ui.C.light = light
+        val bar = app.cornbrowser.ui.C.Bg.toArgb()
+        enableEdgeToEdge(
+            statusBarStyle = if (light) androidx.activity.SystemBarStyle.light(bar, bar) else androidx.activity.SystemBarStyle.dark(bar),
+            navigationBarStyle = if (light) androidx.activity.SystemBarStyle.light(bar, bar) else androidx.activity.SystemBarStyle.dark(bar),
+        )
+        window.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(bar))
+        if (changed) c.onThemeChanged()
     }
 
     override fun onTrimMemory(level: Int) {

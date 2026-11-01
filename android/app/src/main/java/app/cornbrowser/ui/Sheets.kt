@@ -92,7 +92,10 @@ private fun MenuSheet(c: CornController) {
     val cur = c.tabs.current
     Row50(CornIcons.Forward, "Forward", { c.sheet = null; c.tabs.goForward() }, enabled = cur?.canGoForward == true)
     Row50(CornIcons.TabNew, "New tab", { c.newTab() })
-    if (cur?.groupId == null) Row50(CornIcons.GroupAdd, "New tab group", { c.newTabGroup() })
+    // Not in a group: group this tab with a new tab beside it. In a group: a new tab beside this one.
+    val gid = cur?.groupId
+    if (gid == null) Row50(CornIcons.GroupAdd, "New tab group", { c.newTabGroup() })
+    else Row50(CornIcons.GroupAdd, "New tab in this group", { c.newTabInGroup(gid) }, hint = c.tabs.group(gid)?.name)
     Row50(CornIcons.Clock, "History", { c.openHistory() })
     Row50(CornIcons.Share, "Share page", { cur?.takeIf { !it.isNewTab }?.let { c.share(it.url) } ?: run { c.sheet = null } }, enabled = cur?.isNewTab == false)
     Row50(CornIcons.Sliders, "Settings", { c.sheet = null; c.screen = app.cornbrowser.Screen.Settings })
@@ -106,7 +109,7 @@ private fun EngineSheet(c: CornController) {
             e.name,
             onClick = { c.engineNow = e; c.sheet = null; c.showToast("Searching with ${e.name}") },
             leading = { EngineBadge(e) },
-            trailing = { if (c.engineNow.id == e.id) CornIcon(CornIcons.Check, tint = C.Corn) },
+            trailing = { if (c.engineNow.id == e.id) CornIcon(CornIcons.Check, tint = C.Accent) },
         )
     }
 }
@@ -134,8 +137,8 @@ private fun ShieldSheet(c: CornController) {
         Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable { advanced = !advanced }.padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        T("Advanced", 15.sp, C.Corn, FontWeight.SemiBold, modifier = Modifier.weight(1f))
-        CornIcon(if (advanced) CornIcons.ChevUp else CornIcons.ChevDown, 18.dp, C.Corn)
+        T("Advanced", 15.sp, C.Accent, FontWeight.SemiBold, modifier = Modifier.weight(1f))
+        CornIcon(if (advanced) CornIcons.ChevUp else CornIcons.ChevDown, 18.dp, C.Accent)
     }
     AnimatedVisibility(advanced) {
         Column {
@@ -224,7 +227,7 @@ private fun GroupSheet(c: CornController, groupId: Int) {
         BasicTextField(
             g.name, { g.name = it }, singleLine = true,
             textStyle = TextStyle(color = C.Text, fontSize = 20.sp, fontFamily = Display, fontWeight = FontWeight.Bold),
-            cursorBrush = SolidColor(C.Corn),
+            cursorBrush = SolidColor(C.Accent),
             modifier = Modifier.weight(1f),
         )
     }
