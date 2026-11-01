@@ -56,6 +56,10 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | Back, forward, reload, share | ✅ |
 | Blocking of ads, trackers, pop-ups and redirect abuse, on by default | ✅ |
 | Per-site blocking toggle when a page breaks | ✅ |
+| Cookie-banner auto-dismiss (DuckDuckGo autoconsent) | 🟡 proposed |
+| Fingerprinting protection + Global Privacy Control (DuckDuckGo content-scope-scripts) | 🟡 proposed |
+| Strip tracking parameters and unwrap redirect links (ClearURLs rules) | 🟡 proposed |
+| Third-party cookies blocked; HTTPS upgrade | 🟡 proposed |
 | Fullscreen video and Picture-in-Picture | ✅ |
 | File downloads | ⏭️ |
 

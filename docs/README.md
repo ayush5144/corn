@@ -33,6 +33,7 @@ Read in folder order. Start with the product, then the technical plan.
 | # | Doc | What it covers |
 |---|---|---|
 | 01 | [Sources](04-reference/01-sources.md) | Every external fact and where it came from |
+| 02 | [Open source we build on](04-reference/02-open-source.md) | What Corn takes from Brave, DuckDuckGo, Mozilla and others, with licences |
 
 ## ADRs — Architecture decisions
 

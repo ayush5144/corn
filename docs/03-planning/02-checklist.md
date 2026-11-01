@@ -33,8 +33,8 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | ✓ | Task | Owner | Done when |
 |---|---|---|---|
 | [x] | Git repo pushed to GitHub (`ayush5144/corn`, private) | Claude | `main` on GitHub |
-| [ ] | Install Android Studio, SDK, NDK, an ARM "Google Play" emulator image | Founder | Emulator boots on the Mac |
-| [ ] | Install Rust (`rustup`), Android targets, `cargo-ndk` | Founder | `cargo ndk --version` works |
+| [ ] | Install Android Studio, SDK, NDK, an ARM "Google Play" emulator image | Claude | Emulator boots on the Mac |
+| [ ] | Install Rust (`rustup`), Android targets, `cargo-ndk` | Claude | `cargo ndk --version` works |
 | [ ] | Real Android phone with USB/wireless debugging on | Founder | Phone shows in `adb devices` |
 | [ ] | Free disk space to ≥ 40 GB before installs | Founder | `df -h /` shows ≥ 40 GB free |
 | [x] | `AGENTS.md` / `CLAUDE.md` with project rules for coding agents | Claude | File committed |
@@ -53,7 +53,7 @@ The single list of what's done, what's next and who owns it. Product decisions l
 
 ## Phase 2B — Technical spike (one weekend, throwaway code)
 
-**Goal:** Prove WebView + adblock-rust is good enough before building on it.
+**Goal:** Prove WebView + adblock-rust is good enough before building on it. Built in the real layout (`core/` + `android/`); deleted if it fails.
 
 | ✓ | Task | Owner | Done when |
 |---|---|---|---|
