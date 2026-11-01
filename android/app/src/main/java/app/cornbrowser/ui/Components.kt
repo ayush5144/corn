@@ -46,6 +46,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -240,7 +241,7 @@ fun Field(value: String, onChange: (String) -> Unit, placeholder: String, modifi
 
 /** Bottom sheet with a dim scrim, like the mockup's .sheet. Tap outside to close. */
 @Composable
-fun BoxScope.Sheet(visible: Boolean, onDismiss: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
+fun BoxScope.Sheet(visible: Boolean, onDismiss: () -> Unit, onHeight: (Int) -> Unit = {}, content: @Composable ColumnScope.() -> Unit) {
     AnimatedVisibility(visible, enter = fadeIn(tween(200)), exit = fadeOut(tween(150))) {
         Box(Modifier.fillMaxSize().background(C.Scrim).clickable(remember { MutableInteractionSource() }, indication = null, onClick = onDismiss))
     }
@@ -249,7 +250,7 @@ fun BoxScope.Sheet(visible: Boolean, onDismiss: () -> Unit, content: @Composable
         enter = slideInVertically(tween(280)) { it }, exit = slideOutVertically(tween(200)) { it },
     ) {
         Column(
-            Modifier.fillMaxWidth().heightIn(max = 640.dp)
+            Modifier.fillMaxWidth().heightIn(max = 640.dp).onSizeChanged { onHeight(it.height) }
                 .clip(RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp)).background(C.Surface)
                 .clickable(remember { MutableInteractionSource() }, indication = null) {}
                 .navigationBarsPadding().verticalScroll(rememberScrollState())

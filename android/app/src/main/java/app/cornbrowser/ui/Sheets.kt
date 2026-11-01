@@ -55,7 +55,7 @@ fun BoxScope.Sheets(c: CornController) {
     var last by remember { mutableStateOf<Sheet?>(null) }
     val s = c.sheet
     if (s != null) last = s
-    Sheet(visible = s != null, onDismiss = { c.sheet = null }) {
+    Sheet(visible = s != null, onDismiss = { c.sheet = null }, onHeight = { c.sheetHeightPx = it }) {
         when (val shown = s ?: last) {
             is Sheet.Link -> LinkSheet(c, shown)
             Sheet.Menu -> MenuSheet(c)

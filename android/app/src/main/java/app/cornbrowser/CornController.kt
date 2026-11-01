@@ -73,6 +73,9 @@ class CornController(private val context: Context) : TabHost {
         set(v) {
             sheetState.value = v
         }
+    /** Measured heights (px) of the browser's bottom bar and the open sheet, so toasts sit just above them. */
+    var bottomBarHeightPx by mutableIntStateOf(0)
+    var sheetHeightPx by mutableIntStateOf(0)
     var toast by mutableStateOf<ToastMsg?>(null)
         private set
 

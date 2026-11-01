@@ -87,3 +87,8 @@
 - Updated `GLOSSARY.md` (Keep List), `docs/01-product/01-prd.md`, `02-decision-log.md`, `03-features.md`, `docs/02-technical/05-flush-model.md`, `10-storage.md`.
 - Updated `docs/03-planning/02-checklist.md` (A, B, doc ticked), `docs/05-review/01-audit` and `02-review`.
 
+
+## 2026-11-01 — Toasts sit just above the bottom bar or open sheet
+
+- Code: `ui/CornApp.kt` (toast offset from measured heights), `ui/BrowserScreen.kt` and `ui/Components.kt` (report bottom-bar and sheet heights), `ui/Sheets.kt`, `CornController.kt` (`bottomBarHeightPx`, `sheetHeightPx`).
+- No doc sections affected (UI spacing only). Verified on the emulator: browser (8 dp above the bar), open shield sheet (above the sheet), Settings (16 dp above the edge).

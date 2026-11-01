@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -41,7 +42,17 @@ fun CornApp(
                 Screen.History -> HistoryScreen(c)
             }
             Sheets(c)
-            ToastHost(c.toast, bottomPadding = if (c.screen == Screen.Browser) 132.dp else 24.dp) { c.toastAction() }
+            // Toasts sit just above whatever is at the bottom: an open sheet, the browser's bottom bar
+            // (measured, so the Tab Group strip and a bottom address bar count), or the screen edge.
+            val density = LocalDensity.current
+            val toastBottom = with(density) {
+                when {
+                    c.sheet != null -> c.sheetHeightPx.toDp() + 8.dp
+                    c.screen == Screen.Browser -> c.bottomBarHeightPx.toDp() + 8.dp
+                    else -> 16.dp
+                }
+            }
+            ToastHost(c.toast, bottomPadding = toastBottom) { c.toastAction() }
 
             if (pinSetup) {
                 Column(Modifier.fillMaxSize().background(C.Bg)) {

@@ -45,6 +45,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
@@ -72,7 +73,7 @@ fun BrowserScreen(c: CornController) {
     Column(Modifier.fillMaxSize().background(C.Bg)) {
         if (!c.settings.addressBarBottom) AddressBar(c, cur)
         Box(Modifier.weight(1f).fillMaxWidth().background(C.Surface)) { PageArea(c, cur) }
-        Column(Modifier.fillMaxWidth().background(C.Bg)) {
+        Column(Modifier.fillMaxWidth().background(C.Bg).onSizeChanged { c.bottomBarHeightPx = it.height }) {
             Box(Modifier.fillMaxWidth().height(1.dp).background(C.Line))
             GroupStrip(c, cur)
             if (c.settings.addressBarBottom) AddressBar(c, cur)
