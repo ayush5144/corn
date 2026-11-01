@@ -272,6 +272,7 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
         }
 
         override fun onPageStarted(view: WebView, startUrl: String, favicon: Bitmap?) {
+            entry.loading = true
             entry.url = startUrl
             entry.favicon = favicon
             exceptions = emptyList()
@@ -280,6 +281,7 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
         }
 
         override fun onPageFinished(view: WebView, finishedUrl: String) {
+            entry.loading = false
             entry.url = finishedUrl
             view.title?.takeIf { it.isNotBlank() }?.let { entry.title = it }
             sync()

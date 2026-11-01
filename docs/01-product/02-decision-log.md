@@ -389,3 +389,9 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Status:** ✅ Built. Safe Browsing: on by default, Settings → Privacy, one onboarding line. Safe Search: off by default, Settings → Search; flips each engine's URL parameter between off and strict (Startpage has none). Search URLs unit-tested for all 5 engines.
 - **Follow-up:** Onboarding shows both settings with their current state (On/Off) and a switch each, instead of a text line. ✅ Built and verified on a fresh install (switch flips the label and saves the setting).
 
+## Round 10 — 2026-11-01
+
+### Pull to refresh
+- **Answer:** Add pull-to-refresh (drag down at the top of a page to reload), as other mobile browsers do. Only this for now.
+- **Status:** ✅ Built and verified with the test server. Chrome has had it since v41 (2015), Safari since iOS 15, Firefox for Android has it as an option (off by default since 2023).
+

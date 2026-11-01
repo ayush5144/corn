@@ -63,3 +63,8 @@
 - Updated `docs/02-technical/08-repo-structure.md` (app/src/test, `./gradlew testDebugUnitTest`).
 - Updated `docs/01-product/03-features.md` and `02-decision-log.md` (onboarding switches verified on device).
 
+## 2026-11-01 — Pull to refresh
+
+- Code: `ui/BrowserScreen.kt` (SwipeRefreshLayout around the WebView), `browser/TabManager.kt` (`loading` state), `browser/CornTab.kt` (sets loading on page start/finish), dependency `androidx.swiperefreshlayout:1.2.0`.
+- Updated `docs/01-product/03-features.md`, `01-prd.md`, `02-decision-log.md` (Round 10).
+

@@ -48,6 +48,8 @@ class TabEntry(val id: Int, url: String, groupId: Int?) {
     val host: String get() = Uri.parse(url).host?.removePrefix("www.") ?: ""
 
     @Volatile var mediaPlaying = false
+    /** True while the page is loading (drives the pull-to-refresh spinner). */
+    var loading by mutableStateOf(false)
     /** Set when the page process died; the page shows a reload card. */
     var crashed by mutableStateOf(false)
     internal var live: CornTab? = null

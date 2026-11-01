@@ -168,16 +168,33 @@ private fun PageArea(c: CornController, cur: TabEntry) {
         } else if (cur.crashed || live == null) {
             CrashedPage(cur.host) { c.tabs.revive(cur) }
         } else {
+            // Pull to refresh: pulling down while the page is already at the top reloads it
+            // (Android's standard SwipeRefreshLayout around the WebView).
+            val reload = androidx.compose.runtime.rememberUpdatedState { c.tabs.reload() }
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
-                factory = { ctx -> FrameLayout(ctx) },
-                update = { container ->
-                    val wv = live.webView
-                    if (container.getChildAt(0) !== wv) {
-                        container.removeAllViews()
-                        (wv.parent as? ViewGroup)?.removeView(wv)
-                        container.addView(wv, FrameLayout.LayoutParams(-1, -1))
+                factory = { ctx ->
+                    androidx.swiperefreshlayout.widget.SwipeRefreshLayout(ctx).apply {
+                        setColorSchemeColors(0xFFFFC83D.toInt())               // corn yellow spinner
+                        setProgressBackgroundColorSchemeColor(0xFF25221B.toInt())
+                        setOnRefreshListener {
+                            reload.value()
+                            postDelayed({ isRefreshing = false }, 15_000)      // never spin forever
+                        }
                     }
+                },
+                update = { swipe ->
+                    val wv = live.webView
+                    if (swipe.getChildAt(swipe.childCount - 1) !== wv) {
+                        (wv.parent as? ViewGroup)?.removeView(wv)
+                        // Keep SwipeRefreshLayout's own spinner view; replace only the page.
+                        for (i in swipe.childCount - 1 downTo 0) {
+                            val child = swipe.getChildAt(i)
+                            if (child is android.webkit.WebView) swipe.removeView(child)
+                        }
+                        swipe.addView(wv, ViewGroup.LayoutParams(-1, -1))
+                    }
+                    if (!cur.loading && swipe.isRefreshing) swipe.isRefreshing = false
                 },
             )
         }

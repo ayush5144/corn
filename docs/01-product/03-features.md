@@ -141,6 +141,7 @@ Last updated: 2026-11-01 (commit `f6dc779`).
 - **Five search engines with a one-tap switcher** ✅: DuckDuckGo (default), Google, Brave Search, Startpage, Bing, each with its favicon (bundled, never fetched). Seen in the address bar and the engine sheet.
 - **Full address in the address bar** ✅: always shows the page's full URL (e.g. `https://duckduckgo.com/?q=corn+browser`), like Brave.
 - **Address bar top or bottom** 🔨: a Settings choice.
+- **Pull to refresh** ✅: pulling down while the page is at the top reloads it (Android's SwipeRefreshLayout, corn-yellow spinner). Verified: the test server saw the page requested again after a pull (4 → 5); an upward scroll did not reload it. Like Chrome (since v41, 2015), Safari (iOS 15) and Firefox for Android (opt-in). Known limit: on pages that scroll inside their own box rather than the whole page, a pull at the top of the page can reload even if the inner box isn't at its top.
 - **Opens links from other apps** ✅: tested with links sent to Corn.
 - **`http://` sites load** ✅: the Android default would block them; the count-test page loaded over http.
 - **Fullscreen video** 🔨: built in the spike; not re-checked in the new UI.

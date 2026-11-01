@@ -54,6 +54,7 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 |---|---|
 | Address bar: URL and search | ✅ |
 | Back, forward, reload, share | ✅ |
+| Pull down at the top of a page to reload | ✅ |
 | Blocking of ads, trackers, pop-ups and redirect abuse, on by default | ✅ |
 | Per-site blocking: one main switch, plus **Advanced** switches for Ads, Trackers and Pop-ups & redirects | ✅ |
 | Home page **stats**: two all-time totals (trackers & ads blocked, pop-ups & redirects stopped), counts only | ✅ |
