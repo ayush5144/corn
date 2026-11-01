@@ -87,7 +87,7 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [ ] | Privacy: black recents screen, optional App Lock, no notifications while closed | Claude | Verified on a real phone |
 | [ ] | Onboarding: 18+ confirmation, privacy explainer, fun tone. **Built, awaiting founder approval** | Claude | Founder approves the flow |
 | [ ] | Settings screen for every option above | Claude | Every setting in the PRD is reachable |
-| [ ] | In-app update check + signed release APK (release build works: 6.0 MB, R8, tested with a debug-key signature) | Both | Founder installs a signed build |
+| [ ] | In-app update check + signed release APK (release build works: 8.6 MB, R8, tested with a debug-key signature) | Both | Founder installs a signed build |
 | [ ] | Decide Google Safe Browsing default, onboarding mention and setting | Founder | Recorded in the decision log |
 | [ ] | Delete a Vault item (long-press). **Built, not yet seen on device** | Claude | A saved link can be removed permanently |
 | [x] | HTTPS upgrade + http fallback (unit-tested) and link cleaning (verified: server received `/?id=42` from a link with 4 tracking tags) | Claude | Tracking tags never reach the site |
