@@ -37,7 +37,7 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [ ] | Install Rust (`rustup`), Android targets, `cargo-ndk` | Founder | `cargo ndk --version` works |
 | [ ] | Real Android phone with USB/wireless debugging on | Founder | Phone shows in `adb devices` |
 | [ ] | Free disk space to ≥ 40 GB before installs | Founder | `df -h /` shows ≥ 40 GB free |
-| [ ] | `AGENTS.md` / `CLAUDE.md` with project rules for coding agents | Claude | File committed |
+| [x] | `AGENTS.md` / `CLAUDE.md` with project rules for coding agents | Claude | File committed |
 
 ## Phase 2A — Design (runs alongside 2B)
 
@@ -48,7 +48,7 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [ ] | Brand voice: cool, funny, modern — sample copy (onboarding, Flush, empty states) | Both | Copy sheet approved |
 | [ ] | Low-fi wireframes: browser, tab switcher + Tab Groups, Flush, Vault + Collections, settings, onboarding | Claude | Wireframes reviewed |
 | [ ] | Visual style: black + yellow, Flush Button look, icons, type | Both | Style sheet approved |
-| [ ] | Clickable prototype (plain HTML, Next.js static only if needed), mobile viewport, in `design/prototype/`. **v0.1 built**, waiting on the founder's tap-through | Claude | Founder has tapped through it on a real phone |
+| [ ] | Clickable prototype (plain HTML, Next.js static only if needed), mobile viewport, in `mockups/prototype.html` (never as a claude.ai artifact). **v0.1 built**, waiting on the founder's tap-through | Claude | Founder has tapped through it on a real phone |
 | [ ] | Prototype test with 3–5 target users | Founder | Notes recorded; changes fed back into the PRD |
 
 ## Phase 2B — Technical spike (one weekend, throwaway code)

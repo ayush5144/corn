@@ -26,10 +26,10 @@ Why this and not a Brave fork: [ADR 0001](docs/adr/0001-os-web-engine-not-brave-
 ```
 corn/
 ├── README.md      this file
+├── AGENTS.md      rules for AI coding agents (CLAUDE.md imports it)
 ├── GLOSSARY.md    product vocabulary (Session, Flush, Vault, …)
 ├── brand/         logo files
-├── design/
-│   └── prototype/ clickable phone-size HTML prototype (open index.html)
+├── mockups/       clickable phone-size HTML mockups (open in a browser)
 └── docs/          product, technical, planning, reference, ADRs
     └── README.md  docs index — start here
 ```
