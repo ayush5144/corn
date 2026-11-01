@@ -73,6 +73,10 @@ fun OnboardingScreen(onStart: () -> Unit) {
             "Nothing you browse leaves this phone. No account needed.", 13.sp, C.Muted,
             modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
         )
+        T(
+            "Corn warns you about dangerous sites using Google Safe Browsing. You can turn this off in Settings.", 13.sp, C.Muted,
+            modifier = Modifier.fillMaxWidth().padding(top = 6.dp),
+        )
     }
 }
 

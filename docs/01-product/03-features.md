@@ -132,9 +132,11 @@ Last updated: 2026-11-01 (commit `f6dc779`).
 - **No backups** ✅: `allowBackup="false"` plus rules excluding all data from cloud backup and device transfer.
 - **No logs of browsing** ✅: audited. Corn's 5 log messages contain no URLs; page console messages are kept out of Android's log; there's no record of what was blocked where.
 - **WebView usage metrics opted out** ✅: `MetricsOptOut` in the manifest.
+- **Safe Browsing switch** 🔨: Settings → Privacy, on by default, mentioned in onboarding. Google Safe Browsing warns before malware and phishing pages; Google receives hashed address fragments, not full URLs. Applies to open tabs immediately.
 
 ## Search and navigation
 
+- **Safe Search switch** 🧪: Settings → Search, off by default. Off adds each engine's "safe search off" parameter (`kp=-2`, `safe=off`, `safesearch=off`, `adlt=off`); on adds the strict one (`kp=1`, `safe=active`, `safesearch=strict`, `adlt=strict`). Startpage has no URL parameter, so its own setting applies. 3 unit tests (13 address checks).
 - **Five search engines with a one-tap switcher** ✅: DuckDuckGo (default), Google, Brave Search, Startpage, Bing, each with its favicon (bundled, never fetched). Seen in the address bar and the engine sheet.
 - **Full address in the address bar** ✅: always shows the page's full URL (e.g. `https://duckduckgo.com/?q=corn+browser`), like Brave.
 - **Address bar top or bottom** 🔨: a Settings choice.

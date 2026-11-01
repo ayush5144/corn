@@ -47,6 +47,10 @@ class CornSettings(context: Context) {
     var engine by stringPref("engine", "ddg")
     var addressBarBottom by pref("address_bar_bottom", false)
     var cookieBanners by pref("cookie_banners", true)
+    /** Google Safe Browsing warnings in WebView. On by default (founder decision, Round 9). */
+    var safeBrowsing by pref("safe_browsing", true)
+    /** Ask search engines to filter explicit results. Off by default. */
+    var safeSearch by pref("safe_search", false)
 
     fun chooseFlushMode(mode: FlushMode) {
         flushMode = mode

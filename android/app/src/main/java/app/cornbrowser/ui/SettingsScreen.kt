@@ -89,6 +89,10 @@ fun SettingsScreen(c: CornController, onNeedPin: () -> Unit) {
                     if (on && !s.hasPin) onNeedPin() else s.appLock = on
                 }
                 ToggleRow("Lock the Vault", "Your PIN to see saved links.", s.vaultLock) { s.vaultLock = it }
+                ToggleRow("Safe Browsing", "Warns you about dangerous sites using Google Safe Browsing. Google gets scrambled fragments of addresses, not the pages you visit.", s.safeBrowsing) {
+                    s.safeBrowsing = it
+                    c.applySafeBrowsing()
+                }
                 ToggleRow("Close cookie banners", "Corn clicks \"Reject\" for you. Applies to new tabs.", s.cookieBanners) { s.cookieBanners = it }
                 ToggleRow("Black screen in recent apps", "Hides what's on screen in the app switcher.", s.blackRecents) { s.blackRecents = it }
                 SettingRow("Notifications", "Corn never notifies you while it's closed.", leading = { CornIcon(CornIcons.BellOff, tint = C.Muted) })
@@ -99,6 +103,9 @@ fun SettingsScreen(c: CornController, onNeedPin: () -> Unit) {
                 SearchEngines.all.forEach { e ->
                     SettingRow(e.name, onClick = { s.engine = e.id; c.engineNow = e }, leading = { EngineBadge(e) }, trailing = { Radio(s.engine == e.id) })
                 }
+            }
+            SettingsGroup {
+                ToggleRow("Safe Search", "Ask search engines to filter explicit results. Off by default. Startpage uses its own setting.", s.safeSearch) { s.safeSearch = it }
             }
             Caption("Default engine. You can switch for one search from the dropdown in the address bar.")
 

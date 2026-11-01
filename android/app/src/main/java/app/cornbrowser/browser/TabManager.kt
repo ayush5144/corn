@@ -182,6 +182,9 @@ class TabManager(private val context: Context, private val host: TabHost) {
         if (entry.id == currentId) ensureLive(entry)
     }
 
+    /** Run something on every tab that currently has a WebView. */
+    fun forEachLive(action: (CornTab) -> Unit) = tabs.forEach { t -> t.live?.let(action) }
+
     fun goBack() = current?.live?.webView?.takeIf { it.canGoBack() }?.goBack()
     fun goForward() = current?.live?.webView?.takeIf { it.canGoForward() }?.goForward()
     fun reload() = current?.live?.webView?.reload()

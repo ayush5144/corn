@@ -57,7 +57,7 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | Blocking of ads, trackers, pop-ups and redirect abuse, on by default | ✅ |
 | Per-site blocking: one main switch, plus **Advanced** switches for Ads, Trackers and Pop-ups & redirects | ✅ |
 | Home page **stats**: two all-time totals (trackers & ads blocked, pop-ups & redirects stopped), counts only | ✅ |
-| Google Safe Browsing (WebView default: on) | 🟡 decide default + setting |
+| Google Safe Browsing: Settings switch, **on by default**, mentioned in onboarding | ✅ |
 | Cookie-banner closing: clicks "Reject" (DuckDuckGo autoconsent); Settings switch, on by default | ✅ |
 | Fingerprinting protection + Global Privacy Control (DuckDuckGo content-scope-scripts) | 🟡 proposed |
 | Link cleaning: strip tracking parameters (`utm_*`, `fbclid`, `gclid`…) | ✅ (redirect unwrapping later) |
@@ -99,6 +99,7 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | Several built-in engines: DuckDuckGo, Google, Brave Search, Startpage, Bing | ✅ |
 | Switch engine from **one dropdown inside the search bar**, each engine shown with its favicon | ✅ |
 | Default engine: **DuckDuckGo**, safe search off where the engine allows | ✅ |
+| **Safe Search** switch (filter explicit results), **off by default** | ✅ |
 | User-added custom engines | ⏭️ |
 
 ### 6.4 Flush and session behaviour
@@ -180,6 +181,8 @@ What a new user gets before changing anything.
 | Notifications while closed | None | ✅ |
 | Backups | Off, always | ✅ |
 | Search engine | DuckDuckGo, safe search off where the engine allows | ✅ |
+| Safe Search | Off | ✅ |
+| Safe Browsing | On | ✅ |
 | Address bar position | Top | ✅ |
 | Ad / tracker / pop-up blocking | On for every site (each can be switched off per site) | ✅ |
 | Redirect guard | On | ✅ |

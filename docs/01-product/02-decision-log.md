@@ -382,3 +382,9 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Answer:** A features file listing every built feature, its benefit and data-backed evidence, no assumptions.
 - **Status:** ✅ [03-features.md](03-features.md), with evidence levels (verified / tested / built).
 
+## Round 9 — 2026-11-01
+
+### Safe Browsing and Safe Search switches
+- **Answer:** Add both switches to Settings. Safe Search keeps a switch even though engines are asked for "off".
+- **Status:** ✅ Built. Safe Browsing: on by default, Settings → Privacy, one onboarding line. Safe Search: off by default, Settings → Search; flips each engine's URL parameter between off and strict (Startpage has none). Search URLs unit-tested for all 5 engines.
+

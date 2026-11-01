@@ -54,6 +54,8 @@ interface TabHost {
     fun onPageCrashed(entry: TabEntry)
     /** Settings → Privacy → Close cookie banners. Read when a tab is created. */
     val cookieBannersEnabled: Boolean
+    /** Settings → Privacy → Safe Browsing. */
+    val safeBrowsingEnabled: Boolean
 }
 
 /**
@@ -86,6 +88,7 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
         s.mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
         s.setGeolocationEnabled(false)
         s.userAgentString = BrowserIdentity.userAgent(s.userAgentString)
+        setSafeBrowsing(host.safeBrowsingEnabled)
         webView.setBackgroundColor(0xFF0F0E0B.toInt())
 
         CookieManager.getInstance().setAcceptThirdPartyCookies(webView, false)
@@ -99,6 +102,13 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
     }
 
     fun load(url: String) = webView.loadUrl(prepare(url))
+
+    /** Google Safe Browsing: warns before malware and phishing pages (hashed URL prefixes, not full URLs). */
+    fun setSafeBrowsing(on: Boolean) {
+        if (androidx.webkit.WebViewFeature.isFeatureSupported(androidx.webkit.WebViewFeature.SAFE_BROWSING_ENABLE)) {
+            androidx.webkit.WebSettingsCompat.setSafeBrowsingEnabled(webView.settings, on)
+        }
+    }
 
     /** https versions Corn tried, mapped to the http original to fall back to if they fail. */
     private val upgraded = mutableMapOf<String, String>()

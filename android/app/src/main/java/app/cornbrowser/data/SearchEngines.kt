@@ -9,31 +9,46 @@ import androidx.compose.ui.graphics.Color
 import app.cornbrowser.R
 import java.net.URLEncoder
 
-/** A built-in search engine. `template` contains %s for the query; safe search is turned off where the engine allows it. */
-data class SearchEngine(val id: String, val name: String, @DrawableRes val icon: Int, val color: Color, val template: String) {
-    fun urlFor(query: String): String = template.replace("%s", URLEncoder.encode(query, "UTF-8"))
+/**
+ * A built-in search engine. `template` contains %s for the query. `safeOff` / `safeOn` are the
+ * engine's own URL parameters for safe search (empty when the engine has none, e.g. Startpage).
+ */
+data class SearchEngine(
+    val id: String,
+    val name: String,
+    @DrawableRes val icon: Int,
+    val color: Color,
+    val template: String,
+    val safeOff: String,
+    val safeOn: String,
+) {
+    fun urlFor(query: String, safeSearch: Boolean): String {
+        val base = template.replace("%s", URLEncoder.encode(query, "UTF-8"))
+        val param = if (safeSearch) safeOn else safeOff
+        return if (param.isEmpty()) base else "$base&$param"
+    }
 }
 
 object SearchEngines {
     val all = listOf(
-        SearchEngine("ddg", "DuckDuckGo", R.drawable.engine_ddg, Color(0xFFDE5833), "https://duckduckgo.com/?q=%s&kp=-2"),
-        SearchEngine("google", "Google", R.drawable.engine_google, Color(0xFF4285F4), "https://www.google.com/search?q=%s&safe=off"),
-        SearchEngine("brave", "Brave Search", R.drawable.engine_brave, Color(0xFFFB542B), "https://search.brave.com/search?q=%s&safesearch=off"),
-        SearchEngine("startpage", "Startpage", R.drawable.engine_startpage, Color(0xFF6573FF), "https://www.startpage.com/do/search?q=%s"),
-        SearchEngine("bing", "Bing", R.drawable.engine_bing, Color(0xFF00809D), "https://www.bing.com/search?q=%s&adlt=off"),
+        SearchEngine("ddg", "DuckDuckGo", R.drawable.engine_ddg, Color(0xFFDE5833), "https://duckduckgo.com/?q=%s", "kp=-2", "kp=1"),
+        SearchEngine("google", "Google", R.drawable.engine_google, Color(0xFF4285F4), "https://www.google.com/search?q=%s", "safe=off", "safe=active"),
+        SearchEngine("brave", "Brave Search", R.drawable.engine_brave, Color(0xFFFB542B), "https://search.brave.com/search?q=%s", "safesearch=off", "safesearch=strict"),
+        SearchEngine("startpage", "Startpage", R.drawable.engine_startpage, Color(0xFF6573FF), "https://www.startpage.com/do/search?q=%s", "", ""),
+        SearchEngine("bing", "Bing", R.drawable.engine_bing, Color(0xFF00809D), "https://www.bing.com/search?q=%s", "adlt=off", "adlt=strict"),
     )
 
     fun byId(id: String) = all.firstOrNull { it.id == id } ?: all.first()
 
 
     /** Turn what the user typed into a URL: a web address as-is, anything else as a search. */
-    fun resolve(input: String, engine: SearchEngine): String {
+    fun resolve(input: String, engine: SearchEngine, safeSearch: Boolean): String {
         val text = input.trim()
         val looksLikeUrl = !text.contains(' ') && (text.contains('.') || text.startsWith("localhost"))
         return when {
             text.startsWith("http://") || text.startsWith("https://") -> text
             looksLikeUrl -> "https://$text"
-            else -> engine.urlFor(text)
+            else -> engine.urlFor(text, safeSearch)
         }
     }
 }

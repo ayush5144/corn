@@ -170,7 +170,7 @@ class CornController(private val context: Context) : TabHost {
         val text = input.trim()
         if (text.isEmpty()) return
         quip = null
-        tabs.load(SearchEngines.resolve(text, engineNow))
+        tabs.load(SearchEngines.resolve(text, engineNow, settings.safeSearch))
     }
 
     fun openInNewTab(url: String) {
@@ -353,6 +353,10 @@ class CornController(private val context: Context) : TabHost {
     }
 
     override val cookieBannersEnabled: Boolean get() = settings.cookieBanners
+    override val safeBrowsingEnabled: Boolean get() = settings.safeBrowsing
+
+    /** Settings calls this so open tabs follow the Safe Browsing switch right away. */
+    fun applySafeBrowsing() = tabs.forEachLive { it.setSafeBrowsing(settings.safeBrowsing) }
 
     override fun onPageCrashed(entry: TabEntry) {
         if (fullscreen != null) onExitFullscreen()

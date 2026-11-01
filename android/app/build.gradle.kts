@@ -69,4 +69,5 @@ dependencies {
     implementation(libs.androidx.webkit)
     implementation("${libs.jna.get().module}:${libs.jna.get().version}@aar")
     debugImplementation(libs.androidx.compose.ui.tooling)
+    testImplementation(libs.junit)
 }
