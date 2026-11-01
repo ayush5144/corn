@@ -38,6 +38,8 @@ android {
         // Kotlin bindings generated from the Rust core by UniFFI (see scripts/build-android-core.sh).
         kotlin.directories += "build/generated/uniffi/kotlin"
         jniLibs.directories += "build/generated/uniffi/jniLibs"
+        // Offline starter list + cookie-banner script (see scripts/build-starter-assets.sh).
+        assets.directories += "build/generated/starter/assets"
     }
 }
 
@@ -50,7 +52,14 @@ val buildRustCore by tasks.registering(Exec::class) {
     inputs.file(File(repoRoot, "core/Cargo.toml"))
     outputs.dir(layout.projectDirectory.dir("build/generated/uniffi"))
 }
-tasks.named("preBuild") { dependsOn(buildRustCore) }
+// Offline starter list (compiled filter lists) and the pinned cookie-banner script.
+val buildStarterAssets by tasks.registering(Exec::class) {
+    workingDir = layout.projectDirectory.dir("../..").asFile
+    commandLine("bash", "scripts/build-starter-assets.sh")
+    dependsOn(buildRustCore)
+    outputs.upToDateWhen { false } // the script itself decides what's fresh
+}
+tasks.named("preBuild") { dependsOn(buildRustCore, buildStarterAssets) }
 
 dependencies {
     implementation(platform(libs.androidx.compose.bom))

@@ -13,7 +13,7 @@ Everything stays in Corn's **private app storage** on the phone. Other apps can'
 | **Kept Session** (open tabs, Tab Groups, their URLs) | `corn.db`, key-value area | ❌ Wiped by Flush | Restores your tabs after a restart when Kept Session is on |
 | **Settings** (Flush mode, toggles, default engine, address bar position) | Android app settings file (SharedPreferences) | ✅ Yes | Simple on/off values, no browsing data |
 | **Vault PIN** | Settings file, as a salted PBKDF2 hash (never the PIN itself) | ✅ Yes | Lets Corn check the PIN without storing it |
-| **Blocking engines** | Cache files `ads-v1.dat` (EasyList) and `trackers-v1.dat` (EasyPrivacy) | ✅ Yes | Rebuilt from downloaded lists |
+| **Blocking engines** | Cache files `ads-v1.dat` (EasyList) and `trackers-v1.dat` (EasyPrivacy); last refresh time in `corn_engine` settings | ✅ Yes | Rebuilt from downloaded lists every 4 days |
 | **Cookies, site data, cache, history** | WebView's own storage | ❌ Wiped (except Keep List cookies) | Owned by the web engine |
 | **Tab previews** | Memory only | ❌ Gone on Flush or app close | Never written to disk |
 

@@ -58,10 +58,12 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | Per-site blocking: one main switch, plus **Advanced** switches for Ads, Trackers and Pop-ups & redirects | ✅ |
 | Home page **stats**: two all-time totals (trackers & ads blocked, pop-ups & redirects stopped), counts only | ✅ |
 | Google Safe Browsing (WebView default: on) | 🟡 decide default + setting |
-| Cookie-banner auto-dismiss (DuckDuckGo autoconsent) | 🟡 proposed |
+| Cookie-banner closing: clicks "Reject" (DuckDuckGo autoconsent); Settings switch, on by default | ✅ |
 | Fingerprinting protection + Global Privacy Control (DuckDuckGo content-scope-scripts) | 🟡 proposed |
-| Strip tracking parameters and unwrap redirect links (ClearURLs rules) | 🟡 proposed |
-| Third-party cookies blocked; HTTPS upgrade | 🟡 proposed |
+| Link cleaning: strip tracking parameters (`utm_*`, `fbclid`, `gclid`…) | ✅ (redirect unwrapping later) |
+| Third-party cookies blocked | ✅ |
+| HTTPS upgrade, with http fallback if the secure version fails | ✅ |
+| Filter lists refresh every 4 days on Wi-Fi; offline starter list built in | ✅ |
 | Fullscreen video and Picture-in-Picture | ✅ |
 | File downloads | ⏭️ |
 
@@ -130,7 +132,8 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | Stored only on the device (app-private SQLite, protected by Android's sandbox and phone encryption) | ✅ (SQLCipher dropped, see decision log) |
 | **Vault locked by default** with a 4-digit PIN | ✅ |
 | Fingerprint / face unlock | ⏭️ Later |
-| Export, import, permanent delete | 🟡 |
+| Permanent delete (long-press a saved link) | ✅ |
+| Export, import | 🟡 |
 | Saving downloaded files into the Vault | ⏭️ |
 
 ### 6.6 Privacy and discretion

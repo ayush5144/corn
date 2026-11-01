@@ -40,6 +40,7 @@ sealed interface Sheet {
     data class Save(val url: String, val title: String) : Sheet
     data class Group(val groupId: Int) : Sheet
     data object ConfirmFlush : Sheet
+    data class DeleteItem(val id: Long, val title: String) : Sheet
 }
 
 /**
@@ -102,6 +103,7 @@ class CornController(private val context: Context) : TabHost {
     }
 
     fun onAppForeground() {
+        app.cornbrowser.browser.CornEngine.refreshIfStale(context)
         if (shouldAutoFlushOnReturn()) flushNow(animate = false)
         main.removeCallbacks(leaveFlush)
         settings.leftAt = 0L
@@ -260,6 +262,12 @@ class CornController(private val context: Context) : TabHost {
         showToast("Saved $added links to “${g.name}”")
     }
 
+    fun deleteVaultItem(id: Long) {
+        data.deleteItem(id)
+        sheet = null
+        showToast("Deleted from the Vault")
+    }
+
     fun openVault() {
         sheet = null
         screen = Screen.Vault
@@ -343,6 +351,8 @@ class CornController(private val context: Context) : TabHost {
         fullscreen = view
         exitFullscreen = exit
     }
+
+    override val cookieBannersEnabled: Boolean get() = settings.cookieBanners
 
     override fun onPageCrashed(entry: TabEntry) {
         if (fullscreen != null) onExitFullscreen()

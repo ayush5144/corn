@@ -36,7 +36,8 @@ example.org##.ad-banner            ← on example.org, hide elements with class 
 ```
 First launch:  download lists → build two engines (ads = EasyList, trackers = EasyPrivacy) → save ads-v1.dat, trackers-v1.dat
 Every launch:  load the saved engines (~1 ms on an M4 Mac; a few ms on a phone)
-Every few days, on Wi-Fi: download fresh lists → rebuild in the background → swap engines   (⏳ not built yet)
+Every 4 days, on Wi-Fi: download fresh lists → sanity-check → rebuild in the background → swap engines   (✅ built)
+Fresh install:  load the built-in starter list instantly → first download on any network → swap   (✅ built)
 ```
 
 **Why two engines:** each site can switch ads and trackers off separately (shield → Advanced) without changing adblock-rust. Both are the same unmodified engine loaded with a different list. The lists overlap slightly, so the split is close but not exact.
@@ -58,10 +59,10 @@ Phone figures go in the spike results.
 
 | Gap | Plan | Tracked in |
 |---|---|---|
-| Lists are downloaded once and never refreshed (spike) | `corn-lists`: refresh every few days on Wi-Fi, rebuild in the background | Checklist, Phase 3 |
-| Fresh install with no internet has no rules | Ship a small starter engine inside the app (credited), replace it on first connection | Checklist, Phase 3 |
-| A corrupted download could break blocking | Keep the last good engine; only swap after the new one loads | `corn-lists` |
-| A list could be tampered with in transit | HTTPS only; sanity-check size and rule count before swapping | `corn-lists` |
+| Lists refresh | ✅ Every 4 days on Wi-Fi (`CornEngine.refreshIfStale`, checked on start and when Corn comes to the foreground) | Done |
+| Fresh install with no internet | ✅ Starter engines compiled at build time from that day's lists (`scripts/build-starter-assets.sh`, `corn-compile`), never committed | Done |
+| A corrupted download could break blocking | ✅ Last good engine kept; new one swapped in only after it builds and is saved | Done |
+| A list could be tampered with in transit | ✅ HTTPS only; rejected if under 10,000 lines | Done |
 
 ## Credits
 

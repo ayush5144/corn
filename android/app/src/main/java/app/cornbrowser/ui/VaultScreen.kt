@@ -8,6 +8,7 @@ import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -159,17 +160,22 @@ private fun CollectionView(c: CornController, id: Long, onBack: () -> Unit) {
         }
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
             if (items.isEmpty()) Empty("Nothing here yet. Tap the Vault icon in the address bar on any page to save it here.")
-            else items.forEach { ItemRow(c, it) }
+            else {
+                items.forEach { ItemRow(c, it) }
+                T("Long-press a link to delete it.", 12.5.sp, C.Muted, modifier = Modifier.padding(vertical = 14.dp))
+            }
         }
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 private fun ItemRow(c: CornController, it: VaultItem) {
     val host = Uri.parse(it.url).host?.removePrefix("www.") ?: it.url
     Row(
-        Modifier.fillMaxWidth().clickable { c.openInNewTab(it.url) }.padding(vertical = 12.dp, horizontal = 4.dp),
+        Modifier.fillMaxWidth()
+            .combinedClickable(onClick = { c.openInNewTab(it.url) }, onLongClick = { c.sheet = app.cornbrowser.Sheet.DeleteItem(it.id, it.title) })
+            .padding(vertical = 12.dp, horizontal = 4.dp),
         verticalAlignment = Alignment.Top,
     ) {
         LetterIcon(host, 34.dp)

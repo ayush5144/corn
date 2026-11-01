@@ -80,8 +80,8 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [ ] | **Keep List**: chosen sites stay logged in across Flush | Claude | Keep List site still logged in after Flush |
 | [ ] | **Corn password store** in the Vault, survives Flush (v1 or v1.1, timing open) | Claude | Saved password fills a login after Flush |
 | [ ] | Session saved in app-private SQLite + backups disabled | Claude | Kept Session restores after restart; backup tool finds nothing |
-| [ ] | Filter lists refresh automatically (every few days, on Wi-Fi), engine rebuilt in the background | Claude | Lists newer than 4 days after a week of use |
-| [ ] | Starter engine bundled in the app for first launch without internet | Claude | Fresh install in airplane mode still blocks ads |
+| [x] | Filter lists refresh automatically (every 4 days, on Wi-Fi), engine rebuilt in the background. Verified: refreshed 8 s after first launch | Claude | Lists newer than 4 days after a week of use |
+| [x] | Starter engine bundled in the app for first launch without internet. Verified: starter loaded before any download | Claude | Fresh install in airplane mode still blocks ads |
 | [ ] | Revisit how many tabs stay live (now 1 active + 2 paused) after real-phone testing | Both | Number confirmed or changed in the decision log |
 | [ ] | **Vault**: save link + title, optional tags, **Collections**, PIN/biometric lock | Claude | Save, find, lock, delete all work |
 | [ ] | Privacy: black recents screen, optional App Lock, no notifications while closed | Claude | Verified on a real phone |
@@ -89,7 +89,9 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [ ] | Settings screen for every option above | Claude | Every setting in the PRD is reachable |
 | [ ] | In-app update check + signed release APK (release build works: 6.0 MB, R8, tested with a debug-key signature) | Both | Founder installs a signed build |
 | [ ] | Decide Google Safe Browsing default, onboarding mention and setting | Founder | Recorded in the decision log |
-| [ ] | Delete a Vault item | Claude | A saved link can be removed permanently |
+| [ ] | Delete a Vault item (long-press). **Built, not yet seen on device** | Claude | A saved link can be removed permanently |
+| [x] | HTTPS upgrade + http fallback (unit-tested) and link cleaning (verified: server received `/?id=42` from a link with 4 tracking tags) | Claude | Tracking tags never reach the site |
+| [ ] | Cookie-banner closing (autoconsent). **Built, not yet seen closing a banner on device** | Founder | A cookie banner is rejected without a tap |
 
 ## Phase 4 — Beta
 

@@ -183,3 +183,17 @@ impl CornStore {
         Ok(self.inner.kv_delete(&key)?)
     }
 }
+
+// ---------------- URL hygiene ----------------
+
+/// Remove well-known tracking parameters (utm_*, fbclid, gclid…) from a link.
+#[uniffi::export]
+pub fn clean_url(url: String) -> String {
+    corn_url::clean(&url)
+}
+
+/// The https version of an http URL, or None when it's already secure or local.
+#[uniffi::export]
+pub fn https_upgrade(url: String) -> Option<String> {
+    corn_url::https_upgrade(&url)
+}

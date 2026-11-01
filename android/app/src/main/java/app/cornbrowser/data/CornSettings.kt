@@ -46,6 +46,7 @@ class CornSettings(context: Context) {
     var blackRecents by pref("black_recents", true)
     var engine by stringPref("engine", "ddg")
     var addressBarBottom by pref("address_bar_bottom", false)
+    var cookieBanners by pref("cookie_banners", true)
 
     fun chooseFlushMode(mode: FlushMode) {
         flushMode = mode

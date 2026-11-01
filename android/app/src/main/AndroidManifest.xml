@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- To refresh filter lists on Wi-Fi only (never reads anything about browsing). -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- allowBackup=false + empty extraction rules: Corn never lets Android back up app data.
          usesCleartextTraffic: a browser must be able to open http:// sites. -->

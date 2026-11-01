@@ -227,7 +227,7 @@ private fun NewTabPage(c: CornController) {
             CornIcon(CornIcons.Search, 20.dp, C.Muted)
             Spacer(Modifier.width(10.dp))
             Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
-                if (q.isEmpty()) T("Search ${c.engineNow.name} or type a site", 16.sp, C.Muted, maxLines = 1)
+                if (q.isEmpty()) T("Search or type a site", 16.sp, C.Muted, maxLines = 1)
                 BasicTextField(
                     q, { q = it }, singleLine = true,
                     textStyle = TextStyle(color = C.Text, fontSize = 16.sp, fontFamily = Ui),

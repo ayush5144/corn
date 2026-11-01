@@ -25,7 +25,7 @@ Rust earns its place in three ways:
 |---|---|---|---|
 | `corn-block` | Wraps adblock-rust: request checks, cosmetic CSS, scriptlets | Same engine as Brave Shields; ~5 µs per request check | 1 |
 | `corn-lists` | Download, verify, compile and cache filter lists as a compact binary engine | Off-main-thread, memory-compact, identical everywhere | 1 |
-| `corn-url` | Strip tracking parameters, unwrap redirect links, compute site keys (eTLD+1 via the Public Suffix List) | Parses untrusted input; shared rules | 1 |
+| `corn-url` | ✅ Strip tracking parameters, HTTPS upgrade. ⏳ Redirect unwrapping, site keys (Public Suffix List) | Parses untrusted input; shared rules | 1 |
 | `corn-flush` | Flush **policy**: what to clear, when, and which Keep-list sites to spare | Same rules on every platform | 2 |
 | `corn-vault` | SQLite database (rusqlite): Collections, Vault Items, tags, search, key-value area for Keep List / session | One Vault format everywhere; security-critical | 2 |
 | `corn-ffi` | UniFFI bindings (Kotlin, Swift) | Generated glue; keeps the API small | 1 |

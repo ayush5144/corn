@@ -1,0 +1,9 @@
+[package]
+name = "corn-url"
+description = "Corn's URL hygiene: remove tracking parameters, upgrade http to https"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+url = "2"

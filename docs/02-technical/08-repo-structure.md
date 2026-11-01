@@ -26,9 +26,10 @@ corn/
 │   ├── Cargo.toml             ✅ workspace: shared versions, release profile
 │   └── crates/
 │       ├── corn-block/        ✅ wraps Brave's adblock-rust: request checks, element hiding
-│       │   └── examples/bench.rs  ✅ benchmark on real filter lists
+│       │   ├── examples/bench.rs  ✅ benchmark on real filter lists
+│       │   └── src/bin/corn-compile.rs ✅ build-time tool: compiles the offline starter list
 │       ├── corn-lists/        🔜 download, verify, cache and refresh filter lists
-│       ├── corn-url/          🔜 link cleaning, redirect unwrapping, site keys (Public Suffix List)
+│       ├── corn-url/          ✅ link cleaning (tracking parameters), HTTPS upgrade
 │       ├── corn-flush/        ⏭️ Flush rules: what to clear, Keep List matching
 │       ├── corn-vault/        ✅ SQLite: Vault, Collections, tags, search, Keep List, session
 │       ├── corn-ffi/          ✅ UniFFI bindings → Kotlin (Android) and Swift (iOS)
@@ -62,6 +63,7 @@ corn/
 │
 └── scripts/                   build glue between the Rust core and each app
     ├── build-android-core.sh  ✅ cargo-ndk → .so files + Kotlin bindings
+    ├── build-starter-assets.sh ✅ starter filter engines + pinned autoconsent → app assets (not committed)
     ├── build-ios-core.sh      ⏭️ cargo → .xcframework + Swift bindings
     └── build-desktop-core.sh  ⏭️ napi-rs → .node addon
 ```

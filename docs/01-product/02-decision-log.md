@@ -348,3 +348,17 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Release build:** R8 shrinking + phones-only native library: 6.0 MB (debug 21.3 MB).
 - **Open:** Google Safe Browsing in WebView is on by default (it checks hashed URL prefixes with Google to warn about malware/phishing). Keep it or turn it off is a founder decision.
 
+## Round 7 — 2026-11-01
+
+### Privacy features to build
+- **Answer:** Build filter-list refresh, HTTPS upgrade, Vault item delete, cookie-banner closing, offline starter list, and link cleaning (easy). Fingerprinting protection: explanation only for now. Password store v1.1; fingerprint unlock later.
+- **Status:** ✅ All six built. Verified on device: starter list + refresh, link cleaning. Unit-tested: HTTPS upgrade, link cleaning. Not yet seen on device: cookie-banner closing, Vault delete.
+
+### Search engine name in the search box
+- **Answer:** Don't name the engine in the search box; the favicon already shows it.
+- **Status:** ✅ New-tab placeholder is "Search or type a site".
+
+### Do other browsers have password stores and download vaults?
+- **Findings:** Chrome, Brave and DuckDuckGo all have built-in password managers. Download "vaults" are rarer: Aloha Browser offers passcode-locked folders for downloads (listed as a Premium feature on its site).
+- **Status:** ✅ Informational. Password store stays v1.1; downloads stay in the backlog.
+

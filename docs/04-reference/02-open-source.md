@@ -21,7 +21,7 @@ Filter lists are **downloaded on the device at runtime** as data and credited in
 |---|---|---|
 | [duckduckgo/Android](https://github.com/duckduckgo/Android) | Apache-2.0 | **Corn's closest twin**: a Kotlin + WebView browser. Reference for the Fire Button, WebView setup, request interception, tab handling and privacy settings. |
 | [duckduckgo/content-scope-scripts](https://github.com/duckduckgo/content-scope-scripts) | Apache-2.0 | Scripts injected at page start: fingerprinting protection, Global Privacy Control, other in-page protections |
-| [duckduckgo/autoconsent](https://github.com/duckduckgo/autoconsent) | MPL-2.0 | Auto-dismisses cookie-consent pop-ups |
+| [duckduckgo/autoconsent](https://github.com/duckduckgo/autoconsent) | MPL-2.0 | ✅ In use: version 17.2.0 standalone build, unmodified, fetched at build time and bundled with its licence. Clicks "Reject" on cookie banners. Version pinned in `scripts/build-starter-assets.sh` (bump by hand; Dependabot can't see it). |
 | [ClearURLs/Rules](https://github.com/ClearURLs/Rules) | LGPL-3.0 | Tracking-parameter and redirect-wrapper rules for `corn-url` |
 | [publicsuffix/list](https://github.com/publicsuffix/list) | MPL-2.0 | Works out which site a URL belongs to (Keep List, third-party detection) |
 | [duckduckgo/apple-browsers](https://github.com/duckduckgo/apple-browsers) | Apache-2.0 | iPhone later: WKWebView browser reference |

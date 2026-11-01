@@ -52,6 +52,8 @@ interface TabHost {
     fun onExitFullscreen()
     /** The page process died (crash or the system reclaimed memory). */
     fun onPageCrashed(entry: TabEntry)
+    /** Settings → Privacy → Close cookie banners. Read when a tab is created. */
+    val cookieBannersEnabled: Boolean
 }
 
 /**
@@ -89,13 +91,35 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
         CookieManager.getInstance().setAcceptThirdPartyCookies(webView, false)
 
         installBridge()
+        installCookieBannerCloser(context)
         webView.webViewClient = Client()
         webView.webChromeClient = Chrome()
         webView.setOnTouchListener { _, _ -> lastUserGestureAt = System.currentTimeMillis(); false }
         webView.setOnLongClickListener { onLongPress() }
     }
 
-    fun load(url: String) = webView.loadUrl(url)
+    fun load(url: String) = webView.loadUrl(prepare(url))
+
+    /** https versions Corn tried, mapped to the http original to fall back to if they fail. */
+    private val upgraded = mutableMapOf<String, String>()
+
+    /** Link cleaning (tracking parameters removed), then HTTPS upgrade unless this site is known to lack https. */
+    private fun prepare(url: String): String {
+        var u = uniffi.corn_ffi.cleanUrl(url)
+        val h = Uri.parse(u).host
+        if (h != null && h !in httpOnlyHosts) {
+            uniffi.corn_ffi.httpsUpgrade(u)?.let { secure -> upgraded[secure] = u; u = secure }
+        }
+        return u
+    }
+
+    /** The secure version failed: remember the site has no https (for this session) and load http. */
+    private fun fallBackToHttp(view: WebView, failedUrl: String): Boolean {
+        val http = upgraded.remove(failedUrl) ?: return false
+        Uri.parse(http).host?.let { httpOnlyHosts += it }
+        view.loadUrl(http)
+        return true
+    }
 
     fun restore(state: Bundle) {
         webView.restoreState(state)
@@ -213,15 +237,25 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
             val target = request.url
             val scheme = target.scheme ?: return true
             if (scheme != "http" && scheme != "https") return true // never jump out to other apps silently
-            if (!request.isForMainFrame || request.isRedirect) return false
-            val currentHost = Uri.parse(entry.url).host?.removePrefix("www.") ?: return false
-            if (!host.shields(currentHost).popups) return false
-            // Redirect guard: the page navigating the whole tab to another site with no recent tap.
-            val recentTap = System.currentTimeMillis() - lastUserGestureAt < 1500
-            if (!request.hasGesture() && !recentTap && !sameSite(target, Uri.parse(entry.url))) {
-                guardedOnPage.incrementAndGet()
-                sync()
-                host.onBlockedRedirect(target.host ?: target.toString())
+            if (!request.isForMainFrame) return false
+            if (!request.isRedirect) {
+                val currentHost = Uri.parse(entry.url).host?.removePrefix("www.")
+                // Redirect guard: the page navigating the whole tab to another site with no recent tap.
+                val recentTap = System.currentTimeMillis() - lastUserGestureAt < 1500
+                if (currentHost != null && host.shields(currentHost).popups &&
+                    !request.hasGesture() && !recentTap && !sameSite(target, Uri.parse(entry.url))
+                ) {
+                    guardedOnPage.incrementAndGet()
+                    sync()
+                    host.onBlockedRedirect(target.host ?: target.toString())
+                    return true
+                }
+            }
+            // Link cleaning + HTTPS upgrade: load the tidied address instead.
+            val original = target.toString()
+            val prepared = prepare(original)
+            if (prepared != original) {
+                view.loadUrl(prepared)
                 return true
             }
             return false
@@ -239,6 +273,15 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
             entry.url = finishedUrl
             view.title?.takeIf { it.isNotBlank() }?.let { entry.title = it }
             sync()
+        }
+
+        override fun onReceivedError(view: WebView, request: WebResourceRequest, error: android.webkit.WebResourceError) {
+            if (request.isForMainFrame) fallBackToHttp(view, request.url.toString())
+        }
+
+        override fun onReceivedSslError(view: WebView, handler: android.webkit.SslErrorHandler, error: android.net.http.SslError) {
+            handler.cancel() // never load a page with a broken certificate
+            fallBackToHttp(view, error.url)
         }
 
         override fun onRenderProcessGone(view: WebView, detail: android.webkit.RenderProcessGoneDetail): Boolean {
@@ -271,6 +314,9 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
             if (icon != null) entry.favicon = icon
         }
 
+        /** Page console messages would otherwise be copied into Android's system log (with URLs). */
+        override fun onConsoleMessage(message: android.webkit.ConsoleMessage): Boolean = true
+
         override fun onShowCustomView(view: View, callback: CustomViewCallback) {
             host.onEnterFullscreen(view) { callback.onCustomViewHidden() }
         }
@@ -291,6 +337,13 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
             handleBridgeMessage(message, isMainFrame, reply)
         }
         WebViewCompat.addDocumentStartJavaScript(webView, PAGE_JS, setOf("*"))
+    }
+
+    /** DuckDuckGo autoconsent (unmodified, built into the app): clicks "Reject" on cookie banners. */
+    private fun installCookieBannerCloser(context: Context) {
+        if (!host.cookieBannersEnabled || !WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) return
+        val js = autoconsentScript(context) ?: return
+        WebViewCompat.addDocumentStartJavaScript(webView, js, setOf("*")) // all frames: many banners live in iframes
     }
 
     private fun handleBridgeMessage(message: WebMessageCompat, isMainFrame: Boolean, reply: JavaScriptReplyProxy) {
@@ -324,6 +377,17 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
 
     companion object {
         private const val TAG = "CornTab"
+
+        /** Sites whose https version failed this session; loaded over http without retrying. */
+        private val httpOnlyHosts: MutableSet<String> = java.util.Collections.synchronizedSet(mutableSetOf())
+
+        @Volatile private var autoconsent: String? = null
+
+        private fun autoconsentScript(context: Context): String? {
+            autoconsent?.let { return it }
+            val name = context.assets.list("autoconsent")?.firstOrNull { it.startsWith("autoconsent-") && it.endsWith(".js") } ?: return null
+            return context.assets.open("autoconsent/$name").bufferedReader().use { it.readText() }.also { autoconsent = it }
+        }
 
         private fun sameSite(a: Uri, b: Uri): Boolean {
             val ha = a.host ?: return false

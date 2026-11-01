@@ -16,5 +16,6 @@ path = "src/bin/uniffi-bindgen.rs"
 [dependencies]
 corn-block = { path = "../corn-block" }
 corn-vault = { path = "../corn-vault" }
+corn-url = { path = "../corn-url" }
 thiserror.workspace = true
 uniffi = { workspace = true, features = ["cli"] }

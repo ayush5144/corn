@@ -62,6 +62,7 @@ fun BoxScope.Sheets(c: CornController) {
             is Sheet.Save -> SaveSheet(c, shown)
             is Sheet.Group -> GroupSheet(c, shown.groupId)
             Sheet.ConfirmFlush -> ConfirmFlushSheet(c)
+            is Sheet.DeleteItem -> DeleteItemSheet(c, shown)
             null -> {}
         }
     }
@@ -221,6 +222,14 @@ private fun GroupSheet(c: CornController, groupId: Int) {
 private fun ConfirmFlushSheet(c: CornController) {
     SheetTitle("Flush everything?", "All tabs and groups, cookies, cache and history go. Your Vault and Keep List stay.")
     BigButton("Flush", { c.flushNow(animate = true) }, icon = CornIcons.Toilet)
+    Spacer(Modifier.height(10.dp))
+    BigButton("Cancel", { c.sheet = null }, ghost = true)
+}
+
+@Composable
+private fun DeleteItemSheet(c: CornController, s: Sheet.DeleteItem) {
+    SheetTitle("Delete this link?", "“${s.title}” will be removed from your Vault for good.")
+    BigButton("Delete", { c.deleteVaultItem(s.id) })
     Spacer(Modifier.height(10.dp))
     BigButton("Cancel", { c.sheet = null }, ghost = true)
 }

@@ -37,7 +37,10 @@
 | Pop-up windows | `onCreateWindow` (every pop-up, tapped or scripted, reaches it) | Deny and count by default; if the site allows pop-ups, open it as a new tab |
 | Redirect hijacks | `shouldOverrideUrlLoading` + user-gesture check | Stop top-level navigations the user didn't trigger |
 | Hidden ads, anti-adblock walls | `addDocumentStartJavaScript` (androidx.webkit 1.9+) | Inject cosmetic CSS and scriptlets before page scripts run |
-| Tracking parameters | `shouldOverrideUrlLoading` | ⏳ Not built: Rust will strip `utm_*`, `fbclid` etc. and unwrap `out.php?url=` style redirects |
+| Tracking parameters | `shouldOverrideUrlLoading` + `load()` | ✅ Rust `corn-url` strips `utm_*`, `fbclid`, `gclid` and other click IDs (redirect unwrapping not built) |
+| http pages | `shouldOverrideUrlLoading` + `load()`; `onReceivedError` / `onReceivedSslError` | ✅ HTTPS upgrade; falls back to http for the session if the secure version fails; local addresses exempt |
+| Cookie banners | `addDocumentStartJavaScript` (all frames) | ✅ DuckDuckGo autoconsent 17.2.0, unmodified, clicks "Reject"; Settings switch, on by default |
+| Page console messages | `onConsoleMessage` returns true | ✅ Not copied into Android's system log (they can contain URLs) |
 | Page process crash | `onRenderProcessGone` | Drop the dead WebView and show a "This page stopped · Reload" card instead of crashing the app |
 
 ## What Corn builds itself

@@ -89,6 +89,7 @@ fun SettingsScreen(c: CornController, onNeedPin: () -> Unit) {
                     if (on && !s.hasPin) onNeedPin() else s.appLock = on
                 }
                 ToggleRow("Lock the Vault", "Your PIN to see saved links.", s.vaultLock) { s.vaultLock = it }
+                ToggleRow("Close cookie banners", "Corn clicks \"Reject\" for you. Applies to new tabs.", s.cookieBanners) { s.cookieBanners = it }
                 ToggleRow("Black screen in recent apps", "Hides what's on screen in the app switcher.", s.blackRecents) { s.blackRecents = it }
                 SettingRow("Notifications", "Corn never notifies you while it's closed.", leading = { CornIcon(CornIcons.BellOff, tint = C.Muted) })
             }
