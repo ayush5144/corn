@@ -330,22 +330,26 @@ private fun Toolbar(c: CornController, cur: TabEntry) {
             Modifier.width(56.dp).height(48.dp).clip(RoundedCornerShape(14.dp))
                 .combinedClickable(enabled = cur.canGoBack || cur.canGoForward, onClick = { c.tabs.goBack() }, onLongClick = { c.tabs.goForward(); c.showToast("Forward") }),
             contentAlignment = Alignment.Center,
-        ) { CornIcon(CornIcons.Back, tint = if (cur.canGoBack) C.Text else C.Muted.copy(alpha = 0.45f)) }
-        ToolbarButton({ c.openVault() }) { CornIcon(CornIcons.Vault) }
+        ) { CornIcon(CornIcons.Back, TOOLBAR_ICON, tint = if (cur.canGoBack) C.Text else C.Muted.copy(alpha = 0.45f)) }
+        ToolbarButton({ c.openVault() }) { CornIcon(CornIcons.Vault, TOOLBAR_ICON) }
         ToolbarButton({ c.openTabsScreen() }) {
-            Box(Modifier.size(23.dp).border(2.dp, C.Text, RoundedCornerShape(7.dp)), contentAlignment = Alignment.Center) {
-                T(c.tabs.tabs.size.toString(), 12.sp, weight = FontWeight.ExtraBold)
+            // 18 dp: the same visible height as the other toolbar icons.
+            Box(Modifier.size(18.dp).border(1.9.dp, C.Text, RoundedCornerShape(5.dp)), contentAlignment = Alignment.Center) {
+                T(c.tabs.tabs.size.toString(), 11.sp, weight = FontWeight.ExtraBold)
             }
         }
         // Flush (second from the right)
         ToolbarButton({ c.requestFlush() }) {
             Box(Modifier.width(46.dp).height(40.dp).clip(RoundedCornerShape(14.dp)).background(C.Corn), contentAlignment = Alignment.Center) {
-                CornIcon(CornIcons.Toilet, 24.dp, C.CornInk)
+                CornIcon(CornIcons.Toilet, TOOLBAR_ICON, C.CornInk)
             }
         }
-        ToolbarButton({ c.sheet = Sheet.Menu }) { CornIcon(CornIcons.Dots) }
+        ToolbarButton({ c.sheet = Sheet.Menu }) { CornIcon(CornIcons.Dots, TOOLBAR_ICON) }
     }
 }
+
+/** Every toolbar icon is drawn on a 24 dp canvas whose visible shape is 18 dp tall. */
+private val TOOLBAR_ICON = 24.dp
 
 @Composable
 private fun ToolbarButton(onClick: () -> Unit, content: @Composable () -> Unit) {
