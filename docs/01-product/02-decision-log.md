@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:08 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:28 IST
 
 Every product question asked and the founder's answer, in order. Settled answers flow into [01-prd.md](01-prd.md). New rounds are appended at the bottom.
 
@@ -420,6 +420,10 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Answer:** History deletions say they're history only (× → "Removed from history"; site → "… Cookies stay."; clear all → "History cleared. Cookies and site data stay."). The History screen links to Delete browsing data (as Chrome and Brave do). With Keep history off, nothing is stored.
 - **Added:** deleted history leaves no trace in the database files (`secure_delete` + emptying the write-ahead log); without it, a cleared page title was still readable in `corn.db-wal` (unit test).
 - **Open:** a Keep history switch on the History screen too (it's in Settings now).
+
+### Keep List stays; A + B now, C + D later
+- **Answer:** Keep the Keep List (allowing a site's cookies is how you stay signed in; the password store is separate and stays on the checklist). Build **A** (keep Keep List sites' IndexedDB) and **B** ("Stay logged in after Flush" switch in the shield sheet); **C** (local storage via LevelDB) and **D** (prompt after login) later if needed.
+- **Status:** ✅ A and B built and verified on the emulator. Doc: [11-keep-list](../02-technical/11-keep-list.md).
 
 ### "Unsorted" becomes "All"
 - **Answer:** Each link is saved once. Picking a Collection is optional. **All** is a view of every saved link, not a stored Collection, so nothing is ever saved twice. Existing Unsorted links moved to "no Collection" (they show in All); the Unsorted Collection was removed (database upgrade, unit-tested).

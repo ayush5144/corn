@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:01 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:28 IST
 
 The single list of what's done, what's next and who owns it. Product decisions live in the [decision log](../01-product/02-decision-log.md); this file tracks **work**.
 
@@ -81,7 +81,7 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [ ] | Tabs + **Tab Groups**: Tab Group Strip (icons, `^` grid, `+`, `×`), swipe, previews, instant switching | Claude | 20+ tabs across groups without lag on a mid-range phone |
 | [ ] | Background tabs (Settings → Advanced: automatic by memory, recent 0/1/2/3/5, all with warning; unload on low memory; scroll restore; media held paused). **Built, not yet tested on device** | Claude | No crashes with 30 tabs |
 | [ ] | **Flush Button** + Kept Session (default) + Auto-Flush (leave delay, inactivity; video counts as activity) | Claude | Flush tests in [05-flush-model](../02-technical/05-flush-model.md) pass |
-| [ ] | **Keep List**: chosen sites stay logged in across Flush | Claude | Keep List site still logged in after Flush |
+| [ ] | **Keep List**: chosen sites stay logged in across Flush (cookies + IndexedDB kept, verified with a test site; not yet with a real login) | Claude | Keep List site still logged in after Flush |
 | [ ] | **Corn password store** in the Vault, survives Flush (v1 or v1.1, timing open) | Claude | Saved password fills a login after Flush |
 | [ ] | Session saved in app-private SQLite + backups disabled | Claude | Kept Session restores after restart; backup tool finds nothing |
 | [x] | Filter lists refresh automatically (every 4 days, on Wi-Fi), engine rebuilt in the background. Verified: refreshed 8 s after first launch | Claude | Lists newer than 4 days after a week of use |
@@ -90,6 +90,9 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [ ] | **History**: recording, Keep history switch, History screen (search, by day, delete one, delete site, clear all). Verified: visits recorded with titles, one search = one entry, Flush empties it. **Screen not yet checked by the founder** | Claude | Founder uses it on a phone |
 | [ ] | **Delete browsing data** (history, cookies + site data, cache, tabs; no time ranges). **Built, not yet tested on device** | Claude | Each category is empty afterwards; Keep List cookies stay |
 | [x] | Flush deletes completely: cookies by WebView's cookie database (Keep List cookies untouched), all site storage, then restart. Verified on the emulator (cookie kept only for the Keep List site; local storage and IndexedDB gone for both) | Claude | Test site is a new visitor after Flush, except Keep List cookies |
+| [x] | **Keep List A: keep Keep List sites' IndexedDB** on Flush / Delete browsing data (skip their `IndexedDB/<scheme>_<host>_<port>.indexeddb.*` folders; every other site's deleted). Verified: Keep List site kept cookie + IndexedDB (readable after restart), local storage gone; other site kept nothing | Claude | Keep List test site keeps cookie + IndexedDB after Flush; other site keeps nothing |
+| [x] | **Keep List B: "Stay logged in after Flush" switch in the shield sheet** (adds/removes the current site, one tap). Verified: tap added the site to the stored Keep List, second tap removed it | Claude | Switch adds and removes the site; Settings list matches |
+| [x] | Keep List doc: `docs/02-technical/11-keep-list.md` (what's kept, what's deleted, how, limits) | Claude | Doc indexed in docs/README.md |
 | [ ] | Back to home page (↩) from a tab's first page. **Built, not yet seen on device** | Claude | Back returns to the home page; Forward reopens the page |
 | [ ] | **Vault**: save link + title, optional tags, **Collections**, PIN/biometric lock | Claude | Save, find, lock, delete all work |
 | [ ] | Privacy: black recents screen, optional App Lock, no notifications while closed | Claude | Verified on a real phone |
@@ -130,7 +133,8 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | Vault export / import | Needs a format decision first |
 | Laptop app (Electron) | After iPhone |
 | **Time ranges for deleting history** ("last 15 min / hour / 24 h / 7 days") | Exact for history (and possible for cookies via the cookie database), but site storage and the cache can only be deleted all at once (`clearCache` is per-application). To avoid a half-working option, v1 offers "delete everything" only. Founder decision, Round 11 |
-| **Keep List sites keep their local storage too** | Android can't delete one site's local storage (`deleteOrigin` doesn't cover it, measured). DuckDuckGo edits WebView's LevelDB files with a LevelDB library to spare Fireproof sites. Until then, Keep List sites keep cookies only, which is what the Keep List promises |
+| **Keep List C: keep Keep List sites' local storage** | Android can't delete one site's local storage (`deleteOrigin` doesn't cover it, measured). DuckDuckGo edits WebView's LevelDB files with a LevelDB library to spare Fireproof sites. Until then, Keep List sites keep cookies only, which is what the Keep List promises |
+| **Keep List D: offer "Keep this site logged in?" after you log in** | DuckDuckGo watches for a submitted password form and asks on the next page (Ask / Always / Never). Optional, later if needed |
 | Auto-delete history older than 90 days | Idea from Eddy, for people who never Flush. Discuss first |
 
 ## Out ❌

@@ -85,7 +85,7 @@ fun SettingsScreen(c: CornController, onNeedPin: () -> Unit) {
                     })
                 }
             }
-            Caption("These sites stay logged in after a Flush. It's not history or passwords: Corn keeps only their login cookies.")
+            Caption("These sites stay logged in after a Flush: Corn keeps their cookies and saved site databases (IndexedDB). Not history or passwords. Tip: add the site you're on from its shield.")
 
             Label("History and data")
             SettingsGroup {

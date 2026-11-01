@@ -80,3 +80,10 @@
 - Code: `corn-vault` (`secure_delete`, write-ahead log emptied after every history delete; new no-trace test, 9 tests), `ui/HistoryScreen.kt` (Delete browsing data link, × toast), `ui/Sheets.kt` (history-only toasts).
 - Updated `docs/01-product/03-features.md`, `02-decision-log.md` (Round 11), `docs/02-technical/10-storage.md`.
 
+## 2026-11-01 — Keep List keeps IndexedDB; one-tap Keep List switch; Keep List doc
+
+- Code: `browser/DataClearing.kt` (storage files deleted directly, Keep List IndexedDB folders kept; `deleteAllData` only in the fallback), `ui/Sheets.kt` (shield "Stay logged in after Flush"), `ui/SettingsScreen.kt` (Keep List caption).
+- Added `docs/02-technical/11-keep-list.md` (with the code-is-the-source-of-truth section); indexed in `docs/README.md`.
+- Updated `GLOSSARY.md` (Keep List), `docs/01-product/01-prd.md`, `02-decision-log.md`, `03-features.md`, `docs/02-technical/05-flush-model.md`, `10-storage.md`.
+- Updated `docs/03-planning/02-checklist.md` (A, B, doc ticked), `docs/05-review/01-audit` and `02-review`.
+

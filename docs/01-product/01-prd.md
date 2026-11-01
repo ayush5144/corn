@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:01 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:28 IST
 
 - **Status:** Draft v2, being shaped through Q&A rounds ([02-decision-log.md](02-decision-log.md))
 - **Last updated:** 2026-11-01 (after Round 1)
@@ -122,7 +122,7 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | Flush feedback: quick swirl animation, vibration, funny one-liner on the empty page; sound is a setting, off by default | ✅ |
 | **A playing video counts as activity** | ✅ |
 | "Leaving Corn" = switching apps, going home or locking the phone | ✅ |
-| **Keep List**: sites whose login cookies survive a Flush, so they stay logged in. Not history, not passwords. Their site storage (local storage, IndexedDB) is still deleted. | ✅ v1 |
+| **Keep List**: sites that stay logged in after a Flush: their cookies and IndexedDB are kept; their local storage, history and everything else is deleted. Not history, not passwords. Add from the shield ("Stay logged in after Flush") or Settings. See [11-keep-list](../02-technical/11-keep-list.md) | ✅ v1 |
 | **History**: pages visited, on the phone only, cleared by Flush; "Keep history" switch (on by default); History screen with search, grouped by day, delete one entry, delete a site from history, clear all | ✅ |
 | **Delete browsing data** (Settings): history, cookies and site data (Keep List cookies stay), cache, open tabs; everything in each ticked category, **no time ranges** | ✅ |
 | Time ranges for deleting history ("last hour" etc.) | ⏭️ Later (see checklist) |

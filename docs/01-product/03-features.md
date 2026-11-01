@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:08 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:28 IST
 
 Every feature in the Android app today, what it does for the user, and the evidence behind it. Nothing here is planned-only; planned work lives in the [checklist](../03-planning/02-checklist.md).
 
@@ -77,7 +77,7 @@ Every feature in the Android app today, what it does for the user, and the evide
 ## Flush and sessions
 
 - **Flush Button** ✅
-  - *What:* one tap closes every tab and group and deletes history, cookies (except Keep List sites'), all site storage, cache, form data and the saved session, then Corn restarts itself in about 0.3 s so nothing stays in memory. The Vault, settings and Keep List stay. Drain animation, vibration, a one-liner, optional sound, optional "Ask before flushing".
+  - *What:* one tap closes every tab and group and deletes history, cookies and IndexedDB (except Keep List sites'), all other site storage, cache, form data and the saved session, then Corn restarts itself in about 0.3 s so nothing stays in memory. The Vault, settings and Keep List stay. Drain animation, vibration, a one-liner, optional sound, optional "Ask before flushing".
   - *Benefit:* a clean slate instantly, with nothing left behind.
   - *Evidence:* on the emulator, two test sites each set a cookie, local storage and IndexedDB. After Flush: the Keep List site still had its cookie; the other site's cookie was gone; local storage and IndexedDB were gone for both; history went from 13 visits to 0. Log: cookies deleted from WebView's cookie database (no fallback needed), process restarted.
 
@@ -90,8 +90,8 @@ Every feature in the Android app today, what it does for the user, and the evide
   - *Evidence:* built; timers not yet checked on a device.
 
 - **Keep List** ✅
-  - *What:* sites whose login cookies survive a Flush, so you stay logged in. Their cookies are left untouched in WebView's cookie database (DuckDuckGo's method), so expiry and security flags stay as the site set them.
-  - *Evidence:* a Keep List test site still sent its cookie after Flush; a non-Keep List site didn't. Known limit: their local storage and IndexedDB are deleted (Android can't delete one site's local storage), so a site that keeps its login there may log you out.
+  - *What:* sites that stay logged in after a Flush. Their cookies are left untouched in WebView's cookie database (DuckDuckGo's method), so expiry and security flags stay as the site set them, and their IndexedDB (site databases) is kept. Add or remove the site you're on with one tap: shield → **Stay logged in after Flush**; or in Settings → Keep List. Details: [11-keep-list](../02-technical/11-keep-list.md).
+  - *Evidence:* after Flush, a Keep List test site still had its cookie and its IndexedDB (readable after the restart); a non-Keep List site had neither. The shield switch added the site to the stored list and removed it on a second tap. Known limit: their local storage is deleted (Android can't delete one site's local storage), so a site that keeps its login only there may log you out.
 
 - **History** ✅
   - *What:* pages you visit, on this phone only, cleared by every Flush. Menu → History: search, grouped by day, tap to open, × to delete one visit, long-press to delete a whole site from history, trash icon to clear all. "Keep history" switch in Settings (on by default); when off, nothing is written. A "Delete browsing data" link at the top of History covers cookies, cache and tabs. Every history deletion says it's history only ("Cookies stay").

@@ -145,6 +145,19 @@ private fun ShieldSheet(c: CornController) {
         }
     }
     T("Only turn things off if the page breaks. Changes apply to this site only and reload the page.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 10.dp))
+
+    // Keep List, one tap from the page (also editable in Settings → Keep List).
+    val kept = remember(c.data.vaultVersion.intValue, host) { host in c.data.keepList() }
+    Spacer(Modifier.height(14.dp))
+    SettingRow(
+        "Stay logged in after Flush",
+        "Keeps this site's login (cookies and saved site data). Adds it to your Keep List.",
+        onClick = {
+            if (kept) c.data.removeKeep(host) else c.data.addKeep(host)
+            c.showToast(if (kept) "$host removed from your Keep List" else "$host stays logged in after Flush")
+        },
+        trailing = { CornSwitch(kept) },
+    )
 }
 
 @OptIn(ExperimentalLayoutApi::class)

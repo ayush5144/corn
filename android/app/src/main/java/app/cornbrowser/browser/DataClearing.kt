@@ -15,7 +15,7 @@ import app.cornbrowser.data.CornData
 /** What "Delete browsing data" (or Flush) removes. Always everything in each chosen category: no time ranges. */
 data class ClearChoice(
     val history: Boolean,
-    /** Cookies (except Keep List sites'), all site storage, saved site permissions and HTTP logins. */
+    /** Cookies and IndexedDB (except Keep List sites'), all other site storage, site permissions and HTTP logins. */
     val cookiesAndSiteData: Boolean,
     val cache: Boolean,
     val tabs: Boolean,
@@ -28,8 +28,8 @@ data class ClearChoice(
 /**
  * The single, complete procedure behind Flush, Auto-Flush and "Delete browsing data".
  *
- * Keep List sites keep their cookies (they stay logged in); everything else in each chosen
- * category is deleted, including Keep List sites' site storage and history.
+ * Keep List sites keep their cookies and IndexedDB (they stay logged in); everything else in each
+ * chosen category is deleted, including Keep List sites' local storage and history.
  *
  * Cookies are deleted with [CookieJar] (DuckDuckGo's method), which requires restarting the app
  * process afterwards; `done(true)` means the caller must restart. If the cookie file can't be
@@ -59,39 +59,50 @@ object DataClearing {
         GeolocationPermissions.getInstance().clearAll()
 
         val edited = CookieJar.deleteAllExcept(context, keep)
-        deleteSiteStorage {
-            if (edited) {
-                deleteProfileFiles(context) // the process restarts right after, so nothing writes them back
-                done(true)
-            } else {
-                fallbackDeleteCookies(keep) { done(false) }
-            }
+        if (edited) {
+            // A restart follows, so deleting the files directly is complete: nothing in memory
+            // writes them back. Keep List sites keep their IndexedDB folders.
+            deleteProfileFiles(context, keep)
+            done(true)
+        } else {
+            // No restart possible: use the official API, which deletes every site's storage.
+            WebStorage.getInstance().deleteAllData()
+            fallbackDeleteCookies(keep) { done(false) }
         }
     }
 
     /**
-     * `deleteAllData()` works in the background with no "done" signal, and measured on the emulator,
-     * local storage was still on disk after the restart that follows. So before restarting, also
-     * delete WebView's site-storage files directly (DuckDuckGo deletes its WebView folder the same
-     * way, keeping the cookie file). Kept: the cookie file, already cleaned exactly by [CookieJar].
+     * Delete WebView's site storage files (local storage, IndexedDB, Service Worker caches, Web SQL,
+     * session storage, form data…): everything in `app_webview/Default` except
+     * - the cookie file, already cleaned exactly by [CookieJar];
+     * - Keep List sites' IndexedDB folders. WebView keeps one folder per site, named
+     *   `<scheme>_<host>_<port>.indexeddb.leveldb` (and `.indexeddb.blob`); DuckDuckGo spares
+     *   Fireproof sites' folders the same way.
+     *
+     * Why files and not `WebStorage.deleteAllData()`: that call has no per-site option, and it finishes
+     * in the background with no "done" signal (measured: local storage was still on disk after the
+     * restart). DuckDuckGo also deletes its WebView folder directly before restarting.
      */
-    private fun deleteProfileFiles(context: Context) {
+    private fun deleteProfileFiles(context: Context, keep: List<String>) {
         val profile = java.io.File(context.applicationInfo.dataDir, "app_webview/Default")
-        val keep = setOf("Cookies", "Cookies-journal")
         var removed = 0
-        profile.listFiles()?.filter { it.name !in keep }?.forEach { if (it.deleteRecursively()) removed++ }
-        android.util.Log.i("DataClearing", "deleted $removed WebView storage entries") // a count only
+        var keptSites = 0
+        profile.listFiles()?.forEach { entry ->
+            when (entry.name) {
+                "Cookies", "Cookies-journal" -> Unit
+                "IndexedDB" -> entry.listFiles()?.forEach { site ->
+                    if (isKept(site.name.split('_').getOrNull(1), keep)) keptSites++
+                    else if (site.deleteRecursively()) removed++
+                }
+                else -> if (entry.deleteRecursively()) removed++
+            }
+        }
+        android.util.Log.i("DataClearing", "deleted $removed storage entries, kept $keptSites IndexedDB folders") // counts only
     }
 
-    /**
-     * Site storage (local storage, IndexedDB, Cache Storage…): always **every** site, Keep List
-     * included. Android can't delete one site's local storage (`WebStorage.deleteOrigin` covers
-     * only Application Cache and Web SQL; measured: local storage survived it), so a per-site
-     * delete would be incomplete. Keep List sites stay logged in through their cookies.
-     */
-    private fun deleteSiteStorage(then: () -> Unit) {
-        WebStorage.getInstance().deleteAllData()
-        then()
+    private fun isKept(host: String?, keep: List<String>): Boolean {
+        val h = host?.removePrefix("www.") ?: return false
+        return keep.any { k -> h == k || h.endsWith(".$k") }
     }
 
     /**

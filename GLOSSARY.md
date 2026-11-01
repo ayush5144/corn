@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:01 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:28 IST
 
 Corn is a free, private, "use whenever you want" browser for adults. This glossary fixes the words we use for its product concepts so docs, UI copy and code all mean the same thing.
 
@@ -33,7 +33,7 @@ The user switching to another app, going to the home screen or locking the phone
 _Avoid_: Closing, exiting, backgrounding
 
 **Keep List**:
-Sites the user has chosen to stay logged in to across Flushes.
+Sites the user has chosen to stay logged in to across Flushes. Corn keeps their cookies and IndexedDB; everything else about them is still deleted.
 _Avoid_: Fireproof, whitelist, allowlist
 
 ## Tabs

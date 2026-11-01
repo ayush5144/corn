@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:01 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:28 IST
 
 ## The idea
 
@@ -41,7 +41,7 @@ Corn's Flush Button works like DuckDuckGo's Fire Button: one tap wipes the Sessi
 
 | Platform | Tool that makes Flush work | How clean it is |
 |---|---|---|
-| Android | Built: edit WebView's cookie database (DuckDuckGo's method) + `WebStorage.deleteAllData()` + delete WebView's storage files + `clearCache`, then restart the process | Complete. Verified on the emulator. |
+| Android | Built: edit WebView's cookie database (DuckDuckGo's method) + delete WebView's storage files (Keep List IndexedDB kept) + `clearCache`, then restart the process | Complete. Verified on the emulator. |
 | iPhone | `WKWebsiteDataStore.nonPersistent()` | Cleanest. Nothing is written to disk. |
 | Laptop | Electron session without the `persist:` prefix | Cleanest. Memory only. |
 
@@ -49,10 +49,10 @@ Corn's Flush Button works like DuckDuckGo's Fire Button: one tap wipes the Sessi
 1. Close every tab (destroys their WebViews) and delete the Kept Session.
 2. Delete history (corn.db), the cache (`clearCache`, all of it), form data, HTTP logins and location permissions.
 3. Cookies: open WebView's cookie database (`app_webview/Default/Cookies`) and delete every row except Keep List sites (and their subdomains), then `VACUUM`. Keep List cookies stay exactly as they were.
-4. Site storage of every site: `WebStorage.deleteAllData()`, plus WebView's storage files on disk (everything in `app_webview/Default` except the cookie file), because `deleteAllData` finishes in the background and local storage was still on disk after the restart (measured).
+4. Site storage: WebView's storage files are deleted directly (everything in `app_webview/Default` except the cookie file and Keep List sites' IndexedDB folders). Not `WebStorage.deleteAllData()`: it has no per-site option and finishes in the background (measured: local storage was still on disk after the restart). Details: [11-keep-list](11-keep-list.md).
 5. Restart Corn's process (about 0.3 s) so WebView drops everything it held in memory. In the background (Auto-Flush after leaving), Android doesn't allow a relaunch, so the process just ends.
 
-**Fallback:** if the cookie database can't be opened, Corn uses `CookieManager.removeAllCookies` and re-creates Keep List cookies (less exact: their expiry and HttpOnly flags can't be read), with no restart. `ProfileStore` (androidx.webkit) was considered but isn't needed.
+**Fallback:** if the cookie database can't be opened, Corn uses `WebStorage.deleteAllData()` (every site's storage) and `CookieManager.removeAllCookies`, then re-creates Keep List cookies (less exact: their expiry and HttpOnly flags can't be read), with no restart. `ProfileStore` (androidx.webkit) was considered but isn't needed.
 
 ## Who decides, who executes
 
@@ -79,8 +79,8 @@ Fresh session ready
 | Data | Flush | Notes |
 |---|---|---|
 | Open tabs | ✅ Cleared | |
-| Cookies | ✅ Cleared | Except Keep List sites' cookies |
-| Site storage (local storage, IndexedDB…), cache | ✅ Cleared | All sites, Keep List included |
+| Cookies, IndexedDB | ✅ Cleared | Except Keep List sites' |
+| Other site storage (local storage…), cache | ✅ Cleared | All sites, Keep List included |
 | History | ✅ Cleared | Corn's own History (corn.db) |
 | Tab previews | ✅ Cleared | Never written outside the session |
 | Downloads list | ✅ Cleared | Files saved to the Vault stay |
