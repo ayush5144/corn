@@ -101,7 +101,8 @@ Does every platform need the same behaviour?
 | Rust tests | `cd core && cargo test` |
 | Engine benchmark | `cd core && cargo run --release -p corn-block --example bench -- easylist.txt easyprivacy.txt` |
 | Android debug app | `cd android && ./gradlew assembleDebug` (also builds the Rust core) |
-| Android release app (6.0 MB, unsigned) | `cd android && ./gradlew assembleRelease` |
+| Android release app (8.6 MB, unsigned) | `cd android && ./gradlew assembleRelease` |
+| Test APK for a phone (release build signed with the debug key) | see [../03-planning/04-testing-on-a-phone.md](../03-planning/04-testing-on-a-phone.md) |
 | Install on phone/emulator | `cd android && ./gradlew installDebug` |
 | Open in Android Studio | Open the `android/` folder |
 

@@ -40,3 +40,10 @@
 
 - Updated `docs/03-planning/02-checklist.md` (Phase 3: release APK 8.6 MB, was 6.0 before the starter lists and cookie-banner script).
 
+## 2026-11-01 — Audit, review and features brought up to date; phone-testing guide
+
+- Updated `docs/05-review/01-audit-2026-11-01.md` (release 8.6 MB, refresh traffic, console messages kept out of logs, open items closed).
+- Updated `docs/05-review/02-review-2026-11-01.md` (new verified rows, Collection and icon bugs, privacy items status, 22 Rust tests).
+- Updated `docs/02-technical/08-repo-structure.md` (release size, test APK link) and `docs/03-planning/03-spike-results.md` (cookie banners note).
+- Added `docs/03-planning/04-testing-on-a-phone.md`; indexed in `docs/README.md`.
+

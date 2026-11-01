@@ -7,7 +7,7 @@ Every feature in the Android app today, what it does for the user, and the evide
 - 🧪 **Tested**: covered by automated tests, not yet seen on a device.
 - 🔨 **Built**: in the app, not yet verified. Treat as unproven until checked.
 
-Last updated: 2026-11-01.
+Last updated: 2026-11-01 (commit `f6dc779`).
 
 ---
 

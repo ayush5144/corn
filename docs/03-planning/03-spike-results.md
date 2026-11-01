@@ -25,7 +25,7 @@
 | Blocked on load: Amazon | 29 requests | ✅ |
 | 10 heavy sites in 10 tabs (BBC, CNN, Reddit, YouTube, Wikipedia, NYT, IMDb, ESPN, Amazon, The Verge) | 4,360 requests blocked in ~2 min; no crashes | ✅ |
 | **Memory, 10 live tabs** | App 174 MB PSS + WebView renderer 878 MB ≈ **1.05 GB** | ⚠️ **Tab freezing is required.** Keep 3–5 tabs live and freeze the rest, as planned. |
-| Cookie banners | Still shown (e.g. The Verge) | ⏳ Expected: autoconsent not built yet |
+| Cookie banners | Still shown (e.g. The Verge) | ⏳ Expected at spike time: autoconsent was built later (see the features doc) |
 
 Seen in the blocked list: Google AdSense, Google Tag Manager / Analytics, DoubleClick, Facebook pixel, Hotjar, Yandex Metrica, Sentry, Bugsnag, Cloudflare Insights.
 
