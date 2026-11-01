@@ -798,9 +798,9 @@ const LOGO = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ct
     const e = ENGINES[S.engineNow];
     return `<div class="addr">
       <form class="urlbox" data-form="url">
-        <button type="button" class="shield ${off ? "off" : ""}" data-act="shield" aria-label="Blocking on this site">${ic(off ? "shieldOff" : "shield", 18)}${count}</button>
-        <input id="urlin" value="${esc(displayUrl(url))}" placeholder="Search or type a site" autocomplete="off" aria-label="Address and search bar" enterkeyhint="go">
         <button type="button" class="engine" data-act="engine" aria-label="Search engine: ${e.name}"><span class="ebadge" style="--c:${e.c}">${e.l}</span>${ic("chevDown", 14)}</button>
+        <input id="urlin" value="${esc(displayUrl(url))}" placeholder="Search or type a site" autocomplete="off" aria-label="Address and search bar" enterkeyhint="go">
+        <button type="button" class="shield ${off ? "off" : ""}" data-act="shield" aria-label="Blocking on this site">${ic(off ? "shieldOff" : "shield", 18)}${count}</button>
       </form>
       <button class="iconbtn ${saved ? "saved" : ""}" data-act="save" aria-label="Save page to Vault">${ic(saved ? "vaultOn" : "vaultAdd")}</button>
     </div>`;

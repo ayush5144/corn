@@ -78,7 +78,7 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 |---|---|
 | Address bar **at the top** by default | ✅ |
 | Setting: move the address bar to the bottom | ✅ v1 |
-| Address bar holds the Search Switcher and a **Vault save icon** (no star) | ✅ |
+| Address bar, left to right: **Search Switcher** · address · **blocking shield** · then the **Vault save icon** (no star) | ✅ |
 | Bottom toolbar: **Back** (hold for Forward) · **Vault** · **Tabs** · **Flush** · **Menu** | ✅ |
 | Forward, New tab, Settings live in the Menu | ✅ |
 | Look and feel (colours, type, icon style) | 🟡 decide from prototype |

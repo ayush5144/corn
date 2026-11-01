@@ -245,3 +245,8 @@ Every product question asked and the founder's answer, in order. Settled answers
 ---
 
 ## Round 4 — after the prototype
+
+### Address bar order
+- **Founder asked:** Search engine on the left and shield on the right, or keep the shield left because right is easier for right-handers?
+- **Recommended:** Swap them. The address bar sits at the top, which is hard to reach with either side of the thumb, so handedness barely matters there. What matters is that the most-used control sits at the far right: the Vault save icon. The shield is rarely touched, so it can sit next to it.
+- **Status:** ✅ Search Switcher left, shield right, Vault icon far right. Applied to the prototype.
