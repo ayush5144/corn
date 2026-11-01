@@ -87,7 +87,7 @@ impl CornBlocker {
     }
 }
 
-// ---------------- Local store (Vault, Keep List, session) ----------------
+// ---------------- Local store (Vault, history, Keep List, session) ----------------
 
 #[derive(Debug, Clone, uniffi::Record)]
 pub struct Collection {
@@ -99,11 +99,21 @@ pub struct Collection {
 #[derive(Debug, Clone, uniffi::Record)]
 pub struct VaultItem {
     pub id: i64,
-    pub collection_id: i64,
+    /// None = in no Collection (shown only in All).
+    pub collection_id: Option<i64>,
     pub title: String,
     pub url: String,
     pub tags: Vec<String>,
     pub created_at: i64,
+}
+
+#[derive(Debug, Clone, uniffi::Record)]
+pub struct HistoryVisit {
+    pub visit_id: i64,
+    pub url: String,
+    pub title: String,
+    pub host: String,
+    pub visited_at: i64,
 }
 
 impl From<corn_vault::Collection> for Collection {
@@ -118,6 +128,12 @@ impl From<corn_vault::VaultItem> for VaultItem {
     }
 }
 
+impl From<corn_vault::HistoryVisit> for HistoryVisit {
+    fn from(v: corn_vault::HistoryVisit) -> Self {
+        Self { visit_id: v.visit_id, url: v.url, title: v.title, host: v.host, visited_at: v.visited_at }
+    }
+}
+
 #[derive(uniffi::Object)]
 pub struct CornStore {
     inner: corn_vault::Store,
@@ -125,60 +141,72 @@ pub struct CornStore {
 
 #[uniffi::export]
 impl CornStore {
-    /// Open (or create) the database file in the app's private storage.
+    /// Open (create or upgrade) the database file in the app's private storage.
     #[uniffi::constructor]
     pub fn open(path: String) -> Result<Arc<Self>, CornError> {
         Ok(Arc::new(Self { inner: corn_vault::Store::open(&path)? }))
     }
 
-    pub fn unsorted_id(&self) -> Result<i64, CornError> {
-        Ok(self.inner.unsorted_id()?)
-    }
-
+    // Vault
     pub fn collections(&self) -> Result<Vec<Collection>, CornError> {
         Ok(self.inner.collections()?.into_iter().map(Into::into).collect())
     }
-
     pub fn create_collection(&self, name: String) -> Result<Collection, CornError> {
         Ok(self.inner.create_collection(&name)?.into())
     }
-
     pub fn collection_named(&self, name: String) -> Result<Collection, CornError> {
         Ok(self.inner.collection_named(&name)?.into())
     }
-
-    pub fn add_item(&self, collection_id: i64, title: String, url: String, tags: Vec<String>) -> Result<VaultItem, CornError> {
+    pub fn item_count(&self) -> Result<i64, CornError> {
+        Ok(self.inner.item_count()?)
+    }
+    pub fn add_item(&self, collection_id: Option<i64>, title: String, url: String, tags: Vec<String>) -> Result<VaultItem, CornError> {
         Ok(self.inner.add_item(collection_id, &title, &url, &tags)?.into())
     }
-
     pub fn contains_url(&self, url: String) -> Result<bool, CornError> {
         Ok(self.inner.contains_url(&url)?)
     }
-
-    pub fn items(&self, collection_id: i64) -> Result<Vec<VaultItem>, CornError> {
+    /// Items in one Collection, or every saved link (All) when `collection_id` is None.
+    pub fn items(&self, collection_id: Option<i64>) -> Result<Vec<VaultItem>, CornError> {
         Ok(self.inner.items(collection_id)?.into_iter().map(Into::into).collect())
     }
-
     pub fn recent_items(&self, limit: i64) -> Result<Vec<VaultItem>, CornError> {
         Ok(self.inner.recent_items(limit)?.into_iter().map(Into::into).collect())
     }
-
     pub fn search(&self, query: String) -> Result<Vec<VaultItem>, CornError> {
         Ok(self.inner.search(&query)?.into_iter().map(Into::into).collect())
     }
-
     pub fn delete_item(&self, id: i64) -> Result<(), CornError> {
         Ok(self.inner.delete_item(id)?)
     }
 
+    // History
+    pub fn record_visit(&self, url: String, title: String, host: String, at: i64) -> Result<(), CornError> {
+        Ok(self.inner.record_visit(&url, &title, &host, at)?)
+    }
+    pub fn update_title(&self, url: String, title: String) -> Result<(), CornError> {
+        Ok(self.inner.update_title(&url, &title)?)
+    }
+    pub fn history(&self, query: Option<String>, limit: i64) -> Result<Vec<HistoryVisit>, CornError> {
+        Ok(self.inner.history(query.as_deref(), limit)?.into_iter().map(Into::into).collect())
+    }
+    pub fn delete_visit(&self, visit_id: i64) -> Result<(), CornError> {
+        Ok(self.inner.delete_visit(visit_id)?)
+    }
+    pub fn delete_history_for_host(&self, host: String) -> Result<(), CornError> {
+        Ok(self.inner.delete_history_for_host(&host)?)
+    }
+    pub fn clear_history(&self) -> Result<(), CornError> {
+        Ok(self.inner.clear_history()?)
+    }
+
+    // Key-value
     pub fn kv_get(&self, key: String) -> Result<Option<String>, CornError> {
         Ok(self.inner.kv_get(&key)?)
     }
-
     pub fn kv_set(&self, key: String, value: String) -> Result<(), CornError> {
         Ok(self.inner.kv_set(&key, &value)?)
     }
-
     pub fn kv_delete(&self, key: String) -> Result<(), CornError> {
         Ok(self.inner.kv_delete(&key)?)
     }

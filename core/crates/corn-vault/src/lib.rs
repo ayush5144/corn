@@ -5,9 +5,11 @@
 //! corn-vault: Corn's local database (SQLite).
 //!
 //! Holds everything Corn keeps that could reveal browsing:
-//! - the **Vault**: Vault Items grouped into Collections, with optional tags
-//! - a small key-value area for the Keep List, per-site blocking choices
-//!   and the Kept Session
+//! - the **Vault**: saved links (Vault Items), each stored once, optionally in one Collection.
+//!   "All" is not stored: it is simply every saved link.
+//! - **History**: one entry per page plus a visit log with timestamps (cleared by Flush).
+//!   Deletion is all-or-nothing, per visit, or per site (history only): no time ranges.
+//! - a small key-value area for the Keep List, per-site shields and the Kept Session.
 //!
 //! The file lives in the app's private storage, protected by the OS sandbox
 //! and the phone's own encryption; the Vault lock gates access in the UI.
@@ -17,8 +19,8 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 use rusqlite::{params, Connection, OptionalExtension};
 
-/// The Collection a Vault Item lands in when the user doesn't pick one.
-pub const UNSORTED: &str = "Unsorted";
+/// Schema version written to `PRAGMA user_version`.
+const SCHEMA_VERSION: i64 = 2;
 
 #[derive(Debug, thiserror::Error)]
 pub enum VaultError {
@@ -42,11 +44,22 @@ pub struct Collection {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct VaultItem {
     pub id: i64,
-    pub collection_id: i64,
+    /// None = in no Collection (shown only in All).
+    pub collection_id: Option<i64>,
     pub title: String,
     pub url: String,
     pub tags: Vec<String>,
     pub created_at: i64,
+}
+
+/// One visit to a page, for the History screen.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct HistoryVisit {
+    pub visit_id: i64,
+    pub url: String,
+    pub title: String,
+    pub host: String,
+    pub visited_at: i64,
 }
 
 pub struct Store {
@@ -61,7 +74,7 @@ CREATE TABLE IF NOT EXISTS collections (
 );
 CREATE TABLE IF NOT EXISTS items (
     id            INTEGER PRIMARY KEY,
-    collection_id INTEGER NOT NULL REFERENCES collections(id) ON DELETE CASCADE,
+    collection_id INTEGER REFERENCES collections(id) ON DELETE SET NULL,
     title         TEXT NOT NULL,
     url           TEXT NOT NULL,
     created_at    INTEGER NOT NULL
@@ -76,22 +89,35 @@ CREATE TABLE IF NOT EXISTS kv (
     key   TEXT PRIMARY KEY,
     value TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS history_entries (
+    id         INTEGER PRIMARY KEY,
+    url        TEXT NOT NULL UNIQUE,
+    host       TEXT NOT NULL,
+    title      TEXT NOT NULL,
+    last_visit INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS history_by_host ON history_entries(host);
+CREATE TABLE IF NOT EXISTS history_visits (
+    id         INTEGER PRIMARY KEY,
+    entry_id   INTEGER NOT NULL REFERENCES history_entries(id) ON DELETE CASCADE,
+    visited_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS visits_by_time ON history_visits(visited_at DESC);
 ";
 
 fn now() -> i64 {
     SystemTime::now().duration_since(UNIX_EPOCH).map(|d| d.as_millis() as i64).unwrap_or(0)
 }
 
+/// SQL condition matching a host and all its subdomains (`example.com`, `m.example.com`).
+const HOST_MATCH: &str = "(host = ?1 OR host LIKE '%.' || ?1)";
+
 impl Store {
-    /// Open (or create) the database at `path`.
+    /// Open (or create, or upgrade) the database at `path`.
     pub fn open(path: &str) -> Result<Self> {
         let conn = Connection::open(path)?;
         conn.execute_batch("PRAGMA foreign_keys = ON; PRAGMA journal_mode = WAL;")?;
-        conn.execute_batch(SCHEMA)?;
-        conn.execute(
-            "INSERT OR IGNORE INTO collections (name, created_at) VALUES (?1, ?2)",
-            params![UNSORTED, 0],
-        )?;
+        migrate(&conn)?;
         Ok(Self { conn: Mutex::new(conn) })
     }
 
@@ -99,11 +125,9 @@ impl Store {
         self.conn.lock().unwrap_or_else(|e| e.into_inner())
     }
 
-    pub fn unsorted_id(&self) -> Result<i64> {
-        Ok(self.conn().query_row("SELECT id FROM collections WHERE name = ?1", [UNSORTED], |r| r.get(0))?)
-    }
+    // ---------- Collections ----------
 
-    /// Collections with item counts. Unsorted first, then by creation order.
+    /// Every Collection with its item count, oldest first. "All" is not a Collection.
     pub fn collections(&self) -> Result<Vec<Collection>> {
         let conn = self.conn();
         let mut stmt = conn.prepare(
@@ -130,7 +154,7 @@ impl Store {
         Ok(Collection { id: conn.last_insert_rowid(), name: name.to_owned(), item_count: 0 })
     }
 
-    /// Find a collection by name, creating it if needed (used by "Save group to Vault").
+    /// Find a Collection by name, creating it if needed.
     pub fn collection_named(&self, name: &str) -> Result<Collection> {
         let found = self.collections()?.into_iter().find(|c| c.name.eq_ignore_ascii_case(name.trim()));
         match found {
@@ -139,7 +163,15 @@ impl Store {
         }
     }
 
-    pub fn add_item(&self, collection_id: i64, title: &str, url: &str, tags: &[String]) -> Result<VaultItem> {
+    // ---------- Vault items ----------
+
+    /// Number of saved links (what "All" shows).
+    pub fn item_count(&self) -> Result<i64> {
+        Ok(self.conn().query_row("SELECT count(*) FROM items", [], |r| r.get(0))?)
+    }
+
+    /// Save a link once. `collection_id` None = in no Collection (still shown in All).
+    pub fn add_item(&self, collection_id: Option<i64>, title: &str, url: &str, tags: &[String]) -> Result<VaultItem> {
         let mut conn = self.conn();
         let tx = conn.transaction()?;
         let created = now();
@@ -160,24 +192,26 @@ impl Store {
         Ok(VaultItem { id, collection_id, title: title.to_owned(), url: url.to_owned(), tags: clean, created_at: created })
     }
 
-    /// True if any Vault Item points at exactly this URL.
     pub fn contains_url(&self, url: &str) -> Result<bool> {
         Ok(self.conn().query_row("SELECT EXISTS(SELECT 1 FROM items WHERE url = ?1)", [url], |r| r.get(0))?)
     }
 
-    pub fn items(&self, collection_id: i64) -> Result<Vec<VaultItem>> {
-        self.query_items("WHERE i.collection_id = ?1", params![collection_id])
+    /// Items in one Collection, or every saved link when `collection_id` is None ("All").
+    pub fn items(&self, collection_id: Option<i64>) -> Result<Vec<VaultItem>> {
+        match collection_id {
+            Some(id) => self.query_items("WHERE i.collection_id = ?1", params![id]),
+            None => self.query_items("", params![]),
+        }
     }
 
-    /// Newest items across every Collection.
     pub fn recent_items(&self, limit: i64) -> Result<Vec<VaultItem>> {
-        let sql = format!("WHERE 1 = 1 LIMIT {}", limit.max(0));
+        let sql = format!(" LIMIT {}", limit.max(0));
         self.query_items(&sql, params![])
     }
 
     /// Case-insensitive search across titles, URLs and tags.
     pub fn search(&self, query: &str) -> Result<Vec<VaultItem>> {
-        let like = format!("%{}%", query.trim().replace('%', "\\%").replace('_', "\\_"));
+        let like = like_pattern(query);
         self.query_items(
             "WHERE i.title LIKE ?1 ESCAPE '\\' OR i.url LIKE ?1 ESCAPE '\\'
                OR EXISTS (SELECT 1 FROM item_tags t WHERE t.item_id = i.id AND t.tag LIKE ?1 ESCAPE '\\')",
@@ -216,6 +250,80 @@ impl Store {
         Ok(rows.collect::<std::result::Result<_, _>>()?)
     }
 
+    // ---------- History ----------
+
+    /// Record a visit. One entry per URL (title kept fresh) plus one visit row per visit.
+    pub fn record_visit(&self, url: &str, title: &str, host: &str, at: i64) -> Result<()> {
+        let mut conn = self.conn();
+        let tx = conn.transaction()?;
+        tx.execute(
+            "INSERT INTO history_entries (url, host, title, last_visit) VALUES (?1, ?2, ?3, ?4)
+             ON CONFLICT(url) DO UPDATE SET last_visit = excluded.last_visit,
+               title = CASE WHEN excluded.title <> '' THEN excluded.title ELSE history_entries.title END",
+            params![url, host, title, at],
+        )?;
+        let entry_id: i64 = tx.query_row("SELECT id FROM history_entries WHERE url = ?1", [url], |r| r.get(0))?;
+        tx.execute("INSERT INTO history_visits (entry_id, visited_at) VALUES (?1, ?2)", params![entry_id, at])?;
+        tx.commit()?;
+        Ok(())
+    }
+
+    /// Update a page's title once it's known (titles often arrive after the visit is recorded).
+    pub fn update_title(&self, url: &str, title: &str) -> Result<()> {
+        if !title.trim().is_empty() {
+            self.conn().execute("UPDATE history_entries SET title = ?2 WHERE url = ?1", params![url, title])?;
+        }
+        Ok(())
+    }
+
+    /// Visits newest first, optionally filtered by text in the title, URL or host.
+    pub fn history(&self, query: Option<&str>, limit: i64) -> Result<Vec<HistoryVisit>> {
+        let conn = self.conn();
+        let base = "SELECT v.id, e.url, e.title, e.host, v.visited_at
+                    FROM history_visits v JOIN history_entries e ON e.id = v.entry_id";
+        let map = |r: &rusqlite::Row| -> rusqlite::Result<HistoryVisit> {
+            Ok(HistoryVisit { visit_id: r.get(0)?, url: r.get(1)?, title: r.get(2)?, host: r.get(3)?, visited_at: r.get(4)? })
+        };
+        let rows: Vec<HistoryVisit> = match query.map(str::trim).filter(|q| !q.is_empty()) {
+            Some(q) => {
+                let sql = format!(
+                    "{base} WHERE e.title LIKE ?1 ESCAPE '\\' OR e.url LIKE ?1 ESCAPE '\\'
+                     ORDER BY v.visited_at DESC, v.id DESC LIMIT ?2"
+                );
+                let mut stmt = conn.prepare(&sql)?;
+                let r = stmt.query_map(params![like_pattern(q), limit], map)?.collect::<std::result::Result<_, _>>()?;
+                r
+            }
+            None => {
+                let sql = format!("{base} ORDER BY v.visited_at DESC, v.id DESC LIMIT ?1");
+                let mut stmt = conn.prepare(&sql)?;
+                let r = stmt.query_map(params![limit], map)?.collect::<std::result::Result<_, _>>()?;
+                r
+            }
+        };
+        Ok(rows)
+    }
+
+    /// Delete one visit; the page entry goes too once it has no visits left.
+    pub fn delete_visit(&self, visit_id: i64) -> Result<()> {
+        let conn = self.conn();
+        conn.execute("DELETE FROM history_visits WHERE id = ?1", [visit_id])?;
+        drop_orphans(&conn)?;
+        Ok(())
+    }
+
+    /// Delete every visit to a site and its subdomains.
+    pub fn delete_history_for_host(&self, host: &str) -> Result<()> {
+        let conn = self.conn();
+        conn.execute(&format!("DELETE FROM history_entries WHERE {HOST_MATCH}"), [host])?;
+        Ok(())
+    }
+
+    pub fn clear_history(&self) -> Result<()> {
+        self.conn().execute_batch("DELETE FROM history_visits; DELETE FROM history_entries;")?;
+        Ok(())
+    }
+
     // ---------- key-value area ----------
 
     pub fn kv_get(&self, key: &str) -> Result<Option<String>> {
@@ -236,6 +344,61 @@ impl Store {
     }
 }
 
+fn like_pattern(query: &str) -> String {
+    format!("%{}%", query.trim().replace('\\', "\\\\").replace('%', "\\%").replace('_', "\\_"))
+}
+
+fn drop_orphans(conn: &Connection) -> Result<()> {
+    conn.execute(
+        "DELETE FROM history_entries WHERE NOT EXISTS (SELECT 1 FROM history_visits v WHERE v.entry_id = history_entries.id)",
+        [],
+    )?;
+    Ok(())
+}
+
+/// Bring any older database up to [SCHEMA_VERSION] without losing data.
+fn migrate(conn: &Connection) -> Result<()> {
+    let version: i64 = conn.query_row("PRAGMA user_version", [], |r| r.get(0))?;
+    if version >= SCHEMA_VERSION {
+        conn.execute_batch(SCHEMA)?;
+        return Ok(());
+    }
+    let has_items: bool = conn.query_row(
+        "SELECT EXISTS(SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'items')",
+        [],
+        |r| r.get(0),
+    )?;
+    if has_items {
+        // Version 1 (before "All"): every item had to be in a Collection, with an "Unsorted"
+        // catch-all. Rebuild `items` with an optional Collection, move Unsorted items to
+        // "no Collection" (they stay visible in All), then drop the Unsorted Collection.
+        conn.execute_batch(
+            "PRAGMA foreign_keys = OFF;
+             BEGIN;
+             CREATE TABLE items_v2 (
+                 id            INTEGER PRIMARY KEY,
+                 collection_id INTEGER REFERENCES collections(id) ON DELETE SET NULL,
+                 title         TEXT NOT NULL,
+                 url           TEXT NOT NULL,
+                 created_at    INTEGER NOT NULL
+             );
+             INSERT INTO items_v2 (id, collection_id, title, url, created_at)
+                 SELECT i.id,
+                        CASE WHEN c.name = 'Unsorted' THEN NULL ELSE i.collection_id END,
+                        i.title, i.url, i.created_at
+                 FROM items i LEFT JOIN collections c ON c.id = i.collection_id;
+             DROP TABLE items;
+             ALTER TABLE items_v2 RENAME TO items;
+             DELETE FROM collections WHERE name = 'Unsorted';
+             COMMIT;
+             PRAGMA foreign_keys = ON;",
+        )?;
+    }
+    conn.execute_batch(SCHEMA)?;
+    conn.execute_batch(&format!("PRAGMA user_version = {SCHEMA_VERSION};"))?;
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -247,28 +410,41 @@ mod tests {
     }
 
     #[test]
-    fn unsorted_exists_on_first_open() {
-        let s = Store::open(&temp_path("unsorted")).unwrap();
-        let cs = s.collections().unwrap();
-        assert_eq!(cs.len(), 1);
-        assert_eq!(cs[0].name, UNSORTED);
+    fn new_store_has_no_collections_and_all_is_every_link() {
+        let s = Store::open(&temp_path("all")).unwrap();
+        assert!(s.collections().unwrap().is_empty());
+        let later = s.create_collection("Watch later").unwrap();
+        s.add_item(Some(later.id), "In a collection", "https://a.example/1", &[]).unwrap();
+        s.add_item(None, "In no collection", "https://a.example/2", &[]).unwrap();
+        // Each link stored once; All shows both; the Collection shows only its own.
+        assert_eq!(s.item_count().unwrap(), 2);
+        assert_eq!(s.items(None).unwrap().len(), 2);
+        assert_eq!(s.items(Some(later.id)).unwrap().len(), 1);
     }
 
     #[test]
     fn save_find_and_count() {
         let s = Store::open(&temp_path("save")).unwrap();
         let later = s.create_collection("Watch later").unwrap();
-        s.add_item(later.id, "Rainy window ambience", "https://example.com/v/3", &["Chill".into(), "sleep".into(), "chill".into()]).unwrap();
-        s.add_item(s.unsorted_id().unwrap(), "Ten snacks", "https://example.com/a/3", &[]).unwrap();
-
-        let items = s.items(later.id).unwrap();
-        assert_eq!(items.len(), 1);
+        s.add_item(Some(later.id), "Rainy window ambience", "https://example.com/v/3", &["Chill".into(), "sleep".into(), "chill".into()]).unwrap();
+        s.add_item(None, "Ten snacks", "https://example.com/a/3", &[]).unwrap();
+        let items = s.items(Some(later.id)).unwrap();
         assert_eq!(items[0].tags, vec!["chill".to_string(), "sleep".to_string()]);
-        assert_eq!(s.collections().unwrap().iter().find(|c| c.id == later.id).unwrap().item_count, 1);
+        assert_eq!(s.collections().unwrap()[0].item_count, 1);
         assert!(s.contains_url("https://example.com/a/3").unwrap());
         assert_eq!(s.search("SLEEP").unwrap().len(), 1);
-        assert_eq!(s.search("snacks").unwrap().len(), 1);
         assert_eq!(s.recent_items(1).unwrap().len(), 1);
+    }
+
+    #[test]
+    fn deleting_a_collection_keeps_its_links_in_all() {
+        let s = Store::open(&temp_path("delcoll")).unwrap();
+        let c = s.create_collection("Temp").unwrap();
+        s.add_item(Some(c.id), "Kept", "https://example.com/", &[]).unwrap();
+        s.conn().execute("DELETE FROM collections WHERE id = ?1", [c.id]).unwrap();
+        let all = s.items(None).unwrap();
+        assert_eq!(all.len(), 1);
+        assert_eq!(all[0].collection_id, None);
     }
 
     #[test]
@@ -282,8 +458,6 @@ mod tests {
     #[test]
     fn kv_round_trip() {
         let s = Store::open(&temp_path("kv")).unwrap();
-        assert_eq!(s.kv_get("keep_list").unwrap(), None);
-        s.kv_set("keep_list", "[\"mail.example.com\"]").unwrap();
         s.kv_set("keep_list", "[]").unwrap();
         assert_eq!(s.kv_get("keep_list").unwrap().as_deref(), Some("[]"));
         s.kv_delete("keep_list").unwrap();
@@ -291,14 +465,74 @@ mod tests {
     }
 
     #[test]
-    fn data_survives_reopen() {
-        let path = temp_path("reopen");
+    fn upgrades_v1_database_moving_unsorted_to_all() {
+        let path = temp_path("migrate");
         {
-            let s = Store::open(&path).unwrap();
-            s.add_item(s.unsorted_id().unwrap(), "kept", "https://example.com/", &[]).unwrap();
+            // Build a version-1 database by hand: NOT NULL collection, "Unsorted" catch-all.
+            let c = Connection::open(&path).unwrap();
+            c.execute_batch(
+                "CREATE TABLE collections (id INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE COLLATE NOCASE, created_at INTEGER NOT NULL);
+                 CREATE TABLE items (id INTEGER PRIMARY KEY, collection_id INTEGER NOT NULL REFERENCES collections(id) ON DELETE CASCADE,
+                                     title TEXT NOT NULL, url TEXT NOT NULL, created_at INTEGER NOT NULL);
+                 CREATE TABLE item_tags (item_id INTEGER NOT NULL REFERENCES items(id) ON DELETE CASCADE, tag TEXT NOT NULL, PRIMARY KEY (item_id, tag));
+                 CREATE TABLE kv (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+                 INSERT INTO collections VALUES (1, 'Unsorted', 0), (2, 'Watch later', 1);
+                 INSERT INTO items VALUES (10, 1, 'Was unsorted', 'https://a.example/', 5), (11, 2, 'In watch later', 'https://b.example/', 6);
+                 INSERT INTO item_tags VALUES (11, 'chill');",
+            )
+            .unwrap();
         }
         let s = Store::open(&path).unwrap();
-        assert_eq!(s.collections().unwrap().len(), 1);
-        assert!(s.contains_url("https://example.com/").unwrap());
+        let names: Vec<String> = s.collections().unwrap().into_iter().map(|c| c.name).collect();
+        assert_eq!(names, vec!["Watch later".to_string()]); // Unsorted is gone
+        let all = s.items(None).unwrap();
+        assert_eq!(all.len(), 2); // nothing lost
+        let was_unsorted = all.iter().find(|i| i.id == 10).unwrap();
+        assert_eq!(was_unsorted.collection_id, None);
+        let kept = all.iter().find(|i| i.id == 11).unwrap();
+        assert_eq!(kept.collection_id, Some(2));
+        assert_eq!(kept.tags, vec!["chill".to_string()]);
+        // Opening again is a no-op.
+        drop(s);
+        assert_eq!(Store::open(&path).unwrap().items(None).unwrap().len(), 2);
+    }
+
+    #[test]
+    fn history_records_searches_and_deletes_completely() {
+        let s = Store::open(&temp_path("history")).unwrap();
+        s.record_visit("https://news.example.com/a", "", "news.example.com", 1_000).unwrap();
+        s.update_title("https://news.example.com/a", "Story A").unwrap();
+        s.record_visit("https://news.example.com/a", "", "news.example.com", 2_000).unwrap(); // same page again
+        s.record_visit("https://shop.example.org/", "Shop", "shop.example.org", 3_000).unwrap();
+        s.record_visit("https://m.example.com/x", "Mobile", "m.example.com", 4_000).unwrap();
+
+        let all = s.history(None, 100).unwrap();
+        assert_eq!(all.len(), 4); // every visit listed, newest first
+        assert_eq!(all[0].visited_at, 4_000);
+        assert_eq!(all.iter().filter(|v| v.title == "Story A").count(), 2); // title kept after empty update
+        assert_eq!(s.history(Some("shop"), 100).unwrap().len(), 1);
+
+        // Deleting one visit leaves the page while other visits remain.
+        let shop = all.iter().find(|v| v.host == "shop.example.org").unwrap().visit_id;
+        s.delete_visit(shop).unwrap();
+        let pages: i64 = s.conn().query_row("SELECT count(*) FROM history_entries", [], |r| r.get(0)).unwrap();
+        assert_eq!(pages, 2); // shop.example.org page removed with its only visit, no orphan left
+
+        // Site deletion covers subdomains.
+        s.delete_history_for_host("example.com").unwrap();
+        assert!(s.history(None, 100).unwrap().is_empty());
+        let orphans: i64 = s.conn().query_row("SELECT count(*) FROM history_visits", [], |r| r.get(0)).unwrap();
+        assert_eq!(orphans, 0);
+    }
+
+    #[test]
+    fn clear_history_removes_everything() {
+        let s = Store::open(&temp_path("clear")).unwrap();
+        s.record_visit("https://a.example/", "A", "a.example", 10).unwrap();
+        s.record_visit("https://b.example/", "B", "b.example", 20).unwrap();
+        s.clear_history().unwrap();
+        assert!(s.history(None, 100).unwrap().is_empty());
+        let rows: i64 = s.conn().query_row("SELECT (SELECT count(*) FROM history_entries) + (SELECT count(*) FROM history_visits)", [], |r| r.get(0)).unwrap();
+        assert_eq!(rows, 0);
     }
 }

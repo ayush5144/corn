@@ -1,5 +1,9 @@
 # 04 — Rust Core: Where Rust Is Used and Why
 
+> **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
+>
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 12:17 IST
+
 ## The honest headline
 
 **Rust will not make the web engine use less memory.** The biggest memory consumer in Corn is the web engine itself (Blink/V8 or WebKit renderers, video buffers, page JavaScript), and Google, Apple or Electron own that code.

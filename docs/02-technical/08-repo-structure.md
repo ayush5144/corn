@@ -1,5 +1,9 @@
 # 08 — Repository Structure
 
+> **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
+>
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 13:59 IST
+
 One public repository, `ayush5144/corn`, holds everything: docs, the shared Rust core, and every platform app.
 
 **Legend:** ✅ exists · 🔜 next · ⏭️ later
@@ -65,6 +69,7 @@ corn/
 └── scripts/                   build glue between the Rust core and each app
     ├── build-android-core.sh  ✅ cargo-ndk → .so files + Kotlin bindings
     ├── build-starter-assets.sh ✅ starter filter engines + pinned autoconsent → app assets (not committed)
+    ├── doc-banner.py          ✅ adds/refreshes the developer banner + Created/Last updated (IST) on every doc
     ├── build-ios-core.sh      ⏭️ cargo → .xcframework + Swift bindings
     └── build-desktop-core.sh  ⏭️ napi-rs → .node addon
 ```

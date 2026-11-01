@@ -38,5 +38,11 @@
                 <data android:scheme="https" />
             </intent-filter>
         </activity>
+        <!-- Relaunches Corn after cookies were deleted from WebView's cookie file (own process). -->
+        <activity
+            android:name=".RestartActivity"
+            android:exported="false"
+            android:process=":restart"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
     </application>
 </manifest>

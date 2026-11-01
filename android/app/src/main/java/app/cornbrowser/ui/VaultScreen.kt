@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -73,7 +75,7 @@ fun VaultScreen(c: CornController) {
     var newName by remember { mutableStateOf("") }
     val version = c.data.vaultVersion.intValue
     val collections = remember(version) { c.data.collections() }
-    val total = collections.sumOf { it.itemCount }
+    val total = remember(version) { c.data.itemCount() }
     val hits = remember(query, version) { if (query.isBlank()) emptyList() else c.data.search(query) }
 
     Column(Modifier.fillMaxSize().background(C.Bg)) {
@@ -89,15 +91,17 @@ fun VaultScreen(c: CornController) {
                 if (hits.isEmpty()) Empty("No saved links match “$query”.") else hits.forEach { ItemRow(c, it) }
             } else {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    // Collections, then the "New collection" tile (null), two per row.
-                    val tiles: List<Collection?> = collections + listOf(null)
+                    // "All" (every saved link, not a stored Collection), the Collections, then the
+                    // "New collection" tile (null), two per row. Tiles in a row share one height.
+                    val all = Collection(ALL, "All", total)
+                    val tiles: List<Collection?> = listOf(all) + collections + listOf(null)
                     tiles.chunked(2).forEach { row ->
-                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Row(Modifier.height(IntrinsicSize.Max), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             row.forEach { col ->
                                 if (col != null) {
-                                    CollectionTile(col, Modifier.weight(1f)) { openCollection = col.id }
+                                    CollectionTile(col, Modifier.weight(1f).fillMaxHeight()) { openCollection = col.id }
                                 } else {
-                                    NewCollectionTile(naming, newName, { newName = it }, { naming = true }, Modifier.weight(1f)) {
+                                    NewCollectionTile(naming, newName, { newName = it }, { naming = true }, Modifier.weight(1f).fillMaxHeight()) {
                                         c.data.createCollection(newName)?.let { created -> openCollection = created.id }
                                             ?: c.showToast("Pick a different name")
                                         naming = false
@@ -115,6 +119,9 @@ fun VaultScreen(c: CornController) {
     }
 }
 
+/** Stands for "All" in the grid: every saved link. Never a real Collection id (SQLite ids start at 1). */
+private const val ALL = -1L
+
 @Composable
 private fun CollectionTile(col: Collection, modifier: Modifier, onOpen: () -> Unit) {
     Column(
@@ -122,7 +129,7 @@ private fun CollectionTile(col: Collection, modifier: Modifier, onOpen: () -> Un
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Box(Modifier.size(36.dp).clip(RoundedCornerShape(11.dp)).background(C.Surface2), contentAlignment = Alignment.Center) {
-            CornIcon(if (col.name == "Unsorted") CornIcons.Vault else CornIcons.Folder, 20.dp, C.Corn)
+            CornIcon(if (col.id == ALL) CornIcons.Vault else CornIcons.Folder, 20.dp, C.Corn)
         }
         Column {
             T(col.name, 16.sp, weight = FontWeight.SemiBold, maxLines = 1)
@@ -151,8 +158,9 @@ private fun NewCollectionTile(naming: Boolean, name: String, onName: (String) ->
 @Composable
 private fun CollectionView(c: CornController, id: Long, onBack: () -> Unit) {
     val version = c.data.vaultVersion.intValue
-    val name = remember(version) { c.data.collections().firstOrNull { it.id == id }?.name ?: "" }
-    val items = remember(version) { c.data.items(id) }
+    val isAll = id == ALL
+    val name = remember(version) { if (isAll) "All" else c.data.collections().firstOrNull { it.id == id }?.name ?: "" }
+    val items = remember(version) { c.data.items(if (isAll) null else id) }
     Column(Modifier.fillMaxSize().background(C.Bg)) {
         Row(Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             IconBtn(CornIcons.Back, "Back to collections", onBack)

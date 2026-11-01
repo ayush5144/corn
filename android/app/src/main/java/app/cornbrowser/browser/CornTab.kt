@@ -56,6 +56,10 @@ interface TabHost {
     val cookieBannersEnabled: Boolean
     /** Settings → Privacy → Safe Browsing. */
     val safeBrowsingEnabled: Boolean
+    /** A tab's address changed (for history). */
+    fun onVisited(entry: TabEntry, url: String, title: String)
+    /** A page's title became known (for history). */
+    fun onTitle(url: String, title: String)
 }
 
 /**
@@ -137,14 +141,32 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
 
     fun saveState(): Bundle = Bundle().also { webView.saveState(it) }
 
-    /** Paused tabs stay in memory but stop scripts' heavy work and all media. */
-    fun pause() {
-        webView.evaluateJavascript("document.querySelectorAll('video,audio').forEach(function(m){m.pause()})", null)
+    /**
+     * The tab stays in memory behind the open tab. Pauses every video/audio element and stops the
+     * page from restarting them until the tab is opened again, then calls `WebView.onPause()`
+     * (animations, geolocation). Scripts keep running, slowed down by Chromium for hidden pages;
+     * see the rules at the top of [TabManager].
+     */
+    fun keepInBackground() {
+        webView.evaluateJavascript(
+            "window.__cornHold=true;document.querySelectorAll('video,audio').forEach(function(m){m.pause()})", null,
+        )
         webView.onPause()
         entry.mediaPlaying = false
     }
 
-    fun resume() = webView.onResume()
+    /** The tab is the open one again: allow media and resume. */
+    fun bringToForeground() {
+        webView.evaluateJavascript("window.__cornHold=false", null)
+        webView.onResume()
+    }
+
+    private var pendingScrollY = 0
+
+    /** After an unloaded tab reloads, scroll back to where the user was. */
+    fun restoreScrollAfterLoad(y: Int) {
+        pendingScrollY = y
+    }
 
     /** A small screenshot for tab previews (memory only, never written to disk). */
     fun capturePreview(): Bitmap? {
@@ -284,6 +306,11 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
             entry.loading = false
             entry.url = finishedUrl
             view.title?.takeIf { it.isNotBlank() }?.let { entry.title = it }
+            if (pendingScrollY > 0) {
+                val y = pendingScrollY
+                pendingScrollY = 0
+                view.postDelayed({ view.scrollTo(0, y) }, 250) // after the page lays out
+            }
             sync()
         }
 
@@ -305,6 +332,7 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
 
         override fun doUpdateVisitedHistory(view: WebView, url: String, isReload: Boolean) {
             entry.url = url
+            if (!isReload) host.onVisited(entry, url, view.title ?: "")
             sync()
         }
     }
@@ -319,7 +347,10 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
         }
 
         override fun onReceivedTitle(view: WebView, title: String?) {
-            if (!title.isNullOrBlank()) entry.title = title
+            if (!title.isNullOrBlank()) {
+                entry.title = title
+                host.onTitle(entry.url, title)
+            }
         }
 
         override fun onReceivedIcon(view: WebView, icon: Bitmap?) {
@@ -424,6 +455,10 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
                 for (var i = 0; i < m.length; i++) if (!m[i].paused && !m[i].ended) return true;
                 return false;
               }
+              // A tab kept in memory behind the open tab may not restart media (window.__cornHold).
+              document.addEventListener('play', function (e) {
+                if (window.__cornHold && e.target && e.target.pause) e.target.pause();
+              }, true);
               ['play', 'playing', 'pause', 'ended'].forEach(function (ev) {
                 document.addEventListener(ev, function () {
                   bridge.postMessage(JSON.stringify({ t: 'media', playing: playing() }));

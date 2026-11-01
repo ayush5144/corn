@@ -1,13 +1,15 @@
 # 03 — Features (Built)
 
+> **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
+>
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 13:59 IST
+
 Every feature in the Android app today, what it does for the user, and the evidence behind it. Nothing here is planned-only; planned work lives in the [checklist](../03-planning/02-checklist.md).
 
 **Evidence levels**
 - ✅ **Verified**: seen working on the emulator (Pixel 8 image, Android 16), with the test described.
 - 🧪 **Tested**: covered by automated tests, not yet seen on a device.
 - 🔨 **Built**: in the app, not yet verified. Treat as unproven until checked.
-
-Last updated: 2026-11-01 (commit `f6dc779`).
 
 ---
 
@@ -75,9 +77,9 @@ Last updated: 2026-11-01 (commit `f6dc779`).
 ## Flush and sessions
 
 - **Flush Button** ✅
-  - *What:* one tap closes every tab and group and clears cookies (except the Keep List), site storage, cache, form data and the saved session. The Vault, settings and Keep List stay. Drain animation, vibration, a one-liner, optional sound, optional "Ask before flushing".
-  - *Benefit:* a clean slate instantly.
-  - *Evidence:* animation and fresh page with the one-liner seen. What each category of data looks like after a Flush hasn't been checked file by file yet.
+  - *What:* one tap closes every tab and group and deletes history, cookies (except Keep List sites'), all site storage, cache, form data and the saved session, then Corn restarts itself in about 0.3 s so nothing stays in memory. The Vault, settings and Keep List stay. Drain animation, vibration, a one-liner, optional sound, optional "Ask before flushing".
+  - *Benefit:* a clean slate instantly, with nothing left behind.
+  - *Evidence:* on the emulator, two test sites each set a cookie, local storage and IndexedDB. After Flush: the Keep List site still had its cookie; the other site's cookie was gone; local storage and IndexedDB were gone for both; history went from 13 visits to 0. Log: cookies deleted from WebView's cookie database (no fallback needed), process restarted.
 
 - **Kept Session (default)** 🔨
   - *What:* your tabs and groups are saved when you leave Corn and restored next time, until you flush.
@@ -87,9 +89,17 @@ Last updated: 2026-11-01 (commit `f6dc779`).
   - *What:* optional: flush when you leave Corn, 5 or 30 minutes after leaving, or after 10/30/60 minutes of inactivity. A playing video counts as activity.
   - *Evidence:* built; timers not yet checked on a device.
 
-- **Keep List** 🔨
-  - *What:* sites whose login cookies survive a Flush, so you stay logged in.
-  - *Evidence:* built. Known limit: other saved data for those sites is wiped, so some sites may still log you out.
+- **Keep List** ✅
+  - *What:* sites whose login cookies survive a Flush, so you stay logged in. Their cookies are left untouched in WebView's cookie database (DuckDuckGo's method), so expiry and security flags stay as the site set them.
+  - *Evidence:* a Keep List test site still sent its cookie after Flush; a non-Keep List site didn't. Known limit: their local storage and IndexedDB are deleted (Android can't delete one site's local storage), so a site that keeps its login there may log you out.
+
+- **History** ✅
+  - *What:* pages you visit, on this phone only, cleared by every Flush. Menu → History: search, grouped by day, tap to open, × to delete one visit, long-press to delete a whole site from history, trash icon to clear all. "Keep history" switch in Settings (on by default).
+  - *Evidence:* visits recorded with page titles (e.g. "corn test search at DuckDuckGo"). One search = one entry (pages that change their own address while loading are merged within 5 s; before the fix one DuckDuckGo search made 6 entries). Flush emptied it. The screen itself hasn't been reviewed by the founder yet.
+
+- **Delete browsing data** 🔨
+  - *What:* Settings → History and data: tick History, Cookies and site data (Keep List cookies stay), Cached files, Open tabs; everything in each ticked category goes. No time ranges, because the cache and site storage can only be deleted all at once.
+  - *Evidence:* uses the same deletion as Flush (verified above); this screen not yet tested on a device.
 
 ## Tabs
 
@@ -101,10 +111,14 @@ Last updated: 2026-11-01 (commit `f6dc779`).
   - *What:* screenshots of tabs in the Tabs screen and group view, kept in memory only (~0.25 MB each).
   - *Evidence:* seen in the Tabs screen.
 
-- **Memory-saving tab rule** 🔨
-  - *What:* only the active tab and the 2 most recent stay in memory (paused tabs stop video and audio); others are frozen as a preview and reload when opened.
-  - *Benefit:* lower memory use. 10 fully live tabs measured **~1.05 GB** before this rule existed.
-  - *Evidence:* built; memory with the rule in place not yet re-measured.
+- **Background tabs** 🔨
+  - *What:* Settings → Advanced → Background tabs. **Automatic by phone memory** (default: 1 recent tab kept in memory on 4 GB, 2 on 6 GB, 3 on 8 GB, 5 on 12 GB+, all unloaded when Android warns memory is low), **Keep recent tabs** (0/1/2/3/5) or **Keep all** (asks first: battery, heat, Android may close Corn, one crash reloads every tab). Kept tabs reopen instantly; their videos stay paused and can't restart. Unloaded tabs run nothing and reload with their scroll position.
+  - *Benefit:* lower memory and battery use. 10 tabs: **~644 MB** with 2 kept vs **~1.05 GB** all loaded (measured earlier).
+  - *Evidence:* builds; the settings, scroll restore and video hold not yet tested on a device.
+
+- **Back to the home page** 🔨
+  - *What:* on a tab's first page opened from Corn's home page, Back shows a curved ↩ and returns to the home page; Forward reopens the page.
+  - *Evidence:* built; not yet seen on a device.
 
 - **Page crash recovery** 🔨
   - *What:* if a page's process dies, the tab shows "This page stopped · Reload" instead of the app breaking.
@@ -113,7 +127,8 @@ Last updated: 2026-11-01 (commit `f6dc779`).
 ## Vault
 
 - **Vault with Collections and tags** 🔨
-  - *What:* save the current page from the address bar (or a link from its long-press menu) into a Collection, with optional tags; browse Collections, search titles, addresses and tags.
+  - *What:* save the current page from the address bar (or a link from its long-press menu), optionally into a Collection, with optional tags. **All** shows every saved link; each link is stored once. Browse Collections, search titles, addresses and tags. Tiles in a row share one height.
+  - *Upgrade:* links that were in the old "Unsorted" Collection moved to no Collection and show in All (verified: the emulator's database upgraded to version 2 and "Unsorted" was removed; unit-tested with tags kept).
   - *Evidence:* built; save flow fixed today (a typed new Collection is now used when you tap Save). Not yet seen end to end on a device.
 
 - **Delete a saved link** 🔨

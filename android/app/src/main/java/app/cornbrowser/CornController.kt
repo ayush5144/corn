@@ -4,6 +4,8 @@
 
 package app.cornbrowser
 
+import android.app.ActivityManager
+import android.content.ComponentCallbacks2
 import android.content.Context
 import android.content.Intent
 import android.os.Handler
@@ -14,6 +16,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import app.cornbrowser.browser.BlockKind
+import app.cornbrowser.browser.ClearChoice
+import app.cornbrowser.browser.DataClearing
 import app.cornbrowser.browser.Flusher
 import app.cornbrowser.browser.NEW_TAB
 import app.cornbrowser.browser.TabEntry
@@ -24,12 +28,14 @@ import app.cornbrowser.data.CornSettings
 import app.cornbrowser.data.FlushMode
 import app.cornbrowser.data.SearchEngines
 import app.cornbrowser.data.Shields
+import app.cornbrowser.data.TabMemory
+import uniffi.corn_ffi.HistoryVisit
 import app.cornbrowser.ui.C
 import app.cornbrowser.ui.ToastMsg
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
-enum class Screen { Onboarding, Browser, Tabs, Vault, Settings }
+enum class Screen { Onboarding, Browser, Tabs, Vault, Settings, History }
 
 /** Which bottom sheet is open. */
 sealed interface Sheet {
@@ -41,6 +47,13 @@ sealed interface Sheet {
     data class Group(val groupId: Int) : Sheet
     data object ConfirmFlush : Sheet
     data class DeleteItem(val id: Long, val title: String) : Sheet
+    /** Long-press on a history entry. */
+    data class HistoryEntry(val visit: HistoryVisit) : Sheet
+    /** Settings → Delete browsing data. */
+    data object DeleteData : Sheet
+    data object ConfirmClearHistory : Sheet
+    /** Confirmation before "Keep all tabs in memory". */
+    data object ConfirmKeepAllTabs : Sheet
 }
 
 /**
@@ -83,17 +96,47 @@ class CornController(private val context: Context) : TabHost {
 
     init {
         refreshShields()
+        tabs.keepInMemory = ::tabsKeptInMemory
+    }
+
+    /** Settings → Advanced → Background tabs. */
+    private fun tabsKeptInMemory(): Int = when (settings.tabMemory) {
+        TabMemory.AUTO -> autoTabsKeptInMemory
+        TabMemory.RECENT -> settings.tabMemoryCount
+        TabMemory.ALL -> Int.MAX_VALUE
+    }
+
+    /**
+     * "Automatic by phone memory": tabs kept in memory besides the open one.
+     * Android reports a little less than the advertised size (a 4 GB phone shows about 3.7 GB),
+     * hence the in-between thresholds: 4 GB → 1, 6 GB → 2, 8 GB → 3, 12 GB or more → 5.
+     */
+    val autoTabsKeptInMemory: Int by lazy {
+        val am = context.getSystemService(ActivityManager::class.java)
+        if (am.isLowRamDevice) return@lazy 0
+        val gb = ActivityManager.MemoryInfo().also { am.getMemoryInfo(it) }.totalMem / 1_000_000_000.0
+        when {
+            gb < 5 -> 1
+            gb < 7 -> 2
+            gb < 10 -> 3
+            else -> 5
+        }
     }
 
     // ---------------- startup / lifecycle ----------------
 
     /** Restore the Kept Session if allowed, else start with a fresh new-tab page. */
-    fun start(openUrl: String?) {
+    fun start(openUrl: String?, restartQuip: String? = null, restartToast: String? = null) {
+        isStarting = true
         if (shouldAutoFlushOnReturn()) {
-            Flusher.flush(context, tabs, data) {}
+            // Corn was away long enough for Auto-Flush: wipe, then restart clean (opening nothing).
+            clearData(ClearChoice.EVERYTHING, quipAfter = Flusher.QUIPS.random()) {}
         } else {
             data.loadSession()?.let { tabs.restore(it) }
         }
+        isStarting = false
+        restartQuip?.let { quip = it }
+        restartToast?.let { showToast(it) }
         when {
             tabs.tabs.isEmpty() -> tabs.open(openUrl ?: NEW_TAB) // a link opened Corn: no extra empty tab
             openUrl != null -> openInNewTab(openUrl)
@@ -103,6 +146,7 @@ class CornController(private val context: Context) : TabHost {
     }
 
     fun onAppForeground() {
+        inForeground = true
         app.cornbrowser.browser.CornEngine.refreshIfStale(context)
         if (shouldAutoFlushOnReturn()) flushNow(animate = false)
         main.removeCallbacks(leaveFlush)
@@ -112,6 +156,7 @@ class CornController(private val context: Context) : TabHost {
     }
 
     fun onAppBackground() {
+        inForeground = false
         main.removeCallbacks(inactivityTick)
         val now = System.currentTimeMillis()
         settings.leftAt = now
@@ -122,7 +167,17 @@ class CornController(private val context: Context) : TabHost {
         settings.flushMode.delayMs?.let { delay -> main.postDelayed(leaveFlush, delay) }
     }
 
+    private var inForeground = false
+
+    /** Auto-Flush timer after leaving Corn. Runs in the background, so it can't relaunch Corn. */
     private val leaveFlush = Runnable { flushNow(animate = false) }
+
+    /** Android says memory is running low (only acted on in "Automatic by phone memory"). */
+    fun onTrimMemory(level: Int) {
+        @Suppress("DEPRECATION")
+        val low = level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW && level != ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
+        if (low && settings.tabMemory == TabMemory.AUTO) tabs.trimMemory()
+    }
 
     private fun shouldAutoFlushOnReturn(): Boolean {
         val now = System.currentTimeMillis()
@@ -207,6 +262,7 @@ class CornController(private val context: Context) : TabHost {
             sheet != null -> sheet = null
             screen != Screen.Browser && screen != Screen.Onboarding -> screen = Screen.Browser
             tabs.current?.canGoBack == true -> tabs.goBack()
+            tabs.backGoesHome -> tabs.goHome()
             else -> return false
         }
         return true
@@ -248,10 +304,11 @@ class CornController(private val context: Context) : TabHost {
         sheet = Sheet.Save(cur.url, cur.title)
     }
 
-    fun save(collectionId: Long, collectionName: String, title: String, url: String, tags: List<String>) {
+    /** `collectionId` null = saved without a Collection (it shows in All). */
+    fun save(collectionId: Long?, collectionName: String?, title: String, url: String, tags: List<String>) {
         data.save(collectionId, title.ifBlank { url }, url, tags)
         sheet = null
-        showToast("Saved to $collectionName")
+        showToast(if (collectionName != null) "Saved to $collectionName" else "Saved to your Vault")
     }
 
     fun saveGroup(groupId: Int) {
@@ -283,10 +340,12 @@ class CornController(private val context: Context) : TabHost {
     fun flushNow(animate: Boolean) {
         sheet = null
         val wipe = {
-            Flusher.flush(context, tabs, data) {}
-            vaultUnlocked = false
-            engineNow = SearchEngines.byId(settings.engine)
-            quip = Flusher.QUIPS.random()
+            val line = Flusher.QUIPS.random()
+            clearData(ClearChoice.EVERYTHING, quipAfter = line) {
+                vaultUnlocked = false
+                engineNow = SearchEngines.byId(settings.engine)
+                quip = line
+            }
         }
         if (!animate) { wipe(); return }
         screen = Screen.Browser
@@ -294,6 +353,74 @@ class CornController(private val context: Context) : TabHost {
         if (settings.flushSound) Flusher.playSound()
         flushing = true
         main.postDelayed({ wipe(); flushing = false }, 720)
+    }
+
+    /**
+     * Run [DataClearing]. When cookies were deleted from WebView's cookie file, Corn must restart
+     * its process so WebView forgets the cookies it holds in memory:
+     * - in the foreground, Corn relaunches itself and shows [quipAfter] / [toastAfter];
+     * - in the background (Auto-Flush after leaving), Android doesn't allow a relaunch, so the
+     *   process just ends and the next launch starts clean.
+     * Without a restart (cookie file not editable, or cookies not chosen), [done] runs instead.
+     */
+    private fun clearData(what: ClearChoice, quipAfter: String? = null, toastAfter: String? = null, done: () -> Unit) {
+        DataClearing.clear(context, tabs, data, what) { needsRestart ->
+            if (!needsRestart) {
+                done()
+                return@clear
+            }
+            settings.markFlushedAndSave()
+            // Tabs not chosen for deletion come back after the restart (they reload).
+            if (!what.tabs) data.saveSession(tabs.toJson())
+            if (inForeground || isStarting) {
+                RestartActivity.restart(context, quipAfter, toastAfter)
+            } else {
+                RestartActivity.exitProcess()
+            }
+        }
+    }
+
+    /** True while MainActivity.onCreate runs start() (the app is visible: a relaunch is allowed). */
+    private var isStarting = false
+
+    // ---------------- history ----------------
+
+    /**
+     * Record a visit. Pages often change their own address while loading (a search page adds
+     * `&ia=web`, redirects, `history.replaceState`), and WebView reports each change. Within 5 s in
+     * the same tab, the same page (same site and path, any `?…`) counts as one visit.
+     */
+    override fun onVisited(entry: TabEntry, url: String, title: String) {
+        if (!settings.keepHistory || !(url.startsWith("https://") || url.startsWith("http://"))) return
+        val uri = android.net.Uri.parse(url)
+        val host = uri.host?.removePrefix("www.") ?: return
+        val now = System.currentTimeMillis()
+        val last = entry.lastVisitUrl?.let { android.net.Uri.parse(it) }
+        val samePage = last != null && last.host?.removePrefix("www.") == host && (last.path ?: "") == (uri.path ?: "")
+        if (samePage && now - entry.lastVisitAt < 5_000) return
+        entry.lastVisitUrl = url
+        entry.lastVisitAt = now
+        data.recordVisit(url, title, host)
+    }
+
+    override fun onTitle(url: String, title: String) {
+        if (settings.keepHistory) data.updateTitle(url, title)
+    }
+
+    fun openHistory() {
+        sheet = null
+        screen = Screen.History
+    }
+
+    fun openFromHistory(url: String) {
+        screen = Screen.Browser
+        if (tabs.current?.isNewTab == true) tabs.load(url) else tabs.open(url)
+    }
+
+    /** Settings → Delete browsing data. Everything in each ticked category (no time ranges). */
+    fun deleteBrowsingData(what: ClearChoice) {
+        sheet = null
+        clearData(what, toastAfter = "Browsing data deleted") { showToast("Browsing data deleted") }
     }
 
     // ---------------- per-site blocking ----------------

@@ -1,5 +1,9 @@
 # 02 — Decision Log
 
+> **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
+>
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 13:59 IST
+
 Every product question asked and the founder's answer, in order. Settled answers flow into [01-prd.md](01-prd.md). New rounds are appended at the bottom.
 
 **Format:** question → recommendation given → founder's answer → status.
@@ -394,4 +398,34 @@ Every product question asked and the founder's answer, in order. Settled answers
 ### Pull to refresh
 - **Answer:** Add pull-to-refresh (drag down at the top of a page to reload), as other mobile browsers do. Only this for now.
 - **Status:** ✅ Built and verified with the test server. Chrome has had it since v41 (2015), Safari since iOS 15, Firefox for Android has it as an option (off by default since 2023).
+
+## Round 11 — 2026-11-01
+
+### History
+- **Answer:** Chrome/Brave-style history: recorded on the phone only, cleared by Flush, "Keep history" switch (on by default). History screen: search, grouped by day, tap to open, delete one entry, delete a site from history (history only), clear all.
+- **Research:** DuckDuckGo's Android app has **no History screen and no time-range clearing**; it records history only for address-bar suggestions. Eddy (Kotlin + WebView) records each finished page, skips the same address within 5 s, offers time ranges for history only, and deletes all cookies at once.
+- **Status:** ✅ Built. Verified: a search is recorded once with its title (DuckDuckGo changes its address several times while loading; same page within 5 s in one tab = one visit; before the fix one search made 6 entries).
+
+### Deleting browsing data: only what is fully possible
+- **Answer:** "Delete browsing data" deletes everything in each chosen category. **No time ranges and no per-site cookie or storage deletion for now**: only controls that work completely. Time ranges for history go on the checklist for later.
+- **Data:** `WebView.clearCache()` "is per-application, so this will clear the cache for all WebViews" (Android docs): the cache can't be deleted by time. `WebStorage.deleteOrigin()` covers Application Cache and Web SQL only; measured: a site's local storage survived it.
+
+### Flush deletes completely, Keep List cookies exactly
+- **Answer:** Flush must never be an incomplete deletion, and Keep List sites stay logged in.
+- **How:** Corn deletes cookies by editing WebView's cookie database directly, as DuckDuckGo does (`SQLCookieRemover`): every cookie except Keep List sites' goes, with Keep List cookies untouched (before, they were re-created and lost their expiry and HttpOnly flags). Site storage of **every** site is deleted (`deleteAllData` plus WebView's storage files), then Corn restarts its process (about 0.3 s) so nothing stays in memory. In the background (Auto-Flush after leaving), Android doesn't allow a relaunch, so the process just ends.
+- **Status:** ✅ Verified on the emulator: Keep List site kept its cookie; the other site lost its cookie; local storage and IndexedDB gone for both; history 13 visits → 0.
+- **Later:** keep Keep List sites' local storage too (DuckDuckGo edits WebView's LevelDB files with a LevelDB library). See checklist.
+
+### "Unsorted" becomes "All"
+- **Answer:** Each link is saved once. Picking a Collection is optional. **All** is a view of every saved link, not a stored Collection, so nothing is ever saved twice. Existing Unsorted links moved to "no Collection" (they show in All); the Unsorted Collection was removed (database upgrade, unit-tested).
+
+### Background tabs
+- **Answer:** Settings → Advanced → Background tabs: **Automatic by phone memory** (default: 1 tab kept in memory on 4 GB, 2 on 6 GB, 3 on 8 GB, 5 on 12 GB+; all unloaded when Android warns memory is low), **Keep recent tabs in memory** (0/1/2/3/5), **Keep all tabs in memory** (not recommended; confirmation about battery, heat, Android closing Corn, and one shared page process). Names: "Kept in memory" and "Unloaded" replace "paused" and "frozen".
+- **Facts written into the code** (top of `TabManager.kt`): `WebView.onPause()` "does not pause JavaScript" (Android docs); measured, a hidden tab's timers slow about 5×; `pauseTimers()` is global, so Corn never calls it. Videos in kept tabs are paused and blocked from restarting; unloaded tabs restore their scroll position.
+
+### Back to the home page
+- **Answer:** On a tab's first page opened from Corn's home page, Back shows a curved ↩ arrow and returns to the home page; Forward reopens the page. Not a heart.
+
+### Smaller fixes
+- Vault tiles in a row share one height. Tab card header 36 dp with the × centred in it; long titles end with "…" before the ×.
 

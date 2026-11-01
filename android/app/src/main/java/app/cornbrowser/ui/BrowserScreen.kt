@@ -342,12 +342,23 @@ private fun GroupStrip(c: CornController, cur: TabEntry) {
 @Composable
 private fun Toolbar(c: CornController, cur: TabEntry) {
     Row(Modifier.fillMaxWidth().height(58.dp).padding(horizontal = 6.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
-        // Back (hold for Forward)
+        // Back (hold for Forward). On a tab's first page opened from Corn's home page, Back shows
+        // a curved ↩ and returns to the home page.
+        val home = !cur.isNewTab && !cur.canGoBack && cur.openedFromHome
         Box(
             Modifier.width(56.dp).height(48.dp).clip(RoundedCornerShape(14.dp))
-                .combinedClickable(enabled = cur.canGoBack || cur.canGoForward, onClick = { c.tabs.goBack() }, onLongClick = { c.tabs.goForward(); c.showToast("Forward") }),
+                .combinedClickable(
+                    enabled = cur.canGoBack || cur.canGoForward || home,
+                    onClick = { if (home) c.tabs.goHome() else c.tabs.goBack() },
+                    onLongClick = { c.tabs.goForward(); c.showToast("Forward") },
+                ),
             contentAlignment = Alignment.Center,
-        ) { CornIcon(CornIcons.Back, TOOLBAR_ICON, tint = if (cur.canGoBack) C.Text else C.Muted.copy(alpha = 0.45f)) }
+        ) {
+            CornIcon(
+                if (home) CornIcons.BackHome else CornIcons.Back, TOOLBAR_ICON,
+                tint = if (cur.canGoBack || home) C.Text else C.Muted.copy(alpha = 0.45f),
+            )
+        }
         ToolbarButton({ c.openVault() }) { CornIcon(CornIcons.Vault, TOOLBAR_ICON) }
         ToolbarButton({ c.openTabsScreen() }) {
             // 18 dp: the same visible height as the other toolbar icons.

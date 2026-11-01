@@ -68,3 +68,10 @@
 - Code: `ui/BrowserScreen.kt` (SwipeRefreshLayout around the WebView), `browser/TabManager.kt` (`loading` state), `browser/CornTab.kt` (sets loading on page start/finish), dependency `androidx.swiperefreshlayout:1.2.0`.
 - Updated `docs/01-product/03-features.md`, `01-prd.md`, `02-decision-log.md` (Round 10).
 
+## 2026-11-01 — History, complete Flush, "All", background tabs
+
+- Code: `corn-vault` (schema v2: optional Collection, history tables, upgrade from v1; 8 tests), `corn-ffi` (history + All exports), new `browser/CookieJar.kt`, `browser/DataClearing.kt`, `RestartActivity.kt`, `ui/HistoryScreen.kt`; `TabManager.kt` (real tab rules, settings-driven limit, unload, scroll restore, back-to-home), `CornTab.kt` (media hold, history hooks), `CornController.kt`, `CornData.kt`, `CornSettings.kt`, Settings/Sheets/Vault/Components/BrowserScreen UI.
+- Updated `GLOSSARY.md` (All, Kept in memory, Unloaded, History, Delete browsing data; Unsorted removed), `docs/01-product/01-prd.md`, `02-decision-log.md` (Round 11), `03-features.md`.
+- Updated `docs/02-technical/02-architecture.md`, `03-android.md` (tab rules), `05-flush-model.md` (how Android Flush works), `10-storage.md` (history, schema version).
+- Updated `docs/03-planning/02-checklist.md` (new Phase 3 rows; backlog: history time ranges, Keep List local storage, 90-day history idea) and `docs/05-review/02-review-2026-11-01.md`.
+

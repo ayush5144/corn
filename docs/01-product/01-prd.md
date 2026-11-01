@@ -1,5 +1,9 @@
 # 01 — Product Requirements (PRD)
 
+> **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
+>
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 13:59 IST
+
 - **Status:** Draft v2, being shaped through Q&A rounds ([02-decision-log.md](02-decision-log.md))
 - **Last updated:** 2026-11-01 (after Round 1)
 - **Replaces:** the Brave-fork PRD in `~/dev/corn-old/prd-corn-browser.md`
@@ -118,7 +122,12 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | Flush feedback: quick swirl animation, vibration, funny one-liner on the empty page; sound is a setting, off by default | ✅ |
 | **A playing video counts as activity** | ✅ |
 | "Leaving Corn" = switching apps, going home or locking the phone | ✅ |
-| **Keep List**: sites whose login cookies survive a Flush, so they stay logged in. Not history, not passwords. | ✅ v1 |
+| **Keep List**: sites whose login cookies survive a Flush, so they stay logged in. Not history, not passwords. Their site storage (local storage, IndexedDB) is still deleted. | ✅ v1 |
+| **History**: pages visited, on the phone only, cleared by Flush; "Keep history" switch (on by default); History screen with search, grouped by day, delete one entry, delete a site from history, clear all | ✅ |
+| **Delete browsing data** (Settings): history, cookies and site data (Keep List cookies stay), cache, open tabs; everything in each ticked category, **no time ranges** | ✅ |
+| Time ranges for deleting history ("last hour" etc.) | ⏭️ Later (see checklist) |
+| **Background tabs** (Settings → Advanced): Automatic by phone memory (default), Keep recent tabs (0/1/2/3/5), Keep all (with a warning) | ✅ |
+| Back from a tab's first page opened from the home page returns to the home page (curved ↩ arrow) | ✅ |
 | **Corn's own password store** (inside the Vault), survives a Flush | ✅ (tentatively v1.1 🟡) |
 
 ### 6.5 Vault
@@ -129,7 +138,7 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | Save the current page from the Vault icon in the address bar → sheet to pick a Collection + optional tags | ✅ |
 | Save links with their titles | ✅ |
 | Optional tags | ✅ |
-| **Collections**: one level, each item in exactly one Collection (default "Unsorted"); tags cut across | ✅ |
+| **Collections**: one level, optional: each link is saved once, in one Collection or none; **All** shows every saved link; tags cut across | ✅ |
 | Thumbnails (screenshot, placeholder or none) | ⏭️ Not v1 |
 | Stored only on the device (app-private SQLite, protected by Android's sandbox and phone encryption) | ✅ (SQLCipher dropped, see decision log) |
 | **Vault locked by default** with a 4-digit PIN | ✅ |
@@ -188,12 +197,13 @@ What a new user gets before changing anything.
 | Ad / tracker / pop-up blocking | On for every site (each can be switched off per site) | ✅ |
 | Redirect guard | On | ✅ |
 | Third-party cookies | Blocked | ✅ |
-| Where Vault saves land | Unsorted | ✅ |
+| Where Vault saves land | No Collection (shown in All) | ✅ |
 | Cookie banners | Auto-reject | 🟡 proposed |
 | Fingerprinting protection + Global Privacy Control | On | 🟡 proposed |
 | Link cleaning | On | 🟡 proposed |
 | HTTPS upgrade | On | 🟡 proposed |
-| Live tabs | 1 active + up to 2 paused (media stopped); the rest frozen | ✅ (revisit later) |
+| Background tabs | Automatic by phone memory: 1 kept in memory on 4 GB, 2 on 6 GB, 3 on 8 GB, 5 on 12 GB+; the rest unloaded | ✅ |
+| Keep history | On (cleared by every Flush) | ✅ |
 
 ## 9. Success measures (draft)
 

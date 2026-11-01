@@ -1,5 +1,9 @@
 # 09 — Filter Lists
 
+> **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
+>
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 12:17 IST
+
 ## What they are
 
 Filter lists are plain-text files of rules that tell the blocker what to block or hide. Brave's adblock-rust is the engine; the lists are its instructions. Volunteers maintain them and update them several times a day.

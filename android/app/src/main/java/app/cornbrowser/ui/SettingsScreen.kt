@@ -28,7 +28,11 @@ import androidx.compose.ui.unit.sp
 import app.cornbrowser.BuildConfig
 import app.cornbrowser.CornController
 import app.cornbrowser.Screen
+import app.cornbrowser.Sheet
 import app.cornbrowser.data.FlushMode
+import app.cornbrowser.data.TabMemory
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import app.cornbrowser.data.SearchEngines
 
 /**
@@ -83,6 +87,16 @@ fun SettingsScreen(c: CornController, onNeedPin: () -> Unit) {
             }
             Caption("These sites stay logged in after a Flush. It's not history or passwords: Corn keeps only their login cookies.")
 
+            Label("History and data")
+            SettingsGroup {
+                ToggleRow("Keep history", "Pages you visit, on this phone only. Flush clears it.", s.keepHistory) { s.keepHistory = it }
+                SettingRow("History", onClick = { c.openHistory() }, leading = { CornIcon(CornIcons.Clock, tint = C.Muted) },
+                    trailing = { CornIcon(CornIcons.ChevRight, 18.dp, C.Muted) })
+                SettingRow("Delete browsing data", "History, cookies, cache or tabs. Keep List sites stay logged in.",
+                    onClick = { c.sheet = Sheet.DeleteData }, leading = { CornIcon(CornIcons.Trash, tint = C.Muted) },
+                    trailing = { CornIcon(CornIcons.ChevRight, 18.dp, C.Muted) })
+            }
+
             Label("Privacy")
             SettingsGroup {
                 ToggleRow("App Lock", "Ask for your PIN to open Corn.", s.appLock) { on ->
@@ -119,6 +133,30 @@ fun SettingsScreen(c: CornController, onNeedPin: () -> Unit) {
                 })
             }
 
+            Label("Advanced: background tabs")
+            SettingsGroup {
+                SettingRow(
+                    "Automatic by phone memory",
+                    "Recommended. This phone keeps ${tabsText(c.autoTabsKeptInMemory)} in memory, fewer when Android says memory is low.",
+                    onClick = { s.chooseTabMemory(TabMemory.AUTO); c.tabs.enforceLivePolicy() },
+                    leading = { Radio(s.tabMemory == TabMemory.AUTO) },
+                )
+                SettingRow(
+                    "Keep recent tabs in memory",
+                    "Your most recent tabs besides the one open.",
+                    onClick = { s.chooseTabMemory(TabMemory.RECENT); c.tabs.enforceLivePolicy() },
+                    leading = { Radio(s.tabMemory == TabMemory.RECENT) },
+                    trailing = { if (s.tabMemory == TabMemory.RECENT) CountDropdown(s.tabMemoryCount) { s.tabMemoryCount = it; c.tabs.enforceLivePolicy() } },
+                )
+                SettingRow(
+                    "Keep all tabs in memory",
+                    "Not recommended: more battery and heat.",
+                    onClick = { if (s.tabMemory != TabMemory.ALL) c.sheet = Sheet.ConfirmKeepAllTabs },
+                    leading = { Radio(s.tabMemory == TabMemory.ALL) },
+                )
+            }
+            Caption("Tabs kept in memory open instantly where you left them; their videos stay paused. Other tabs are unloaded: nothing runs, and they reload when you open them.")
+
             Label("About")
             SettingsGroup {
                 SettingRow("Donate", "Corn is free. Donations keep it that way.", onClick = { c.showToast("Donations open at launch. Thank you! 🌽") },
@@ -126,6 +164,22 @@ fun SettingsScreen(c: CornController, onNeedPin: () -> Unit) {
                 SettingRow("Version", trailing = { T(BuildConfig.VERSION_NAME, 12.sp, C.Muted) })
             }
             Box(Modifier.height(8.dp))
+        }
+    }
+}
+
+private fun tabsText(n: Int) = if (n == 1) "1 recent tab" else "$n recent tabs"
+
+/** 0, 1, 2, 3 or 5 tabs kept in memory besides the open one. */
+@Composable
+private fun CountDropdown(count: Int, onPick: (Int) -> Unit) {
+    var open by remember { mutableStateOf(false) }
+    Box {
+        Pill("$count ${if (count == 1) "tab" else "tabs"}", { open = true }, CornIcons.ChevDown)
+        DropdownMenu(open, { open = false }) {
+            listOf(0, 1, 2, 3, 5).forEach { n ->
+                DropdownMenuItem(text = { T(if (n == 1) "1 tab" else "$n tabs", 15.sp) }, onClick = { onPick(n); open = false })
+            }
         }
     }
 }

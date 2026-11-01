@@ -11,53 +11,15 @@ import android.media.AudioTrack
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
-import android.webkit.CookieManager
-import android.webkit.GeolocationPermissions
-import android.webkit.WebStorage
-import android.webkit.WebView
-import android.webkit.WebViewDatabase
-import app.cornbrowser.data.CornData
 import kotlin.math.PI
 import kotlin.math.sin
 import kotlin.random.Random
 
 /**
- * Wipes the Session: tabs, Tab Groups, cookies (except Keep List sites), site storage,
- * cache, form data and the saved Kept Session. The Vault, settings and Keep List survive.
- * Clears this device only; see docs/02-technical/05-flush-model.md.
+ * The Flush Button's feedback: buzz, optional sound and the one-liner shown afterwards.
+ * The deletion itself is [DataClearing].
  */
 object Flusher {
-    fun flush(context: Context, tabs: TabManager, data: CornData, done: () -> Unit) {
-        val cm = CookieManager.getInstance()
-
-        // 1. Remember Keep List sites' cookies (name=value pairs) so they stay logged in.
-        val kept = data.keepList().associateWith { host ->
-            listOf("https://$host", "https://www.$host").mapNotNull { cm.getCookie(it) }.joinToString("; ")
-        }
-
-        // 2. Close every tab.
-        tabs.reset()
-
-        // 3. Clear web data.
-        WebStorage.getInstance().deleteAllData()
-        GeolocationPermissions.getInstance().clearAll()
-        WebViewDatabase.getInstance(context).clearHttpAuthUsernamePassword()
-        WebView(context).apply { clearCache(true); clearFormData(); destroy() }
-        data.clearSession()
-
-        cm.removeAllCookies {
-            // 4. Put Keep List cookies back. Attributes (expiry, HttpOnly) aren't readable through
-            //    CookieManager, so they come back as secure, long-lived cookies for that site.
-            for ((host, cookies) in kept) {
-                cookies.split(";").map { it.trim() }.filter { it.contains('=') }.distinct().forEach { c ->
-                    cm.setCookie("https://$host", "$c; Domain=$host; Path=/; Secure; Max-Age=34560000; SameSite=Lax")
-                }
-            }
-            cm.flush()
-            done()
-        }
-    }
-
     /** A short buzz: tap, pause, longer swirl. */
     fun vibrate(context: Context) {
         val v: Vibrator? = if (android.os.Build.VERSION.SDK_INT >= 31) {

@@ -35,7 +35,11 @@ class MainActivity : ComponentActivity() {
         CornEngine.start(applicationContext)
 
         c = CornController(this)
-        c.start(intent?.dataString)
+        c.start(
+            intent?.dataString,
+            restartQuip = intent?.getStringExtra(RestartActivity.EXTRA_QUIP),
+            restartToast = intent?.getStringExtra(RestartActivity.EXTRA_TOAST),
+        )
 
         onBackPressedDispatcher.addCallback(this) {
             if (pinSetup) pinSetup = false else if (!c.back()) moveTaskToBack(true)
@@ -66,6 +70,11 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         intent.dataString?.let { c.openInNewTab(it) }
+    }
+
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        c.onTrimMemory(level)
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {

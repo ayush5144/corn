@@ -25,6 +25,17 @@ enum class FlushMode(val key: String, val delayMs: Long?) {
     }
 }
 
+/** Settings → Advanced → Background tabs. Default: AUTO (by the phone's memory). */
+enum class TabMemory(val key: String) {
+    AUTO("auto"),
+    RECENT("recent"),
+    ALL("all");
+
+    companion object {
+        fun of(key: String?) = entries.firstOrNull { it.key == key } ?: AUTO
+    }
+}
+
 /**
  * Corn's plain settings: on/off values only, no browsing data
  * (the Keep List and per-site choices live in the SQLite store).
@@ -51,10 +62,21 @@ class CornSettings(context: Context) {
     var safeBrowsing by pref("safe_browsing", true)
     /** Ask search engines to filter explicit results. Off by default. */
     var safeSearch by pref("safe_search", false)
+    /** Record pages visited (on this phone only). On by default; Flush clears it. */
+    var keepHistory by pref("keep_history", true)
+    var tabMemory by mutableStateOf(TabMemory.of(prefs.getString("tab_memory", null)))
+        private set
+    /** For TabMemory.RECENT: how many recent tabs stay in memory besides the open one (0, 1, 2, 3 or 5). */
+    var tabMemoryCount by intPref("tab_memory_count", 2)
 
     fun chooseFlushMode(mode: FlushMode) {
         flushMode = mode
         prefs.edit().putString("flush_mode", mode.key).apply()
+    }
+
+    fun chooseTabMemory(mode: TabMemory) {
+        tabMemory = mode
+        prefs.edit().putString("tab_memory", mode.key).apply()
     }
 
     // ---------- PIN (shared by the Vault lock and App Lock) ----------
@@ -117,13 +139,23 @@ class CornSettings(context: Context) {
     /** Last touch or playing video. In memory; written on persist(). */
     var lastActivityAt: Long = prefs.getLong("last_activity_at", System.currentTimeMillis())
 
-    /** Write the in-memory counters and timestamps in one go (called when leaving Corn). */
-    fun persist() {
-        prefs.edit()
+    /**
+     * Write the in-memory counters and timestamps in one go (called when leaving Corn).
+     * `now = true` writes before returning: used right before Corn restarts its process.
+     */
+    fun persist(now: Boolean = false) {
+        val e = prefs.edit()
             .putLong("total_blocked", totalBlocked)
             .putLong("total_popups", totalPopups)
             .putLong("last_activity_at", lastActivityAt)
-            .apply()
+        if (now) e.commit() else e.apply()
+    }
+
+    /** Clear the Auto-Flush timestamps and save everything immediately (before a restart). */
+    fun markFlushedAndSave() {
+        lastActivityAt = System.currentTimeMillis()
+        prefs.edit().putLong("left_at", 0L).commit()
+        persist(now = true)
     }
 
     // ---------- timestamps used by Auto-Flush (not user settings) ----------

@@ -52,17 +52,42 @@ class TabEntry(val id: Int, url: String, groupId: Int?) {
     var loading by mutableStateOf(false)
     /** Set when the page process died; the page shows a reload card. */
     var crashed by mutableStateOf(false)
+    /** True when this tab's first page was opened from Corn's home page: Back returns home. */
+    var openedFromHome by mutableStateOf(false)
+    /** After returning home with Back, Forward reopens this address. */
+    internal var homeForwardUrl: String? = null
+    /** Last address recorded in history from this tab, and when (to merge address updates into one visit). */
+    internal var lastVisitUrl: String? = null
+    internal var lastVisitAt: Long = 0
+    /** Scroll position saved when the tab was unloaded, restored after it reloads. */
+    internal var savedScrollY: Int = 0
     internal var live: CornTab? = null
     internal var saved: Bundle? = null
 }
 
 /**
- * Owns every tab and Tab Group, and the live-tab rule:
- * **1 active + up to 2 paused** (in memory, media stopped); every other tab is
- * **frozen** (preview + saved state, no WebView) and reloads when opened.
- * See docs/01-product/02-decision-log.md, "How many tabs stay live".
+ * Owns every tab and Tab Group, and the rule for which tabs stay in memory.
+ *
+ * ## Tab states (the real rules; keep this in sync with docs/02-technical/03-android.md)
+ * - **Open tab**: the one on screen. Fully running.
+ * - **Kept in memory**: the N most recently used other tabs (N from Settings → Advanced →
+ *   Background tabs, via [keepInMemory]). Their WebView stays alive, so returning is instant
+ *   and keeps scroll position, video position and typed text. On leaving, Corn pauses every
+ *   video/audio element and blocks it from restarting ([CornTab.keepInBackground]), and calls
+ *   `WebView.onPause()`. What that does NOT do, per Android's own documentation:
+ *   *"Note that this call does not pause JavaScript."* Measured on the emulator: a page kept
+ *   in memory learns it is hidden and its timers are slowed about 5× (to about once a second),
+ *   but it still runs. `pauseTimers()` would stop scripts, but it is global ("for all WebViews"),
+ *   so it would also stop the open tab; Corn never calls it.
+ * - **Unloaded**: every other tab. The WebView is destroyed (nothing runs), Corn keeps the
+ *   preview picture, the back/forward history and the scroll position. Opening it reloads the
+ *   page and scrolls back to where it was.
+ * - When Android warns that memory is low, Corn unloads every kept-in-memory tab ([trimMemory]).
+ * - A tab on Corn's home page has no WebView at all and costs nothing.
  */
 class TabManager(private val context: Context, private val host: TabHost) {
+    /** How many recent tabs (besides the open one) stay in memory. Set by the controller from Settings. */
+    var keepInMemory: () -> Int = { 2 }
     val tabs = mutableStateListOf<TabEntry>()
     val groups = mutableStateListOf<TabGroup>()
     var currentId by mutableIntStateOf(-1)
@@ -129,9 +154,13 @@ class TabManager(private val context: Context, private val host: TabHost) {
         return true
     }
 
-    /** Load a URL in the current tab (creating its WebView if it's a new-tab page or frozen). */
+    /** Load a URL in the current tab (creating its WebView if it's a new-tab page or unloaded). */
     fun load(url: String) {
         val cur = current ?: open(NEW_TAB)
+        if (cur.isNewTab) {
+            cur.openedFromHome = true   // Back from this page returns to Corn's home page
+            cur.homeForwardUrl = null
+        }
         cur.url = url
         cur.title = url
         group(cur.groupId)?.takeIf { it.autoNamed }?.let { g ->
@@ -188,7 +217,35 @@ class TabManager(private val context: Context, private val host: TabHost) {
     fun forEachLive(action: (CornTab) -> Unit) = tabs.forEach { t -> t.live?.let(action) }
 
     fun goBack() = current?.live?.webView?.takeIf { it.canGoBack() }?.goBack()
-    fun goForward() = current?.live?.webView?.takeIf { it.canGoForward() }?.goForward()
+
+    fun goForward() {
+        val cur = current ?: return
+        val forward = cur.homeForwardUrl
+        if (cur.isNewTab && forward != null) {
+            load(forward)               // Forward from the home page reopens the page you left
+            cur.homeForwardUrl = null
+        } else {
+            cur.live?.webView?.takeIf { it.canGoForward() }?.goForward()
+        }
+    }
+
+    /** True when Back should return to Corn's home page (no earlier web page in this tab). */
+    val backGoesHome: Boolean get() = current?.let { !it.isNewTab && !it.canGoBack && it.openedFromHome } ?: false
+
+    /** Back from a tab's first page when it was opened from the home page: show the home page again. */
+    fun goHome() {
+        val cur = current ?: return
+        cur.homeForwardUrl = cur.url
+        cur.live?.destroy()
+        cur.live = null
+        cur.saved = null
+        cur.url = NEW_TAB
+        cur.title = "New tab"
+        cur.openedFromHome = false
+        cur.canGoBack = false
+        cur.canGoForward = true
+        cur.loading = false
+    }
     fun reload() = current?.live?.webView?.reload()
 
     /** Grab a fresh preview of the current tab (before showing the tab switcher). */
@@ -206,32 +263,45 @@ class TabManager(private val context: Context, private val host: TabHost) {
         } else {
             live.load(entry.url)
         }
+        live.restoreScrollAfterLoad(entry.savedScrollY)
+        entry.savedScrollY = 0
         return live
     }
 
     private fun newLive(entry: TabEntry): CornTab = CornTab(context, entry, host).also { entry.live = it }
 
-    /** Active tab runs; the next two most recent stay in memory paused; everything else is frozen. */
+    /** Apply the rules above: open tab runs, the N most recent stay in memory, the rest are unloaded. */
     fun enforceLivePolicy() {
+        val limit = keepInMemory().coerceAtLeast(0)
         val keep = mutableListOf<Int>()
-        keep += currentId
         for (id in recent) {
-            if (keep.size >= 1 + PAUSED_TABS) break
+            if (keep.size >= limit) break
             if (id != currentId && tabs.any { it.id == id && it.live != null }) keep += id
         }
         for (t in tabs) {
             val live = t.live ?: continue
             when {
-                t.id == currentId -> live.resume()
-                t.id in keep -> live.pause()
-                else -> freeze(t)
+                t.id == currentId -> live.bringToForeground()
+                t.id in keep -> live.keepInBackground()
+                else -> unload(t)
             }
         }
     }
 
-    private fun freeze(t: TabEntry) {
+    /** Android says memory is low: unload every tab except the open one. */
+    fun trimMemory() {
+        tabs.filter { it.id != currentId }.forEach { unload(it) }
+    }
+
+    /** Unload every tab, including the open one (before deleting cookies). The open tab reloads when shown. */
+    fun unloadAll() {
+        tabs.forEach { unload(it) }
+    }
+
+    private fun unload(t: TabEntry) {
         val live = t.live ?: return
         if (t.preview == null) live.capturePreview()?.let { t.preview = it }
+        t.savedScrollY = live.webView.scrollY
         t.saved = live.saveState()
         live.destroy()
         t.live = null
@@ -263,7 +333,7 @@ class TabManager(private val context: Context, private val host: TabHost) {
         return JSONObject().put("groups", gs).put("tabs", ts).put("current", tabs.indexOfFirst { it.id == currentId }).toString()
     }
 
-    /** Restore saved tabs as frozen entries; only the current one loads. Returns false if nothing was restored. */
+    /** Restore saved tabs as unloaded entries; only the current one loads. Returns false if nothing was restored. */
     fun restore(json: String): Boolean {
         val o = runCatching { JSONObject(json) }.getOrNull() ?: return false
         val ts = o.optJSONArray("tabs") ?: return false
@@ -291,8 +361,4 @@ class TabManager(private val context: Context, private val host: TabHost) {
     private fun siteName(t: TabEntry): String =
         if (t.isNewTab) "Group ${groups.size + 1}"
         else t.host.substringBeforeLast('.').substringAfterLast('.').replaceFirstChar { it.uppercase() }.ifBlank { t.host }
-
-    companion object {
-        const val PAUSED_TABS = 2
-    }
 }

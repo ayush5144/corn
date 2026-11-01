@@ -1,5 +1,9 @@
 # 07 — Desktop / Laptop (Third Platform)
 
+> **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
+>
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 00:28 IST
+
 ## Recommendation: Electron
 
 One codebase covers Windows, Mac and Linux, and video plays the same everywhere. The cost is app size and shipping Electron updates yourself. That's a dependency bump, not a fork rebuild.

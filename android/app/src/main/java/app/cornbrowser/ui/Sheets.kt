@@ -38,6 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.cornbrowser.CornController
 import app.cornbrowser.Sheet
+import app.cornbrowser.browser.ClearChoice
+import app.cornbrowser.data.TabMemory
 import app.cornbrowser.data.SearchEngine
 import app.cornbrowser.data.SearchEngines
 import app.cornbrowser.data.Shields
@@ -63,6 +65,10 @@ fun BoxScope.Sheets(c: CornController) {
             is Sheet.Group -> GroupSheet(c, shown.groupId)
             Sheet.ConfirmFlush -> ConfirmFlushSheet(c)
             is Sheet.DeleteItem -> DeleteItemSheet(c, shown)
+            is Sheet.HistoryEntry -> HistoryEntrySheet(c, shown)
+            Sheet.DeleteData -> DeleteDataSheet(c)
+            Sheet.ConfirmKeepAllTabs -> ConfirmKeepAllTabsSheet(c)
+            Sheet.ConfirmClearHistory -> ConfirmClearHistorySheet(c)
             null -> {}
         }
     }
@@ -87,6 +93,7 @@ private fun MenuSheet(c: CornController) {
     Row50(CornIcons.Forward, "Forward", { c.sheet = null; c.tabs.goForward() }, enabled = cur?.canGoForward == true)
     Row50(CornIcons.TabNew, "New tab", { c.newTab() })
     if (cur?.groupId == null) Row50(CornIcons.GroupAdd, "New tab group", { c.newTabGroup() })
+    Row50(CornIcons.Clock, "History", { c.openHistory() })
     Row50(CornIcons.Share, "Share page", { cur?.takeIf { !it.isNewTab }?.let { c.share(it.url) } ?: run { c.sheet = null } }, enabled = cur?.isNewTab == false)
     Row50(CornIcons.Sliders, "Settings", { c.sheet = null; c.screen = app.cornbrowser.Screen.Settings })
 }
@@ -145,7 +152,8 @@ private fun ShieldSheet(c: CornController) {
 private fun SaveSheet(c: CornController, s: Sheet.Save) {
     val collections = remember(c.data.vaultVersion.intValue) { c.data.collections() }
     var title by remember(s) { mutableStateOf(s.title) }
-    var chosen by remember(s) { mutableStateOf(c.data.unsortedId()) }
+    // No Collection by default: the link is saved once and always shows in All.
+    var chosen by remember(s) { mutableStateOf<Long?>(null) }
     var naming by remember(s) { mutableStateOf(false) }
     var newName by remember(s) { mutableStateOf("") }
     val tags = remember(s) { mutableStateListOf<String>() }
@@ -154,9 +162,10 @@ private fun SaveSheet(c: CornController, s: Sheet.Save) {
     SheetTitle("Save to Vault", s.url)
     Label("Title")
     Field(title, { title = it }, "Title")
-    Label("Collection")
+    Label("Collection (optional)")
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        collections.forEach { col -> Chip(col.name, col.id == chosen, { chosen = col.id }) }
+        Chip("None", chosen == null && !naming, { chosen = null; naming = false })
+        collections.forEach { col -> Chip(col.name, col.id == chosen, { chosen = if (chosen == col.id) null else col.id }) }
         if (naming) {
             Field(newName, { newName = it }, "Name it", Modifier.width(150.dp), height = 34.dp, onDone = {
                 c.data.createCollection(newName)?.let { chosen = it.id }
@@ -183,13 +192,13 @@ private fun SaveSheet(c: CornController, s: Sheet.Save) {
         // A new Collection typed but not confirmed with the keyboard's Done key still counts.
         val typed = newName.trim()
         val col = (if (naming && typed.isNotEmpty()) c.data.collectionNamed(typed) else null)
-            ?: collections.firstOrNull { it.id == chosen } ?: c.data.collections().first { it.id == chosen }
+            ?: chosen?.let { id -> c.data.collections().firstOrNull { it.id == id } }
         // Same for a tag still in the box.
         val t = tagInput.trim().lowercase()
         if (t.isNotEmpty() && t !in tags) tags += t
-        c.save(col.id, col.name, title, s.url, tags.toList())
+        c.save(col?.id, col?.name, title, s.url, tags.toList())
     }, icon = CornIcons.VaultAdd)
-    T("You can save while the Vault is locked. Seeing what's inside needs your PIN.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 10.dp))
+    T("Every saved link shows in All. You can save while the Vault is locked; seeing what's inside needs your PIN.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 10.dp))
 }
 
 @Composable
@@ -236,6 +245,68 @@ private fun ConfirmFlushSheet(c: CornController) {
 private fun DeleteItemSheet(c: CornController, s: Sheet.DeleteItem) {
     SheetTitle("Delete this link?", "“${s.title}” will be removed from your Vault for good.")
     BigButton("Delete", { c.deleteVaultItem(s.id) })
+    Spacer(Modifier.height(10.dp))
+    BigButton("Cancel", { c.sheet = null }, ghost = true)
+}
+
+@Composable
+private fun HistoryEntrySheet(c: CornController, s: Sheet.HistoryEntry) {
+    val v = s.visit
+    SheetTitle(v.title.ifBlank { v.host }, v.url)
+    Row50(CornIcons.ChevRight, "Open", { c.sheet = null; c.openFromHistory(v.url) })
+    Row50(CornIcons.TabNew, "Open in new tab", { c.sheet = null; c.screen = app.cornbrowser.Screen.Browser; c.tabs.open(v.url) })
+    Row50(CornIcons.Copy, "Copy link", { c.copyLink(v.url) })
+    Row50(CornIcons.Trash, "Delete from history", { c.data.deleteVisit(v.visitId); c.sheet = null; c.showToast("Deleted from history") })
+    Row50(CornIcons.Trash, "Delete all of ${v.host} from history", {
+        c.data.deleteHistoryForHost(v.host)
+        c.sheet = null
+        c.showToast("Deleted ${v.host} from history")
+    })
+    T("This deletes history only. Cookies and site data go with Flush or Delete browsing data.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 10.dp))
+}
+
+@Composable
+private fun DeleteDataSheet(c: CornController) {
+    var history by remember { mutableStateOf(true) }
+    var cookies by remember { mutableStateOf(true) }
+    var cache by remember { mutableStateOf(true) }
+    var tabs by remember { mutableStateOf(false) }
+    val keep = remember { c.data.keepList() }
+    SheetTitle("Delete browsing data", "Everything in each ticked box, from the start. Your Vault and settings stay.")
+    SettingRow("History", "Every page in History", onClick = { history = !history }, trailing = { CornSwitch(history) })
+    SettingRow(
+        "Cookies and site data",
+        if (keep.isEmpty()) "Logs you out of sites" else "Logs you out of sites, except the ${keep.size} on your Keep List",
+        onClick = { cookies = !cookies }, trailing = { CornSwitch(cookies) },
+    )
+    SettingRow("Cached images and files", "Pages may load slower the first time", onClick = { cache = !cache }, trailing = { CornSwitch(cache) })
+    SettingRow("Open tabs and groups", "Closes every tab", onClick = { tabs = !tabs }, trailing = { CornSwitch(tabs) })
+    Spacer(Modifier.height(18.dp))
+    val any = history || cookies || cache || tabs
+    BigButton("Delete", { if (any) c.deleteBrowsingData(ClearChoice(history, cookies, cache, tabs)) }, icon = CornIcons.Trash)
+    if (cookies) {
+        T("Corn restarts for a moment after deleting cookies, so nothing is left in memory.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 10.dp))
+    }
+}
+
+@Composable
+private fun ConfirmClearHistorySheet(c: CornController) {
+    SheetTitle("Clear all history?", "Every page in History goes. Tabs, cookies and your Vault stay.")
+    BigButton("Clear history", { c.data.clearHistory(); c.sheet = null; c.showToast("History cleared") }, icon = CornIcons.Trash)
+    Spacer(Modifier.height(10.dp))
+    BigButton("Cancel", { c.sheet = null }, ghost = true)
+}
+
+@Composable
+private fun ConfirmKeepAllTabsSheet(c: CornController) {
+    SheetTitle("Keep all tabs in memory?", "Not recommended. Every open tab keeps running in the background:")
+    T(
+        "• More battery drain and heat.\n" +
+            "• Android may close Corn to free memory, and you'd lose what wasn't saved.\n" +
+            "• All tabs share one page process: if one page crashes, every tab reloads.",
+        14.sp, C.Text, modifier = Modifier.padding(bottom = 18.dp),
+    )
+    BigButton("Keep all tabs", { c.settings.chooseTabMemory(TabMemory.ALL); c.tabs.enforceLivePolicy(); c.sheet = null })
     Spacer(Modifier.height(10.dp))
     BigButton("Cancel", { c.sheet = null }, ghost = true)
 }

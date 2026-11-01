@@ -1,5 +1,9 @@
 # 02 — Architecture
 
+> **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
+>
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 13:59 IST
+
 ## Shape of the system
 
 Corn is **three thin native shells plus one shared Rust core.**
@@ -62,8 +66,8 @@ Brave writes Java on Android only because it inherited Chromium's Android code. 
 │          ▼                    ▼                              ▼   │
 │   ┌─────────────┐     ┌──────────────┐           ┌─────────────┐ │
 │   │ Tab Manager │     │ Tab previews │           │ Vault UI    │ │
-│   │ 3–5 live,   │     │ (local only) │           │ 🔑 Keystore │ │
-│   │ rest frozen │     └──────────────┘           └──────┬──────┘ │
+│   │ N in memory,│     │ (local only) │           │ 🔑 Keystore │ │
+│   │ rest unload.│     └──────────────┘           └──────┬──────┘ │
 │   └──────┬──────┘                                       │        │
 └──────────┼──────────────────────────────────────────────┼────────┘
            │ one WebView per live tab                     │

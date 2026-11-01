@@ -1,5 +1,9 @@
 # 03 — Android Stack (First Platform)
 
+> **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
+>
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 13:59 IST
+
 ## Summary
 
 - **No Tauri.**
@@ -52,23 +56,32 @@
 
 ## Tab manager memory policy
 
+The real rules are written at the top of `TabManager.kt`; keep this section in sync with it.
+
 ```
-New tab opened
+Tab switched or opened
       │
       ▼
-Live tabs > limit (3–5, tuned per device RAM)?
+Keep the open tab + the N most recently used tabs "kept in memory"
+  N = Settings → Advanced → Background tabs:
+      Automatic by phone memory (default): 4 GB → 1, 6 GB → 2, 8 GB → 3, 12 GB+ → 5
+      Keep recent tabs: 0 / 1 / 2 / 3 / 5
+      Keep all (not recommended, asks first)
       │
-  ┌───┴───┐
-  No     Yes ──► Freeze the least recently used tab:
-  │             • take a preview screenshot (memory/disk, session only)
-  │             • save WebView state bundle
-  │             • destroy the WebView (frees the renderer)
-  ▼
-Keep going
+      ▼
+Every other tab is "unloaded":
+  • keep its preview picture (memory only), back/forward state and scroll position
+  • destroy the WebView (nothing runs)
 
-System sends onTrimMemory(...) ──► freeze more tabs immediately
-User taps a frozen tab        ──► create a WebView, restore state, reload
+Android warns memory is low (onTrimMemory) ──► unload every tab except the open one (Automatic mode)
+User opens an unloaded tab                 ──► new WebView, restore state, reload, scroll back
 ```
+
+What "kept in memory" really means (Android's documentation and our measurements):
+- Corn pauses every video/audio element and stops the page restarting them, then calls `WebView.onPause()`.
+- `onPause()` "does not pause JavaScript" (Android docs). Measured: a hidden tab's timers slow about 5× but keep running.
+- `pauseTimers()` would stop scripts but is global ("for all WebViews"), so it would stop the open tab too. Corn never calls it.
+- All tabs share one page process (measured): one page crashing reloads every tab.
 
 The tab limit and the freeze policy make the biggest memory difference in the whole app. This is Kotlin's job, not Rust's.
 

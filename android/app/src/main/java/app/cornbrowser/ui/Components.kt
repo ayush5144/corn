@@ -299,10 +299,16 @@ fun TabPreview(entry: TabEntry, isCurrent: Boolean, onOpen: () -> Unit, onClose:
                 .border(if (isCurrent) 2.dp else 1.dp, if (isCurrent) C.Corn else C.Line, RoundedCornerShape(14.dp))
                 .clickable(onClick = onOpen),
         ) {
-            Row(Modifier.fillMaxWidth().height(26.dp).background(C.Surface2).padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            // Header: icon, title (cut short with "…" before the ×), and the × centred in the header.
+            Row(Modifier.fillMaxWidth().height(36.dp).background(C.Surface2).padding(start = 8.dp, end = 7.dp), verticalAlignment = Alignment.CenterVertically) {
                 SiteIcon(entry, 14.dp)
                 Spacer(Modifier.width(6.dp))
-                T(if (entry.isNewTab) "New tab" else entry.host, 10.sp, C.Text, FontWeight.Bold, maxLines = 1)
+                T(if (entry.isNewTab) "New tab" else entry.host, 10.sp, C.Text, FontWeight.Bold, maxLines = 1, modifier = Modifier.weight(1f))
+                Spacer(Modifier.width(4.dp))
+                Box(
+                    Modifier.size(22.dp).clip(CircleShape).background(Color(0xA6000000)).clickable(onClick = onClose),
+                    contentAlignment = Alignment.Center,
+                ) { CornIcon(CornIcons.X, 13.dp, Color.White) }
             }
             val shot = entry.preview
             if (shot != null && !entry.isNewTab) {
@@ -314,10 +320,6 @@ fun TabPreview(entry: TabEntry, isCurrent: Boolean, onOpen: () -> Unit, onClose:
                 }
             }
         }
-        Box(
-            Modifier.align(Alignment.TopEnd).padding(6.dp).size(24.dp).clip(CircleShape).background(Color(0xA6000000)).clickable(onClick = onClose),
-            contentAlignment = Alignment.Center,
-        ) { CornIcon(CornIcons.X, 14.dp, Color.White) }
     }
 }
 

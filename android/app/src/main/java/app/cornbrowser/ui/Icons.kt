@@ -27,6 +27,8 @@ object CornIcons {
     // drawn smaller on purpose (optical sizing), 15.5 dp visible vs 18 dp for the others.
     val Back = line("M19.2 12H5.2", "M12 18.8L5.2 12 12 5.2")
     val Forward = line("M4.8 12h14", "M12 5.2l6.8 6.8-6.8 6.8")
+    /** Back when it returns to Corn's home page: a curved "↩" arrow, same optical size as Back. */
+    val BackHome = line("M9.5 13.8L5 9.3l4.5-4.5", "M5 9.3h9a4.75 4.75 0 0 1 0 9.5h-3.5")
     val Vault = toolbar(RECT_VAULT, "M15.5 11a3.5 3.5 0 1 1-7 0a3.5 3.5 0 1 1 7 0z", "M12 7.5v1M12 13.5v1M8.5 11h1M14.5 11h1", FEET)
     val VaultAdd = toolbar(RECT_VAULT, "M12 7.4v7.2M8.4 11h7.2", FEET)
     val VaultSaved = toolbar(RECT_VAULT, "M8.3 11.2l2.6 2.6 4.8-5", FEET)
@@ -76,6 +78,8 @@ object CornIcons {
     val Backspace = line("M9 5h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9l-6-7z", "M12.5 9.5l5 5M17.5 9.5l-5 5")
     val Heart = line("M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z")
     val Check = line("M5 12.5l4.5 4.5L19 7")
+    val Clock = line("M20.5 12a8.5 8.5 0 1 1-17 0a8.5 8.5 0 1 1 17 0z", "M12 7.5V12l3 2")
+    val Trash = line("M4.5 6.5h15", "M9.5 6.5V4.5h5v2", "M6.5 6.5l1 13h9l1-13", "M10.3 10.5v5.5M13.7 10.5v5.5")
     val Folder = line("M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z")
     val BellOff = line("M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z", "M10 20.5a2 2 0 0 0 4 0", "M4 4l16 16")
 

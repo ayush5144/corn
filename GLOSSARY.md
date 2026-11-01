@@ -1,5 +1,9 @@
 # Corn
 
+> **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
+>
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 13:59 IST
+
 Corn is a free, private, "use whenever you want" browser for adults. This glossary fixes the words we use for its product concepts so docs, UI copy and code all mean the same thing.
 
 ## Session and Flush
@@ -41,6 +45,14 @@ One open web page in the Session.
 A set of Tabs the user browses together, opened from one another, switchable in one tap from the Tab Group Strip.
 _Avoid_: Tab stack, tab folder, workspace
 
+**Kept in memory**:
+A tab other than the open one whose page stays loaded, so it reopens instantly where it was. Its videos stay paused; its scripts keep running, slowed down. How many: Settings → Advanced → Background tabs.
+_Avoid_: Paused, sleeping
+
+**Unloaded**:
+A tab whose page has been closed to save memory. Corn keeps its preview, back/forward history and scroll position; opening it reloads the page.
+_Avoid_: Frozen, discarded, suspended
+
 **Tab Group Strip**:
 The bar at the bottom of the screen showing one round site icon per Tab in the current Tab Group.
 _Avoid_: Tab bar, group bar, bubbles
@@ -56,12 +68,22 @@ One saved thing in the Vault: a link with its title, plus optional tags and thum
 _Avoid_: Bookmark, save, entry
 
 **Collection**:
-A named, single-level grouping of Vault Items; each Vault Item belongs to exactly one Collection.
+A named, single-level grouping of Vault Items; each Vault Item belongs to at most one Collection (picking one is optional).
 _Avoid_: Vault group, folder, album
 
-**Unsorted**:
-The Collection a Vault Item lands in when the user hasn't picked one.
-_Avoid_: Inbox, default folder
+**All**:
+The Vault view showing every saved Vault Item, in a Collection or not. Not a stored Collection: each link is saved once.
+_Avoid_: Unsorted, Inbox, default folder
+
+## History
+
+**History**:
+Corn's list of pages visited, stored only on the phone, cleared by every Flush. "Keep history" switches recording off.
+_Avoid_: Browsing log, activity
+
+**Delete browsing data**:
+The Settings action that deletes everything in the chosen categories (history, cookies and site data, cache, tabs), without a full Flush. No time ranges.
+_Avoid_: Clear data, wipe
 
 ## Privacy
 

@@ -13,6 +13,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import uniffi.corn_ffi.Collection
 import uniffi.corn_ffi.CornStore
+import uniffi.corn_ffi.HistoryVisit
 import uniffi.corn_ffi.VaultItem
 
 /** What Corn blocks on a site. Default: everything on. */
@@ -28,7 +29,7 @@ data class Shields(val ads: Boolean = true, val trackers: Boolean = true, val po
 
 /**
  * Corn's local store (corn.db, plain SQLite in app-private storage, via the Rust core).
- * Holds the Vault, the Keep List, per-site blocking choices and the Kept Session.
+ * Holds the Vault, history, the Keep List, per-site blocking choices and the Kept Session.
  * See docs/02-technical/10-storage.md.
  */
 class CornData(context: Context) {
@@ -37,12 +38,17 @@ class CornData(context: Context) {
     /** Bumped on every Vault change so screens showing Vault data redraw. */
     val vaultVersion = mutableIntStateOf(0)
 
+    /** Bumped on every history change so the History screen redraws. */
+    val historyVersion = mutableIntStateOf(0)
+
     private fun changed() { vaultVersion.intValue++ }
 
     // ---------- Vault ----------
     fun collections(): List<Collection> = store.collections()
-    fun unsortedId(): Long = store.unsortedId()
-    fun items(collectionId: Long): List<VaultItem> = store.items(collectionId)
+    /** Number of saved links: what "All" shows. */
+    fun itemCount(): Long = store.itemCount()
+    /** Links in one Collection, or every saved link ("All") when `collectionId` is null. */
+    fun items(collectionId: Long?): List<VaultItem> = store.items(collectionId)
     fun recentItems(limit: Long): List<VaultItem> = store.recentItems(limit)
     fun search(query: String): List<VaultItem> = store.search(query)
     fun isSaved(url: String): Boolean = url.isNotBlank() && store.containsUrl(url)
@@ -57,7 +63,8 @@ class CornData(context: Context) {
         .onFailure { Log.w(TAG, "create collection", it) }
         .getOrNull()
 
-    fun save(collectionId: Long, title: String, url: String, tags: List<String>) {
+    /** Save a link once. `collectionId` null = in no Collection (it still shows in All). */
+    fun save(collectionId: Long?, title: String, url: String, tags: List<String>) {
         store.addItem(collectionId, title, url, tags)
         changed()
     }
@@ -81,6 +88,24 @@ class CornData(context: Context) {
         store.deleteItem(id)
         changed()
     }
+
+    // ---------- History (on this phone only; cleared by Flush) ----------
+    fun recordVisit(url: String, title: String, host: String) = runCatching {
+        store.recordVisit(url, title, host, System.currentTimeMillis())
+        historyVersion.intValue++
+    }.onFailure { Log.w(TAG, "history write failed: ${it.javaClass.simpleName}") } // never the address
+
+    fun updateTitle(url: String, title: String) = runCatching { store.updateTitle(url, title) }
+
+    fun history(query: String?, limit: Long = 500): List<HistoryVisit> =
+        runCatching { store.history(query?.takeIf { it.isNotBlank() }, limit) }.getOrDefault(emptyList())
+
+    fun deleteVisit(visitId: Long) { store.deleteVisit(visitId); historyVersion.intValue++ }
+
+    /** Delete every history entry for a site and its subdomains (history only, not cookies). */
+    fun deleteHistoryForHost(host: String) { store.deleteHistoryForHost(host); historyVersion.intValue++ }
+
+    fun clearHistory() { store.clearHistory(); historyVersion.intValue++ }
 
     // ---------- Keep List (sites that stay logged in after a Flush) ----------
     fun keepList(): List<String> = readList(KEEP)

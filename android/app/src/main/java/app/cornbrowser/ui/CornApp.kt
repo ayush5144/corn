@@ -38,6 +38,7 @@ fun CornApp(
                 Screen.Tabs -> TabsScreen(c)
                 Screen.Vault -> VaultScreen(c)
                 Screen.Settings -> SettingsScreen(c, onNeedPin)
+                Screen.History -> HistoryScreen(c)
             }
             Sheets(c)
             ToastHost(c.toast, bottomPadding = if (c.screen == Screen.Browser) 132.dp else 24.dp) { c.toastAction() }

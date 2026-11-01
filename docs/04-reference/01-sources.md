@@ -1,5 +1,9 @@
 # Sources
 
+> **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
+>
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 00:28 IST
+
 Facts in these docs and where they come from. Anything marked *estimate* in the docs is reasoning, not a measurement.
 
 ## Build requirements and release cadence
