@@ -116,7 +116,8 @@ impl Store {
     /// Open (or create, or upgrade) the database at `path`.
     pub fn open(path: &str) -> Result<Self> {
         let conn = Connection::open(path)?;
-        conn.execute_batch("PRAGMA foreign_keys = ON; PRAGMA journal_mode = WAL;")?;
+        // secure_delete: deleted rows are overwritten with zeros, not left in free space in the file.
+        conn.execute_batch("PRAGMA foreign_keys = ON; PRAGMA journal_mode = WAL; PRAGMA secure_delete = ON;")?;
         migrate(&conn)?;
         Ok(Self { conn: Mutex::new(conn) })
     }
@@ -309,19 +310,21 @@ impl Store {
         let conn = self.conn();
         conn.execute("DELETE FROM history_visits WHERE id = ?1", [visit_id])?;
         drop_orphans(&conn)?;
-        Ok(())
+        checkpoint(&conn)
     }
 
     /// Delete every visit to a site and its subdomains.
     pub fn delete_history_for_host(&self, host: &str) -> Result<()> {
         let conn = self.conn();
         conn.execute(&format!("DELETE FROM history_entries WHERE {HOST_MATCH}"), [host])?;
-        Ok(())
+        checkpoint(&conn)
     }
 
+    /// Delete all history, then empty the write-ahead log so no copy of it stays in the -wal file.
     pub fn clear_history(&self) -> Result<()> {
-        self.conn().execute_batch("DELETE FROM history_visits; DELETE FROM history_entries;")?;
-        Ok(())
+        let conn = self.conn();
+        conn.execute_batch("DELETE FROM history_visits; DELETE FROM history_entries;")?;
+        checkpoint(&conn)
     }
 
     // ---------- key-value area ----------
@@ -346,6 +349,13 @@ impl Store {
 
 fn like_pattern(query: &str) -> String {
     format!("%{}%", query.trim().replace('\\', "\\\\").replace('%', "\\%").replace('_', "\\_"))
+}
+
+/// Copy the write-ahead log into the database and empty it, so deleted rows don't survive in the
+/// -wal file (with `secure_delete` on, they are zeroed in the database itself).
+fn checkpoint(conn: &Connection) -> Result<()> {
+    conn.query_row("PRAGMA wal_checkpoint(TRUNCATE)", [], |_| Ok(()))?;
+    Ok(())
 }
 
 fn drop_orphans(conn: &Connection) -> Result<()> {
@@ -523,6 +533,29 @@ mod tests {
         assert!(s.history(None, 100).unwrap().is_empty());
         let orphans: i64 = s.conn().query_row("SELECT count(*) FROM history_visits", [], |r| r.get(0)).unwrap();
         assert_eq!(orphans, 0);
+    }
+
+    #[test]
+    fn cleared_history_leaves_no_trace_in_the_files() {
+        let path = temp_path("trace");
+        let s = Store::open(&path).unwrap();
+        s.record_visit("https://secret-marker.example/page", "SECRETTITLEMARKER", "secret-marker.example", 1).unwrap();
+        s.record_visit("https://one-visit.example/", "ONEVISITMARKER", "one-visit.example", 2).unwrap();
+        s.record_visit("https://whole-site.example/a", "SITEMARKER", "whole-site.example", 3).unwrap();
+        s.record_visit("https://keep.example/", "Kept", "keep.example", 4).unwrap();
+        let one = s.history(Some("ONEVISITMARKER"), 10).unwrap()[0].visit_id;
+        s.delete_visit(one).unwrap();
+        s.delete_history_for_host("whole-site.example").unwrap();
+        for f in [path.clone(), format!("{path}-wal")] {
+            let text = String::from_utf8_lossy(&std::fs::read(&f).unwrap_or_default()).into_owned();
+            assert!(!text.contains("ONEVISITMARKER") && !text.contains("SITEMARKER"), "single delete left a trace in {f}");
+        }
+        s.clear_history().unwrap();
+        for f in [path.clone(), format!("{path}-wal")] {
+            let bytes = std::fs::read(&f).unwrap_or_default();
+            let text = String::from_utf8_lossy(&bytes);
+            assert!(!text.contains("SECRETTITLEMARKER") && !text.contains("secret-marker"), "trace left in {f}");
+        }
     }
 
     #[test]

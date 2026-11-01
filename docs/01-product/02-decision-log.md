@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 13:59 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:08 IST
 
 Every product question asked and the founder's answer, in order. Settled answers flow into [01-prd.md](01-prd.md). New rounds are appended at the bottom.
 
@@ -415,6 +415,11 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **How:** Corn deletes cookies by editing WebView's cookie database directly, as DuckDuckGo does (`SQLCookieRemover`): every cookie except Keep List sites' goes, with Keep List cookies untouched (before, they were re-created and lost their expiry and HttpOnly flags). Site storage of **every** site is deleted (`deleteAllData` plus WebView's storage files), then Corn restarts its process (about 0.3 s) so nothing stays in memory. In the background (Auto-Flush after leaving), Android doesn't allow a relaunch, so the process just ends.
 - **Status:** ✅ Verified on the emulator: Keep List site kept its cookie; the other site lost its cookie; local storage and IndexedDB gone for both; history 13 visits → 0.
 - **Later:** keep Keep List sites' local storage too (DuckDuckGo edits WebView's LevelDB files with a LevelDB library). See checklist.
+
+### History deletion: say what it does, link to the rest
+- **Answer:** History deletions say they're history only (× → "Removed from history"; site → "… Cookies stay."; clear all → "History cleared. Cookies and site data stay."). The History screen links to Delete browsing data (as Chrome and Brave do). With Keep history off, nothing is stored.
+- **Added:** deleted history leaves no trace in the database files (`secure_delete` + emptying the write-ahead log); without it, a cleared page title was still readable in `corn.db-wal` (unit test).
+- **Open:** a Keep history switch on the History screen too (it's in Settings now).
 
 ### "Unsorted" becomes "All"
 - **Answer:** Each link is saved once. Picking a Collection is optional. **All** is a view of every saved link, not a stored Collection, so nothing is ever saved twice. Existing Unsorted links moved to "no Collection" (they show in All); the Unsorted Collection was removed (database upgrade, unit-tested).

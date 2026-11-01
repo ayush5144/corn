@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 13:59 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:08 IST
 
 Every feature in the Android app today, what it does for the user, and the evidence behind it. Nothing here is planned-only; planned work lives in the [checklist](../03-planning/02-checklist.md).
 
@@ -94,8 +94,8 @@ Every feature in the Android app today, what it does for the user, and the evide
   - *Evidence:* a Keep List test site still sent its cookie after Flush; a non-Keep List site didn't. Known limit: their local storage and IndexedDB are deleted (Android can't delete one site's local storage), so a site that keeps its login there may log you out.
 
 - **History** ✅
-  - *What:* pages you visit, on this phone only, cleared by every Flush. Menu → History: search, grouped by day, tap to open, × to delete one visit, long-press to delete a whole site from history, trash icon to clear all. "Keep history" switch in Settings (on by default).
-  - *Evidence:* visits recorded with page titles (e.g. "corn test search at DuckDuckGo"). One search = one entry (pages that change their own address while loading are merged within 5 s; before the fix one DuckDuckGo search made 6 entries). Flush emptied it. The screen itself hasn't been reviewed by the founder yet.
+  - *What:* pages you visit, on this phone only, cleared by every Flush. Menu → History: search, grouped by day, tap to open, × to delete one visit, long-press to delete a whole site from history, trash icon to clear all. "Keep history" switch in Settings (on by default); when off, nothing is written. A "Delete browsing data" link at the top of History covers cookies, cache and tabs. Every history deletion says it's history only ("Cookies stay").
+  - *Evidence:* visits recorded with page titles (e.g. "corn test search at DuckDuckGo"). One search = one entry (pages that change their own address while loading are merged within 5 s; before the fix one DuckDuckGo search made 6 entries). Flush emptied it. Deletion leaves no trace in the database files: SQLite `secure_delete` plus emptying the write-ahead log (a unit test searches the files for the deleted page; without the fix the title was still readable in the `-wal` file). Size: about 160 bytes per visit (1,000 visits ≈ 160 KB, measured). The screen itself hasn't been reviewed by the founder yet.
 
 - **Delete browsing data** 🔨
   - *What:* Settings → History and data: tick History, Cookies and site data (Keep List cookies stay), Cached files, Open tabs; everything in each ticked category goes. No time ranges, because the cache and site storage can only be deleted all at once.

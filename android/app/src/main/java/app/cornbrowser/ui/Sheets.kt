@@ -260,7 +260,7 @@ private fun HistoryEntrySheet(c: CornController, s: Sheet.HistoryEntry) {
     Row50(CornIcons.Trash, "Delete all of ${v.host} from history", {
         c.data.deleteHistoryForHost(v.host)
         c.sheet = null
-        c.showToast("Deleted ${v.host} from history")
+        c.showToast("Deleted ${v.host} from history. Cookies stay.")
     })
     T("This deletes history only. Cookies and site data go with Flush or Delete browsing data.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 10.dp))
 }
@@ -292,7 +292,7 @@ private fun DeleteDataSheet(c: CornController) {
 @Composable
 private fun ConfirmClearHistorySheet(c: CornController) {
     SheetTitle("Clear all history?", "Every page in History goes. Tabs, cookies and your Vault stay.")
-    BigButton("Clear history", { c.data.clearHistory(); c.sheet = null; c.showToast("History cleared") }, icon = CornIcons.Trash)
+    BigButton("Clear history", { c.data.clearHistory(); c.sheet = null; c.showToast("History cleared. Cookies and site data stay.") }, icon = CornIcons.Trash)
     Spacer(Modifier.height(10.dp))
     BigButton("Cancel", { c.sheet = null }, ghost = true)
 }

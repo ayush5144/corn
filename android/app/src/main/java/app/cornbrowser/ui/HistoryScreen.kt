@@ -62,6 +62,20 @@ fun HistoryScreen(c: CornController) {
         Box(Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
             Field(query, { query = it }, "Search history", leading = { CornIcon(CornIcons.Search, 18.dp, C.Muted) })
         }
+        // Same sheet as Settings → Delete browsing data: cookies, cache and tabs live there, not in History.
+        Row(
+            Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp).clip(RoundedCornerShape(12.dp))
+                .combinedClickable(onClick = { c.sheet = Sheet.DeleteData }).padding(vertical = 10.dp, horizontal = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            CornIcon(CornIcons.Trash, 20.dp, C.Corn)
+            Spacer(Modifier.width(12.dp))
+            Column(Modifier.weight(1f)) {
+                T("Delete browsing data", 15.sp, C.Corn, FontWeight.SemiBold)
+                T("Cookies, cache and tabs too", 12.5.sp, C.Muted)
+            }
+            CornIcon(CornIcons.ChevRight, 18.dp, C.Muted)
+        }
         if (!c.settings.keepHistory) {
             T("History is off, so Corn isn't recording new pages. Turn it on in Settings → History and data.", 13.sp, C.Muted,
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp))
@@ -80,7 +94,7 @@ fun HistoryScreen(c: CornController) {
                         v, time.format(Date(v.visitedAt)),
                         onOpen = { c.openFromHistory(v.url) },
                         onMore = { c.sheet = Sheet.HistoryEntry(v) },
-                        onDelete = { c.data.deleteVisit(v.visitId) },
+                        onDelete = { c.data.deleteVisit(v.visitId); c.showToast("Removed from history") },
                     )
                 }
             }

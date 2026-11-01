@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 12:31 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:01 IST
 
 Two APKs can be built for a real Android phone. Neither is committed (APKs never go in the repo).
 

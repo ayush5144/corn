@@ -75,3 +75,8 @@
 - Updated `docs/02-technical/02-architecture.md`, `03-android.md` (tab rules), `05-flush-model.md` (how Android Flush works), `10-storage.md` (history, schema version).
 - Updated `docs/03-planning/02-checklist.md` (new Phase 3 rows; backlog: history time ranges, Keep List local storage, 90-day history idea) and `docs/05-review/02-review-2026-11-01.md`.
 
+## 2026-11-01 — History deletion: clear messages, link, no traces
+
+- Code: `corn-vault` (`secure_delete`, write-ahead log emptied after every history delete; new no-trace test, 9 tests), `ui/HistoryScreen.kt` (Delete browsing data link, × toast), `ui/Sheets.kt` (history-only toasts).
+- Updated `docs/01-product/03-features.md`, `02-decision-log.md` (Round 11), `docs/02-technical/10-storage.md`.
+

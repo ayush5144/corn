@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 13:59 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:08 IST
 
 Everything stays in Corn's **private app storage** on the phone. Other apps can't read it (Android sandbox), the phone encrypts it while locked (file-based encryption), and Corn opts out of every backup.
 
@@ -25,6 +25,10 @@ Everything stays in Corn's **private app storage** on the phone. Other apps can'
 ## Why plain SQLite, not SQLCipher
 
 Founder decision (decision log, Round 5). SQLCipher would only add protection when someone gets the raw file: a rooted phone, malware with root access, or forensic extraction tools. In normal use, Android's sandbox and phone encryption already protect the file, the same level as Chrome's bookmarks and history on Android.
+
+**Deleting leaves no trace:** `corn.db` runs with `PRAGMA secure_delete = ON` (deleted rows are overwritten with zeros) and every history deletion empties the write-ahead log (`wal_checkpoint(TRUNCATE)`), so deleted pages can't be read back from `corn.db` or `corn.db-wal`. Unit-tested.
+
+**Size:** history costs about 160 bytes per visit (1,000 visits ≈ 160 KB, measured with Corn's tables).
 
 **Schema upgrades:** `corn.db` carries a version (`PRAGMA user_version`, now 2). Version 2 made a link's Collection optional and moved "Unsorted" links to no Collection (shown in All). Upgrades run once on open and keep all data (unit-tested).
 
