@@ -115,3 +115,8 @@
 - Updated `docs/03-planning/04-testing-on-a-phone.md` (what to test: background-loaded tabs, light mode).
 - Updated `docs/05-review/02-review-2026-11-01.md` (verified rows for this round) and `GLOSSARY.md` (Kept in memory: background-opened tabs).
 
+## 2026-11-01 — Dev start/stop scripts
+
+- Added `scripts/dev-start.sh` (emulator, optional debug install and test server) and `scripts/dev-stop.sh` (stops emulator, test servers, Gradle/Kotlin daemons, adb).
+- Updated `docs/02-technical/08-repo-structure.md` (scripts list) and `docs/03-planning/04-testing-on-a-phone.md` (Emulator on the Mac).
+

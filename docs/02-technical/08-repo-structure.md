@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:38 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 23:16 IST
 
 One public repository, `ayush5144/corn`, holds everything: docs, the shared Rust core, and every platform app.
 
@@ -70,6 +70,8 @@ corn/
     ├── build-android-core.sh  ✅ cargo-ndk → .so files + Kotlin bindings
     ├── build-starter-assets.sh ✅ starter filter engines + pinned autoconsent → app assets (not committed)
     ├── doc-banner.py          ✅ adds/refreshes the developer banner + Created/Last updated (IST) on every doc
+    ├── dev-start.sh           ✅ starts the emulator; --install builds + installs the debug app; --serve DIR runs a test server
+    ├── dev-stop.sh            ✅ stops the emulator, test servers, Gradle/Kotlin daemons and adb (frees memory)
     ├── build-ios-core.sh      ⏭️ cargo → .xcframework + Swift bindings
     └── build-desktop-core.sh  ⏭️ napi-rs → .node addon
 ```

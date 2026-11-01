@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 20:14 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 23:16 IST
 
 Two APKs can be built for a real Android phone. Neither is committed (APKs never go in the repo).
 
@@ -34,6 +34,10 @@ The debug key is only for testing. A public release needs a real signing key (se
 **Without a cable:** send the APK to the phone (Google Drive, Telegram, email to yourself; AirDrop doesn't reach Android), open it, and allow "Install unknown apps" for the app you opened it from.
 
 **Switching between the two builds:** both use the same app ID and key, so one replaces the other and keeps data.
+
+## Emulator on the Mac
+
+`scripts/dev-start.sh --install` starts the emulator and installs the debug app (`--serve DIR` also serves test pages at `http://10.0.2.2:8765`). When you're done, `scripts/dev-stop.sh` stops the emulator, test servers and build daemons, which together use several GB of memory.
 
 ## What to test first
 

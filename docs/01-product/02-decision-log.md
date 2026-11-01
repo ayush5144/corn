@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 18:38 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 20:14 IST
 
 Every product question asked and the founder's answer, in order. Settled answers flow into [01-prd.md](01-prd.md). New rounds are appended at the bottom.
 
