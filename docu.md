@@ -52,3 +52,8 @@
 - Code: `data/SearchEngines.kt` (per-engine safe-search parameters), `data/CornSettings.kt` (`safeBrowsing`, `safeSearch`), `browser/CornTab.kt` (`setSafeBrowsing`), Settings switches, onboarding line, first JVM unit tests (`SearchEnginesTest`).
 - Updated `docs/01-product/01-prd.md` (features + defaults), `03-features.md`, `02-decision-log.md` (Round 9), `docs/03-planning/02-checklist.md`, `docs/05-review/01-audit` and `02-review` (decision closed).
 
+## 2026-11-01 — Onboarding shows Safe Browsing and Safe Search switches
+
+- Code: `ui/OnboardingScreen.kt` (two switches with On/Off state), `ui/CornApp.kt` (passes settings).
+- Updated `docs/01-product/01-prd.md`, `03-features.md`, `02-decision-log.md` (Round 9 follow-up).
+

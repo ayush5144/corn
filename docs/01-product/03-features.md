@@ -132,7 +132,7 @@ Last updated: 2026-11-01 (commit `f6dc779`).
 - **No backups** ✅: `allowBackup="false"` plus rules excluding all data from cloud backup and device transfer.
 - **No logs of browsing** ✅: audited. Corn's 5 log messages contain no URLs; page console messages are kept out of Android's log; there's no record of what was blocked where.
 - **WebView usage metrics opted out** ✅: `MetricsOptOut` in the manifest.
-- **Safe Browsing switch** 🔨: Settings → Privacy, on by default, mentioned in onboarding. Google Safe Browsing warns before malware and phishing pages; Google receives hashed address fragments, not full URLs. Applies to open tabs immediately.
+- **Safe Browsing switch** 🔨: Settings → Privacy, on by default. Onboarding shows Safe Browsing and Safe Search with their on/off state and a switch for each. Google Safe Browsing warns before malware and phishing pages; Google receives hashed address fragments, not full URLs. Applies to open tabs immediately.
 
 ## Search and navigation
 

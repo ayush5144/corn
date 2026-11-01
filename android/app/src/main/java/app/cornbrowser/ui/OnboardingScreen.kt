@@ -11,6 +11,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,7 +44,7 @@ import androidx.compose.ui.unit.sp
 import app.cornbrowser.R
 
 @Composable
-fun OnboardingScreen(onStart: () -> Unit) {
+fun OnboardingScreen(settings: app.cornbrowser.data.CornSettings, onStart: () -> Unit) {
     val bob = rememberInfiniteTransition(label = "bob")
     val lift by bob.animateFloat(0f, 1f, infiniteRepeatable(tween(1600), RepeatMode.Reverse), label = "lift")
 
@@ -67,16 +68,45 @@ fun OnboardingScreen(onStart: () -> Unit) {
             Bullet(CornIcons.Vault, "Saves what matters to a locked Vault")
             Bullet(CornIcons.Toilet, "Flushes everything else in one tap")
         }
-        Spacer(Modifier.height(48.dp))
+        Spacer(Modifier.height(28.dp))
+        // Two choices people should make up front, shown with their current state.
+        Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(C.Surface).padding(horizontal = 14.dp, vertical = 4.dp)) {
+            OnboardingToggle(
+                "Safe Browsing", if (settings.safeBrowsing) "On" else "Off",
+                "Warns you about dangerous sites using Google Safe Browsing.", settings.safeBrowsing,
+            ) { settings.safeBrowsing = it }
+            Box(Modifier.fillMaxWidth().height(1.dp).background(C.Line))
+            OnboardingToggle(
+                "Safe Search", if (settings.safeSearch) "On" else "Off",
+                "Filters explicit results from search engines.", settings.safeSearch,
+            ) { settings.safeSearch = it }
+        }
+        T("You can change both any time in Settings.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 8.dp, start = 4.dp))
+        Spacer(Modifier.height(24.dp))
         BigButton("I'm 18 or older · Start browsing", onStart)
         T(
             "Nothing you browse leaves this phone. No account needed.", 13.sp, C.Muted,
             modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
         )
-        T(
-            "Corn warns you about dangerous sites using Google Safe Browsing. You can turn this off in Settings.", 13.sp, C.Muted,
-            modifier = Modifier.fillMaxWidth().padding(top = 6.dp),
-        )
+    }
+}
+
+@Composable
+private fun OnboardingToggle(title: String, state: String, sub: String, on: Boolean, onChange: (Boolean) -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().clickable { onChange(!on) }.padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                T(title, 15.5.sp, weight = FontWeight.SemiBold)
+                Spacer(Modifier.width(8.dp))
+                T(state, 13.sp, if (on) C.Leaf else C.Muted, FontWeight.Bold)
+            }
+            T(sub, 13.sp, C.Muted)
+        }
+        Spacer(Modifier.width(12.dp))
+        CornSwitch(on)
     }
 }
 

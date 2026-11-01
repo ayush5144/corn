@@ -33,7 +33,7 @@ fun CornApp(
     Box(Modifier.fillMaxSize().background(C.Bg)) {
         Box(Modifier.fillMaxSize().systemBarsPadding().imePadding()) {
             when (c.screen) {
-                Screen.Onboarding -> OnboardingScreen { c.finishOnboarding() }
+                Screen.Onboarding -> OnboardingScreen(c.settings) { c.finishOnboarding() }
                 Screen.Browser -> BrowserScreen(c)
                 Screen.Tabs -> TabsScreen(c)
                 Screen.Vault -> VaultScreen(c)
