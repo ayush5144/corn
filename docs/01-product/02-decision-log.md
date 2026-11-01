@@ -387,5 +387,5 @@ Every product question asked and the founder's answer, in order. Settled answers
 ### Safe Browsing and Safe Search switches
 - **Answer:** Add both switches to Settings. Safe Search keeps a switch even though engines are asked for "off".
 - **Status:** ✅ Built. Safe Browsing: on by default, Settings → Privacy, one onboarding line. Safe Search: off by default, Settings → Search; flips each engine's URL parameter between off and strict (Startpage has none). Search URLs unit-tested for all 5 engines.
-- **Follow-up:** Onboarding shows both settings with their current state (On/Off) and a switch each, instead of a text line. ✅ Built; not yet seen (onboarding needs a fresh install).
+- **Follow-up:** Onboarding shows both settings with their current state (On/Off) and a switch each, instead of a text line. ✅ Built and verified on a fresh install (switch flips the label and saves the setting).
 

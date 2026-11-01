@@ -57,3 +57,9 @@
 - Code: `ui/OnboardingScreen.kt` (two switches with On/Off state), `ui/CornApp.kt` (passes settings).
 - Updated `docs/01-product/01-prd.md`, `03-features.md`, `02-decision-log.md` (Round 9 follow-up).
 
+## 2026-11-01 — Docs sync after onboarding switches; Android unit tests documented
+
+- Updated `docs/05-review/02-review-2026-11-01.md` (Testing gaps: 3 Android unit tests).
+- Updated `docs/02-technical/08-repo-structure.md` (app/src/test, `./gradlew testDebugUnitTest`).
+- Updated `docs/01-product/03-features.md` and `02-decision-log.md` (onboarding switches verified on device).
+

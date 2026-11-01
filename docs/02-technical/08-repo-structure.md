@@ -50,6 +50,7 @@ corn/
 │           │   ├── data/                    ✅ CornData (corn.db), CornSettings, SearchEngines
 │           │   └── ui/                      ✅ Compose screens, sheets, components, theme, icons
 │           ├── assets/licenses/             ✅ font licences (OFL)
+│           (app/src/test/)                  ✅ JVM unit tests (SearchEnginesTest)
 │           └── res/                         ✅ icons, fonts, engine favicons, logo, theme, backup exclusion rules
 │
 ├── ios/                       ⏭️ IPHONE APP (Swift + SwiftUI + WKWebView)
@@ -102,6 +103,7 @@ Does every platform need the same behaviour?
 | Engine benchmark | `cd core && cargo run --release -p corn-block --example bench -- easylist.txt easyprivacy.txt` |
 | Android debug app | `cd android && ./gradlew assembleDebug` (also builds the Rust core) |
 | Android release app (8.6 MB, unsigned) | `cd android && ./gradlew assembleRelease` |
+| Android unit tests | `cd android && ./gradlew testDebugUnitTest` |
 | Test APK for a phone (release build signed with the debug key) | see [../03-planning/04-testing-on-a-phone.md](../03-planning/04-testing-on-a-phone.md) |
 | Install on phone/emulator | `cd android && ./gradlew installDebug` |
 | Open in Android Studio | Open the `android/` folder |
