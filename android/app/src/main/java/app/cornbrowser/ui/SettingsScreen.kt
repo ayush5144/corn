@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -146,7 +147,14 @@ fun SettingsScreen(c: CornController, onNeedPin: () -> Unit) {
                     "Your most recent tabs besides the one open.",
                     onClick = { s.chooseTabMemory(TabMemory.RECENT); c.tabs.enforceLivePolicy() },
                     leading = { Radio(s.tabMemory == TabMemory.RECENT) },
-                    trailing = { if (s.tabMemory == TabMemory.RECENT) CountDropdown(s.tabMemoryCount) { s.tabMemoryCount = it; c.tabs.enforceLivePolicy() } },
+                    // Always visible so it can be found; dimmed until this option is chosen. Picking a count chooses it.
+                    trailing = {
+                        CountDropdown(s.tabMemoryCount, active = s.tabMemory == TabMemory.RECENT) {
+                            s.tabMemoryCount = it
+                            s.chooseTabMemory(TabMemory.RECENT)
+                            c.tabs.enforceLivePolicy()
+                        }
+                    },
                 )
                 SettingRow(
                     "Keep all tabs in memory",
@@ -172,11 +180,12 @@ private fun tabsText(n: Int) = if (n == 1) "1 recent tab" else "$n recent tabs"
 
 /** 0, 1, 2, 3 or 5 tabs kept in memory besides the open one. */
 @Composable
-private fun CountDropdown(count: Int, onPick: (Int) -> Unit) {
+private fun CountDropdown(count: Int, active: Boolean, onPick: (Int) -> Unit) {
     var open by remember { mutableStateOf(false) }
-    Box {
+    Box(Modifier.alpha(if (active) 1f else 0.45f)) {
         Pill("$count ${if (count == 1) "tab" else "tabs"}", { open = true }, CornIcons.ChevDown)
-        DropdownMenu(open, { open = false }) {
+        // Corn's dark menu colour: Material's default is light, which made the light item text invisible.
+        DropdownMenu(open, { open = false }, containerColor = C.Surface2) {
             listOf(0, 1, 2, 3, 5).forEach { n ->
                 DropdownMenuItem(text = { T(if (n == 1) "1 tab" else "$n tabs", 15.sp) }, onClick = { onPick(n); open = false })
             }

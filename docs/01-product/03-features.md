@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:38 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 15:18 IST
 
 Every feature in the Android app today, what it does for the user, and the evidence behind it. Nothing here is planned-only; planned work lives in the [checklist](../03-planning/02-checklist.md).
 
@@ -116,7 +116,7 @@ Every feature in the Android app today, what it does for the user, and the evide
 - **Background tabs** 🔨
   - *What:* Settings → Advanced → Background tabs. **Automatic by phone memory** (default: 1 recent tab kept in memory on 4 GB, 2 on 6 GB, 3 on 8 GB, 5 on 12 GB+, all unloaded when Android warns memory is low), **Keep recent tabs** (0/1/2/3/5) or **Keep all** (asks first: battery, heat, Android may close Corn, one crash reloads every tab). Kept tabs reopen instantly; their videos stay paused and can't restart. Unloaded tabs run nothing and reload with their scroll position.
   - *Benefit:* lower memory and battery use. 10 tabs: **~644 MB** with 2 kept vs **~1.05 GB** all loaded (measured earlier).
-  - *Evidence:* builds; the settings, scroll restore and video hold not yet tested on a device.
+  - *Evidence:* tab counts checked through WebView's DevTools list: with 4 tabs open on the 4 GB emulator, 2 were in memory (the open tab + 1 recent), as designed. The tab-count picker is always visible (dimmed until "Keep recent tabs" is chosen; picking a count chooses it) and its menu is readable (it was light-on-light before). Scroll restore and video hold not yet tested on a device.
 
 - **Back to the home page** 🔨
   - *What:* on a tab's first page opened from Corn's home page, Back shows a curved ↩ and returns to the home page; Forward reopens the page.
@@ -158,7 +158,7 @@ Every feature in the Android app today, what it does for the user, and the evide
 - **Five search engines with a one-tap switcher** ✅: DuckDuckGo (default), Google, Brave Search, Startpage, Bing, each with its favicon (bundled, never fetched). Seen in the address bar and the engine sheet.
 - **Full address in the address bar** ✅: always shows the page's full URL (e.g. `https://duckduckgo.com/?q=corn+browser`), like Brave.
 - **Address bar top or bottom** 🔨: a Settings choice.
-- **Pull to refresh** ✅: pulling down while the page is at the top reloads it (Android's SwipeRefreshLayout, corn-yellow spinner). Verified: the test server saw the page requested again after a pull (4 → 5); an upward scroll did not reload it. Like Chrome (since v41, 2015), Safari (iOS 15) and Firefox for Android (opt-in). Known limit: on pages that scroll inside their own box rather than the whole page, a pull at the top of the page can reload even if the inner box isn't at its top.
+- **Pull to refresh** ✅: pulling down while the page is at the top reloads it (Android's SwipeRefreshLayout, corn-yellow spinner). Each tab's page has its own pull container: SwipeRefreshLayout only ever measures the first child it saw, so swapping another tab's page into a shared one left it 0×0 and blank (bug from the first version, fixed; verified: switching between group tabs shows each page at full size, and pull still reloads after switching). Verified: the test server saw the page requested again after a pull (4 → 5); an upward scroll did not reload it. Like Chrome (since v41, 2015), Safari (iOS 15) and Firefox for Android (opt-in). Known limit: on pages that scroll inside their own box rather than the whole page, a pull at the top of the page can reload even if the inner box isn't at its top.
 - **Opens links from other apps** ✅: tested with links sent to Corn.
 - **`http://` sites load** ✅: the Android default would block them; the count-test page loaded over http.
 - **Fullscreen video** 🔨: built in the spike; not re-checked in the new UI.

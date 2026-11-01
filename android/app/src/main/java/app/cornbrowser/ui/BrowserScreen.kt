@@ -40,6 +40,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -171,33 +172,27 @@ private fun PageArea(c: CornController, cur: TabEntry) {
         } else {
             // Pull to refresh: pulling down while the page is already at the top reloads it
             // (Android's standard SwipeRefreshLayout around the WebView).
+            // One container per WebView (key): SwipeRefreshLayout picks its child once and only ever
+            // measures that one, so swapping another tab's WebView into it left the new page 0×0 (blank).
             val reload = androidx.compose.runtime.rememberUpdatedState { c.tabs.reload() }
-            AndroidView(
-                modifier = Modifier.fillMaxSize(),
-                factory = { ctx ->
-                    androidx.swiperefreshlayout.widget.SwipeRefreshLayout(ctx).apply {
-                        setColorSchemeColors(0xFFFFC83D.toInt())               // corn yellow spinner
-                        setProgressBackgroundColorSchemeColor(0xFF25221B.toInt())
-                        setOnRefreshListener {
-                            reload.value()
-                            postDelayed({ isRefreshing = false }, 15_000)      // never spin forever
+            key(live) {
+                AndroidView(
+                    modifier = Modifier.fillMaxSize(),
+                    factory = { ctx ->
+                        androidx.swiperefreshlayout.widget.SwipeRefreshLayout(ctx).apply {
+                            setColorSchemeColors(0xFFFFC83D.toInt())               // corn yellow spinner
+                            setProgressBackgroundColorSchemeColor(0xFF25221B.toInt())
+                            setOnRefreshListener {
+                                reload.value()
+                                postDelayed({ isRefreshing = false }, 15_000)      // never spin forever
+                            }
+                            (live.webView.parent as? ViewGroup)?.removeView(live.webView)
+                            addView(live.webView, ViewGroup.LayoutParams(-1, -1))
                         }
-                    }
-                },
-                update = { swipe ->
-                    val wv = live.webView
-                    if (swipe.getChildAt(swipe.childCount - 1) !== wv) {
-                        (wv.parent as? ViewGroup)?.removeView(wv)
-                        // Keep SwipeRefreshLayout's own spinner view; replace only the page.
-                        for (i in swipe.childCount - 1 downTo 0) {
-                            val child = swipe.getChildAt(i)
-                            if (child is android.webkit.WebView) swipe.removeView(child)
-                        }
-                        swipe.addView(wv, ViewGroup.LayoutParams(-1, -1))
-                    }
-                    if (!cur.loading && swipe.isRefreshing) swipe.isRefreshing = false
-                },
-            )
+                    },
+                    update = { swipe -> if (!cur.loading && swipe.isRefreshing) swipe.isRefreshing = false },
+                )
+            }
         }
     }
 }

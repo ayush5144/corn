@@ -99,3 +99,8 @@
 - Updated `docs/03-planning/04-testing-on-a-phone.md` (APK sizes 8.7 / 28.1 MB; what to test: Keep List switch, History, Delete browsing data, background tabs, ↩).
 - Updated sizes in `docs/02-technical/08-repo-structure.md`, `docs/05-review/01-audit-2026-11-01.md`, `docs/01-product/03-features.md`; features: toast placement.
 
+## 2026-11-01 — Fix blank pages when switching tabs; readable tab-count picker
+
+- Code: `ui/BrowserScreen.kt` (one SwipeRefreshLayout per WebView via `key(live)`; it only measures its first child, so swapped-in pages stayed 0×0), `ui/SettingsScreen.kt` (dropdown uses Corn's dark menu colour; picker always visible, dimmed until chosen).
+- Updated `docs/01-product/03-features.md` (Pull to refresh, Background tabs evidence).
+
