@@ -250,3 +250,9 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Founder asked:** Search engine on the left and shield on the right, or keep the shield left because right is easier for right-handers?
 - **Recommended:** Swap them. The address bar sits at the top, which is hard to reach with either side of the thumb, so handedness barely matters there. What matters is that the most-used control sits at the far right: the Vault save icon. The shield is rarely touched, so it can sit next to it.
 - **Status:** ✅ Search Switcher left, shield right, Vault icon far right. Applied to the prototype.
+
+### Licence for Corn's own code
+- **Founder asked:** What licence should Corn be published under?
+- **Recommended:** **MPL-2.0** for the app and Rust core (same as Brave, Firefox and adblock-rust; App Store compatible). "Corn" name and logo stay trademarks, not covered by the licence. Server code for a future Cloud Vault decided separately.
+- **Status:** 🟡 Awaiting founder decision. No LICENSE file added yet. Legal review before public launch.
+
