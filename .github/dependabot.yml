@@ -1,0 +1,18 @@
+# Opens pull requests when upstream dependencies release new versions
+# (Brave's adblock-rust, UniFFI, AndroidX, Gradle plugins…).
+version: 2
+updates:
+  - package-ecosystem: "cargo"
+    directory: "/core"
+    schedule:
+      interval: "weekly"
+    groups:
+      rust:
+        patterns: ["*"]
+  - package-ecosystem: "gradle"
+    directory: "/android"
+    schedule:
+      interval: "weekly"
+    groups:
+      android:
+        patterns: ["*"]

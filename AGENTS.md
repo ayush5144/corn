@@ -20,6 +20,7 @@ Corn is a free, private, mobile-first browser for adults. Start with `README.md`
 - **Mockups are HTML files in `mockups/`.** Never publish mockups or prototypes as claude.ai Artifacts or any other hosted page. Plain HTML first; Next.js static export only if necessary. Design at mobile viewport size.
 - **Docs are numbered** in reading order inside their folder. Keep `docs/README.md` indexing every doc.
 - **Product decisions go into the decision log first**, then the PRD. Mark each requirement ✅ settled, 🟡 open or ⏭️ later.
+- **Never modify upstream code.** Brave's adblock-rust, DuckDuckGo's scripts, UniFFI and other third-party code are used as unmodified, version-pinned dependencies behind a thin Corn wrapper, so updates stay a version bump. Filter lists are downloaded from their authors at runtime, never copied into the repo. DuckDuckGo's and Brave's apps are references for patterns, not code to copy wholesale. If an upstream change is truly needed, propose it upstream first and record the reason in an ADR.
 - **Use the glossary's terms** (Session, Flush, Flush Button, Kept Session, Keep List, Vault, Collection, Tab Group, Tab Group Strip…). Add a term the moment it's resolved.
 - **Tick a checklist box only when its "Done when" is true.**
 - **Privacy is a product requirement:** never add code that sends URLs, searches, titles, tabs or Vault contents off the device.
