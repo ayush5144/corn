@@ -21,7 +21,8 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [x] | Organise docs, README, glossary | Claude | `docs/README.md` indexes every doc |
 | [x] | Round 0 + Round 1 product Q&A | Both | Answers in the decision log |
 | [x] | Round 2: Tab Groups model, Keep List / passwords, thumbnails, Flush placement, prototype tool | Both | Answers in the decision log |
-| [ ] | Round 3: Session protection, Flush presets, Tab Groups on Flush, toolbar layout | Both | Answers in the decision log |
+| [x] | Round 3: Session protection, Flush presets, Tab Groups on Flush, toolbar layout | Both | Answers in the decision log |
+| [ ] | Round 4: react to the prototype (look and feel, group naming, password store timing) | Founder | Answers in the decision log |
 | [ ] | PRD v2 sign-off: no 🟡 left that blocks v1 | Founder | Founder says "PRD approved" |
 | [ ] | Research donation platforms that accept an adult-adjacent product | Claude | Shortlist with policy links in `04-reference/` |
 
@@ -47,7 +48,7 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [ ] | Brand voice: cool, funny, modern — sample copy (onboarding, Flush, empty states) | Both | Copy sheet approved |
 | [ ] | Low-fi wireframes: browser, tab switcher + Tab Groups, Flush, Vault + Collections, settings, onboarding | Claude | Wireframes reviewed |
 | [ ] | Visual style: black + yellow, Flush Button look, icons, type | Both | Style sheet approved |
-| [ ] | Clickable prototype (plain HTML, Next.js static only if needed), mobile viewport, in `design/prototype/` | Claude | Founder has tapped through it on a real phone |
+| [ ] | Clickable prototype (plain HTML, Next.js static only if needed), mobile viewport, in `design/prototype/`. **v0.1 built**, waiting on the founder's tap-through | Claude | Founder has tapped through it on a real phone |
 | [ ] | Prototype test with 3–5 target users | Founder | Notes recorded; changes fed back into the PRD |
 
 ## Phase 2B — Technical spike (one weekend, throwaway code)

@@ -1,0 +1,1160 @@
+<title>Corn Prototype</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: a phone-sized browser app. Laptop = phone frame + guide panel; phone = full screen. Single dark look, deliberately. */
+:root {
+  --bg: #0F0E0B;
+  --surface: #1A1813;
+  --surface-2: #25221B;
+  --line: #36312A;
+  --text: #F5F0E1;
+  --muted: #A8A08C;
+  --corn: #FFC83D;
+  --corn-ink: #2A1E00;
+  --leaf: #86C64A;
+  --stage: #070706;
+  --font-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-ui: "Figtree", "Helvetica Neue", "Segoe UI", system-ui, sans-serif;
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 22px;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body {
+  background: var(--stage);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--corn); outline-offset: 2px; border-radius: 8px; }
+
+/* ---------- Stage ---------- */
+.stage {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  padding-block: 24px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.panel { width: 300px; display: flex; flex-direction: column; gap: 20px; }
+.panel .brand { display: flex; align-items: center; gap: 12px; }
+.panel .brand img { width: 44px; height: 44px; }
+.panel h1 { font-family: var(--font-display); font-weight: 800; font-size: 30px; margin: 0; letter-spacing: -0.02em; }
+.panel .ver { color: var(--muted); font-size: 13px; }
+.panel h2 { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; font-weight: 600; }
+.panel ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; color: var(--text); line-height: 1.45; font-size: 14px; }
+.panel ol b { color: var(--corn); font-weight: 600; }
+.jump { display: flex; flex-wrap: wrap; gap: 8px; }
+.jump button { padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; color: var(--text); background: var(--surface); }
+.jump button:hover { border-color: var(--corn); }
+.panel .note { color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+.phone {
+  position: relative;
+  width: 390px;
+  height: min(844px, calc(100dvh - 48px));
+  background: var(--bg);
+  border-radius: 48px;
+  border: 10px solid #000;
+  box-shadow: 0 0 0 1px var(--line), 0 30px 80px rgba(0,0,0,.6);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.sbar { height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 4px 28px 0; font-size: 13px; font-weight: 700; }
+.sbar span:last-child { letter-spacing: 2px; font-size: 11px; color: var(--muted); }
+#app { flex: 1; min-height: 0; position: relative; display: flex; flex-direction: column; }
+
+@media (max-width: 760px) { .panel { display: none; } }
+@media (max-width: 520px) {
+  .stage { display: block; padding: 0; height: 100%; min-height: 0; }
+  .phone { width: 100%; height: 100%; border-radius: 0; border: 0; box-shadow: none; }
+  .sbar { display: none; }
+}
+
+/* ---------- Browser chrome ---------- */
+.browser { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.addr { display: flex; align-items: center; gap: 6px; padding: 8px 10px; background: var(--bg); flex-shrink: 0; }
+.urlbox { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; height: 42px; padding: 0 6px 0 4px; background: var(--surface-2); border-radius: 999px; }
+.urlbox input { flex: 1; min-width: 0; height: 100%; background: transparent; border: 0; outline: none; font-size: 15px; }
+.urlbox input::placeholder { color: var(--muted); }
+.shield { display: flex; align-items: center; gap: 3px; height: 32px; padding: 0 8px 0 7px; border-radius: 999px; color: var(--leaf); font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.shield.off { color: var(--muted); }
+.engine { display: flex; align-items: center; gap: 1px; height: 32px; padding: 0 4px; border-radius: 999px; color: var(--muted); }
+.ebadge { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 800; color: #fff; background: var(--c); flex-shrink: 0; }
+.iconbtn { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 50%; color: var(--text); flex-shrink: 0; }
+.iconbtn:active { background: var(--surface-2); }
+.iconbtn.saved { color: var(--corn); }
+
+.page { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; background: var(--surface); position: relative; overscroll-behavior: contain; }
+.page.flushing > * { animation: drain .72s cubic-bezier(.55,0,.75,.2) forwards; transform-origin: 50% 45%; }
+@keyframes drain { to { transform: rotate(560deg) scale(0); opacity: .2; filter: blur(2px); } }
+.page.fresh > * { animation: fresh .45s ease-out; }
+@keyframes fresh { from { transform: scale(.94); opacity: 0; } }
+
+.bottom { flex-shrink: 0; background: var(--bg); border-top: 1px solid var(--line); }
+.strip { display: flex; align-items: center; gap: 4px; padding: 8px 8px 4px; }
+.strip .dots { flex: 1; min-width: 0; display: flex; gap: 10px; overflow-x: auto; padding: 6px 6px; scrollbar-width: none; }
+.strip .dots::-webkit-scrollbar { display: none; }
+.dot { position: relative; width: 40px; height: 40px; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center; flex-shrink: 0; }
+.dot .fav { width: 22px; height: 22px; border-radius: 7px; background: var(--c); color: #fff; font-weight: 800; font-size: 12px; display: grid; place-items: center; }
+.dot.cur { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--gc, var(--corn)); }
+.dot .x { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%; background: var(--text); color: var(--bg); display: grid; place-items: center; }
+.toolbar { display: flex; justify-content: space-around; align-items: center; height: 58px; padding: 0 6px 4px; }
+.tb { width: 56px; height: 48px; border-radius: 14px; display: grid; place-items: center; color: var(--text); }
+.tb:active { background: var(--surface-2); }
+.tb[disabled] { color: var(--muted); opacity: .45; }
+.tabcount { width: 23px; height: 23px; border: 2px solid currentColor; border-radius: 7px; display: grid; place-items: center; font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.tb.flush { color: var(--corn-ink); }
+.tb.flush .flushbg { width: 46px; height: 40px; border-radius: 14px; background: var(--corn); display: grid; place-items: center; }
+
+/* ---------- Sheets ---------- */
+.scrim { position: absolute; inset: 0; background: rgba(0,0,0,.55); z-index: 20; animation: fade .2s ease; }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 21; background: var(--surface); border-radius: var(--r-lg) var(--r-lg) 0 0; padding: 8px 16px 20px; max-height: 82%; overflow-y: auto; animation: up .28s cubic-bezier(.2,.8,.2,1); }
+.sheet.still, .scrim.still { animation: none; }
+.handle { width: 40px; height: 5px; border-radius: 3px; background: var(--line); margin: 2px auto 12px; }
+@keyframes up { from { transform: translateY(100%); } }
+@keyframes fade { from { opacity: 0; } }
+.sheet h3 { font-family: var(--font-display); font-size: 20px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.01em; text-wrap: balance; }
+.sheet .sub { color: var(--muted); font-size: 13px; margin: 0 0 14px; overflow-wrap: anywhere; }
+.row { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 50px; padding: 0 6px; border-radius: 12px; text-align: left; font-size: 15px; }
+.row:active { background: var(--surface-2); }
+.row svg { color: var(--muted); flex-shrink: 0; }
+.row .grow { flex: 1; min-width: 0; }
+.row .hint { color: var(--muted); font-size: 12px; }
+.row[disabled] { opacity: .4; }
+.sep { height: 1px; background: var(--line); margin: 8px 0; }
+.label { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin: 14px 0 8px; }
+.field { width: 100%; height: 46px; border-radius: 12px; background: var(--surface-2); border: 1px solid transparent; padding: 0 14px; outline: none; }
+.field:focus { border-color: var(--corn); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { height: 34px; padding: 0 14px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); font-size: 14px; display: inline-flex; align-items: center; gap: 6px; }
+.chip.on { background: var(--corn); color: var(--corn-ink); border-color: var(--corn); font-weight: 600; }
+.chip.dashed { border-style: dashed; color: var(--muted); background: transparent; }
+.tag { height: 24px; padding: 0 9px; border-radius: 999px; background: var(--surface-2); color: var(--muted); font-size: 12px; display: inline-flex; align-items: center; gap: 4px; }
+.btn { height: 50px; width: 100%; border-radius: 14px; background: var(--corn); color: var(--corn-ink); font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.btn.ghost { background: var(--surface-2); color: var(--text); font-weight: 600; }
+.stack { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+.fine { color: var(--muted); font-size: 12.5px; line-height: 1.45; margin: 10px 0 0; }
+
+/* ---------- Previews ---------- */
+.pv { border-radius: 14px; overflow: hidden; background: var(--bg); border: 1px solid var(--line); display: flex; flex-direction: column; height: 100%; text-align: left; }
+.pv-top { height: 24px; background: var(--c); display: flex; align-items: center; gap: 6px; padding: 0 8px; font-size: 10px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; }
+.pv-body { padding: 8px; display: flex; flex-direction: column; gap: 6px; flex: 1; min-height: 0; }
+.pv-body b { font-size: 11.5px; line-height: 1.25; font-weight: 600; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.pv-body i { display: block; height: 6px; border-radius: 3px; background: var(--surface-2); }
+.pv-body i.s { width: 60%; }
+.pv-img { height: 44px; border-radius: 8px; background: var(--g); }
+.pv.newtab { align-items: center; justify-content: center; gap: 6px; color: var(--muted); font-size: 11px; }
+.pv.newtab img { width: 34px; height: 34px; }
+.tcell { position: relative; aspect-ratio: 3 / 4; max-width: 100%; }
+.tcell.cur .pv { border: 2px solid var(--corn); }
+.tcell .close { position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; border-radius: 50%; background: rgba(0,0,0,.65); color: #fff; display: grid; place-items: center; }
+.tgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.gname { display: flex; align-items: center; gap: 10px; }
+.gdot { width: 16px; height: 16px; border-radius: 50%; background: var(--gc); flex-shrink: 0; }
+.gname input { flex: 1; min-width: 0; background: transparent; border: 0; border-bottom: 1px dashed var(--line); font-family: var(--font-display); font-weight: 700; font-size: 20px; padding: 2px 0; outline: none; }
+.gname input:focus { border-bottom-color: var(--corn); }
+
+/* ---------- Full screens ---------- */
+.screen { flex: 1; min-height: 0; display: flex; flex-direction: column; background: var(--bg); }
+.shead { display: flex; align-items: center; gap: 6px; padding: 8px 10px; flex-shrink: 0; }
+.shead h2 { flex: 1; margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 24px; letter-spacing: -0.02em; }
+.shead .pill { height: 38px; padding: 0 14px; border-radius: 999px; background: var(--surface-2); font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; }
+.shead .pill.corn { background: var(--corn); color: var(--corn-ink); }
+.sbody { flex: 1; min-height: 0; overflow-y: auto; padding: 4px 16px 24px; }
+.gcard { background: var(--surface); border-radius: var(--r-md); padding: 12px; margin-bottom: 14px; }
+.gcard header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.gcard header b { flex: 1; font-size: 16px; }
+.gcard header span { color: var(--muted); font-size: 13px; }
+.grow-row { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+.grow-row::-webkit-scrollbar { display: none; }
+.grow-row .tcell { width: 112px; flex-shrink: 0; }
+.drain-cta { margin-top: 18px; display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: var(--r-md); border: 1px dashed var(--line); color: var(--muted); font-size: 14px; width: 100%; text-align: left; }
+.drain-cta b { color: var(--text); }
+
+/* ---------- Vault ---------- */
+.lock { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 20px; }
+.lock .safe { width: 72px; height: 72px; border-radius: 22px; background: var(--surface-2); display: grid; place-items: center; color: var(--corn); }
+.lock h3 { margin: 0; font-family: var(--font-display); font-size: 24px; font-weight: 800; }
+.lock p { margin: -8px 0 0; color: var(--muted); font-size: 14px; }
+.pins { display: flex; gap: 14px; }
+.pins i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--muted); }
+.pins i.on { background: var(--corn); border-color: var(--corn); }
+.keypad { display: grid; grid-template-columns: repeat(3, 72px); gap: 12px; }
+.keypad button { height: 60px; border-radius: 18px; background: var(--surface); font-size: 22px; font-weight: 600; display: grid; place-items: center; }
+.keypad button:active { background: var(--surface-2); }
+.fp { display: inline-flex; align-items: center; gap: 8px; color: var(--corn); font-weight: 600; padding: 10px 14px; border-radius: 999px; }
+.vsearch { position: relative; margin: 4px 0 16px; }
+.vsearch svg { position: absolute; left: 14px; top: 13px; color: var(--muted); }
+.vsearch input { padding-left: 42px; }
+.colls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.coll { background: var(--surface); border-radius: var(--r-md); padding: 14px; text-align: left; display: flex; flex-direction: column; gap: 10px; min-height: 108px; }
+.coll .ico { width: 36px; height: 36px; border-radius: 11px; background: var(--surface-2); display: grid; place-items: center; color: var(--corn); }
+.coll b { font-size: 16px; }
+.coll span { color: var(--muted); font-size: 13px; margin-top: -6px; }
+.coll.new { border: 1px dashed var(--line); background: transparent; color: var(--muted); align-items: center; justify-content: center; }
+.item { display: flex; gap: 12px; align-items: flex-start; padding: 12px 4px; border-bottom: 1px solid var(--line); width: 100%; text-align: left; }
+.item .fav { width: 34px; height: 34px; border-radius: 10px; background: var(--c); color: #fff; font-weight: 800; display: grid; place-items: center; flex-shrink: 0; }
+.item .meta { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.item .meta b { font-weight: 600; font-size: 15px; line-height: 1.3; }
+.item .meta small { color: var(--muted); font-size: 12.5px; }
+.item .tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.empty { color: var(--muted); text-align: center; padding: 40px 10px; line-height: 1.5; }
+
+/* ---------- Settings ---------- */
+.sgroup { background: var(--surface); border-radius: var(--r-md); padding: 4px 14px; margin-bottom: 8px; }
+.sgroup .row { padding: 0; min-height: 54px; border-radius: 0; }
+.sgroup .row + .row { border-top: 1px solid var(--line); }
+.scap { color: var(--muted); font-size: 12.5px; line-height: 1.45; margin: 0 4px 18px; }
+.sw { width: 46px; height: 28px; border-radius: 999px; background: var(--line); position: relative; flex-shrink: 0; transition: background .2s; }
+.sw::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: var(--text); transition: transform .2s; }
+.sw.on { background: var(--leaf); }
+.sw.on::after { transform: translateX(18px); }
+.radio { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--muted); flex-shrink: 0; display: grid; place-items: center; }
+.radio.on { border-color: var(--corn); }
+.radio.on::after { content: ""; width: 11px; height: 11px; border-radius: 50%; background: var(--corn); }
+.seg { display: flex; background: var(--surface-2); border-radius: 12px; padding: 3px; gap: 3px; }
+.seg button { flex: 1; height: 34px; border-radius: 9px; font-size: 14px; font-weight: 600; color: var(--muted); padding: 0 12px; }
+.seg button.on { background: var(--corn); color: var(--corn-ink); }
+.keeprow { display: flex; align-items: center; gap: 10px; min-height: 48px; }
+.keeprow + .keeprow { border-top: 1px solid var(--line); }
+.keeprow span { flex: 1; overflow-wrap: anywhere; }
+
+/* ---------- Onboarding ---------- */
+.onb { flex: 1; display: flex; flex-direction: column; padding: 28px 24px 24px; background: radial-gradient(120% 60% at 50% 0%, #2A2410 0%, var(--bg) 60%); overflow-y: auto; }
+.onb .hero { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+.onb img { width: 112px; height: 112px; margin-left: -8px; animation: bob 3.2s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translateY(-6px) rotate(-4deg); } }
+.onb h1 { font-family: var(--font-display); font-weight: 800; font-size: 64px; line-height: .9; letter-spacing: -0.04em; margin: 0; color: var(--corn); }
+.onb .tagline { font-family: var(--font-display); font-size: 24px; font-weight: 600; line-height: 1.15; margin: 0; text-wrap: balance; }
+.onb ul { list-style: none; padding: 0; margin: 14px 0 0; display: flex; flex-direction: column; gap: 14px; }
+.onb li { display: flex; gap: 12px; align-items: center; font-size: 15.5px; }
+.onb li span.i { width: 38px; height: 38px; border-radius: 12px; background: var(--surface-2); color: var(--corn); display: grid; place-items: center; flex-shrink: 0; }
+.onb .age { color: var(--muted); font-size: 13px; text-align: center; margin: 12px 0 0; }
+
+/* ---------- Fake websites ---------- */
+.site { min-height: 100%; background: #F6F3EC; color: #1B1A17; }
+.sitehead { height: 52px; display: flex; align-items: center; gap: 8px; padding: 0 16px; background: var(--c); color: #fff; font-weight: 800; font-size: 18px; position: sticky; top: 0; z-index: 2; }
+.sitehead small { margin-left: auto; font-weight: 500; font-size: 12px; opacity: .85; }
+.lnk { cursor: pointer; -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
+.kn-item { display: flex; gap: 14px; padding: 16px; border-bottom: 1px solid #E4DED1; font-size: 17px; line-height: 1.3; font-weight: 600; font-family: Georgia, "Times New Roman", serif; }
+.kn-item .n { color: #5B8DEF; font-family: var(--font-ui); font-weight: 800; font-size: 14px; padding-top: 3px; }
+.article { padding: 18px 18px 30px; font-family: Georgia, "Times New Roman", serif; }
+.article h1 { font-size: 26px; line-height: 1.15; margin: 0 0 8px; text-wrap: balance; }
+.article .meta { font-family: var(--font-ui); color: #78705F; font-size: 13px; margin-bottom: 16px; }
+.article p { font-size: 17px; line-height: 1.6; margin: 0 0 14px; max-width: 65ch; }
+.adgone { margin: 18px 0; height: 84px; border: 2px dashed #CFC6B2; border-radius: 12px; display: grid; place-items: center; font-family: var(--font-ui); font-size: 13px; color: #78705F; font-weight: 600; }
+.related { font-family: var(--font-ui); margin-top: 20px; }
+.related b { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: #78705F; }
+.related .lnk { display: block; padding: 12px 0; border-bottom: 1px solid #E4DED1; color: #2F5FC4; font-weight: 600; }
+.pp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; }
+.pp-tile { aspect-ratio: 1; max-width: 100%; background: var(--g); display: flex; align-items: flex-end; padding: 6px; color: #fff; font-size: 11px; font-weight: 700; text-shadow: 0 1px 3px rgba(0,0,0,.5); }
+.pp-big { aspect-ratio: 4 / 5; max-width: 100%; background: var(--g); }
+.pp-info { padding: 14px 16px 6px; }
+.pp-info h1 { margin: 0; font-size: 22px; }
+.pp-info p { margin: 4px 0 0; color: #78705F; font-size: 14px; }
+.pp-more { padding: 14px 16px 6px; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: #78705F; font-weight: 700; }
+.sh-site { background: #0B0B10; color: #EDEDF2; }
+.sh-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 10px; padding: 12px; }
+.vcard { display: flex; flex-direction: column; gap: 6px; }
+.thumb { position: relative; aspect-ratio: 16 / 9; max-width: 100%; border-radius: 10px; background: var(--g); }
+.thumb em { position: absolute; right: 6px; bottom: 6px; background: rgba(0,0,0,.75); color: #fff; font-style: normal; font-size: 11px; font-weight: 700; padding: 2px 5px; border-radius: 5px; }
+.vcard b { font-size: 13px; line-height: 1.3; font-weight: 600; }
+.vcard small { color: #8C8CA0; font-size: 12px; }
+.player { position: relative; aspect-ratio: 16 / 9; max-width: 100%; background: var(--g); display: grid; place-items: center; }
+.player .play { width: 64px; height: 64px; border-radius: 50%; background: rgba(0,0,0,.55); display: grid; place-items: center; color: #fff; }
+.player .live { position: absolute; left: 10px; bottom: 10px; font-size: 11px; font-weight: 700; background: rgba(0,0,0,.6); padding: 4px 8px; border-radius: 6px; color: #fff; }
+.player .bar { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255,255,255,.25); }
+.player .bar i { display: block; height: 100%; width: 34%; background: #E9473B; }
+.watch-info { padding: 14px 14px 4px; }
+.watch-info h1 { font-size: 18px; margin: 0 0 6px; line-height: 1.3; }
+.watch-info small { color: #8C8CA0; }
+.watch-actions { display: flex; gap: 8px; padding: 12px 14px; overflow-x: auto; }
+.watch-actions button { height: 36px; padding: 0 14px; border-radius: 999px; background: #1E1E28; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.watch-actions button.vault { background: var(--corn); color: var(--corn-ink); }
+.upnext { padding: 6px 14px 20px; display: flex; flex-direction: column; gap: 12px; }
+.upnext .lnk { display: flex; gap: 10px; }
+.upnext .thumb { width: 150px; flex-shrink: 0; }
+.upnext b { font-size: 13px; line-height: 1.3; font-weight: 600; }
+.serp { background: #FFFFFF; color: #1B1A17; min-height: 100%; }
+.serp-head { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid #ECE8DF; }
+.serp-head b { font-size: 16px; }
+.adhidden { margin: 12px 16px 0; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: #3F7D1C; background: #EAF5E0; padding: 6px 10px; border-radius: 999px; }
+.res { padding: 14px 16px; border-bottom: 1px solid #F0ECE4; display: block; }
+.res small { color: #3F7D1C; font-size: 12.5px; }
+.res b { display: block; color: #2348B8; font-size: 17px; margin: 3px 0 4px; font-weight: 600; line-height: 1.3; }
+.res p { margin: 0; color: #5B5547; font-size: 14px; line-height: 1.45; }
+
+/* ---------- New tab ---------- */
+.ntp { min-height: 100%; background: var(--bg); padding: 40px 20px 24px; display: flex; flex-direction: column; gap: 22px; }
+.ntp .top { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+.ntp .top img { width: 76px; height: 76px; }
+.ntp .word { font-family: var(--font-display); font-weight: 800; font-size: 44px; line-height: 1; color: var(--corn); letter-spacing: -0.04em; margin: 0; }
+.ntp .line { font-family: var(--font-display); font-size: 19px; font-weight: 600; margin: 4px 0 0; text-wrap: balance; }
+.ntp .line.quip { color: var(--corn); }
+.ntp form { display: flex; align-items: center; gap: 10px; height: 52px; border-radius: 16px; background: var(--surface-2); padding: 0 14px; color: var(--muted); }
+.ntp form input { flex: 1; min-width: 0; height: 100%; background: transparent; border: 0; outline: none; font-size: 16px; }
+.quick { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.quick .lnk, .quick button { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); text-align: center; }
+.quick .q { width: 56px; height: 56px; border-radius: 18px; background: var(--c); display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 20px; }
+.stat { background: var(--surface); border-radius: var(--r-md); padding: 16px; display: flex; gap: 14px; align-items: center; }
+.stat .big { font-family: var(--font-display); font-weight: 800; font-size: 34px; color: var(--leaf); font-variant-numeric: tabular-nums; line-height: 1; }
+.stat p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.4; }
+.unknown { padding: 60px 24px; text-align: center; color: var(--muted); }
+
+/* ---------- Toast ---------- */
+#toast { position: absolute; left: 12px; right: 12px; bottom: 140px; z-index: 40; background: var(--text); color: var(--bg); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.4); transform: translateY(20px); opacity: 0; pointer-events: none; transition: all .25s ease; }
+#toast.show { transform: none; opacity: 1; pointer-events: auto; }
+#toast span { flex: 1; }
+#toast button { color: #8A5B00; font-weight: 800; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+</style>
+
+<div class="stage">
+  <aside class="panel" aria-label="Prototype guide">
+    <div class="brand"><img id="plogo" alt=""><div><h1>Corn</h1><div class="ver">Clickable prototype · v0.1 · 1 Nov 2026</div></div></div>
+    <div>
+      <h2>Try this</h2>
+      <ol>
+        <li>Tap the icons in the <b>Tab Group Strip</b> at the bottom to switch tabs instantly.</li>
+        <li><b>Long-press</b> any link (right-click on a laptop) → <b>Open in new tab in group</b>.</li>
+        <li>Tap <b>^</b> on the strip to see the group, rename it or save it to the Vault.</li>
+        <li>Tap the <b>Vault icon</b> in the address bar to save the page.</li>
+        <li>Hit the <b>toilet</b>. Everything goes. The Vault stays.</li>
+        <li>Open the Vault (any 4 digits unlock it).</li>
+        <li>Menu → Settings → move the address bar to the bottom.</li>
+      </ol>
+    </div>
+    <div>
+      <h2>Jump to</h2>
+      <div class="jump">
+        <button data-jump="onboarding">Onboarding</button>
+        <button data-jump="browser">Browser</button>
+        <button data-jump="tabs">All tabs</button>
+        <button data-jump="vault">Vault</button>
+        <button data-jump="settings">Settings</button>
+        <button data-jump="reset">Reset</button>
+      </div>
+    </div>
+    <p class="note">Every site here is fake and neutral. Nothing is saved or sent anywhere; reload to start over.</p>
+  </aside>
+
+  <div class="phone" id="phone">
+    <div class="sbar" aria-hidden="true"><span>9:41</span><span>●●● 5G ▮</span></div>
+    <div id="app"></div>
+    <div id="toast" role="status" aria-live="polite"><span></span></div>
+  </div>
+</div>
+
+<script>
+const LOGO = "data:image/png;base64,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";
+</script>
+<script>
+(function () {
+  "use strict";
+
+  /* ---------------- Icons ---------------- */
+  const P = {
+    back: '<path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>',
+    fwd: '<path d="M5 12h14"/><path d="M12 5l7 7-7 7"/>',
+    vault: '<rect x="3" y="4" width="18" height="15" rx="2.5"/><circle cx="12" cy="11.5" r="3.2"/><path d="M12 8.3v.9M12 13.8v.9M8.8 11.5h.9M14.3 11.5h.9"/><path d="M6.5 19v1.6M17.5 19v1.6"/>',
+    vaultAdd: '<rect x="3" y="4" width="18" height="15" rx="2.5"/><path d="M12 8.2v6.6M8.7 11.5h6.6"/><path d="M6.5 19v1.6M17.5 19v1.6"/>',
+    vaultOn: '<rect x="3" y="4" width="18" height="15" rx="2.5"/><path d="M8.5 11.7l2.4 2.4 4.6-4.8"/><path d="M6.5 19v1.6M17.5 19v1.6"/>',
+    toilet: '<rect x="3.5" y="2.5" width="7" height="8" rx="1.3"/><path d="M3.5 10.5h17c0 3.9-3.1 7-7 7h-4.3c-3.2 0-5.7-2.6-5.7-5.7z"/><path d="M8.7 17.5l-.6 4h7l-.6-4"/>',
+    dots: '<circle cx="12" cy="5" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1.5" fill="currentColor" stroke="none"/>',
+    shield: '<path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.4-7.5 9.5-4.3-1.1-7.5-4.9-7.5-9.5V6z"/><path d="M8.8 12.2l2.2 2.2 4.3-4.6"/>',
+    shieldOff: '<path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.4-7.5 9.5-4.3-1.1-7.5-4.9-7.5-9.5V6z"/><path d="M9 9l6 6M15 9l-6 6"/>',
+    chevDown: '<path d="M7 10l5 5 5-5"/>',
+    chevUp: '<path d="M6 15l6-6 6 6"/>',
+    chevRight: '<path d="M9 6l6 6-6 6"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    x: '<path d="M6 6l12 12M18 6L6 18"/>',
+    search: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',
+    lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+    sliders: '<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>',
+    share: '<path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/>',
+    fp: '<path d="M7.5 19c1-1.8 1.5-3.9 1.5-6.5a3 3 0 0 1 6 0c0 1.2-.1 2.3-.3 3.4"/><path d="M5 15.5c.4-1 .5-2 .5-3a6.5 6.5 0 0 1 13 0c0 2.4-.4 4.6-1.1 6.6"/><path d="M12 12.5c0 3.2-.7 6-2 8.5"/>',
+    tag: '<path d="M3.5 3.5h7.6l9.4 9.4-7.6 7.6-9.4-9.4z"/><circle cx="8" cy="8" r="1.4"/>',
+    groupAdd: '<rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><path d="M17 14v6M14 17h6"/>',
+    tabNew: '<rect x="3" y="5" width="18" height="15" rx="2.5"/><path d="M12 9.5v6M9 12.5h6"/>',
+    copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>',
+    play: '<path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="none"/>',
+    pause: '<rect x="7" y="5" width="3.5" height="14" rx="1" fill="currentColor" stroke="none"/><rect x="13.5" y="5" width="3.5" height="14" rx="1" fill="currentColor" stroke="none"/>',
+    bksp: '<path d="M9 5h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9l-6-7z"/><path d="M12.5 9.5l5 5M17.5 9.5l-5 5"/>',
+    heart: '<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/>',
+    check: '<path d="M5 12.5l4.5 4.5L19 7"/>',
+    folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+    bell: '<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/><path d="M4 4l16 16"/>'
+  };
+  const ic = (n, s = 22) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]}</svg>`;
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  /* ---------------- Fake web ---------------- */
+  const ENGINES = {
+    ddg: { name: "DuckDuckGo", host: "duckduckgo.com", c: "#DE5833", l: "D" },
+    google: { name: "Google", host: "google.com", c: "#4285F4", l: "G" },
+    brave: { name: "Brave Search", host: "search.brave.com", c: "#FB542B", l: "B" },
+    startpage: { name: "Startpage", host: "startpage.com", c: "#6573FF", l: "S" },
+    bing: { name: "Bing", host: "bing.com", c: "#00809D", l: "b" }
+  };
+  const SITES = {
+    "kernel.news": { name: "Kernel News", c: "#5B8DEF", l: "K" },
+    "pixelpasture.com": { name: "Pixel Pasture", c: "#E26D9B", l: "P" },
+    "streamhut.tv": { name: "StreamHut", c: "#9B6BF2", l: "S" }
+  };
+  const HEADLINES = [
+    "Scientists confirm popcorn is just corn that got excited",
+    "Local man opens 47 tabs, finds the one he wanted on tab 46",
+    "Why your browsing history is nobody's business",
+    "Ten snacks ranked by how loud they are at 2 a.m.",
+    "The quiet comeback of the bottom toolbar",
+    "Ad trackers hate this one simple button"
+  ];
+  const PICS = ["Golden hour", "Neon alley", "Fog lines", "Citrus", "Late train", "Soft focus", "Night swim", "Paper sun", "Blue hour"];
+  const VIDS = [
+    ["Corn field drone flyover · 4K", "12:04", "1.2M"],
+    ["Making popcorn the slow way", "8:31", "640K"],
+    ["Top 10 browser fails of the year", "15:20", "3.4M"],
+    ["Rainy window ambience · 2 hours", "2:00:00", "9.8M"],
+    ["How tab groups changed my life", "6:45", "210K"],
+    ["Satisfying sorting compilation", "11:12", "5.1M"],
+    ["Lo-fi beats to flush to", "1:12:40", "880K"],
+    ["Street food night tour", "22:18", "1.9M"]
+  ];
+  const grad = (i, sat = 70) => { const h = (i * 47 + 20) % 360; return `linear-gradient(135deg, hsl(${h} ${sat}% 58%), hsl(${(h + 50) % 360} 72% 32%))`; };
+  const QUIPS = [
+    "All gone. Fresh as a new cob. 🌽",
+    "Flushed. Nobody saw nothing.",
+    "Squeaky clean. Like it never happened.",
+    "Session down the drain. Your Vault's safe.",
+    "Poof. Clean slate, same great corn."
+  ];
+  const hashN = s => { let h = 0; for (const c of s) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; };
+
+  function parse(url) {
+    if (url === "corn://new") return { kind: "new" };
+    if (url.startsWith("corn://search/")) { const [, , , e, ...q] = url.split("/"); return { kind: "search", engine: e, q: decodeURIComponent(q.join("/")) }; }
+    if (url.startsWith("corn://unknown/")) return { kind: "unknown", host: url.slice(15) };
+    const [host, ...rest] = url.split("/");
+    return { kind: "site", host, path: rest.filter(Boolean) };
+  }
+  function siteOf(url) {
+    const p = parse(url);
+    if (p.kind === "site") return SITES[p.host];
+    if (p.kind === "search") { const e = ENGINES[p.engine]; return { name: e.name, c: e.c, l: e.l }; }
+    if (p.kind === "new") return { name: "New tab", c: "#3A352B", l: "🌽" };
+    return { name: p.host, c: "#6B6455", l: "?" };
+  }
+  function titleOf(url) {
+    const p = parse(url);
+    if (p.kind === "new") return "New tab";
+    if (p.kind === "search") return `${p.q} at ${ENGINES[p.engine].name}`;
+    if (p.kind === "unknown") return p.host;
+    const [a, b] = p.path;
+    if (p.host === "kernel.news") return a === "a" ? HEADLINES[+b] : "Kernel News: front page";
+    if (p.host === "pixelpasture.com") return a === "p" ? PICS[+b] : "Pixel Pasture";
+    if (p.host === "streamhut.tv") return a === "w" ? VIDS[+b][0] : "StreamHut: home";
+    return url;
+  }
+  function displayUrl(url) {
+    const p = parse(url);
+    if (p.kind === "new") return "";
+    if (p.kind === "search") return `${ENGINES[p.engine].host}/?q=${p.q}`;
+    if (p.kind === "unknown") return p.host;
+    return url;
+  }
+  const link = (url, inner, cls = "") => `<a class="lnk ${cls}" data-link="${esc(url)}" tabindex="0">${inner}</a>`;
+
+  function pageHTML(url) {
+    const p = parse(url);
+    if (p.kind === "new") return ntpHTML();
+    if (p.kind === "search") return serpHTML(p);
+    if (p.kind === "unknown") return `<div class="unknown"><p><b>${esc(p.host)}</b> isn't part of this prototype.</p><p>Try Kernel News, Pixel Pasture or StreamHut.</p></div>`;
+    const [a, b] = p.path;
+    if (p.host === "kernel.news") return a === "a" ? knArticle(+b) : knHome();
+    if (p.host === "pixelpasture.com") return a === "p" ? ppItem(+b) : ppHome();
+    if (p.host === "streamhut.tv") return a === "w" ? shWatch(+b) : shHome();
+    return "";
+  }
+  const head = (host, extra = "") => `<div class="sitehead" style="--c:${SITES[host].c}">${SITES[host].name}<small>${extra}</small></div>`;
+  function knHome() {
+    return `<div class="site">${head("kernel.news", "Est. 2026")}${HEADLINES.map((h, i) => link(`kernel.news/a/${i}`, `<span class="n">${i + 1}</span><span>${esc(h)}</span>`, "kn-item")).join("")}</div>`;
+  }
+  function knArticle(i) {
+    const rel = [0, 1, 2, 3, 4, 5].filter(n => n !== i).slice(0, 3);
+    return `<div class="site">${head("kernel.news", "Front page")}<article class="article">
+      <h1>${esc(HEADLINES[i])}</h1><div class="meta">4 min read · Updated today</div>
+      <p>It started, as these things do, with a perfectly ordinary evening and far too many open tabs. By midnight the situation had escalated beyond anyone's ability to find the one page that actually mattered.</p>
+      <div class="adgone">Ad removed by Corn</div>
+      <p>Experts recommend a simple routine: keep what you love somewhere safe, and let everything else go. "Honestly, most tabs are just guests," one researcher said. "You don't have to adopt them."</p>
+      <p>Readers who tried it reported calmer phones, faster pages and a strange new feeling of control.</p>
+      <div class="related"><b>Keep reading</b>${rel.map(n => link(`kernel.news/a/${n}`, esc(HEADLINES[n]))).join("")}</div>
+    </article></div>`;
+  }
+  function ppHome() {
+    return `<div class="site">${head("pixelpasture.com", "Photos")}<div class="pp-grid">${PICS.map((t, i) => link(`pixelpasture.com/p/${i}`, esc(t), "pp-tile").replace('class="lnk pp-tile"', `class="lnk pp-tile" style="--g:${grad(i)}"`)).join("")}</div></div>`;
+  }
+  function ppItem(i) {
+    const more = [1, 2, 3, 4, 5, 6].map(n => (i + n) % PICS.length);
+    return `<div class="site">${head("pixelpasture.com", "Photos")}<div class="pp-big" style="--g:${grad(i)}"></div>
+      <div class="pp-info"><h1>${esc(PICS[i])}</h1><p>by @fieldnotes · 2.4K likes</p></div>
+      <div class="pp-more">More like this</div>
+      <div class="pp-grid">${more.map(n => `<a class="lnk pp-tile" style="--g:${grad(n)}" data-link="pixelpasture.com/p/${n}" tabindex="0">${esc(PICS[n])}</a>`).join("")}</div></div>`;
+  }
+  const vcard = i => `<a class="lnk vcard" data-link="streamhut.tv/w/${i}" tabindex="0"><div class="thumb" style="--g:${grad(i + 3, 60)}"><em>${VIDS[i][1]}</em></div><b>${esc(VIDS[i][0])}</b><small>${VIDS[i][2]} views</small></a>`;
+  function shHome() {
+    return `<div class="site sh-site">${head("streamhut.tv", "Trending")}<div class="sh-grid">${VIDS.map((v, i) => vcard(i)).join("")}</div></div>`;
+  }
+  function shWatch(i) {
+    const next = [1, 2, 3, 4].map(n => (i + n) % VIDS.length);
+    return `<div class="site sh-site">${head("streamhut.tv", "Watch")}
+      <div class="player" style="--g:${grad(i + 3, 60)}"><button class="play" data-act="play" aria-label="Play or pause">${ic(S.playing ? "pause" : "play", 30)}</button>
+      ${S.playing ? '<span class="live">Playing · counts as activity</span>' : ""}<div class="bar"><i></i></div></div>
+      <div class="watch-info"><h1>${esc(VIDS[i][0])}</h1><small>${VIDS[i][2]} views · 3 days ago</small></div>
+      <div class="watch-actions"><button class="vault" data-act="save">${ic("vaultAdd", 16)} Save to Vault</button><button data-act="toast" data-msg="Likes are local-only in Corn's world">👍 Like</button><button data-act="toast" data-msg="The Share sheet opens here">${ic("share", 16)} Share</button></div>
+      <div class="upnext">${next.map(n => `<a class="lnk" data-link="streamhut.tv/w/${n}" tabindex="0"><div class="thumb" style="--g:${grad(n + 3, 60)}"><em>${VIDS[n][1]}</em></div><div><b>${esc(VIDS[n][0])}</b><br><small style="color:#8C8CA0">${VIDS[n][2]} views</small></div></a>`).join("")}</div></div>`;
+  }
+  function serpHTML(p) {
+    const e = ENGINES[p.engine];
+    const pool = [
+      ["kernel.news/a/1", "kernel.news › a › 1", HEADLINES[1], "Forty-seven tabs. One answer. A cautionary tale for the modern phone."],
+      ["streamhut.tv/w/4", "streamhut.tv › watch", VIDS[4][0], "A six-minute video about tabs that got weirdly emotional."],
+      ["pixelpasture.com/p/3", "pixelpasture.com › p › 3", "Citrus · Pixel Pasture", "Bright, sharp, a little sour. Photos for the yellow-hearted."],
+      ["kernel.news/a/2", "kernel.news › a › 2", HEADLINES[2], "A short, friendly explainer on why private means private."],
+      ["streamhut.tv/", "streamhut.tv", "StreamHut: trending videos", "Watch what everyone's watching, without anyone watching you."]
+    ];
+    const start = hashN(p.q) % pool.length;
+    const res = pool.slice(start).concat(pool.slice(0, start));
+    return `<div class="serp"><div class="serp-head"><span class="ebadge" style="--c:${e.c}">${e.l}</span><b>${e.name}</b><span style="color:#78705F;font-size:13px">“${esc(p.q)}”</span></div>
+      <span class="adhidden">${ic("shield", 14)} 3 sponsored results hidden by Corn</span>
+      ${res.map(r => link(r[0], `<small>${r[1]}</small><b>${esc(r[2])}</b><p>${esc(r[3])}</p>`, "res")).join("")}</div>`;
+  }
+  function ntpHTML() {
+    const quip = S.quip;
+    return `<div class="ntp"><div class="top"><img src="${LOGO}" alt=""><p class="word">corn</p>
+      <p class="line ${quip ? "quip" : ""}">${esc(quip || "Browse. Save what matters. Flush the rest.")}</p></div>
+      <form data-form="ntp">${ic("search", 20)}<input id="ntpq" placeholder="Search ${ENGINES[S.engineNow].name} or type a site" autocomplete="off" aria-label="Search or type a site"></form>
+      <div class="quick">
+        ${link("kernel.news/", `<span class="q" style="--c:${SITES["kernel.news"].c}">K</span>Kernel`)}
+        ${link("pixelpasture.com/", `<span class="q" style="--c:${SITES["pixelpasture.com"].c}">P</span>Pixel`)}
+        ${link("streamhut.tv/", `<span class="q" style="--c:${SITES["streamhut.tv"].c}">S</span>StreamHut`)}
+        <button data-act="vault"><span class="q" style="--c:var(--surface-2);color:var(--corn)">${ic("vault", 24)}</span>Vault</button>
+      </div>
+      <div class="stat"><span class="big">${S.blocked}</span><p>ads, trackers and pop-ups blocked this session.${quip ? " Your Vault and Keep List stayed put." : ""}</p></div></div>`;
+  }
+
+  /* ---------------- State ---------------- */
+  let S;
+  let uid = 100;
+  const nid = p => p + (uid++);
+  const GROUP_COLORS = ["#FFC83D", "#86C64A", "#5B8DEF", "#E26D9B", "#9B6BF2", "#FF8A4C"];
+
+  function initialState() {
+    return {
+      screen: "onboarding",
+      sheet: null,
+      tabs: [
+        { id: "t1", gid: "g1", hist: ["streamhut.tv/", "streamhut.tv/w/4"], i: 1 },
+        { id: "t2", gid: "g1", hist: ["streamhut.tv/w/6"], i: 0 },
+        { id: "t3", gid: "g1", hist: ["streamhut.tv/w/1"], i: 0 },
+        { id: "t4", gid: null, hist: ["corn://new", "kernel.news/", "kernel.news/a/1"], i: 2 },
+        { id: "t5", gid: null, hist: ["pixelpasture.com/"], i: 0 }
+      ],
+      groups: [{ id: "g1", name: "StreamHut", color: "#FFC83D" }],
+      cur: "t1",
+      blocked: 214,
+      quip: "",
+      playing: false,
+      engineNow: "ddg",
+      blockOff: {},
+      vaultOpen: false,
+      pin: "",
+      vaultColl: null,
+      vaultQuery: "",
+      colls: [
+        { id: "c0", name: "Unsorted", items: [
+          { title: HEADLINES[3], url: "kernel.news/a/3", tags: ["funny"] },
+          { title: PICS[1], url: "pixelpasture.com/p/1", tags: [] } ] },
+        { id: "c1", name: "Watch later", items: [
+          { title: VIDS[0][0], url: "streamhut.tv/w/0", tags: ["chill"] },
+          { title: VIDS[3][0], url: "streamhut.tv/w/3", tags: ["chill", "sleep"] },
+          { title: VIDS[7][0], url: "streamhut.tv/w/7", tags: [] } ] },
+        { id: "c2", name: "Inspo", items: [
+          { title: PICS[0], url: "pixelpasture.com/p/0", tags: ["colour"] },
+          { title: PICS[8], url: "pixelpasture.com/p/8", tags: ["colour", "night"] } ] },
+        { id: "c3", name: "Funny", items: [
+          { title: HEADLINES[0], url: "kernel.news/a/0", tags: [] },
+          { title: VIDS[2][0], url: "streamhut.tv/w/2", tags: ["fails"] } ] }
+      ],
+      set: {
+        flushMode: "keep", inactivity: false, inactMin: 30, sound: false,
+        appLock: false, blackRecents: true, vaultLock: true,
+        engine: "ddg", addrBottom: false,
+        keep: ["mail.example.com", "forum.example.org"]
+      }
+    };
+  }
+  S = initialState();
+
+  const tab = id => S.tabs.find(t => t.id === (id || S.cur));
+  const urlOf = t => t.hist[t.i];
+  const group = id => S.groups.find(g => g.id === id);
+  const groupTabs = gid => S.tabs.filter(t => t.gid === gid);
+  const inVault = url => S.colls.some(c => c.items.some(it => it.url === url));
+
+  /* ---------------- Actions ---------------- */
+  function vibrate(p) { try { navigator.vibrate && navigator.vibrate(p); } catch (e) { /* not allowed here */ } }
+
+  function navigate(url) {
+    const t = tab();
+    t.hist = t.hist.slice(0, t.i + 1).concat(url);
+    t.i++;
+    S.playing = false;
+    S.quip = "";
+    const p = parse(url);
+    if (p.kind === "site" || p.kind === "search") S.blocked += 3 + (hashN(url) % 14);
+    S.sheet = null;
+    render({ top: true });
+    if (p.kind === "site" && p.host === "streamhut.tv" && !S.blockOff["streamhut.tv"]) toast("Blocked 1 pop-up and 1 sneaky redirect");
+  }
+  function back() { const t = tab(); if (t.i > 0) { t.i--; S.playing = false; render({ top: true }); } }
+  function forward() { const t = tab(); if (t.i < t.hist.length - 1) { t.i++; S.playing = false; render({ top: true }); toast("Forward"); } }
+
+  function newTab(url, inGroup, switchTo) {
+    const cur = tab();
+    let gid = null;
+    if (inGroup) {
+      if (!cur.gid) {
+        const g = { id: nid("g"), name: siteOf(urlOf(cur)).name, color: GROUP_COLORS[S.groups.length % GROUP_COLORS.length] };
+        S.groups.push(g);
+        cur.gid = g.id;
+      }
+      gid = cur.gid;
+    }
+    const t = { id: nid("t"), gid, hist: [url], i: 0 };
+    const at = S.tabs.indexOf(cur);
+    S.tabs.splice(at + 1, 0, t);
+    if (url !== "corn://new") S.blocked += 3 + (hashN(url) % 9);
+    if (switchTo) S.cur = t.id;
+    return t;
+  }
+  function closeTab(id) {
+    const t = tab(id);
+    const idx = S.tabs.indexOf(t);
+    const siblings = t.gid ? groupTabs(t.gid).filter(x => x.id !== id) : [];
+    S.tabs.splice(idx, 1);
+    if (t.gid && siblings.length <= 1) {
+      siblings.forEach(x => (x.gid = null));
+      S.groups = S.groups.filter(g => g.id !== t.gid);
+    }
+    if (!S.tabs.length) S.tabs.push({ id: nid("t"), gid: null, hist: ["corn://new"], i: 0 });
+    if (S.cur === id) {
+      const next = siblings[0] || S.tabs[Math.min(idx, S.tabs.length - 1)];
+      S.cur = next.id;
+    }
+  }
+
+  let audio;
+  function flushSound() {
+    try {
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      const dur = 1.1, n = audio.sampleRate * dur;
+      const buf = audio.createBuffer(1, n, audio.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
+      const src = audio.createBufferSource(); src.buffer = buf;
+      const f = audio.createBiquadFilter(); f.type = "bandpass"; f.Q.value = 1.4;
+      f.frequency.setValueAtTime(1400, audio.currentTime);
+      f.frequency.exponentialRampToValueAtTime(180, audio.currentTime + dur);
+      const g = audio.createGain(); g.gain.setValueAtTime(0.0001, audio.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.5, audio.currentTime + 0.08);
+      g.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + dur);
+      src.connect(f).connect(g).connect(audio.destination); src.start();
+    } catch (e) { /* audio unavailable */ }
+  }
+  function flush() {
+    S.sheet = null;
+    if (S.screen !== "browser") { S.screen = "browser"; render(); }
+    const page = document.querySelector(".page");
+    vibrate([25, 40, 70]);
+    if (S.set.sound) flushSound();
+    if (page) page.classList.add("flushing");
+    setTimeout(() => {
+      const fresh = { id: nid("t"), gid: null, hist: ["corn://new"], i: 0 };
+      S.tabs = [fresh]; S.groups = []; S.cur = fresh.id;
+      S.blocked = 0; S.playing = false; S.vaultOpen = false; S.pin = ""; S.vaultColl = null;
+      S.quip = QUIPS[Math.floor(Math.random() * QUIPS.length)];
+      S.engineNow = S.set.engine;
+      render({ fresh: true });
+    }, 720);
+  }
+
+  function openSave(url, title) {
+    S.sheet = { type: "save", url, title, coll: "c0", tags: [], newColl: false };
+    render();
+  }
+  function commitSave() {
+    const sh = S.sheet;
+    const titleEl = document.getElementById("savetitle");
+    const title = (titleEl && titleEl.value.trim()) || sh.title;
+    const c = S.colls.find(x => x.id === sh.coll);
+    c.items.unshift({ title, url: sh.url, tags: sh.tags.slice() });
+    S.sheet = null;
+    render();
+    toast(`Saved to ${c.name}`);
+  }
+  function saveGroup(gid) {
+    const g = group(gid);
+    const urls = groupTabs(gid).map(urlOf).filter(u => !u.startsWith("corn://new"));
+    let c = S.colls.find(x => x.name === g.name);
+    if (!c) { c = { id: nid("c"), name: g.name, items: [] }; S.colls.push(c); }
+    urls.forEach(u => { if (!c.items.some(it => it.url === u)) c.items.push({ title: titleOf(u), url: u, tags: [] }); });
+    S.sheet = null;
+    render();
+    toast(`Saved ${urls.length} links to “${g.name}”`);
+  }
+
+  /* ---------------- Toast ---------------- */
+  let toastTimer;
+  function toast(msg, action, fn) {
+    const el = document.getElementById("toast");
+    el.innerHTML = `<span>${esc(msg)}</span>${action ? `<button type="button" id="toastbtn">${esc(action)}</button>` : ""}`;
+    if (action) document.getElementById("toastbtn").onclick = () => { el.classList.remove("show"); fn(); };
+    el.style.bottom = S.screen === "browser" ? (document.querySelector(".bottom")?.offsetHeight || 60) + 12 + "px" : "24px";
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), 2800);
+  }
+
+  /* ---------------- Render ---------------- */
+  const app = document.getElementById("app");
+  let lastSheet = null;
+  const scrollMem = {};
+
+  function render(opt = {}) {
+    const pageEl = app.querySelector(".page");
+    if (pageEl && pageEl.dataset.key) scrollMem[pageEl.dataset.key] = pageEl.scrollTop;
+    let html = "";
+    if (S.screen === "onboarding") html = onboardingHTML();
+    else if (S.screen === "browser") html = browserHTML();
+    else if (S.screen === "tabs") html = tabsHTML();
+    else if (S.screen === "vault") html = vaultHTML();
+    else if (S.screen === "settings") html = settingsHTML();
+    const sheetKey = S.sheet ? S.sheet.type : null;
+    if (S.sheet) html += sheetHTML(sheetKey === lastSheet);
+    lastSheet = sheetKey;
+    app.innerHTML = html;
+    const np = app.querySelector(".page");
+    if (np) {
+      if (opt.fresh) np.classList.add("fresh");
+      if (!opt.top && scrollMem[np.dataset.key]) np.scrollTop = scrollMem[np.dataset.key];
+    }
+    if (opt.focus) { const f = document.getElementById(opt.focus); if (f) f.focus(); }
+  }
+
+  function onboardingHTML() {
+    return `<div class="onb"><div class="hero"><img src="${LOGO}" alt="Corn logo"><h1>corn</h1>
+      <p class="tagline">The private browser that keeps you organised.</p>
+      <ul>
+        <li><span class="i">${ic("shield")}</span>Blocks ads, trackers and pop-ups</li>
+        <li><span class="i">${ic("vault")}</span>Saves what matters to a locked Vault</li>
+        <li><span class="i">${ic("toilet")}</span>Flushes everything else in one tap</li>
+      </ul></div>
+      <div class="stack"><button class="btn" data-act="start">I'm 18 or older · Start browsing</button></div>
+      <p class="age">Nothing you browse leaves this phone. No account needed.</p></div>`;
+  }
+
+  function addrHTML() {
+    const t = tab(), url = urlOf(t), p = parse(url);
+    const host = p.kind === "site" ? p.host : null;
+    const off = host && S.blockOff[host];
+    const count = p.kind === "new" ? "" : off ? "" : 3 + (hashN(url) % 9);
+    const saved = inVault(url);
+    const e = ENGINES[S.engineNow];
+    return `<div class="addr">
+      <form class="urlbox" data-form="url">
+        <button type="button" class="shield ${off ? "off" : ""}" data-act="shield" aria-label="Blocking on this site">${ic(off ? "shieldOff" : "shield", 18)}${count}</button>
+        <input id="urlin" value="${esc(displayUrl(url))}" placeholder="Search or type a site" autocomplete="off" aria-label="Address and search bar" enterkeyhint="go">
+        <button type="button" class="engine" data-act="engine" aria-label="Search engine: ${e.name}"><span class="ebadge" style="--c:${e.c}">${e.l}</span>${ic("chevDown", 14)}</button>
+      </form>
+      <button class="iconbtn ${saved ? "saved" : ""}" data-act="save" aria-label="Save page to Vault">${ic(saved ? "vaultOn" : "vaultAdd")}</button>
+    </div>`;
+  }
+  function stripHTML() {
+    const t = tab();
+    if (!t.gid) return "";
+    const g = group(t.gid);
+    return `<div class="strip" style="--gc:${g.color}">
+      <button class="iconbtn" data-act="groupgrid" aria-label="Show group ${esc(g.name)}">${ic("chevUp")}</button>
+      <div class="dots">${groupTabs(t.gid).map(x => {
+        const s = siteOf(urlOf(x));
+        const cur = x.id === S.cur;
+        return `<button class="dot ${cur ? "cur" : ""}" data-tab="${x.id}" aria-label="${esc(titleOf(urlOf(x)))}"><span class="fav" style="--c:${s.c}">${s.l}</span>${cur ? `<span class="x" data-close="${x.id}" aria-label="Close tab">${ic("x", 12)}</span>` : ""}</button>`;
+      }).join("")}</div>
+      <button class="iconbtn" data-act="newingroup" aria-label="New tab in this group">${ic("plus")}</button>
+    </div>`;
+  }
+  function toolbarHTML() {
+    const t = tab();
+    return `<nav class="toolbar" aria-label="Browser toolbar">
+      <button class="tb" data-act="back" ${t.i === 0 ? "disabled" : ""} aria-label="Back (hold for forward)">${ic("back")}</button>
+      <button class="tb" data-act="vault" aria-label="Vault">${ic("vault")}</button>
+      <button class="tb" data-act="tabs" aria-label="All tabs"><span class="tabcount">${S.tabs.length}</span></button>
+      <button class="tb flush" data-act="flush" aria-label="Flush"><span class="flushbg">${ic("toilet", 24)}</span></button>
+      <button class="tb" data-act="menu" aria-label="Menu">${ic("dots")}</button>
+    </nav>`;
+  }
+  function browserHTML() {
+    const t = tab(), url = urlOf(t);
+    const page = `<main class="page" data-key="${t.id}:${t.i}">${pageHTML(url)}</main>`;
+    if (S.set.addrBottom) return `<div class="browser">${page}<div class="bottom">${stripHTML()}${addrHTML()}${toolbarHTML()}</div></div>`;
+    return `<div class="browser">${addrHTML()}${page}<div class="bottom">${stripHTML()}${toolbarHTML()}</div></div>`;
+  }
+
+  function previewHTML(t) {
+    const url = urlOf(t), p = parse(url), s = siteOf(url);
+    if (p.kind === "new") return `<div class="pv newtab"><img src="${LOGO}" alt="">New tab</div>`;
+    const img = p.kind === "site" && p.host !== "kernel.news" ? `<div class="pv-img" style="--g:${grad(hashN(url) % 9)}"></div>` : "";
+    return `<div class="pv"><div class="pv-top" style="--c:${s.c}">${s.l} ${esc(displayUrl(url).split("/")[0])}</div><div class="pv-body">${img}<b>${esc(titleOf(url))}</b><i></i><i class="s"></i></div></div>`;
+  }
+  const cellHTML = t => `<div class="tcell ${t.id === S.cur ? "cur" : ""}"><button style="display:block;width:100%;height:100%" data-tab="${t.id}" aria-label="${esc(titleOf(urlOf(t)))}">${previewHTML(t)}</button><button class="close" data-close="${t.id}" aria-label="Close tab">${ic("x", 14)}</button></div>`;
+
+  function tabsHTML() {
+    const loose = S.tabs.filter(t => !t.gid);
+    return `<div class="screen"><div class="shead"><h2>${S.tabs.length} tabs</h2>
+      <button class="pill" data-act="newtab">${ic("plus", 18)} New</button><button class="pill corn" data-act="done">Done</button></div>
+      <div class="sbody">
+        ${S.groups.map(g => `<section class="gcard" style="--gc:${g.color}"><header><span class="gdot"></span><b>${esc(g.name)}</b><span>${groupTabs(g.id).length} tabs</span>
+          <button class="iconbtn" style="width:34px;height:34px" data-opengroup="${g.id}" aria-label="Open group">${ic("chevRight", 18)}</button></header>
+          <div class="grow-row">${groupTabs(g.id).map(cellHTML).join("")}</div></section>`).join("")}
+        ${loose.length ? `<div class="label">Other tabs</div><div class="tgrid">${loose.map(cellHTML).join("")}</div>` : ""}
+        <button class="drain-cta" data-act="flush"><span style="color:var(--corn)">${ic("toilet", 26)}</span><span><b>Done with all of these?</b><br>Flush wipes every tab and group. Your Vault stays.</span></button>
+      </div></div>`;
+  }
+
+  function vaultHTML() {
+    if (!S.vaultOpen) {
+      return `<div class="screen"><div class="shead"><button class="iconbtn" data-act="done" aria-label="Back">${ic("back")}</button><h2></h2></div>
+        <div class="lock"><div class="safe">${ic("lock", 34)}</div><h3>Vault is locked</h3><p>Enter your PIN · any 4 digits work here</p>
+        <div class="pins">${[0, 1, 2, 3].map(i => `<i class="${i < S.pin.length ? "on" : ""}"></i>`).join("")}</div>
+        <div class="keypad">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button data-pin="${n}">${n}</button>`).join("")}<button data-act="fp" aria-label="Use fingerprint">${ic("fp", 26)}</button><button data-pin="0">0</button><button data-act="bksp" aria-label="Delete digit">${ic("bksp", 24)}</button></div>
+        <button class="fp" data-act="fp">${ic("fp", 20)} Use fingerprint</button></div></div>`;
+    }
+    if (S.vaultColl) {
+      const c = S.colls.find(x => x.id === S.vaultColl);
+      return `<div class="screen"><div class="shead"><button class="iconbtn" data-act="vaultback" aria-label="Back to collections">${ic("back")}</button><h2>${esc(c.name)}</h2></div>
+        <div class="sbody">${c.items.length ? c.items.map(itemHTML).join("") : `<p class="empty">Nothing here yet. Tap the Vault icon in the address bar on any page to save it here.</p>`}</div></div>`;
+    }
+    const total = S.colls.reduce((n, c) => n + c.items.length, 0);
+    return `<div class="screen"><div class="shead"><button class="iconbtn" data-act="done" aria-label="Back to browser">${ic("back")}</button><h2>Vault</h2>
+      <button class="pill" data-act="lockvault">${ic("lock", 16)} Lock</button></div>
+      <div class="sbody">
+        <div class="vsearch">${ic("search", 18)}<input class="field" id="vq" placeholder="Search ${total} saved links" value="${esc(S.vaultQuery)}" autocomplete="off" aria-label="Search the Vault"></div>
+        <div id="vresults">${vaultResultsHTML()}</div>
+      </div></div>`;
+  }
+  function vaultResultsHTML() {
+    const q = S.vaultQuery.trim().toLowerCase();
+    if (q) {
+      const hits = [];
+      S.colls.forEach(c => c.items.forEach(it => { if ((it.title + " " + it.url + " " + it.tags.join(" ")).toLowerCase().includes(q)) hits.push(it); }));
+      return hits.length ? hits.map(itemHTML).join("") : `<p class="empty">No saved links match “${esc(q)}”.</p>`;
+    }
+    return `<div class="colls">${S.colls.map(c => `<button class="coll" data-coll="${c.id}"><span class="ico">${ic(c.name === "Unsorted" ? "vault" : "folder", 20)}</span><b>${esc(c.name)}</b><span>${c.items.length} ${c.items.length === 1 ? "link" : "links"}</span></button>`).join("")}
+      <button class="coll new" data-act="newcoll">${ic("plus", 22)}New collection</button></div>
+      <p class="fine" style="margin-top:16px">Everything in here is encrypted on this phone and survives every Flush.</p>`;
+  }
+  function itemHTML(it) {
+    const s = siteOf(it.url);
+    return `<button class="item" data-openurl="${esc(it.url)}"><span class="fav" style="--c:${s.c}">${s.l}</span><span class="meta"><b>${esc(it.title)}</b><small>${esc(it.url.split("/")[0])}</small>
+      ${it.tags.length ? `<span class="tags">${it.tags.map(tg => `<span class="tag">${ic("tag", 11)}${esc(tg)}</span>`).join("")}</span>` : ""}</span></button>`;
+  }
+
+  function settingsHTML() {
+    const s = S.set;
+    const radio = (key, label, sub) => `<button class="row" data-flushmode="${key}"><span class="radio ${s.flushMode === key ? "on" : ""}"></span><span class="grow">${label}${sub ? `<br><span class="hint">${sub}</span>` : ""}</span></button>`;
+    const sw = (key, label, sub) => `<button class="row" data-toggle="${key}" role="switch" aria-checked="${s[key]}"><span class="grow">${label}${sub ? `<br><span class="hint">${sub}</span>` : ""}</span><span class="sw ${s[key] ? "on" : ""}"></span></button>`;
+    return `<div class="screen"><div class="shead"><button class="iconbtn" data-act="done" aria-label="Back to browser">${ic("back")}</button><h2>Settings</h2></div>
+      <div class="sbody">
+        <div class="label">When should Corn flush?</div>
+        <div class="sgroup">
+          ${radio("keep", "Keep my session until I flush", "Default. Nothing goes until you hit the toilet.")}
+          ${radio("leave0", "Flush when I leave Corn")}
+          ${radio("leave5", "Flush 5 minutes after I leave")}
+          ${radio("leave30", "Flush 30 minutes after I leave")}
+        </div>
+        <p class="scap">Leaving Corn means switching apps, going home or locking your phone.</p>
+        <div class="sgroup">
+          ${sw("inactivity", "Flush after inactivity", "A playing video counts as activity.")}
+          ${s.inactivity ? `<div class="row"><span class="grow">After</span><div class="seg">${[10, 30, 60].map(m => `<button class="${s.inactMin === m ? "on" : ""}" data-inact="${m}">${m} min</button>`).join("")}</div></div>` : ""}
+          ${sw("sound", "Flush sound", "Off by default, so it never goes off in public.")}
+        </div>
+        <div class="label">Keep List</div>
+        <div class="sgroup">
+          ${s.keep.map(k => `<div class="keeprow"><span>${esc(k)}</span><button class="iconbtn" style="width:34px;height:34px" data-unkeep="${esc(k)}" aria-label="Remove ${esc(k)}">${ic("x", 16)}</button></div>`).join("")}
+          <form class="keeprow" data-form="keep"><input class="field" id="keepin" placeholder="Add a site, e.g. mail.example.com" style="height:40px;margin:6px 0" autocomplete="off" aria-label="Add a site to the Keep List"></form>
+        </div>
+        <p class="scap">These sites stay logged in after a Flush.</p>
+        <div class="label">Privacy</div>
+        <div class="sgroup">
+          ${sw("appLock", "App Lock", "Ask for PIN or fingerprint to open Corn.")}
+          ${sw("vaultLock", "Lock the Vault", "PIN or fingerprint to see saved links.")}
+          ${sw("blackRecents", "Black screen in recent apps", "Hides what's on screen in the app switcher.")}
+          <div class="row"><span style="color:var(--muted)">${ic("bell")}</span><span class="grow">Notifications<br><span class="hint">Corn never notifies you while it's closed.</span></span></div>
+        </div>
+        <div class="label">Search</div>
+        <div class="sgroup">
+          ${Object.entries(ENGINES).map(([k, e]) => `<button class="row" data-defengine="${k}"><span class="ebadge" style="--c:${e.c}">${e.l}</span><span class="grow">${e.name}</span><span class="radio ${s.engine === k ? "on" : ""}"></span></button>`).join("")}
+        </div>
+        <p class="scap">Default engine. You can switch for one search from the dropdown in the address bar.</p>
+        <div class="label">Layout</div>
+        <div class="sgroup"><div class="row"><span class="grow">Address bar</span><div class="seg"><button class="${!s.addrBottom ? "on" : ""}" data-addr="top">Top</button><button class="${s.addrBottom ? "on" : ""}" data-addr="bottom">Bottom</button></div></div></div>
+        <div class="label">About</div>
+        <div class="sgroup">
+          <button class="row" data-act="donate"><span style="color:var(--corn)">${ic("heart")}</span><span class="grow">Donate<br><span class="hint">Corn is free. Donations keep it that way.</span></span>${ic("chevRight", 18)}</button>
+          <div class="row"><span class="grow">Version</span><span class="hint">Prototype 0.1</span></div>
+        </div>
+      </div></div>`;
+  }
+
+  function sheetHTML(still) {
+    const sh = S.sheet;
+    let inner = "";
+    if (sh.type === "link") {
+      inner = `<h3>${esc(titleOf(sh.url))}</h3><p class="sub">${esc(displayUrl(sh.url))}</p>
+        <button class="row" data-act="lk-open">${ic("chevRight")}<span class="grow">Open</span></button>
+        <button class="row" data-act="lk-newtab">${ic("tabNew")}<span class="grow">Open in new tab</span></button>
+        <button class="row" data-act="lk-group">${ic("groupAdd")}<span class="grow">Open in new tab in group</span><span class="hint">${tab().gid ? esc(group(tab().gid).name) : "new group"}</span></button>
+        <button class="row" data-act="lk-save">${ic("vaultAdd")}<span class="grow">Save link to Vault</span></button>
+        <button class="row" data-act="lk-copy">${ic("copy")}<span class="grow">Copy link</span></button>`;
+    } else if (sh.type === "menu") {
+      const t = tab();
+      inner = `<button class="row" data-act="m-fwd" ${t.i >= t.hist.length - 1 ? "disabled" : ""}>${ic("fwd")}<span class="grow">Forward</span></button>
+        <button class="row" data-act="newtab">${ic("tabNew")}<span class="grow">New tab</span></button>
+        <button class="row" data-act="m-share">${ic("share")}<span class="grow">Share page</span></button>
+        <button class="row" data-act="m-settings">${ic("sliders")}<span class="grow">Settings</span></button>
+        <div class="sep"></div>
+        <div class="label" style="margin-top:6px">Prototype</div>
+        <button class="row" data-jump="onboarding">${ic("chevRight")}<span class="grow">Replay onboarding</span></button>
+        <button class="row" data-jump="reset">${ic("chevRight")}<span class="grow">Reset prototype</span></button>`;
+    } else if (sh.type === "engine") {
+      inner = `<h3>Search with</h3><p class="sub">Just for your next searches. Change the default in Settings.</p>
+        ${Object.entries(ENGINES).map(([k, e]) => `<button class="row" data-engine="${k}"><span class="ebadge" style="--c:${e.c}">${e.l}</span><span class="grow">${e.name}</span>${S.engineNow === k ? `<span style="color:var(--corn)">${ic("check")}</span>` : ""}</button>`).join("")}`;
+    } else if (sh.type === "shield") {
+      const host = parse(urlOf(tab())).host;
+      const off = !!S.blockOff[host];
+      const n = hashN(urlOf(tab()));
+      inner = `<h3>Blocking on ${esc(host || "this page")}</h3>
+        <p class="sub">${off ? "Blocking is off for this site." : `Blocked on this page: ${2 + (n % 5)} trackers, ${1 + (n % 4)} ads${host === "streamhut.tv" ? ", 1 pop-up, 1 redirect" : ""}.`}</p>
+        <button class="row" data-act="toggleblock" role="switch" aria-checked="${!off}"><span class="grow">Block ads, trackers and pop-ups here</span><span class="sw ${off ? "" : "on"}"></span></button>
+        <p class="fine">Only turn this off if the page breaks. It applies to this site only.</p>`;
+    } else if (sh.type === "save") {
+      inner = `<h3>Save to Vault</h3><p class="sub">${esc(displayUrl(sh.url))}</p>
+        <div class="label">Title</div><input class="field" id="savetitle" value="${esc(sh.title)}" autocomplete="off">
+        <div class="label">Collection</div>
+        <div class="chips">${S.colls.map(c => `<button class="chip ${sh.coll === c.id ? "on" : ""}" data-savecoll="${c.id}">${esc(c.name)}</button>`).join("")}
+          ${sh.newColl ? `<form data-form="newcoll" style="display:inline-flex"><input class="field" id="newcollin" placeholder="Name it" style="height:34px;width:130px;border-radius:999px" autocomplete="off"></form>` : `<button class="chip dashed" data-act="savenewcoll">${ic("plus", 14)} New</button>`}</div>
+        <div class="label">Tags (optional)</div>
+        <div class="chips" style="margin-bottom:8px">${sh.tags.map(tg => `<button class="chip" data-untag="${esc(tg)}">${esc(tg)} ${ic("x", 12)}</button>`).join("")}</div>
+        <form data-form="tag"><input class="field" id="tagin" placeholder="Type a tag and press enter" autocomplete="off" enterkeyhint="done"></form>
+        <div class="stack"><button class="btn" data-act="commitsave">${ic("vaultAdd", 20)} Save</button></div>
+        <p class="fine">You can save while the Vault is locked. Seeing what's inside needs your PIN.</p>`;
+    } else if (sh.type === "group") {
+      const g = group(sh.gid);
+      if (!g) { S.sheet = null; return ""; }
+      inner = `<div class="gname" style="--gc:${g.color}"><button class="gdot" data-act="groupcolor" aria-label="Change group colour"></button><input id="gname" value="${esc(g.name)}" aria-label="Group name"></div>
+        <p class="sub" style="margin-top:6px">${groupTabs(g.id).length} tabs · tap a tab to jump to it</p>
+        <div class="tgrid">${groupTabs(g.id).map(cellHTML).join("")}</div>
+        <div class="stack"><button class="btn" data-act="savegroup">${ic("vaultAdd", 20)} Save group to Vault</button>
+        <button class="btn ghost" data-act="newingroup">${ic("plus", 20)} New tab in group</button></div>
+        <p class="fine">Flush wipes every group. Save it first if you want these links later.</p>`;
+    }
+    return `<div class="scrim ${still ? "still" : ""}" data-act="closesheet"></div><div class="sheet ${still ? "still" : ""}" role="dialog" aria-modal="true"><div class="handle"></div>${inner}</div>`;
+  }
+
+  /* ---------------- Events ---------------- */
+  const lp = { timer: null, fired: false, x: 0, y: 0 };
+  app.addEventListener("pointerdown", e => {
+    lp.fired = false;
+    const el = e.target.closest("[data-link], [data-act='back']");
+    if (!el) return;
+    lp.x = e.clientX; lp.y = e.clientY;
+    clearTimeout(lp.timer);
+    lp.timer = setTimeout(() => {
+      lp.fired = true;
+      vibrate(12);
+      if (el.dataset.link) { S.sheet = { type: "link", url: el.dataset.link }; render(); }
+      else forward();
+    }, 460);
+  });
+  app.addEventListener("pointermove", e => { if (Math.abs(e.clientX - lp.x) + Math.abs(e.clientY - lp.y) > 12) clearTimeout(lp.timer); });
+  ["pointerup", "pointercancel", "pointerleave"].forEach(ev => app.addEventListener(ev, () => clearTimeout(lp.timer)));
+  app.addEventListener("contextmenu", e => {
+    e.preventDefault();
+    const el = e.target.closest("[data-link]");
+    if (!el || lp.fired) return;
+    clearTimeout(lp.timer);
+    S.sheet = { type: "link", url: el.dataset.link };
+    render();
+  });
+
+  app.addEventListener("keydown", e => {
+    if (e.key === "Enter") { const el = e.target.closest("[data-link]"); if (el) navigate(el.dataset.link); }
+  });
+
+  app.addEventListener("click", e => {
+    if (lp.fired) { lp.fired = false; e.preventDefault(); e.stopPropagation(); return; }
+    const d = sel => e.target.closest(sel);
+    let el;
+
+    if ((el = d("[data-close]"))) { e.stopPropagation(); closeTab(el.dataset.close); render(); return; }
+    if ((el = d("[data-link]"))) { navigate(el.dataset.link); return; }
+    if ((el = d("[data-tab]"))) {
+      S.cur = el.dataset.tab; S.playing = false;
+      if (S.screen === "tabs") S.screen = "browser";
+      S.sheet = null; render(); return;
+    }
+    if ((el = d("[data-jump]"))) { jump(el.dataset.jump); return; }
+    if ((el = d("[data-pin]"))) {
+      if (S.pin.length < 4) S.pin += el.dataset.pin;
+      if (S.pin.length === 4) { render(); setTimeout(() => { S.vaultOpen = true; S.pin = ""; render(); }, 180); }
+      else render();
+      return;
+    }
+    if ((el = d("[data-coll]"))) { S.vaultColl = el.dataset.coll; render(); return; }
+    if ((el = d("[data-openurl]"))) {
+      S.screen = "browser"; S.vaultColl = null;
+      newTab(el.dataset.openurl, false, true); render({ top: true }); return;
+    }
+    if ((el = d("[data-engine]"))) { S.engineNow = el.dataset.engine; S.sheet = null; render(); toast(`Searching with ${ENGINES[S.engineNow].name}`); return; }
+    if ((el = d("[data-defengine]"))) { S.set.engine = S.engineNow = el.dataset.defengine; render(); return; }
+    if ((el = d("[data-flushmode]"))) { S.set.flushMode = el.dataset.flushmode; render(); return; }
+    if ((el = d("[data-toggle]"))) { const k = el.dataset.toggle; S.set[k] = !S.set[k]; render(); return; }
+    if ((el = d("[data-inact]"))) { S.set.inactMin = +el.dataset.inact; render(); return; }
+    if ((el = d("[data-addr]"))) { S.set.addrBottom = el.dataset.addr === "bottom"; render(); toast(S.set.addrBottom ? "Address bar moved to the bottom" : "Address bar moved to the top"); return; }
+    if ((el = d("[data-unkeep]"))) { S.set.keep = S.set.keep.filter(k => k !== el.dataset.unkeep); render(); return; }
+    if ((el = d("[data-savecoll]"))) { S.sheet.coll = el.dataset.savecoll; keepTitle(); render(); return; }
+    if ((el = d("[data-untag]"))) { S.sheet.tags = S.sheet.tags.filter(t => t !== el.dataset.untag); keepTitle(); render(); return; }
+    if ((el = d("[data-opengroup]"))) { S.sheet = { type: "group", gid: el.dataset.opengroup }; render(); return; }
+
+    el = d("[data-act]");
+    if (!el || el.disabled) return;
+    const act = el.dataset.act;
+    const t = tab();
+    switch (act) {
+      case "start": S.screen = "browser"; render(); break;
+      case "back": back(); break;
+      case "vault": S.screen = "vault"; S.sheet = null; render(); break;
+      case "tabs": S.screen = "tabs"; render(); break;
+      case "done": S.screen = "browser"; S.vaultColl = null; S.sheet = null; render(); break;
+      case "flush": flush(); break;
+      case "menu": S.sheet = { type: "menu" }; render(); break;
+      case "engine": S.sheet = { type: "engine" }; render(); break;
+      case "shield": if (parse(urlOf(t)).kind === "site") { S.sheet = { type: "shield" }; render(); } else toast("Nothing to block on this page"); break;
+      case "toggleblock": { const h = parse(urlOf(t)).host; S.blockOff[h] = !S.blockOff[h]; render(); break; }
+      case "save": { const u = urlOf(t); if (parse(u).kind === "new") toast("Open a page first, then save it"); else openSave(u, titleOf(u)); break; }
+      case "closesheet": saveGroupName(); S.sheet = null; render(); break;
+      case "groupgrid": S.sheet = { type: "group", gid: t.gid }; render(); break;
+      case "newingroup": {
+        const gid = S.sheet && S.sheet.gid;
+        if (gid && S.cur && tab().gid !== gid) S.cur = groupTabs(gid)[0].id;
+        saveGroupName();
+        newTab("corn://new", true, true); S.sheet = null; S.screen = "browser"; render({ top: true }); break;
+      }
+      case "newtab": newTab("corn://new", false, true); S.sheet = null; S.screen = "browser"; render({ top: true }); break;
+      case "savegroup": saveGroupName(); saveGroup(S.sheet.gid); break;
+      case "groupcolor": { const g = group(S.sheet.gid); g.color = GROUP_COLORS[(GROUP_COLORS.indexOf(g.color) + 1) % GROUP_COLORS.length]; saveGroupName(); render(); break; }
+      case "lk-open": navigate(S.sheet.url); break;
+      case "lk-newtab": { const u = S.sheet.url; S.sheet = null; const nt = newTab(u, false, false); render(); toast("Opened in a new tab", "Switch", () => { S.cur = nt.id; render({ top: true }); }); break; }
+      case "lk-group": { const u = S.sheet.url; S.sheet = null; newTab(u, true, false); render(); toast(`Added to “${group(tab().gid).name}”. Tap it in the strip.`); break; }
+      case "lk-save": openSave(S.sheet.url, titleOf(S.sheet.url)); break;
+      case "lk-copy": { const u = S.sheet.url; S.sheet = null; render(); try { navigator.clipboard.writeText("https://" + u).catch(() => {}); } catch (err) { /* clipboard blocked */ } toast("Link copied"); break; }
+      case "m-fwd": S.sheet = null; forward(); break;
+      case "m-share": S.sheet = null; render(); toast("The Android share sheet opens here"); break;
+      case "m-settings": S.sheet = null; S.screen = "settings"; render(); break;
+      case "savenewcoll": keepTitle(); S.sheet.newColl = true; render({ focus: "newcollin" }); break;
+      case "commitsave": commitSave(); break;
+      case "fp": S.vaultOpen = true; S.pin = ""; render(); toast("Unlocked with fingerprint"); break;
+      case "bksp": S.pin = S.pin.slice(0, -1); render(); break;
+      case "lockvault": S.vaultOpen = false; S.vaultColl = null; render(); break;
+      case "vaultback": S.vaultColl = null; render(); break;
+      case "newcoll": {
+        const name = "New collection " + (S.colls.length);
+        const c = { id: nid("c"), name, items: [] }; S.colls.push(c); S.vaultColl = c.id; render(); toast("Collection created"); break;
+      }
+      case "play": S.playing = !S.playing; render(); break;
+      case "donate": toast("Donations open at launch. Thank you! 🌽"); break;
+      case "toast": toast(el.dataset.msg); break;
+    }
+  });
+
+  function keepTitle() { const el = document.getElementById("savetitle"); if (el && S.sheet) S.sheet.title = el.value; }
+  function saveGroupName() {
+    const el = document.getElementById("gname");
+    if (el && S.sheet && S.sheet.type === "group") { const g = group(S.sheet.gid); if (g && el.value.trim()) g.name = el.value.trim(); }
+  }
+
+  app.addEventListener("submit", e => {
+    e.preventDefault();
+    const f = e.target.dataset.form;
+    if (f === "url" || f === "ntp") {
+      const input = e.target.querySelector("input");
+      go(input.value.trim());
+    } else if (f === "tag") {
+      const v = document.getElementById("tagin").value.trim().toLowerCase();
+      keepTitle();
+      if (v && !S.sheet.tags.includes(v)) S.sheet.tags.push(v);
+      render({ focus: "tagin" });
+    } else if (f === "newcoll") {
+      const v = document.getElementById("newcollin").value.trim();
+      if (v) { const c = { id: nid("c"), name: v, items: [] }; S.colls.push(c); S.sheet.coll = c.id; }
+      S.sheet.newColl = false; render();
+    } else if (f === "keep") {
+      const v = document.getElementById("keepin").value.trim().toLowerCase();
+      if (v && !S.set.keep.includes(v)) S.set.keep.push(v);
+      render({ focus: "keepin" });
+    }
+  });
+  app.addEventListener("input", e => {
+    if (e.target.id === "vq") { S.vaultQuery = e.target.value; document.getElementById("vresults").innerHTML = vaultResultsHTML(); }
+  });
+  app.addEventListener("focusin", e => { if (e.target.id === "urlin") setTimeout(() => e.target.select(), 0); });
+  app.addEventListener("change", e => { if (e.target.id === "gname") { saveGroupName(); } });
+
+  function go(q) {
+    if (!q) return;
+    const clean = q.replace(/^https?:\/\//, "").replace(/^www\./, "");
+    const host = clean.split("/")[0].toLowerCase();
+    if (SITES[host]) return navigate(clean.includes("/") ? clean : host + "/");
+    if (/^[^\s]+\.[a-z]{2,}(\/.*)?$/i.test(clean)) return navigate("corn://unknown/" + host);
+    navigate(`corn://search/${S.engineNow}/${encodeURIComponent(q)}`);
+  }
+
+  function jump(where) {
+    S.sheet = null;
+    if (where === "reset") { S = initialState(); S.screen = "browser"; render(); toast("Prototype reset"); return; }
+    if (where === "vault") { S.vaultOpen = false; S.vaultColl = null; }
+    S.screen = where;
+    render();
+  }
+  document.querySelectorAll(".panel [data-jump]").forEach(b => b.addEventListener("click", () => jump(b.dataset.jump)));
+  document.getElementById("plogo").src = LOGO;
+
+  render();
+})();
+</script>

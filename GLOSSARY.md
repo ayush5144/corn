@@ -48,8 +48,8 @@ _Avoid_: Tab bar, group bar, bubbles
 ## Vault
 
 **Vault**:
-The user's encrypted, local collection of things they explicitly chose to save. It survives every Flush.
-_Avoid_: Walls, bookmarks, collections, library
+The user's encrypted, local collection of things they explicitly chose to save; Corn's replacement for bookmarks. It survives every Flush.
+_Avoid_: Walls, bookmarks, favourites, library
 
 **Vault Item**:
 One saved thing in the Vault: a link with its title, plus optional tags and thumbnail.

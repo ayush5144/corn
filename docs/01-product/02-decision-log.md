@@ -198,4 +198,50 @@ Every product question asked and the founder's answer, in order. Settled answers
 
 ---
 
-## Round 3 — pending
+## Round 3 — 2026-11-01
+
+### Q1 Protecting the Kept Session
+- **Answer:** Didn't follow the question; "there won't be any cloud backups."
+- **Clarified:** Android backs up app data to Google Drive automatically unless the app opts out. Corn opts out. Corn also encrypts its own Session records (tabs, Tab Groups, URLs); this is an engineering default with no visible product change.
+- **Status:** ✅ No backups of any kind. ✅ Corn-encrypted Session records.
+
+### Q2 Auto-Flush presets
+- **Status:** ✅ Accepted: when I leave Corn / 5 min after / 30 min after; separate inactivity switch (10/30/60 min); a playing video counts as activity.
+
+### Q3 Tab Groups on Flush
+- **Answer:** Yes, Flush wipes all groups. Asked where "Save to Vault" sits; it should be visible on pages.
+- **Status:** ✅ Flush wipes all Tab Groups. ✅ Save to Vault is visible on every page (see Q7). "Save group to Vault" lives in the group's `^` grid.
+
+### Q4 Password store timing
+- **Answer:** Not answered.
+- **Status:** 🟡 Tentatively v1.1 (recommendation, unopposed). Revisit before the v1 build.
+
+### Q5 Address bar position
+- **Answer:** Top by default; bottom as an adjustable setting.
+- **Status:** ✅ Top default; "address bar at bottom" is a v1 setting.
+
+### Q6 Bottom toolbar
+- **Answer:** Right for now. The Vault icon could sit in the search bar.
+- **Status:** ✅ Back (hold for Forward) · Vault · Tabs · Flush · Menu. ✅ A Vault save icon also sits in the address bar.
+
+### Q7 Saving to the Vault
+- **Answer:** No star in the address bar. A star means bookmarks/favourites, and the Vault does the same job.
+- **Status:** ✅ **Corn has no separate bookmarks; the Vault replaces them.** The address bar shows a Vault save icon (not a star) on every page; tapping it opens the save sheet (Collection + optional tags).
+
+### Q8 Flush feedback
+- **Status:** ✅ Quick swirl animation, vibration, funny one-liner on the empty page. Sound setting off by default.
+
+### Q9 Look and feel
+- **Answer:** Unsure; decide after seeing the prototype.
+- **Status:** 🟡 Prototype starts dark + corn yellow + leaf green with the existing logo; founder reacts.
+
+### Q10 Prototype scope
+- **Answer:** 18+ onboarding probably not needed, "but sure."
+- **Status:** ✅ All screens, with a single lightweight 18+ confirmation.
+
+### Process
+- Founder asked for no more questions for now. Remaining 🟡 items get decided by reacting to the prototype.
+
+---
+
+## Round 4 — after the prototype
