@@ -34,5 +34,5 @@
 ## 2026-11-01 — Toolbar icons share one visible height
 
 - Code: `ui/Icons.kt` toolbar icons drawn on a y 3–21 grid and stroke-compensated to an 18 dp visible height; arrows optically smaller (~15 dp); `ui/BrowserScreen.kt` tabs box 18 dp.
-- Measured on the emulator: Vault 18.3, Tabs 17.9, Menu 18.3, Toilet 17.9, Back 14.9 dp.
+- Measured on the emulator: Vault 18.3, Tabs 17.9, Menu 18.3, Toilet 17.9, Back 15.5 dp (enlarged from 14.9 at founder request).
 
