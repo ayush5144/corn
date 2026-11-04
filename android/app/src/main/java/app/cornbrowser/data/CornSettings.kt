@@ -70,6 +70,10 @@ class CornSettings(context: Context) {
     var textSize by intPref("text_size", 100)
     /** Record pages visited (on this phone only). On by default; Flush clears it. */
     var keepHistory by pref("keep_history", true)
+    /** Settings → Privacy: offer to save a password after logging in to a site. On by default. */
+    var offerSavePasswords by pref("offer_save_passwords", true)
+    /** Settings → Privacy: ask for the PIN before filling a password while the Vault is locked. On by default. */
+    var askPinBeforeFill by pref("ask_pin_before_fill", true)
     var tabMemory by mutableStateOf(TabMemory.of(prefs.getString("tab_memory", null)))
         private set
     /** For TabMemory.RECENT: how many recent tabs stay in memory besides the open one (0, 1, 2, 3 or 5). */

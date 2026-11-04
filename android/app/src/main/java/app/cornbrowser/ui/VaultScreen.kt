@@ -64,6 +64,11 @@ fun VaultScreen(c: CornController) {
         return
     }
 
+    if (c.passwords.screenOpen) {
+        PasswordsScreen(c)
+        return
+    }
+
     val col = openCollection
     if (col != null) {
         CollectionView(c, col, onBack = { openCollection = null })
@@ -90,6 +95,7 @@ fun VaultScreen(c: CornController) {
             if (query.isNotBlank()) {
                 if (hits.isEmpty()) Empty("No saved links match “$query”.") else hits.forEach { ItemRow(c, it) }
             } else {
+                PasswordsEntry(c)
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     // "All" (every saved link, not a stored Collection), the Collections, then the
                     // "New collection" tile (null), two per row. Tiles in a row share one height.

@@ -74,6 +74,7 @@ fun BoxScope.Sheets(c: CornController) {
             is Sheet.SitePermissionAsk -> SitePermissionSheet(c, shown)
             is Sheet.Download -> DownloadSheet(c, shown)
             Sheet.SplitPick -> SplitPickSheet(c)
+            is Sheet.Password -> PasswordSheetContent(c, shown.kind)
             null -> {}
         }
     }

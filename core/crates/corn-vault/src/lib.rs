@@ -10,6 +10,10 @@
 //! - **History**: one entry per page plus a visit log with timestamps (cleared by Flush).
 //!   Deletion is all-or-nothing, per visit, or per site (history only): no time ranges.
 //! - a small key-value area for the Keep List, per-site shields and the Kept Session.
+//! - **Passwords** (`logins`): one row per saved login. The site (origin) is stored in clear so
+//!   Corn can look logins up; the username and password are opaque blobs encrypted by the app
+//!   (AES-256-GCM with a key protected by the phone's keystore). This crate never sees them in clear.
+//!   Like the Vault, passwords survive every Flush.
 //!
 //! The file lives in the app's private storage, protected by the OS sandbox
 //! and the phone's own encryption; the Vault lock gates access in the UI.
@@ -20,7 +24,11 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use rusqlite::{params, Connection, OptionalExtension};
 
 /// Schema version written to `PRAGMA user_version`.
-const SCHEMA_VERSION: i64 = 2;
+///
+/// - 0: first release (every Vault Item in a Collection, "Unsorted" catch-all).
+/// - 2: optional Collection ("All"), history.
+/// - 3: `logins` (saved passwords).
+const SCHEMA_VERSION: i64 = 3;
 
 #[derive(Debug, thiserror::Error)]
 pub enum VaultError {
@@ -60,6 +68,19 @@ pub struct HistoryVisit {
     pub title: String,
     pub host: String,
     pub visited_at: i64,
+}
+
+/// One saved login. `username_enc` and `password_enc` are encrypted by the app; Rust never decrypts them.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Login {
+    pub id: i64,
+    /// `scheme://host[:port]`, e.g. `https://example.com` (port only if not the default).
+    pub origin: String,
+    pub username_enc: Vec<u8>,
+    pub password_enc: Vec<u8>,
+    pub created_at: i64,
+    pub last_used_at: i64,
+    pub times_used: i64,
 }
 
 pub struct Store {
@@ -103,7 +124,33 @@ CREATE TABLE IF NOT EXISTS history_visits (
     visited_at INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS visits_by_time ON history_visits(visited_at DESC);
+CREATE TABLE IF NOT EXISTS logins (
+    id           INTEGER PRIMARY KEY,
+    origin       TEXT NOT NULL,
+    username_enc BLOB NOT NULL,
+    password_enc BLOB NOT NULL,
+    created_at   INTEGER NOT NULL,
+    last_used_at INTEGER NOT NULL,
+    times_used   INTEGER NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS logins_by_origin ON logins(origin);
 ";
+
+const LOGIN_COLUMNS: &str = "id, origin, username_enc, password_enc, created_at, last_used_at, times_used";
+/// Most recently used first, then most used.
+const LOGIN_ORDER: &str = "ORDER BY last_used_at DESC, times_used DESC, id DESC";
+
+fn login_row(r: &rusqlite::Row) -> rusqlite::Result<Login> {
+    Ok(Login {
+        id: r.get(0)?,
+        origin: r.get(1)?,
+        username_enc: r.get(2)?,
+        password_enc: r.get(3)?,
+        created_at: r.get(4)?,
+        last_used_at: r.get(5)?,
+        times_used: r.get(6)?,
+    })
+}
 
 fn now() -> i64 {
     SystemTime::now().duration_since(UNIX_EPOCH).map(|d| d.as_millis() as i64).unwrap_or(0)
@@ -327,6 +374,81 @@ impl Store {
         checkpoint(&conn)
     }
 
+    // ---------- Passwords (logins) ----------
+
+    /// Save a new login. The blobs are already encrypted by the app.
+    pub fn add_login(&self, origin: &str, username_enc: &[u8], password_enc: &[u8]) -> Result<Login> {
+        let conn = self.conn();
+        let at = now();
+        conn.execute(
+            "INSERT INTO logins (origin, username_enc, password_enc, created_at, last_used_at, times_used)
+             VALUES (?1, ?2, ?3, ?4, ?4, 0)",
+            params![origin, username_enc, password_enc, at],
+        )?;
+        Ok(Login {
+            id: conn.last_insert_rowid(),
+            origin: origin.to_owned(),
+            username_enc: username_enc.to_vec(),
+            password_enc: password_enc.to_vec(),
+            created_at: at,
+            last_used_at: at,
+            times_used: 0,
+        })
+    }
+
+    /// Replace a login's username and password (the site stays the same).
+    pub fn update_login(&self, id: i64, username_enc: &[u8], password_enc: &[u8]) -> Result<()> {
+        let conn = self.conn();
+        conn.execute(
+            "UPDATE logins SET username_enc = ?2, password_enc = ?3 WHERE id = ?1",
+            params![id, username_enc, password_enc],
+        )?;
+        // The old encrypted values are overwritten (secure_delete); empty the log too.
+        checkpoint(&conn)
+    }
+
+    pub fn delete_login(&self, id: i64) -> Result<()> {
+        let conn = self.conn();
+        conn.execute("DELETE FROM logins WHERE id = ?1", [id])?;
+        checkpoint(&conn)
+    }
+
+    /// Delete every saved login ("Reset passwords" when they can no longer be decrypted).
+    pub fn delete_all_logins(&self) -> Result<()> {
+        let conn = self.conn();
+        conn.execute("DELETE FROM logins", [])?;
+        checkpoint(&conn)
+    }
+
+    /// Logins for exactly this origin, most recently used first.
+    pub fn logins_for_origin(&self, origin: &str) -> Result<Vec<Login>> {
+        let conn = self.conn();
+        let mut stmt = conn.prepare(&format!("SELECT {LOGIN_COLUMNS} FROM logins WHERE origin = ?1 {LOGIN_ORDER}"))?;
+        let rows = stmt.query_map([origin], login_row)?;
+        Ok(rows.collect::<std::result::Result<_, _>>()?)
+    }
+
+    /// Every login, most recently used first, then most used.
+    pub fn all_logins(&self) -> Result<Vec<Login>> {
+        let conn = self.conn();
+        let mut stmt = conn.prepare(&format!("SELECT {LOGIN_COLUMNS} FROM logins {LOGIN_ORDER}"))?;
+        let rows = stmt.query_map([], login_row)?;
+        Ok(rows.collect::<std::result::Result<_, _>>()?)
+    }
+
+    pub fn login_count(&self) -> Result<i64> {
+        Ok(self.conn().query_row("SELECT count(*) FROM logins", [], |r| r.get(0))?)
+    }
+
+    /// A login was used (filled): note when, and count it.
+    pub fn touch_login(&self, id: i64) -> Result<()> {
+        self.conn().execute(
+            "UPDATE logins SET last_used_at = ?2, times_used = times_used + 1 WHERE id = ?1",
+            params![id, now()],
+        )?;
+        Ok(())
+    }
+
     // ---------- key-value area ----------
 
     pub fn kv_get(&self, key: &str) -> Result<Option<String>> {
@@ -373,10 +495,11 @@ fn migrate(conn: &Connection) -> Result<()> {
         conn.execute_batch(SCHEMA)?;
         return Ok(());
     }
-    let has_items: bool = conn.query_row(
+    // Only a version-0 database (user_version was never set) needs the items rebuild below.
+    let has_items: bool = version < 2 && conn.query_row(
         "SELECT EXISTS(SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'items')",
         [],
-        |r| r.get(0),
+        |r| r.get::<_, bool>(0),
     )?;
     if has_items {
         // Version 1 (before "All"): every item had to be in a Collection, with an "Unsorted"
@@ -404,6 +527,8 @@ fn migrate(conn: &Connection) -> Result<()> {
              PRAGMA foreign_keys = ON;",
         )?;
     }
+    // Version 2 → 3 only adds the `logins` table: CREATE TABLE IF NOT EXISTS in SCHEMA does it,
+    // leaving everything already stored untouched.
     conn.execute_batch(SCHEMA)?;
     conn.execute_batch(&format!("PRAGMA user_version = {SCHEMA_VERSION};"))?;
     Ok(())
@@ -567,5 +692,98 @@ mod tests {
         assert!(s.history(None, 100).unwrap().is_empty());
         let rows: i64 = s.conn().query_row("SELECT (SELECT count(*) FROM history_entries) + (SELECT count(*) FROM history_visits)", [], |r| r.get(0)).unwrap();
         assert_eq!(rows, 0);
+    }
+
+    #[test]
+    fn logins_add_list_update_touch_delete() {
+        let s = Store::open(&temp_path("logins")).unwrap();
+        let a = s.add_login("https://example.com", b"u1-enc", b"p1-enc").unwrap();
+        let b = s.add_login("https://example.com", b"u2-enc", b"p2-enc").unwrap();
+        s.add_login("https://example.com:8443", b"u3-enc", b"p3-enc").unwrap();
+        s.add_login("https://other.example", b"u4-enc", b"p4-enc").unwrap();
+        assert_eq!(s.login_count().unwrap(), 4);
+        // Exact origin only: another port or site is a different origin.
+        let here = s.logins_for_origin("https://example.com").unwrap();
+        assert_eq!(here.len(), 2);
+        assert!(s.logins_for_origin("https://www.example.com").unwrap().is_empty());
+        assert_eq!(here.iter().find(|l| l.id == a.id).unwrap().username_enc, b"u1-enc".to_vec());
+
+        // Using a login moves it to the top and counts it.
+        s.touch_login(a.id).unwrap();
+        s.touch_login(a.id).unwrap();
+        let all = s.all_logins().unwrap();
+        assert_eq!(all[0].id, a.id);
+        assert_eq!(all[0].times_used, 2);
+
+        s.update_login(b.id, b"u2-enc", b"p2-new").unwrap();
+        let b2 = s.logins_for_origin("https://example.com").unwrap().into_iter().find(|l| l.id == b.id).unwrap();
+        assert_eq!(b2.password_enc, b"p2-new".to_vec());
+
+        s.delete_login(b.id).unwrap();
+        assert_eq!(s.login_count().unwrap(), 3);
+        s.delete_all_logins().unwrap();
+        assert_eq!(s.login_count().unwrap(), 0);
+    }
+
+    #[test]
+    fn deleted_login_leaves_no_trace_in_the_files() {
+        let path = temp_path("login-trace");
+        let s = Store::open(&path).unwrap();
+        let l = s.add_login("https://trace.example", b"USERBLOBMARKER", b"PASSBLOBMARKER").unwrap();
+        s.update_login(l.id, b"USERBLOBMARKER", b"NEWPASSMARKER").unwrap();
+        for f in [path.clone(), format!("{path}-wal")] {
+            let text = String::from_utf8_lossy(&std::fs::read(&f).unwrap_or_default()).into_owned();
+            assert!(!text.contains("PASSBLOBMARKER"), "old password blob left in {f}");
+        }
+        s.delete_login(l.id).unwrap();
+        for f in [path.clone(), format!("{path}-wal")] {
+            let text = String::from_utf8_lossy(&std::fs::read(&f).unwrap_or_default()).into_owned();
+            assert!(!text.contains("NEWPASSMARKER") && !text.contains("USERBLOBMARKER"), "login left in {f}");
+        }
+    }
+
+    #[test]
+    fn upgrades_v2_database_adding_logins_and_keeping_everything() {
+        let path = temp_path("migrate-v2");
+        {
+            // A version-2 database as the previous release wrote it (no logins table).
+            let c = Connection::open(&path).unwrap();
+            c.execute_batch(
+                "CREATE TABLE collections (id INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE COLLATE NOCASE, created_at INTEGER NOT NULL);
+                 CREATE TABLE items (id INTEGER PRIMARY KEY, collection_id INTEGER REFERENCES collections(id) ON DELETE SET NULL,
+                                     title TEXT NOT NULL, url TEXT NOT NULL, created_at INTEGER NOT NULL);
+                 CREATE TABLE item_tags (item_id INTEGER NOT NULL REFERENCES items(id) ON DELETE CASCADE, tag TEXT NOT NULL, PRIMARY KEY (item_id, tag));
+                 CREATE TABLE kv (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+                 CREATE TABLE history_entries (id INTEGER PRIMARY KEY, url TEXT NOT NULL UNIQUE, host TEXT NOT NULL, title TEXT NOT NULL, last_visit INTEGER NOT NULL);
+                 CREATE TABLE history_visits (id INTEGER PRIMARY KEY, entry_id INTEGER NOT NULL REFERENCES history_entries(id) ON DELETE CASCADE, visited_at INTEGER NOT NULL);
+                 -- A user Collection that happens to be called Unsorted must survive (the v0 rebuild must not run again).
+                 INSERT INTO collections VALUES (1, 'Unsorted', 0), (2, 'Watch later', 1);
+                 INSERT INTO items VALUES (10, 1, 'In my Unsorted', 'https://a.example/', 5), (11, NULL, 'In no collection', 'https://b.example/', 6);
+                 INSERT INTO item_tags VALUES (11, 'chill');
+                 INSERT INTO kv VALUES ('keep_list', '[\"mail.example.com\"]');
+                 INSERT INTO history_entries VALUES (1, 'https://h.example/', 'h.example', 'H', 7);
+                 INSERT INTO history_visits VALUES (1, 1, 7);
+                 PRAGMA user_version = 2;",
+            )
+            .unwrap();
+        }
+        let s = Store::open(&path).unwrap();
+        let version: i64 = s.conn().query_row("PRAGMA user_version", [], |r| r.get(0)).unwrap();
+        assert_eq!(version, 3);
+        let names: Vec<String> = s.collections().unwrap().into_iter().map(|c| c.name).collect();
+        assert_eq!(names, vec!["Unsorted".to_string(), "Watch later".to_string()]);
+        let all = s.items(None).unwrap();
+        assert_eq!(all.len(), 2);
+        assert_eq!(all.iter().find(|i| i.id == 10).unwrap().collection_id, Some(1));
+        assert_eq!(all.iter().find(|i| i.id == 11).unwrap().tags, vec!["chill".to_string()]);
+        assert_eq!(s.kv_get("keep_list").unwrap().as_deref(), Some("[\"mail.example.com\"]"));
+        assert_eq!(s.history(None, 10).unwrap().len(), 1);
+        // The new table works.
+        assert_eq!(s.login_count().unwrap(), 0);
+        s.add_login("https://example.com", b"u", b"p").unwrap();
+        drop(s);
+        let s = Store::open(&path).unwrap();
+        assert_eq!(s.login_count().unwrap(), 1);
+        assert_eq!(s.items(None).unwrap().len(), 2);
     }
 }

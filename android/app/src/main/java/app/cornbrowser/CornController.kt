@@ -62,6 +62,8 @@ sealed interface Sheet {
     data class Download(val request: DownloadRequest, val fileName: String) : Sheet
     /** Menu → Split screen: pick the tab for the second pane. */
     data object SplitPick : Sheet
+    /** Passwords: save / update, pick an account, PIN before filling, confirmations. */
+    data class Password(val kind: app.cornbrowser.passwords.PasswordSheet) : Sheet
 }
 
 /** An address-bar suggestion, from the Vault or History (computed on the phone, never sent anywhere). */
@@ -75,6 +77,8 @@ class CornController(private val context: Context) : TabHost {
     val settings = CornSettings(context)
     val data = CornData(context)
     val tabs = TabManager(context, this)
+    /** Saved passwords (see passwords/Passwords.kt). */
+    val passwords = app.cornbrowser.passwords.Passwords(context, this)
     private val main = Handler(Looper.getMainLooper())
 
     var screen by mutableStateOf(if (settings.onboarded) Screen.Browser else Screen.Onboarding)
@@ -496,6 +500,13 @@ class CornController(private val context: Context) : TabHost {
         findQuery = null
         findTotal = 0
     }
+
+    // ---------------- passwords ----------------
+
+    override fun onLoginMessage(entry: TabEntry, data: String, sourceOrigin: String, isMainFrame: Boolean, reply: androidx.webkit.JavaScriptReplyProxy) =
+        passwords.onMessage(entry, data, sourceOrigin, isMainFrame, reply)
+
+    override fun onLoginPageStarted(entry: TabEntry) = passwords.onPageStarted(entry)
 
     override fun onFindResult(active: Int, total: Int) {
         findActive = active
