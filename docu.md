@@ -171,3 +171,8 @@
 - Added `docs/02-technical/12-security.md` (password encryption: data key + Android Keystore KEK, AES-256-GCM with site/field binding; PIN as gate; key loss and reset; filling rules; other data; known gaps incl. no PIN attempt limit); indexed in `docs/README.md`; linked from `10-storage.md` and `AGENTS.md`.
 - Updated `docs/01-product/03-features.md` (split screen tests: bottom address bar, home-page search box in a pane, tap tab already on screen, group strip) and `02-decision-log.md` (Round 18).
 
+## 2026-11-05 — Switch and focus-outline colours
+
+- Code: `ui/Theme.kt` (`SwitchOn` leaf green #86C64A, `SwitchOff`, `SwitchDot` cream #FBF8F1, same in both themes), `ui/Components.kt` (`CornSwitch`), `ui/BrowserScreen.kt` (split focus outline: corn yellow, 3 dp).
+- Founder's choice: switches in Corny's leaf green with a cream dot (not dark green with a black dot, not white); split focus outline in the Flush button's yellow. Seen on the emulator.
+

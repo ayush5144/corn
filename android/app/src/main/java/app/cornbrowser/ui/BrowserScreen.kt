@@ -288,7 +288,8 @@ private fun Pane(c: CornController, entry: TabEntry, focused: Boolean, closing: 
             },
     ) {
         PageContent(c, entry, onTouch = { focusThis.value() })
-        if (focused) Box(Modifier.matchParentSize().border(2.dp, C.Accent))
+        // Corn yellow, the Flush button's colour and the Tabs screen's "current tab" outline.
+        if (focused) Box(Modifier.matchParentSize().border(3.dp, C.Corn))
         if (closing) {
             Box(Modifier.matchParentSize().background(C.Scrim), contentAlignment = Alignment.Center) {
                 T("Let go to close", 15.sp, Color.White, FontWeight.SemiBold)

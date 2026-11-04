@@ -164,8 +164,8 @@ fun Row50(icon: ImageVector?, text: String, onClick: () -> Unit, hint: String? =
 
 @Composable
 fun CornSwitch(on: Boolean) {
-    Box(Modifier.width(46.dp).height(28.dp).clip(RoundedCornerShape(14.dp)).background(if (on) C.Leaf else C.Line)) {
-        Box(Modifier.offset(x = if (on) 21.dp else 3.dp, y = 3.dp).size(22.dp).clip(CircleShape).background(C.Text))
+    Box(Modifier.width(46.dp).height(28.dp).clip(RoundedCornerShape(14.dp)).background(if (on) C.SwitchOn else C.SwitchOff)) {
+        Box(Modifier.offset(x = if (on) 21.dp else 3.dp, y = 3.dp).size(22.dp).clip(CircleShape).background(C.SwitchDot))
     }
 }
 

@@ -34,6 +34,12 @@ object C {
     val Accent get() = if (light) Color(0xFF9A6500) else Color(0xFFFFC83D)
     val CornInk = Color(0xFF2A1E00)
     val Leaf get() = if (light) Color(0xFF4E8A1E) else Color(0xFF86C64A)
+    /** Switches when on: Corny's leaf green, the same in both themes. */
+    val SwitchOn = Color(0xFF86C64A)
+    /** The switch dot: the light theme's warm cream background, in both themes (founder's choice over white). */
+    val SwitchDot = Color(0xFFFBF8F1)
+    /** Switches when off: a neutral track, a touch darker than Line in light mode so the cream dot shows. */
+    val SwitchOff get() = if (light) Color(0xFFC8BEA7) else Color(0xFF4A443A)
     val Scrim = Color(0x8C000000)
 
     val GroupColors = listOf(

@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 01:23 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 01:33 IST
 
 **Question:** Is Android WebView + Brave's adblock-rust good enough to build Corn on?
 **Status:** 🟡 Promising on the emulator. Real-phone tests and the founder's own test sites are still to do.
