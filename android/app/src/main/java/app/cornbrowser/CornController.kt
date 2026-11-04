@@ -265,6 +265,17 @@ class CornController(private val context: Context) : TabHost {
         screen = Screen.Tabs
     }
 
+    /** Close a tab. Closing the last one leaves a fresh home page and returns to the browser. */
+    fun closeTab(id: Int) {
+        val wasLast = tabs.tabs.size == 1
+        tabs.close(id)
+        if (wasLast) {
+            sheet = null
+            quip = null // an old Flush one-liner would be misleading here
+            screen = Screen.Browser
+        }
+    }
+
     fun switchTab(id: Int) {
         if (findQuery != null) closeFind()
         tabs.switchTo(id)

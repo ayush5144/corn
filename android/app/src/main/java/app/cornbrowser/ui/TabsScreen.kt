@@ -39,7 +39,7 @@ fun TabsScreen(c: CornController) {
     val loose = c.tabs.tabs.filter { it.groupId == null }
     Column(Modifier.fillMaxSize().background(C.Bg)) {
         Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            T("${c.tabs.tabs.size} tabs", 24.sp, weight = FontWeight.ExtraBold, display = true, modifier = Modifier.weight(1f))
+            T(c.tabs.tabs.size.let { if (it == 1) "1 tab" else "$it tabs" }, 24.sp, weight = FontWeight.ExtraBold, display = true, modifier = Modifier.weight(1f))
             Pill("New", { c.newTab() }, CornIcons.Plus)
             Pill("Done", { c.screen = app.cornbrowser.Screen.Browser }, corn = true)
         }
@@ -51,22 +51,22 @@ fun TabsScreen(c: CornController) {
                         Box(Modifier.size(16.dp).clip(CircleShape).background(g.color))
                         Spacer(Modifier.width(10.dp))
                         T(g.name, 16.sp, weight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
-                        T("${members.size} tabs", 13.sp, C.Muted)
+                        T(if (members.size == 1) "1 tab" else "${members.size} tabs", 13.sp, C.Muted)
                         IconBtn(CornIcons.ChevRight, "Open group", { c.sheet = Sheet.Group(g.id) }, size = 34.dp, iconSize = 18.dp)
                     }
                     Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                         members.forEach { t ->
-                            TabPreview(t, t.id == c.tabs.currentId, { c.switchTab(t.id) }, { c.tabs.close(t.id) }, Modifier.width(112.dp))
+                            TabPreview(t, t.id == c.tabs.currentId, { c.switchTab(t.id) }, { c.closeTab(t.id) }, Modifier.width(112.dp))
                         }
                     }
                 }
             }
             if (loose.isNotEmpty()) {
-                Label("Other tabs")
+                Label(if (c.tabs.groups.isEmpty()) "Tabs" else "Other tabs")
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     loose.chunked(2).forEach { row ->
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            row.forEach { t -> TabPreview(t, t.id == c.tabs.currentId, { c.switchTab(t.id) }, { c.tabs.close(t.id) }, Modifier.weight(1f)) }
+                            row.forEach { t -> TabPreview(t, t.id == c.tabs.currentId, { c.switchTab(t.id) }, { c.closeTab(t.id) }, Modifier.weight(1f)) }
                             if (row.size == 1) Spacer(Modifier.weight(1f))
                         }
                     }

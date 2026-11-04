@@ -150,3 +150,8 @@
 
 - Updated `docs/01-product/02-decision-log.md` (Round 17: password store architecture, fill gate, split screen) and `docs/03-planning/02-checklist.md` (two tasks, building).
 
+## 2026-11-05 — Closing the last tab returns to the home page
+
+- Code: `CornController.kt` (`closeTab`: closing the last tab leaves a fresh home page, returns to the browser, clears an old Flush one-liner), `ui/TabsScreen.kt` ("1 tab" singular; "Tabs" label when there are no groups).
+- Verified on the emulator (founder report: closing the only tab seemed to do nothing).
+
