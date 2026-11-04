@@ -196,3 +196,8 @@
 - Code: `passwords/Passwords.kt` (`fill()` refuses unless the tab's current page is the login's site, main frames too; commented).
 - Updated `docs/02-technical/12-security.md` (two locks), `docs/05-review/03-password-review-2026-11-05.md` (#2 fixed), `docs/05-review/01-audit-2026-11-01.md` (password and history storage, password logs), `docs/03-planning/02-checklist.md`, `docs/01-product/02-decision-log.md`.
 
+
+## 2026-11-05 — QA report: where Corn fails (no code changes)
+
+- Added `docs/05-review/04-qa-where-corn-fails-2026-11-05.md`: 8 findings with emulator data, cause in code and fix (tapped new-tab links blocked as pop-ups, forced page darkening, YouTube ads without scriptlets, fullscreen ignores split panes, tel/mailto/sms/geo/intent links dead, no image long-press menu, blocked pop-up looks opened, one unreproduced fullscreen hang), what passed, fix order.
+- Updated `docs/README.md` (Review index row 04).

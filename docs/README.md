@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 01:46 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 03:00 IST
 
 Read in folder order. Start with the product, then the technical plan.
 
@@ -56,6 +56,7 @@ Read in folder order. Start with the product, then the technical plan.
 | 01 | [Privacy & efficiency audit, 2026-11-01](05-review/01-audit-2026-11-01.md) | What Corn stores, logs and sends; size and memory measured; fixes |
 | 02 | [Build review, 2026-11-01](05-review/02-review-2026-11-01.md) | Mockup parity, what's verified, bugs fixed, what's not built and whether it's needed |
 | 03 | [Password store code review, 2026-11-05](05-review/03-password-review-2026-11-05.md) | Line-by-line review of the password store: what's right, 7 findings (none leaks a password), what's not covered |
+| 04 | [QA: where Corn fails, 2026-11-05](05-review/04-qa-where-corn-fails-2026-11-05.md) | Emulator QA with data: tapped links blocked as pop-ups, forced page darkening, YouTube ads, fullscreen in split screen, app links, image long-press; causes and fixes |
 
 ## ADRs — Architecture decisions
 
