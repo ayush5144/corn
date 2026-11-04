@@ -304,15 +304,35 @@ class Passwords(private val context: Context, private val c: CornController) {
 
     // ---------------- clipboard ----------------
 
-    private val clearClipboard = Runnable {
-        val cm = context.getSystemService(ClipboardManager::class.java) ?: return@Runnable
-        // Clear only if it's still Corn's copy (when Android lets us check; otherwise clear to be safe).
+    /** Set while a copied username/password may still be on the clipboard; survives Corn being closed. */
+    private val clipPrefs = context.getSharedPreferences("corn_logins", Context.MODE_PRIVATE)
+
+    private val clearClipboard = Runnable { clearIfCornsCopy() }
+
+    /**
+     * Clear the clipboard if it still holds Corn's copy. When Android doesn't let Corn see what's
+     * on the clipboard, it clears anyway, to be safe. Then forget that a copy is pending.
+     */
+    private fun clearIfCornsCopy() {
+        if (!clipPrefs.getBoolean(PREF_CLIP_PENDING, false)) return
+        val cm = context.getSystemService(ClipboardManager::class.java) ?: return
         val label = runCatching { cm.primaryClipDescription?.label?.toString() }.getOrNull()
-        if (label != null && label != CLIP_LABEL) return@Runnable
-        runCatching {
-            if (Build.VERSION.SDK_INT >= 28) cm.clearPrimaryClip() else cm.setPrimaryClip(ClipData.newPlainText("", ""))
+        if (label == null || label == CLIP_LABEL) {
+            runCatching {
+                if (Build.VERSION.SDK_INT >= 28) cm.clearPrimaryClip() else cm.setPrimaryClip(ClipData.newPlainText("", ""))
+            }
         }
+        clipPrefs.edit().putBoolean(PREF_CLIP_PENDING, false).commit()
     }
+
+    /** Corn is leaving the screen: clear a copied password now instead of waiting for the 45 s timer. */
+    fun clearCopiedPassword() {
+        main.removeCallbacks(clearClipboard)
+        clearIfCornsCopy()
+    }
+
+    /** Corn is back: if it was closed before the copy could be cleared, clear it now. */
+    fun clearCopyLeftOver() = clearIfCornsCopy()
 
     /**
      * Copy a username or password. Marked sensitive (Android 13+ hides it from the clipboard preview
@@ -325,14 +345,16 @@ class Passwords(private val context: Context, private val c: CornController) {
             putBoolean(if (Build.VERSION.SDK_INT >= 33) ClipDescription.EXTRA_IS_SENSITIVE else "android.content.extra.IS_SENSITIVE", true)
         }
         cm.setPrimaryClip(clip)
+        clipPrefs.edit().putBoolean(PREF_CLIP_PENDING, true).commit()
         main.removeCallbacks(clearClipboard)
         main.postDelayed(clearClipboard, 45_000L)
         // Android 13+ shows its own "Copied" confirmation.
-        if (Build.VERSION.SDK_INT < 33) c.showToast("$what copied. Corn clears it in 45 seconds.") else c.showToast("Corn clears the clipboard in 45 seconds")
+        if (Build.VERSION.SDK_INT < 33) c.showToast("$what copied. Corn clears it in 45 seconds, or when you leave Corn.") else c.showToast("Corn clears the clipboard in 45 seconds, or when you leave Corn")
     }
 
     private companion object {
         const val TAG = "CornPasswords"
         const val CLIP_LABEL = "Corn password"
+        const val PREF_CLIP_PENDING = "clip_pending"
     }
 }

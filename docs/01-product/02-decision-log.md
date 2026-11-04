@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 01:46 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 02:00 IST
 
 Every product question asked and the founder's answer, in order. Settled answers flow into [01-prd.md](01-prd.md). New rounds are appended at the bottom.
 
@@ -438,6 +438,12 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Question:** a better Flush Button icon while the app is still Corn (not renamed to Flush).
 - **Answer:** option A, a **water swirl**: three arms of water spiralling into a drain, on the yellow pill. It says "flush" without a toilet and works under either name. Replaces the toilet icon everywhere (toolbar, Flush confirmation, Tabs screen, onboarding). A single-line spiral was tried first and read as a snail/hypnosis swirl, so the three-arm vortex was used.
 - **Also answered:** Titanium Browser (jqssun) is a full Chromium fork (Vanadium-based, GPL-2.0), not WebView; its time-range "Delete browsing data" is Chrome's own. Using the Corny mascot in the app proposed.
+
+### Round 20 — Password review decisions; split-screen "New tab in group" (2026-11-05)
+- **Fixed:** a copied password is cleared when Corn leaves the screen (and on next start if it was closed). Split screen: "New tab in group" no longer changes the panes being viewed.
+- **Later:** unlimited wrong PIN attempts; two-step logins. **Info:** a page can prompt to save for its own site; in-memory compare on login.
+- **Waiting for the founder:** review #2 (re-check the site right before filling) and #3 (forget closed tabs' login-form notes).
+- **Asked, not decided:** keep the Flush card on the Tabs screen and the group sheet's buttons always visible ("floating").
 
 ### Round 19 — Colours: switches and split focus (2026-11-05)
 - **Answer:** switches use Corny's leaf green (#86C64A) with a cream dot (#FBF8F1, the Settings background) in both themes; the split-screen focus outline is corn yellow (#FFC83D, the Flush button's yellow), 3 dp. Yellow = actions and selection; green = "on".

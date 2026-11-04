@@ -120,6 +120,17 @@ class TabManager(private val context: Context, private val host: TabHost) {
     /** True for the open tab, and for both tabs while split. */
     fun isOnScreen(id: Int): Boolean = id == currentId || split?.contains(id) == true
 
+    /**
+     * Add an empty tab at the end of a group without showing it, so the tabs on screen
+     * (e.g. both split-screen panes) stay as they are. Null if the group doesn't exist.
+     */
+    fun addToGroupInBackground(groupId: Int): TabEntry? {
+        val last = groupTabs(groupId).lastOrNull() ?: return null
+        val entry = TabEntry(nextTabId++, NEW_TAB, groupId)
+        tabs.add((tabs.indexOf(last) + 1).coerceIn(0, tabs.size), entry)
+        return entry
+    }
+
     private fun onScreenIds(): Set<Int> = split?.tabIds ?: setOf(currentId)
 
     private var nextTabId = 1

@@ -165,6 +165,7 @@ class CornController(private val context: Context) : TabHost {
 
     fun onAppForeground() {
         inForeground = true
+        passwords.clearCopyLeftOver() // in case Corn was closed before it could clear a copied password
         tabs.resumeAllTimers()
         app.cornbrowser.browser.CornEngine.refreshIfStale(context)
         if (shouldAutoFlushOnReturn()) flushNow(animate = false)
@@ -176,6 +177,7 @@ class CornController(private val context: Context) : TabHost {
 
     fun onAppBackground() {
         inForeground = false
+        passwords.clearCopiedPassword() // a copied password never stays on the clipboard after Corn leaves the screen
         tabs.pauseAllTimers()
         main.removeCallbacks(inactivityTick)
         val now = System.currentTimeMillis()
@@ -810,6 +812,14 @@ class CornController(private val context: Context) : TabHost {
     }
 
     fun newTabInGroup(groupId: Int) {
+        // Split screen: don't touch the panes being viewed; add the tab to the group and offer to open it.
+        if (tabs.split != null) {
+            val added = tabs.addToGroupInBackground(groupId) ?: return
+            sheet = null
+            screen = Screen.Browser
+            showToast("New tab added to “${tabs.group(groupId)?.name ?: "the group"}”", "Open") { switchTab(added.id) }
+            return
+        }
         val first = tabs.groupTabs(groupId).firstOrNull() ?: return
         if (tabs.current?.groupId != groupId) tabs.switchTo(first.id)
         tabs.open(NEW_TAB, inGroup = true)

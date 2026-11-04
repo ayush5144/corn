@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 01:46 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 02:00 IST
 
 The single list of what's done, what's next and who owns it. Product decisions live in the [decision log](../01-product/02-decision-log.md); this file tracks **work**.
 
@@ -83,7 +83,9 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [ ] | **Flush Button** + Kept Session (default) + Auto-Flush (leave delay, inactivity; video counts as activity) | Claude | Flush tests in [05-flush-model](../02-technical/05-flush-model.md) pass |
 | [ ] | **Keep List**: chosen sites stay logged in across Flush (cookies + IndexedDB kept, verified with a test site; not yet with a real login) | Claude | Keep List site still logged in after Flush |
 | [x] | **Corn password store** in the Vault, survives Flush: Keystore-wrapped AES-256-GCM, own form script, save/update/never prompts, fill on tap (PIN when Vault locked; switchable), Passwords screen. Verified on the emulator (save, PIN fill, no-PIN fill, kept after Flush) | Claude | Saved password fills a login after Flush |
-| [ ] | Password review findings ([review](../05-review/03-password-review-2026-11-05.md)): limit wrong PIN attempts; check the PIN with a Keystore key; re-check the page's site before filling; forget closed tabs' form connections | Claude | Each finding fixed or consciously accepted in the decision log |
+| [x] | Password review #4: clear a copied password when Corn leaves the screen (and on next start if it was closed). Verified by pasting | Claude | Nothing pastes after leaving Corn |
+| [x] | Split screen: "New tab in group" adds the tab to the group in the background (both panes stay); toast "Open" puts it in the focused pane. Verified | Claude | Panes unchanged; tab in the group |
+| [ ] | Password review #2 (re-check the page's site right before filling) and #3 (forget a closed tab's login-form note): waiting for the founder | Founder | Decided |
 | [ ] | Passwords on real sites and a real phone (StrongBox), then an independent security review before public launch | Both | Logins save and fill on 3 real sites; review notes committed |
 | [x] | **Split screen inside Corn**: two tabs, top/bottom (side by side in landscape), draggable divider, toolbar acts on the focused pane. Verified on the emulator | Claude | Two pages usable at once; divider resizes; closing works |
 | [ ] | Session saved in app-private SQLite + backups disabled | Claude | Kept Session restores after restart; backup tool finds nothing |
@@ -151,6 +153,9 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | **Keep List D: offer "Keep this site logged in?" after you log in** | DuckDuckGo watches for a submitted password form and asks on the next page (Ask / Always / Never). Optional, later if needed |
 | Picture-in-picture video (video keeps playing in a small floating window when you leave Corn) | Founder: later |
 | Print / save page as PDF (Android's print dialog) | Founder: later |
+| Limit wrong PIN attempts; check the PIN with a Keystore key (password review #1) | Founder: later. Today: unlimited tries on a 4-digit PIN; passwords stay encrypted either way |
+| Two-step logins: remember the username from the previous page (password review #7) | Founder: later. Today only the password is saved when the username is on an earlier page |
+| *Info:* a page can trigger "Save password?" for its own site; Corn decrypts a saved password in memory to compare on login (password review #5, #6) | By design; optional later: limit prompts per page |
 | Auto-delete history older than 90 days | Idea from Eddy, for people who never Flush. Discuss first |
 
 ## Out ❌

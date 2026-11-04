@@ -181,3 +181,8 @@
 - Added `docs/05-review/03-password-review-2026-11-05.md` (what's right, 7 findings with severities, what's not covered); indexed in `docs/README.md`.
 - Updated `docs/02-technical/12-security.md` (Known gaps links the review), `docs/03-planning/02-checklist.md` (two follow-up tasks), `docs/01-product/02-decision-log.md` (Round 18 note).
 
+## 2026-11-05 — Clipboard cleared on leaving Corn; split-screen "New tab in group" fix
+
+- Code: `passwords/Passwords.kt` (copy-pending flag; `clearCopiedPassword`, `clearCopyLeftOver`; toast text), `CornController.kt` (clear on background/foreground; `newTabInGroup` in split screen), `browser/TabManager.kt` (`addToGroupInBackground`).
+- Updated `docs/05-review/03-password-review-2026-11-05.md` (status per finding), `docs/02-technical/12-security.md`, `docs/03-planning/02-checklist.md`, `docs/01-product/02-decision-log.md` (Round 20), `03-features.md`.
+

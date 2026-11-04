@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-05 · **Last updated:** 2026-11-05, 01:46 IST
+> **Created:** 2026-11-05 · **Last updated:** 2026-11-05, 02:00 IST
 
 ## The code is the source of truth
 
@@ -59,7 +59,7 @@ If the Keystore key disappears (Corn's data moved to a different phone, the phon
 - Corn fills **only when you tap** "Fill as …": never silently (silent autofill lets hidden form fields on a malicious page receive passwords).
 - **https only** (local test addresses allowed in debug builds) and **only the exact site** the password was saved for.
 - The password is sent only to the page frame that showed the login form, and only if that frame's site matches.
-- Copies are marked sensitive (Android 13+) and the clipboard is cleared after 45 s; the Passwords screens block screenshots (`FLAG_SECURE`, verified: screenshots come out black).
+- Copies are marked sensitive (Android 13+). The clipboard is cleared after 45 s, **or as soon as Corn leaves the screen**, whichever is first; if Corn was closed before it could clear, it clears on its next start (verified). It only clears when the clipboard still holds Corn's copy (when Android doesn't let Corn check, it clears to be safe). The Passwords screens block screenshots (`FLAG_SECURE`, verified: screenshots come out black).
 
 ## Other data on the phone
 
@@ -76,7 +76,8 @@ If the Keystore key disappears (Corn's data moved to a different phone, the phon
 Full list with severities: [password store code review](../05-review/03-password-review-2026-11-05.md).
 
 
-- **No limit on wrong PIN attempts.** The PIN screen allows unlimited tries, and a 4-digit PIN has 10,000 combinations. Someone with your unlocked phone could eventually guess it. Not changed yet.
+- **No limit on wrong PIN attempts.** The PIN screen allows unlimited tries, and a 4-digit PIN has 10,000 combinations. Someone with your unlocked phone could eventually guess it. Founder decision: keep for now, address later (checklist).
+- **Info, by design:** any https page can make Corn ask "Save password?" for **its own site** (never another site's); Corn decrypts a saved password in memory, without the PIN, to decide between Save / Update / already saved (never shown or logged).
 - **4-digit PIN hash:** the salted hash in Corn's settings file could be brute-forced quickly by someone who extracts that file (needs root access). The passwords themselves stay safe because their key is in the Keystore, not derived from the PIN.
 - **Two-step logins** (username and password on separate pages): only the password is saved.
 - No export or import yet.
