@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 01:12 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 01:33 IST
 
 Every product question asked and the founder's answer, in order. Settled answers flow into [01-prd.md](01-prd.md). New rounds are appended at the bottom.
 
@@ -438,6 +438,12 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Question:** a better Flush Button icon while the app is still Corn (not renamed to Flush).
 - **Answer:** option A, a **water swirl**: three arms of water spiralling into a drain, on the yellow pill. It says "flush" without a toilet and works under either name. Replaces the toilet icon everywhere (toolbar, Flush confirmation, Tabs screen, onboarding). A single-line spiral was tried first and read as a snail/hypnosis swirl, so the three-arm vortex was used.
 - **Also answered:** Titanium Browser (jqssun) is a full Chromium fork (Vanadium-based, GPL-2.0), not WebView; its time-range "Delete browsing data" is Chrome's own. Using the Corny mascot in the app proposed.
+
+### Round 18 — Split-screen picker, manual passwords, security doc (2026-11-05)
+- **Split picker:** tab cards like the group sheet (founder's request); a grid/list switch everywhere was judged overkill for now (Claude's view: cards are better for a handful of tabs, a list for many).
+- **Tapping a tab already in the other pane:** moves the focus there (no fullscreen, no rearranging). Tested.
+- **Add passwords by hand:** built. **Security doc:** `docs/02-technical/12-security.md`.
+- **Open:** limit wrong PIN attempts (found while writing the doc; not changed).
 
 ### Round 17 — Password store and split screen (2026-11-05)
 - **Password store architecture** (researched: Firefox's Rust `logins` component keeps the site in clear and encrypts username/password; DuckDuckGo Android protects its keys with the Android Keystore; Chrome uses OS encryption + device check): `logins` table in corn.db via the Rust core (site readable for lookup; username + password AES-256-GCM encrypted in Kotlin); a random data key wrapped by a non-exportable Android Keystore key (StrongBox when available); viewing/copying/editing needs the Corn PIN; Corn's **own small form script** (not DuckDuckGo's library); fill only on the user's tap, https only, exact site match; passwords survive every Flush; nothing synced or sent.

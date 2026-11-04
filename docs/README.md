@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 14:38 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 01:33 IST
 
 Read in folder order. Start with the product, then the technical plan.
 
@@ -31,6 +31,7 @@ Read in folder order. Start with the product, then the technical plan.
 | 09 | [Filter lists](02-technical/09-filter-lists.md) | What filter lists are, which ones Corn uses, why they're fetched not stored |
 | 10 | [Storage](02-technical/10-storage.md) | What Corn keeps, where (SQLite, settings, WebView), and what survives a Flush |
 | 11 | [Keep List and data clearing](02-technical/11-keep-list.md) | What Keep List sites keep, how Flush and Delete browsing data delete everything else, built-in vs workaround, limits |
+| 12 | [Security and encryption](02-technical/12-security.md) | How saved passwords are encrypted (data key + Android Keystore), the PIN, filling rules, what's protected where, known gaps |
 
 ## 03 — Planning: *when* we build it
 

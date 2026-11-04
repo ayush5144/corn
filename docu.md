@@ -166,3 +166,8 @@
 - Code: `passwords/Passwords.kt` (`addManual`), `ui/PasswordsUi.kt` (Add button and form), `ui/Sheets.kt` (split picker: tab cards + New tab), `ui/Components.kt` (`TabPreview` close button optional).
 - Updated `docs/01-product/03-features.md` (Add by hand; split picker; address bar in split screen). Verified on the emulator.
 
+## 2026-11-05 — Security doc; split-screen tests
+
+- Added `docs/02-technical/12-security.md` (password encryption: data key + Android Keystore KEK, AES-256-GCM with site/field binding; PIN as gate; key loss and reset; filling rules; other data; known gaps incl. no PIN attempt limit); indexed in `docs/README.md`; linked from `10-storage.md` and `AGENTS.md`.
+- Updated `docs/01-product/03-features.md` (split screen tests: bottom address bar, home-page search box in a pane, tap tab already on screen, group strip) and `02-decision-log.md` (Round 18).
+
