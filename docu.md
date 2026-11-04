@@ -176,3 +176,8 @@
 - Code: `ui/Theme.kt` (`SwitchOn` leaf green #86C64A, `SwitchOff`, `SwitchDot` cream #FBF8F1, same in both themes), `ui/Components.kt` (`CornSwitch`), `ui/BrowserScreen.kt` (split focus outline: corn yellow, 3 dp).
 - Founder's choice: switches in Corny's leaf green with a cream dot (not dark green with a black dot, not white); split focus outline in the Flush button's yellow. Seen on the emulator.
 
+## 2026-11-05 — Password store code review
+
+- Added `docs/05-review/03-password-review-2026-11-05.md` (what's right, 7 findings with severities, what's not covered); indexed in `docs/README.md`.
+- Updated `docs/02-technical/12-security.md` (Known gaps links the review), `docs/03-planning/02-checklist.md` (two follow-up tasks), `docs/01-product/02-decision-log.md` (Round 18 note).
+

@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 01:43 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 01:46 IST
 
 Every product question asked and the founder's answer, in order. Settled answers flow into [01-prd.md](01-prd.md). New rounds are appended at the bottom.
 
@@ -447,6 +447,7 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Tapping a tab already in the other pane:** moves the focus there (no fullscreen, no rearranging). Tested.
 - **Add passwords by hand:** built. **Security doc:** `docs/02-technical/12-security.md`.
 - **Open:** limit wrong PIN attempts (found while writing the doc; not changed).
+- **Password code review** (Claude, main session): sound for testing and daily use, no password leak found; 7 findings recorded in `docs/05-review/03-password-review-2026-11-05.md`, none changed yet.
 
 ### Round 17 — Password store and split screen (2026-11-05)
 - **Password store architecture** (researched: Firefox's Rust `logins` component keeps the site in clear and encrypts username/password; DuckDuckGo Android protects its keys with the Android Keystore; Chrome uses OS encryption + device check): `logins` table in corn.db via the Rust core (site readable for lookup; username + password AES-256-GCM encrypted in Kotlin); a random data key wrapped by a non-exportable Android Keystore key (StrongBox when available); viewing/copying/editing needs the Corn PIN; Corn's **own small form script** (not DuckDuckGo's library); fill only on the user's tap, https only, exact site match; passwords survive every Flush; nothing synced or sent.
