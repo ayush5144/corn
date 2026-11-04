@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 00:41 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 00:50 IST
 
 Every product question asked and the founder's answer, in order. Settled answers flow into [01-prd.md](01-prd.md). New rounds are appended at the bottom.
 
@@ -438,6 +438,12 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Question:** a better Flush Button icon while the app is still Corn (not renamed to Flush).
 - **Answer:** option A, a **water swirl**: three arms of water spiralling into a drain, on the yellow pill. It says "flush" without a toilet and works under either name. Replaces the toilet icon everywhere (toolbar, Flush confirmation, Tabs screen, onboarding). A single-line spiral was tried first and read as a snail/hypnosis swirl, so the three-arm vortex was used.
 - **Also answered:** Titanium Browser (jqssun) is a full Chromium fork (Vanadium-based, GPL-2.0), not WebView; its time-range "Delete browsing data" is Chrome's own. Using the Corny mascot in the app proposed.
+
+### Round 17 — Password store and split screen (2026-11-05)
+- **Password store architecture** (researched: Firefox's Rust `logins` component keeps the site in clear and encrypts username/password; DuckDuckGo Android protects its keys with the Android Keystore; Chrome uses OS encryption + device check): `logins` table in corn.db via the Rust core (site readable for lookup; username + password AES-256-GCM encrypted in Kotlin); a random data key wrapped by a non-exportable Android Keystore key (StrongBox when available); viewing/copying/editing needs the Corn PIN; Corn's **own small form script** (not DuckDuckGo's library); fill only on the user's tap, https only, exact site match; passwords survive every Flush; nothing synced or sent.
+- **Fill gate:** PIN only when the Vault is locked; a Settings switch **"Ask for PIN before filling"** (on by default) can turn it off.
+- **Split screen inside Corn:** two tabs at once, **top/bottom with a draggable divider** in portrait, side by side in landscape; the toolbar acts on the last-touched pane; both stay in memory. Android's own split screen (two Corn windows) later.
+- **Order:** both built in parallel by two agents in separate git worktrees, then merged and tested.
 
 ### Round 16 — Corny is Corn's logo (2026-11-05)
 - **Answer:** the founder chose **Corny** (the winking "shh" cob) as the logo.

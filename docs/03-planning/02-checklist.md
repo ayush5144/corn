@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 00:34 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 00:50 IST
 
 The single list of what's done, what's next and who owns it. Product decisions live in the [decision log](../01-product/02-decision-log.md); this file tracks **work**.
 
@@ -82,7 +82,8 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [ ] | Background tabs (Settings → Advanced: automatic by memory, recent 0/1/2/3/5, all with warning; unload on low memory; scroll restore; media held paused). **Built, not yet tested on device** | Claude | No crashes with 30 tabs |
 | [ ] | **Flush Button** + Kept Session (default) + Auto-Flush (leave delay, inactivity; video counts as activity) | Claude | Flush tests in [05-flush-model](../02-technical/05-flush-model.md) pass |
 | [ ] | **Keep List**: chosen sites stay logged in across Flush (cookies + IndexedDB kept, verified with a test site; not yet with a real login) | Claude | Keep List site still logged in after Flush |
-| [ ] | **Corn password store** in the Vault, survives Flush (v1 or v1.1, timing open) | Claude | Saved password fills a login after Flush |
+| [ ] | **Corn password store** in the Vault, survives Flush: Keystore-wrapped AES-256-GCM, own form script, save/update/never prompts, fill on tap (PIN when Vault locked; switchable), Passwords screen. **Building (v1)** | Claude | Saved password fills a login after Flush |
+| [ ] | **Split screen inside Corn**: two tabs, top/bottom (side by side in landscape), draggable divider, toolbar acts on the focused pane. **Building** | Claude | Two pages usable at once; divider resizes; closing works |
 | [ ] | Session saved in app-private SQLite + backups disabled | Claude | Kept Session restores after restart; backup tool finds nothing |
 | [x] | Filter lists refresh automatically (every 4 days, on Wi-Fi), engine rebuilt in the background. Verified: refreshed 8 s after first launch | Claude | Lists newer than 4 days after a week of use |
 | [x] | Starter engine bundled in the app for first launch without internet. Verified: starter loaded before any download | Claude | Fresh install in airplane mode still blocks ads |

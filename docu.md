@@ -146,3 +146,7 @@
 - Assets: `res/mipmap-anydpi-v26/ic_launcher.xml` + `ic_launcher_foreground.png` (5 densities), new legacy `ic_launcher.png`, `res/values/colors.xml`, `res/drawable-nodpi/corn_logo.png` (transparent Corny); `brand/corny-logo-1024.png`, `brand/corny-logo-transparent-1024.png`.
 - Updated `docs/01-product/02-decision-log.md` (Round 16) and `03-features.md` (Brand).
 
+## 2026-11-05 — Password store and split screen decided
+
+- Updated `docs/01-product/02-decision-log.md` (Round 17: password store architecture, fill gate, split screen) and `docs/03-planning/02-checklist.md` (two tasks, building).
+
