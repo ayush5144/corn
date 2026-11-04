@@ -192,6 +192,7 @@ fun PasswordsScreen(c: CornController) {
     DisposableEffect(Unit) { onDispose { p.screenOpen = false } }
 
     var detailId by remember { mutableStateOf<Long?>(null) }
+    var adding by remember { mutableStateOf(false) }
     var pinOk by remember { mutableStateOf(false) }
     var pinThen by remember { mutableStateOf<(() -> Unit)?>(null) }
     fun withPin(action: () -> Unit) { if (pinOk) action() else pinThen = action }
@@ -200,6 +201,7 @@ fun PasswordsScreen(c: CornController) {
         when {
             c.sheet != null -> c.dismissSheet()
             pinThen != null -> pinThen = null
+            adding -> adding = false
             detailId != null -> detailId = null
             else -> p.screenOpen = false
         }
@@ -211,10 +213,12 @@ fun PasswordsScreen(c: CornController) {
     val detail = detailId?.let { id -> logins.firstOrNull { it.id == id } }
 
     Box(Modifier.fillMaxSize().background(C.Bg)) {
-        if (detail != null) {
+        if (adding) {
+            AddPassword(c, onDone = { adding = false })
+        } else if (detail != null) {
             PasswordDetail(c, detail, onBack = { detailId = null }, withPin = ::withPin)
         } else {
-            PasswordList(c, logins, unreadable, onOpen = { detailId = it.id })
+            PasswordList(c, logins, unreadable, onOpen = { detailId = it.id }, onAdd = { adding = true })
         }
         pinThen?.let { then ->
             Column(Modifier.fillMaxSize().background(C.Bg).clickable(enabled = false) {}) {
@@ -232,12 +236,13 @@ fun PasswordsScreen(c: CornController) {
 }
 
 @Composable
-private fun PasswordList(c: CornController, logins: List<SavedLogin>, unreadable: Boolean, onOpen: (SavedLogin) -> Unit) {
+private fun PasswordList(c: CornController, logins: List<SavedLogin>, unreadable: Boolean, onOpen: (SavedLogin) -> Unit, onAdd: () -> Unit) {
     var query by remember { mutableStateOf("") }
     Column(Modifier.fillMaxSize()) {
         Row(Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             IconBtn(CornIcons.Back, "Back to the Vault", { c.passwords.screenOpen = false })
             T("Passwords", 24.sp, weight = FontWeight.ExtraBold, display = true, modifier = Modifier.weight(1f))
+            if (!unreadable) Pill("Add", onAdd, CornIcons.Plus)
         }
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 24.dp)) {
             if (unreadable) {
@@ -286,6 +291,53 @@ private fun PasswordList(c: CornController, logins: List<SavedLogin>, unreadable
                 T("Passwords stay on this phone, encrypted, and survive every Flush. Seeing one needs your PIN.", 12.5.sp, C.Muted,
                     modifier = Modifier.padding(top = 16.dp))
             }
+        }
+    }
+}
+
+/** Passwords → Add: save a login by hand (site, username or email, password). */
+@Composable
+private fun AddPassword(c: CornController, onDone: () -> Unit) {
+    var site by remember { mutableStateOf("") }
+    var user by remember { mutableStateOf("") }
+    var pass by remember { mutableStateOf("") }
+    var show by remember { mutableStateOf(false) }
+    var error by remember { mutableStateOf<String?>(null) }
+    Column(Modifier.fillMaxSize()) {
+        Row(Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            IconBtn(CornIcons.Back, "Back to passwords", onDone)
+            T("Add password", 24.sp, weight = FontWeight.ExtraBold, display = true)
+        }
+        Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 24.dp)) {
+            Label("Site")
+            Field(site, { site = it; error = null }, "example.com")
+            Label("Username or email")
+            Field(user, { user = it; error = null }, "you@example.com")
+            Label("Password")
+            Row(
+                Modifier.fillMaxWidth().height(46.dp).clip(RoundedCornerShape(14.dp)).background(C.Surface2).padding(start = 14.dp, end = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
+                    if (pass.isEmpty()) T("Password", 15.sp, C.Muted, maxLines = 1)
+                    androidx.compose.foundation.text.BasicTextField(
+                        pass, { pass = it; error = null }, singleLine = true,
+                        textStyle = androidx.compose.ui.text.TextStyle(color = C.Text, fontSize = 15.sp, fontFamily = Ui),
+                        cursorBrush = androidx.compose.ui.graphics.SolidColor(C.Accent),
+                        visualTransformation = if (show) androidx.compose.ui.text.input.VisualTransformation.None else androidx.compose.ui.text.input.PasswordVisualTransformation(),
+                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Password, autoCorrectEnabled = false),
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+                T(if (show) "Hide" else "Show", 13.sp, C.Accent, FontWeight.SemiBold, modifier = Modifier.clickable { show = !show }.padding(10.dp))
+            }
+            error?.let { T(it, 13.sp, C.Accent, modifier = Modifier.padding(top = 10.dp)) }
+            Spacer(Modifier.height(20.dp))
+            BigButton("Save", {
+                error = c.passwords.addManual(site, user, pass)
+                if (error == null) onDone()
+            }, icon = CornIcons.Lock)
+            T("Encrypted and locked in your Vault with your PIN. Corn fills it on this site's login page when you tap. Never leaves this phone.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 10.dp))
         }
     }
 }

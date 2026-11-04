@@ -293,7 +293,7 @@ fun LetterIcon(host: String, size: Dp) {
 
 /** Tab preview card: screenshot if we have one, otherwise favicon + title. */
 @Composable
-fun TabPreview(entry: TabEntry, isCurrent: Boolean, onOpen: () -> Unit, onClose: () -> Unit, modifier: Modifier = Modifier) {
+fun TabPreview(entry: TabEntry, isCurrent: Boolean, onOpen: () -> Unit, onClose: (() -> Unit)?, modifier: Modifier = Modifier) {
     Box(modifier.aspectRatio(3f / 4f)) {
         Column(
             Modifier.fillMaxSize().clip(RoundedCornerShape(14.dp)).background(C.Bg)
@@ -306,7 +306,7 @@ fun TabPreview(entry: TabEntry, isCurrent: Boolean, onOpen: () -> Unit, onClose:
                 Spacer(Modifier.width(6.dp))
                 T(if (entry.isNewTab) "New tab" else entry.host, 10.sp, C.Text, FontWeight.Bold, maxLines = 1, modifier = Modifier.weight(1f))
                 Spacer(Modifier.width(4.dp))
-                Box(
+                if (onClose != null) Box(
                     Modifier.size(22.dp).clip(CircleShape).background(Color(0xA6000000)).clickable(onClick = onClose),
                     contentAlignment = Alignment.Center,
                 ) { CornIcon(CornIcons.X, 13.dp, Color.White) }

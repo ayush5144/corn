@@ -131,6 +131,36 @@ class Passwords(private val context: Context, private val c: CornController) {
         )
     }
 
+    /**
+     * Passwords → Add: the user types a site, username and password themselves.
+     * Returns null when saved, or a short reason to show under the form. The same site + username
+     * updates that login instead of adding a duplicate. Sites are always https (Corn never fills on http).
+     */
+    fun addManual(site: String, username: String, password: String): String? {
+        val raw = site.trim()
+        if (raw.isEmpty()) return "Enter the site, e.g. example.com"
+        if (password.isEmpty()) return "Enter the password"
+        val withScheme = if (raw.contains("://")) raw else "https://$raw"
+        val origin = LoginMatching.originOf(withScheme) ?: return "That doesn't look like a website. Try example.com"
+        val ci = cipher() ?: return "Corn can't open saved passwords on this phone right now"
+        val existing = forOrigin(origin)
+        val user = username.trim()
+        val decision = LoginMatching.decideSave(existing, user, password) { id -> existing.firstOrNull { it.id == id }?.let(::passwordOf) }
+        val updateId = when (decision) {
+            is SaveDecision.AlreadySaved -> { c.showToast("Already saved"); return null }
+            is SaveDecision.Update -> decision.id
+            SaveDecision.New -> null
+        }
+        val u = ci.encrypt(user, origin, LoginCipher.Field.USERNAME)
+        val p = ci.encrypt(password, origin, LoginCipher.Field.PASSWORD)
+        val ok = runCatching { if (updateId != null) c.data.updateLogin(updateId, u, p) else c.data.addLogin(origin, u, p) }
+            .onFailure { Log.w(TAG, "manual save failed: ${it.javaClass.simpleName}") }.isSuccess
+        changed()
+        if (!ok) return "Corn couldn't save this password"
+        c.showToast(if (updateId != null) "Password updated. Safe in your Vault." else "Password saved. Safe in your Vault.")
+        return null
+    }
+
     /** Edit from the Passwords screen. */
     fun update(login: SavedLogin, username: String, password: String): Boolean {
         val ci = cipher() ?: return false

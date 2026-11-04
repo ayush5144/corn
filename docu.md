@@ -161,3 +161,8 @@
 - Code (split screen, agent branch): `browser/SplitState.kt`, `TabManager.kt`, `CornController.kt`, `ui/BrowserScreen.kt` (divider 24 dp), `ui/Sheets.kt`, `ui/TabsScreen.kt`, `ui/Icons.kt`.
 - Updated `docs/01-product/01-prd.md`, `02-decision-log.md`, `03-features.md`, `GLOSSARY.md` (Split screen), `docs/02-technical/03-android.md`, `05-flush-model.md`, `10-storage.md`, `docs/03-planning/02-checklist.md`.
 
+## 2026-11-05 — Add passwords by hand; split-screen picker as tab cards
+
+- Code: `passwords/Passwords.kt` (`addManual`), `ui/PasswordsUi.kt` (Add button and form), `ui/Sheets.kt` (split picker: tab cards + New tab), `ui/Components.kt` (`TabPreview` close button optional).
+- Updated `docs/01-product/03-features.md` (Add by hand; split picker; address bar in split screen). Verified on the emulator.
+

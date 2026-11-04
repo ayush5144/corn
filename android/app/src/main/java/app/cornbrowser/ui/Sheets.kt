@@ -115,16 +115,24 @@ private fun MenuSheet(c: CornController) {
 private fun SplitPickSheet(c: CornController) {
     val cur = c.tabs.current
     val landscape = LocalConfiguration.current.let { it.screenWidthDp > it.screenHeightDp }
-    SheetTitle("Split screen", if (landscape) "This tab stays on the left. Pick what to show on the right." else "This tab stays on top. Pick what to show below it.")
-    Row50(CornIcons.TabNew, "New tab", { c.startSplit(null) })
-    c.tabs.tabs.filter { it.id != cur?.id }.forEach { t ->
-        SettingRow(
-            if (t.isNewTab) "New tab" else t.title,
-            if (t.isNewTab) null else t.host,
-            onClick = { c.startSplit(t.id) },
-            leading = { SiteIcon(t, 22.dp) },
-        )
+    val others = c.tabs.tabs.filter { it.id != cur?.id }
+    SheetTitle(
+        "Split screen",
+        if (landscape) "This tab stays on the left. Tap a tab to show it on the right." else "This tab stays on top. Tap a tab to show it below.",
+    )
+    // The same tab cards as the group sheet, two per row; tap one to put it in the second pane.
+    if (others.isNotEmpty()) {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            others.chunked(2).forEach { row ->
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    row.forEach { t -> TabPreview(t, false, { c.startSplit(t.id) }, null, Modifier.weight(1f)) }
+                    if (row.size == 1) Spacer(Modifier.weight(1f))
+                }
+            }
+        }
+        Spacer(Modifier.height(18.dp))
     }
+    BigButton("New tab", { c.startSplit(null) }, icon = CornIcons.Plus, ghost = others.isNotEmpty())
 }
 
 @Composable
