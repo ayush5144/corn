@@ -56,7 +56,7 @@ fun TabsScreen(c: CornController) {
                     }
                     Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                         members.forEach { t ->
-                            TabPreview(t, t.id == c.tabs.currentId, { c.switchTab(t.id) }, { c.closeTab(t.id) }, Modifier.width(112.dp))
+                            TabPreview(t, c.tabs.isOnScreen(t.id), { c.switchTab(t.id) }, { c.closeTab(t.id) }, Modifier.width(112.dp))
                         }
                     }
                 }
@@ -66,7 +66,7 @@ fun TabsScreen(c: CornController) {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     loose.chunked(2).forEach { row ->
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            row.forEach { t -> TabPreview(t, t.id == c.tabs.currentId, { c.switchTab(t.id) }, { c.closeTab(t.id) }, Modifier.weight(1f)) }
+                            row.forEach { t -> TabPreview(t, c.tabs.isOnScreen(t.id), { c.switchTab(t.id) }, { c.closeTab(t.id) }, Modifier.weight(1f)) }
                             if (row.size == 1) Spacer(Modifier.weight(1f))
                         }
                     }

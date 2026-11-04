@@ -96,6 +96,12 @@ class TabEntry(val id: Int, url: String, groupId: Int?) {
  *   background, back to normal on return.
  * - When Android warns that memory is low, Corn unloads every kept-in-memory tab ([trimMemory]).
  * - A tab on Corn's home page has no WebView at all and costs nothing.
+ * - **Split screen** ([split], [SplitState]): two tabs on screen at once. The current tab is the
+ *   focused pane's tab (the pane last touched), so everything that acts on "the open tab" acts on
+ *   it. Both panes' tabs are fully running and never unloaded while split (not even by
+ *   [trimMemory]); the N kept-in-memory tabs above are counted besides those two. Showing another
+ *   tab (Tabs screen, group strip, a new tab) replaces the focused pane's tab. Closing either
+ *   tab, closing a pane, or a Flush ([reset]) ends split screen. Not saved across restarts.
  */
 class TabManager(private val context: Context, private val host: TabHost) {
     /** How many recent tabs (besides the open one) stay in memory. Set by the controller from Settings. */
@@ -106,6 +112,15 @@ class TabManager(private val context: Context, private val host: TabHost) {
         private set
 
     val current: TabEntry? get() = tabs.firstOrNull { it.id == currentId }
+
+    /** Split screen (null when off). Its focused tab is always [currentId]. */
+    var split by mutableStateOf<SplitState?>(null)
+        private set
+
+    /** True for the open tab, and for both tabs while split. */
+    fun isOnScreen(id: Int): Boolean = id == currentId || split?.contains(id) == true
+
+    private fun onScreenIds(): Set<Int> = split?.tabIds ?: setOf(currentId)
 
     private var nextTabId = 1
     private var nextGroupId = 1
@@ -149,11 +164,57 @@ class TabManager(private val context: Context, private val host: TabHost) {
     fun switchTo(id: Int) {
         val target = tabs.firstOrNull { it.id == id } ?: return
         current?.let { cur -> if (cur.id != id) cur.live?.capturePreview()?.let { cur.preview = it } }
+        split?.let { split = it.show(id) } // in split screen: the tab goes into the focused pane
         currentId = id
         recent.remove(id)
         recent.addFirst(id)
         if (!target.isNewTab) ensureLive(target)
         enforceLivePolicy()
+    }
+
+    // ---------- split screen ----------
+
+    /** Start split screen: the open tab goes on top (or left), tab [otherId] below (or right), focused. */
+    fun startSplit(otherId: Int) {
+        val cur = current ?: return
+        if (tabs.none { it.id == otherId }) return
+        split = SplitState.start(cur.id, otherId) ?: return
+        switchTo(otherId)
+    }
+
+    /** Start split screen with a new tab (Corn's home page) in the second pane. */
+    fun startSplitWithNewTab() {
+        val entry = open(NEW_TAB, switchTo = false)
+        startSplit(entry.id)
+    }
+
+    /** The user touched the pane showing tab [id]: it becomes the current tab. Both stay live. */
+    fun focusPane(id: Int) {
+        val s = split ?: return
+        if (id !in s || id == currentId) return
+        split = s.focus(id)
+        currentId = id
+        recent.remove(id)
+        recent.addFirst(id)
+    }
+
+    /** Drag the divider ([raw]: the finger's position as a share of the space). */
+    fun resizeSplit(raw: Float) {
+        split = split?.resized(raw) ?: return
+    }
+
+    /** Leave split screen, keeping tab [keep] (default: the focused one) on screen. */
+    fun exitSplit(keep: Int? = null) {
+        val s = split ?: return
+        split = null
+        val k = keep?.takeIf { id -> tabs.any { it.id == id } } ?: s.focused
+        if (k != currentId) switchTo(k) else enforceLivePolicy()
+    }
+
+    /** Close the pane showing tab [id] (not the tab): the other pane's tab fills the screen. */
+    fun closePane(id: Int) {
+        val stay = split?.remainingAfterClosing(id) ?: return
+        exitSplit(stay)
     }
 
     /** A pop-up the site is allowed to open: becomes a new tab next to its opener. */
@@ -190,6 +251,9 @@ class TabManager(private val context: Context, private val host: TabHost) {
         val entry = tabs.firstOrNull { it.id == id } ?: return
         val idx = tabs.indexOf(entry)
         val gid = entry.groupId
+        // Closing one of the split-screen tabs ends split screen; the other tab stays on screen.
+        val stay = split?.remainingAfterClosing(id)
+        if (stay != null) split = null
         entry.live?.destroy()
         entry.live = null
         tabs.remove(entry)
@@ -203,6 +267,10 @@ class TabManager(private val context: Context, private val host: TabHost) {
         }
         if (tabs.isEmpty()) {
             open(NEW_TAB)
+            return
+        }
+        if (stay != null && tabs.any { it.id == stay }) {
+            switchTo(stay)
             return
         }
         if (currentId == id) {
@@ -224,7 +292,7 @@ class TabManager(private val context: Context, private val host: TabHost) {
     /** Reload a crashed tab. */
     fun revive(entry: TabEntry) {
         entry.crashed = false
-        if (entry.id == currentId) ensureLive(entry)
+        if (isOnScreen(entry.id)) ensureLive(entry)
     }
 
     /** Run something on every tab that currently has a WebView. */
@@ -264,7 +332,7 @@ class TabManager(private val context: Context, private val host: TabHost) {
 
     /** Grab a fresh preview of the current tab (before showing the tab switcher). */
     fun captureCurrentPreview() {
-        current?.let { cur -> cur.live?.capturePreview()?.let { cur.preview = it } }
+        tabs.filter { isOnScreen(it.id) }.forEach { t -> t.live?.capturePreview()?.let { t.preview = it } }
     }
 
     private fun ensureLive(entry: TabEntry): CornTab {
@@ -286,27 +354,23 @@ class TabManager(private val context: Context, private val host: TabHost) {
 
     private fun newLive(entry: TabEntry): CornTab = CornTab(context, entry, host).also { entry.live = it }
 
-    /** Apply the rules above: open tab runs, the N most recent stay in memory, the rest are unloaded. */
+    /** Apply the rules above: the open tab (both in split screen) runs, the N most recent stay in memory, the rest are unloaded. */
     fun enforceLivePolicy() {
-        val limit = keepInMemory().coerceAtLeast(0)
-        val keep = mutableListOf<Int>()
-        for (id in recent) {
-            if (keep.size >= limit) break
-            if (id != currentId && tabs.any { it.id == id && it.live != null }) keep += id
-        }
+        val onScreen = onScreenIds()
+        val keep = tabsKeptInMemory(recent.toList(), onScreen, { id -> tabs.any { it.id == id && it.live != null } }, keepInMemory())
         for (t in tabs) {
             val live = t.live ?: continue
             when {
-                t.id == currentId -> live.bringToForeground()
+                t.id in onScreen -> live.bringToForeground()
                 t.id in keep -> live.keepInBackground()
                 else -> unload(t)
             }
         }
     }
 
-    /** Android says memory is low: unload every tab except the open one. */
+    /** Android says memory is low: unload every tab except the open one (both in split screen). */
     fun trimMemory() {
-        tabs.filter { it.id != currentId }.forEach { unload(it) }
+        tabs.filter { !isOnScreen(it.id) }.forEach { unload(it) }
     }
 
     /** Corn left the screen: stop every page's timers (Android's global pause), resumed on return. */
@@ -317,7 +381,7 @@ class TabManager(private val context: Context, private val host: TabHost) {
     /** Rebuild every page (theme change): unload all, then reload the open tab right away. */
     fun recreateAll() {
         tabs.forEach { unload(it) }
-        current?.takeIf { !it.isNewTab }?.let { ensureLive(it) }
+        tabs.filter { isOnScreen(it.id) && !it.isNewTab }.forEach { ensureLive(it) }
     }
 
     /** Unload every tab, including the open one (before deleting cookies). The open tab reloads when shown. */
@@ -339,6 +403,7 @@ class TabManager(private val context: Context, private val host: TabHost) {
 
     /** Destroy every tab and group (used by Flush). Leaves one fresh new-tab page. */
     fun reset() {
+        split = null
         tabs.forEach { it.live?.destroy(); it.live = null }
         tabs.clear()
         groups.clear()

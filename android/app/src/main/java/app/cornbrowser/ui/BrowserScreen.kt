@@ -51,6 +51,12 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -176,6 +182,129 @@ private fun PageArea(c: CornController, cur: TabEntry) {
         alpha = 1f - drain * 0.8f
     } else Modifier
     Box(Modifier.fillMaxSize().then(drainModifier)) {
+        val split = c.tabs.split
+        val first = split?.let { s -> c.tabs.tabs.firstOrNull { it.id == s.first } }
+        val second = split?.let { s -> c.tabs.tabs.firstOrNull { it.id == s.second } }
+        if (split != null && first != null && second != null) {
+            SplitPanes(c, split, first, second)
+        } else {
+            PageContent(c, cur, onTouch = null)
+        }
+    }
+}
+
+// ---------------- split screen ----------------
+
+/**
+ * Two tabs on screen: top / bottom with the phone upright, side by side when the screen is wider
+ * than tall. A draggable divider sets the sizes (25–75 %); letting go of it near an edge closes the
+ * pane it was dragged over. The focused pane (last touched) has a thin accent outline.
+ * One custom layout for both orientations, so turning the phone or dragging the divider never
+ * rebuilds the panes' WebView containers.
+ */
+@Composable
+private fun SplitPanes(c: CornController, split: app.cornbrowser.browser.SplitState, first: TabEntry, second: TabEntry) {
+    val config = androidx.compose.ui.platform.LocalConfiguration.current
+    val sideBySide = config.screenWidthDp > config.screenHeightDp
+    val density = androidx.compose.ui.platform.LocalDensity.current
+    val dividerPx = with(density) { SPLIT_DIVIDER.roundToPx() }
+    var sizePx by remember { mutableStateOf(androidx.compose.ui.unit.IntSize.Zero) }
+    // While dragging: the tab whose pane would close if the divider were let go now.
+    var closing by remember { mutableStateOf<Int?>(null) }
+    val latestSideBySide = androidx.compose.runtime.rememberUpdatedState(sideBySide)
+    val latestSize = androidx.compose.runtime.rememberUpdatedState(sizePx)
+
+    androidx.compose.ui.layout.Layout(
+        modifier = Modifier.fillMaxSize().onSizeChanged { sizePx = it },
+        content = {
+            key(first.id) { Pane(c, first, focused = split.focused == first.id, closing = closing == first.id) }
+            // The divider
+            Box(
+                Modifier.background(C.Bg).pointerInput(Unit) {
+                    var raw = 0f
+                    detectDragGestures(
+                        onDragStart = { raw = c.tabs.split?.ratio ?: 0.5f },
+                        onDragEnd = {
+                            val s = c.tabs.split
+                            closing = null
+                            s?.closedByRelease(raw)?.let { c.closePane(it) }
+                        },
+                        onDragCancel = { closing = null },
+                    ) { change, amount ->
+                        change.consume()
+                        val sz = latestSize.value
+                        val avail = ((if (latestSideBySide.value) sz.width else sz.height) - dividerPx).coerceAtLeast(1)
+                        raw += (if (latestSideBySide.value) amount.x else amount.y) / avail
+                        c.tabs.resizeSplit(raw)
+                        closing = c.tabs.split?.closedByRelease(raw)
+                    }
+                },
+                contentAlignment = Alignment.Center,
+            ) {
+                Box(
+                    Modifier.size(if (sideBySide) 4.dp else 40.dp, if (sideBySide) 40.dp else 4.dp)
+                        .clip(RoundedCornerShape(2.dp)).background(C.Muted),
+                )
+            }
+            key(second.id) { Pane(c, second, focused = split.focused == second.id, closing = closing == second.id) }
+        },
+    ) { measurables, constraints ->
+        val w = constraints.maxWidth
+        val h = constraints.maxHeight
+        val total = if (sideBySide) w else h
+        val avail = (total - dividerPx).coerceAtLeast(0)
+        val a = (avail * split.ratio).toInt()
+        val b = avail - a
+        fun fixed(main: Int) = if (sideBySide) androidx.compose.ui.unit.Constraints.fixed(main, h) else androidx.compose.ui.unit.Constraints.fixed(w, main)
+        val p1 = measurables[0].measure(fixed(a))
+        val d = measurables[1].measure(fixed(dividerPx.coerceAtMost(total)))
+        val p2 = measurables[2].measure(fixed(b))
+        layout(w, h) {
+            if (sideBySide) {
+                p1.place(0, 0); d.place(a, 0); p2.place(a + dividerPx, 0)
+            } else {
+                p1.place(0, 0); d.place(0, a); p2.place(0, a + dividerPx)
+            }
+        }
+    }
+}
+
+/** Thickness of the split-screen divider (its whole width is the drag handle). */
+private val SPLIT_DIVIDER = 14.dp
+
+/** One split-screen pane: the tab's page, a × to close the pane, and the focus outline. */
+@Composable
+private fun Pane(c: CornController, entry: TabEntry, focused: Boolean, closing: Boolean) {
+    val focusThis = androidx.compose.runtime.rememberUpdatedState { c.focusPane(entry.id) }
+    Box(
+        Modifier.fillMaxSize().clipToBounds()
+            // Watch for the first finger down without consuming it, so the page still gets its tap.
+            .pointerInput(Unit) {
+                awaitEachGesture {
+                    awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
+                    focusThis.value()
+                }
+            },
+    ) {
+        PageContent(c, entry, onTouch = { focusThis.value() })
+        if (focused) Box(Modifier.matchParentSize().border(2.dp, C.Accent))
+        if (closing) {
+            Box(Modifier.matchParentSize().background(C.Scrim), contentAlignment = Alignment.Center) {
+                T("Let go to close", 15.sp, Color.White, FontWeight.SemiBold)
+            }
+        }
+        Box(
+            Modifier.align(Alignment.TopEnd).padding(6.dp).size(26.dp).clip(CircleShape).background(Color(0xA6000000))
+                .clickable { c.closePane(entry.id) },
+            contentAlignment = Alignment.Center,
+        ) { CornIcon(CornIcons.X, 14.dp, Color.White) }
+    }
+}
+
+/** One tab's page: Corn's home page, the WebView, or Corn's crashed / error page. */
+@Composable
+private fun PageContent(c: CornController, cur: TabEntry, onTouch: (() -> Unit)?) {
+    Box(Modifier.fillMaxSize()) {
         val live = cur.live
         if (cur.isNewTab) {
             NewTabPage(c)
@@ -186,12 +315,20 @@ private fun PageArea(c: CornController, cur: TabEntry) {
             // (Android's standard SwipeRefreshLayout around the WebView).
             // One container per WebView (key): SwipeRefreshLayout picks its child once and only ever
             // measures that one, so swapping another tab's WebView into it left the new page 0×0 (blank).
-            val reload = androidx.compose.runtime.rememberUpdatedState { c.tabs.reload() }
+            // Reloads this tab's own page (in split screen it may not be the focused one).
+            val reload = androidx.compose.runtime.rememberUpdatedState { cur.live?.webView?.reload() }
+            val touched = androidx.compose.runtime.rememberUpdatedState(onTouch)
             key(live) {
                 AndroidView(
                     modifier = Modifier.fillMaxSize(),
                     factory = { ctx ->
-                        androidx.swiperefreshlayout.widget.SwipeRefreshLayout(ctx).apply {
+                        object : androidx.swiperefreshlayout.widget.SwipeRefreshLayout(ctx) {
+                            // Split screen: a touch on the page focuses its pane (the touch still reaches the page).
+                            override fun dispatchTouchEvent(ev: android.view.MotionEvent): Boolean {
+                                if (ev.actionMasked == android.view.MotionEvent.ACTION_DOWN) touched.value?.invoke()
+                                return super.dispatchTouchEvent(ev)
+                            }
+                        }.apply {
                             setColorSchemeColors(0xFFFFC83D.toInt())               // corn yellow spinner
                             setProgressBackgroundColorSchemeColor(C.Surface2.toArgb())
                             setOnRefreshListener {
@@ -213,7 +350,7 @@ private fun PageArea(c: CornController, cur: TabEntry) {
                     contentScale = androidx.compose.ui.layout.ContentScale.FillWidth, alignment = Alignment.TopCenter,
                 )
             }
-            cur.loadError?.let { reason -> ErrorPage(cur.host, reason) { cur.loadError = null; c.tabs.reload() } }
+            cur.loadError?.let { reason -> ErrorPage(cur.host, reason) { cur.loadError = null; cur.live?.webView?.reload() } }
         }
     }
 }
