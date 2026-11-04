@@ -461,7 +461,7 @@ private fun Toolbar(c: CornController, cur: TabEntry) {
         // Flush (second from the right)
         ToolbarButton({ c.requestFlush() }) {
             Box(Modifier.width(46.dp).height(40.dp).clip(RoundedCornerShape(14.dp)).background(C.Corn), contentAlignment = Alignment.Center) {
-                CornIcon(CornIcons.Toilet, TOOLBAR_ICON, C.CornInk)
+                CornIcon(CornIcons.Flush, TOOLBAR_ICON, C.CornInk)
             }
         }
         ToolbarButton({ c.sheet = Sheet.Menu }) { CornIcon(CornIcons.Dots, TOOLBAR_ICON) }

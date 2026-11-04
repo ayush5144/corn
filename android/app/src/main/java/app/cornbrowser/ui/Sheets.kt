@@ -269,7 +269,7 @@ private fun GroupSheet(c: CornController, groupId: Int) {
 @Composable
 private fun ConfirmFlushSheet(c: CornController) {
     SheetTitle("Flush everything?", "All tabs and groups, cookies, cache and history go. Your Vault and Keep List stay.")
-    BigButton("Flush", { c.flushNow(animate = true) }, icon = CornIcons.Toilet)
+    BigButton("Flush", { c.flushNow(animate = true) }, icon = CornIcons.Flush)
     Spacer(Modifier.height(10.dp))
     BigButton("Cancel", { c.sheet = null }, ghost = true)
 }

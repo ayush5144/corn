@@ -32,12 +32,23 @@ object CornIcons {
     val Vault = toolbar(RECT_VAULT, "M15.5 11a3.5 3.5 0 1 1-7 0a3.5 3.5 0 1 1 7 0z", "M12 7.5v1M12 13.5v1M8.5 11h1M14.5 11h1", FEET)
     val VaultAdd = toolbar(RECT_VAULT, "M12 7.4v7.2M8.4 11h7.2", FEET)
     val VaultSaved = toolbar(RECT_VAULT, "M8.3 11.2l2.6 2.6 4.8-5", FEET)
-    // Toilet y 3…21.
-    val Toilet = toolbar(
-        "M4.8 3h4.4a1.3 1.3 0 0 1 1.3 1.3v5.2a1.3 1.3 0 0 1-1.3 1.3H4.8a1.3 1.3 0 0 1-1.3-1.3V4.3A1.3 1.3 0 0 1 4.8 3z",
-        "M3.5 10.8h17c0 3.7-3 6.7-6.7 6.7h-4.6c-3.1 0-5.7-2.5-5.7-5.6z",
-        "M8.7 17.5l-.5 3.5h7.6l-.5-3.5",
-    )
+    // The Flush Button's glyph: three arms of water swirling into a drain (founder's choice, option A).
+    // Spans y = 3.95…20.05, so with the 1.9 stroke it's 18 units tall like the other toolbar icons.
+    val Flush: ImageVector = run {
+        val b = ImageVector.Builder(defaultWidth = 24.dp, defaultHeight = 24.dp, viewportWidth = 24f, viewportHeight = 24f)
+        listOf(
+            "M12.00 3.95 L13.27 4.26 L14.43 4.77 L15.47 5.44 L16.36 6.26 L17.08 7.18 L17.61 8.18 L17.97 9.23 L18.13 10.29 L18.12 11.32 L17.94 12.31 L17.60 13.22 L17.14 14.03 L16.56 14.73 L15.90 15.29 L15.18 15.72 L14.43 16.01 L13.67 16.15 L12.93 16.16 L12.23 16.05 L11.60 15.82 L11.04 15.50 L10.58 15.11 L10.21 14.66 L9.95 14.19",
+            "M18.97 16.02 L18.07 16.97 L17.05 17.72 L15.94 18.28 L14.79 18.65 L13.63 18.80 L12.50 18.77 L11.42 18.55 L10.42 18.17 L9.53 17.64 L8.76 16.99 L8.14 16.24 L7.67 15.43 L7.36 14.58 L7.20 13.73 L7.19 12.89 L7.32 12.10 L7.57 11.37 L7.93 10.73 L8.38 10.18 L8.89 9.74 L9.45 9.42 L10.02 9.21 L10.59 9.12 L11.13 9.13",
+            "M5.03 16.03 L4.67 14.77 L4.52 13.51 L4.59 12.27 L4.85 11.10 L5.29 10.01 L5.89 9.05 L6.62 8.22 L7.45 7.55 L8.36 7.04 L9.30 6.70 L10.26 6.54 L11.19 6.53 L12.08 6.69 L12.90 6.98 L13.63 7.39 L14.26 7.90 L14.76 8.48 L15.14 9.11 L15.39 9.78 L15.51 10.44 L15.51 11.08 L15.41 11.68 L15.20 12.22 L14.92 12.69",
+        ).forEach { d ->
+            b.addPath(
+                PathParser().parsePathString(d).toNodes(), fill = null, stroke = SolidColor(Color.Black),
+                strokeLineWidth = STROKE, strokeLineCap = StrokeCap.Round, strokeLineJoin = StrokeJoin.Round,
+            )
+        }
+        b.addPath(PathParser().parsePathString("M13.3 12a1.3 1.3 0 1 1-2.6 0a1.3 1.3 0 1 1 2.6 0z").toNodes(), fill = SolidColor(Color.Black)) // the drain
+        b.build()
+    }
     // Dots y 3…21.
     val Dots = filled(
         "M12 3a1.7 1.7 0 1 1 0 3.4a1.7 1.7 0 1 1 0-3.4z",

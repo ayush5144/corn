@@ -66,7 +66,7 @@ fun OnboardingScreen(settings: app.cornbrowser.data.CornSettings, onStart: () ->
         Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
             Bullet(CornIcons.Shield, "Blocks ads, trackers and pop-ups")
             Bullet(CornIcons.Vault, "Saves what matters to a locked Vault")
-            Bullet(CornIcons.Toilet, "Flushes everything else in one tap")
+            Bullet(CornIcons.Flush, "Flushes everything else in one tap")
         }
         Spacer(Modifier.height(28.dp))
         // Two choices people should make up front, shown with their current state.

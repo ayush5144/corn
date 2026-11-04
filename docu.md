@@ -136,3 +136,8 @@
 - Added `design-agents/` (exact agent briefs), `.claude/agents/corn-logo-designer.md` and `flush-brand-designer.md`, Flush concept pages (`mockups/flush/vortex.html`, `button.html`, `wink.html`).
 - Updated `docs/01-product/01-prd.md`, `02-decision-log.md` (Round 14 status), `03-features.md`, `docs/03-planning/02-checklist.md`, `docs/02-technical/08-repo-structure.md`, `AGENTS.md`.
 
+## 2026-11-05 — Flush Button glyph: water swirl
+
+- Code: `ui/Icons.kt` (new `CornIcons.Flush`, three-arm vortex + drain, 18-unit visible height; toilet icon removed), used in `BrowserScreen.kt`, `Sheets.kt`, `TabsScreen.kt`, `OnboardingScreen.kt`.
+- Updated `docs/01-product/01-prd.md` (Flush Button row), `02-decision-log.md` (Round 15), `03-features.md`.
+
