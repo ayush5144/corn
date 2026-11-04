@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Corn logo: The Flush Kernel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --corn: #FFC83D;
+    --ink: #2A1E00;
+    --bg: #0F0E0B;
+    --leaf: #86C64A;
+    --cream: #FFF1C2;
+    --panel: #1A1813;
+    --line: #2B2820;
+    --muted: #A39C88;
+    --text: #F6F1E3;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Figtree, system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  main { max-width: 420px; margin: 0 auto; padding: 28px 16px 64px; }
+  h1, h2, .display { font-family: "Bricolage Grotesque", Figtree, sans-serif; }
+  .eyebrow { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--corn); font-weight: 600; }
+  h1 { font-size: 34px; line-height: 1.05; margin: 6px 0 12px; font-weight: 800; letter-spacing: -.02em; }
+  h2 { font-size: 18px; margin: 0 0 12px; font-weight: 600; }
+  p { margin: 0 0 10px; color: #D9D2BF; }
+  section { margin-top: 36px; }
+  .num { color: var(--corn); margin-right: 6px; }
+  .note { font-size: 13px; color: var(--muted); margin-top: 10px; }
+
+  /* Large hero */
+  .hero { border-radius: 24px; overflow: hidden; border: 1px solid var(--line); background: var(--bg); }
+  .hero img { display: block; width: 100%; height: auto; }
+
+  /* Icon: the PNG has its own near-black field, scaled into the squircle with feathered edges */
+  .icon {
+    --s: 96px;
+    width: var(--s); height: var(--s);
+    border-radius: 23%;
+    background: #0E0D0A;
+    overflow: hidden;
+    display: grid; place-items: center;
+    box-shadow: 0 1px 2px rgba(0,0,0,.35), 0 6px 16px rgba(0,0,0,.25);
+    flex: none;
+  }
+  .icon img {
+    width: 86%; height: 86%;
+    -webkit-mask-image: radial-gradient(circle at center, #000 62%, transparent 71%);
+            mask-image: radial-gradient(circle at center, #000 62%, transparent 71%);
+  }
+
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .duo > div { border-radius: 18px; padding: 26px 0 16px; display: grid; justify-items: center; gap: 10px; font-size: 12px; }
+  .on-dark { background: #000; color: var(--muted); border: 1px solid var(--line); }
+  .on-light { background: #F3F1EC; color: #6B6657; }
+  .duo .icon { --s: 104px; }
+
+  /* Home screen */
+  .phone {
+    border-radius: 30px;
+    padding: 18px 16px 22px;
+    background:
+      radial-gradient(120% 80% at 10% 0%, #2C3A4A 0%, transparent 60%),
+      radial-gradient(120% 90% at 100% 100%, #3B2F48 0%, transparent 60%),
+      #181B22;
+    border: 1px solid var(--line);
+  }
+  .status { display: flex; justify-content: space-between; font-size: 12px; color: #E8E6E1; margin-bottom: 22px; font-weight: 500; }
+  .clock-big { font-family: "Bricolage Grotesque", sans-serif; font-size: 44px; font-weight: 600; color: #fff; line-height: 1; }
+  .date { font-size: 13px; color: #C9CCD3; margin: 4px 0 28px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); row-gap: 18px; justify-items: center; }
+  .app { display: grid; justify-items: center; gap: 6px; font-size: 11.5px; color: #F1F1F1; }
+  .app .icon { --s: 56px; }
+  .ph { width: 56px; height: 56px; border-radius: 23%; display: grid; place-items: center; }
+  .ph i { display: block; }
+  .ph-clock { background: #E9EDF3; }
+  .ph-clock i { width: 26px; height: 26px; border-radius: 50%; border: 3px solid #3D4A5C; position: relative; }
+  .ph-clock i::after { content: ""; position: absolute; left: 50%; top: 4px; width: 3px; height: 9px; background: #3D4A5C; transform: translateX(-50%); border-radius: 2px; }
+  .ph-notes { background: #F4E7B8; }
+  .ph-notes i { width: 24px; height: 28px; border-radius: 4px; background: repeating-linear-gradient(#fff 0 5px, #C9B979 5px 7px); }
+  .ph-cam { background: #3A3F47; }
+  .ph-cam i { width: 30px; height: 22px; border-radius: 6px; background: #D7DBE1; position: relative; }
+  .ph-cam i::after { content: ""; position: absolute; inset: 5px 9px; border-radius: 50%; background: #3A3F47; }
+  .ph-cal { background: #fff; }
+  .ph-cal i { width: 28px; height: 28px; border-radius: 5px; border: 3px solid #4F7BD8; border-top-width: 8px; }
+  .ph-msg { background: #6FA5F7; }
+  .ph-msg i { width: 30px; height: 22px; border-radius: 11px; background: #fff; }
+  .ph-set { background: #8C939E; }
+  .ph-set i { width: 26px; height: 26px; border-radius: 50%; border: 6px dotted #fff; }
+  .ph-files { background: #5BB89A; }
+  .ph-files i { width: 30px; height: 22px; border-radius: 3px 6px 6px 6px; background: #fff; }
+  .dock { margin-top: 26px; padding: 10px; border-radius: 22px; background: rgba(255,255,255,.08); display: grid; grid-template-columns: repeat(4, 1fr); justify-items: center; }
+  .dock .ph, .dock .icon { --s: 50px; width: 50px; height: 50px; }
+
+  /* Sizes */
+  .sizes { display: flex; align-items: flex-end; justify-content: center; gap: 12px; padding: 22px 12px; border-radius: 18px; background: var(--panel); border: 1px solid var(--line); overflow: hidden; }
+  .sizes figure { margin: 0; display: grid; justify-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+  .s192 { --s: 192px; } .s96 { --s: 96px; } .s48 { --s: 48px; }
+  @media (max-width: 400px) {
+    .s192 { --s: 168px; }
+  }
+
+  /* Lockup */
+  .lockup { display: flex; align-items: center; gap: 14px; padding: 26px 20px; border-radius: 18px; }
+  .lockup .icon { --s: 72px; }
+  .wordmark { font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: 64px; letter-spacing: -.04em; line-height: 1; }
+  .lockup.dark { background: var(--panel); border: 1px solid var(--line); }
+  .lockup.dark .wordmark { color: var(--corn); }
+  .lockup.light { background: var(--cream); margin-top: 12px; }
+  .lockup.light .wordmark { color: var(--ink); }
+
+  /* Alternates */
+  .alts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .alts figure { margin: 0; }
+  .alts img { width: 100%; display: block; border-radius: 16px; border: 1px solid var(--line); }
+  .alts figcaption { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+  .alts b { color: var(--text); font-weight: 600; }
+</style>
+</head>
+<body>
+<main>
+
+  <div class="eyebrow">Corn logo concept</div>
+  <h1>The Flush Kernel</h1>
+  <p>One fat corn kernel instead of a whole realistic cob, with a drain swirl cut right through it. The kernel says "corn", the vortex says "Flush", so the icon is also a one-glance explainer for the Flush Button.</p>
+  <p>It is flat yellow on near-black with a cheeky shine and a cream tip, so it reads as cartoon corn rather than food photography, and the swirl still holds up at launcher size.</p>
+
+  <section>
+    <h2><span class="num">1</span>The mark</h2>
+    <div class="hero"><img src="flush-kernel/v5-tooth-vortex.png" alt="Corn logo: a yellow corn kernel with a dark drain swirl"></div>
+  </section>
+
+  <section>
+    <h2><span class="num">2</span>Android app icon</h2>
+    <div class="duo">
+      <div class="on-dark"><span class="icon"><img src="flush-kernel/v5-tooth-vortex.png" alt=""></span>Dark wallpaper</div>
+      <div class="on-light"><span class="icon"><img src="flush-kernel/v5-tooth-vortex.png" alt=""></span>Light wallpaper</div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>On a home screen</h2>
+    <div class="phone">
+      <div class="status"><span>9:41</span><span>5G ▲ 87%</span></div>
+      <div class="clock-big">9:41</div>
+      <div class="date">Thursday, 5 November</div>
+      <div class="grid">
+        <div class="app"><span class="ph ph-clock"><i></i></span>Clock</div>
+        <div class="app"><span class="ph ph-notes"><i></i></span>Notes</div>
+        <div class="app"><span class="ph ph-cal"><i></i></span>Calendar</div>
+        <div class="app"><span class="ph ph-files"><i></i></span>Files</div>
+        <div class="app"><span class="ph ph-set"><i></i></span>Settings</div>
+        <div class="app"><span class="icon"><img src="flush-kernel/v5-tooth-vortex.png" alt=""></span>Corn</div>
+        <div class="app"><span class="ph ph-cam"><i></i></span>Camera</div>
+        <div class="app"><span class="ph ph-msg"><i></i></span>Messages</div>
+      </div>
+      <div class="dock">
+        <span class="ph ph-msg"><i></i></span>
+        <span class="ph ph-cam"><i></i></span>
+        <span class="icon"><img src="flush-kernel/v5-tooth-vortex.png" alt=""></span>
+        <span class="ph ph-set"><i></i></span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>Small sizes</h2>
+    <div class="sizes">
+      <figure><span class="icon s192"><img src="flush-kernel/v5-tooth-vortex.png" alt=""></span>192</figure>
+      <figure><span class="icon s96"><img src="flush-kernel/v5-tooth-vortex.png" alt=""></span>96</figure>
+      <figure><span class="icon s48"><img src="flush-kernel/v5-tooth-vortex.png" alt=""></span>48</figure>
+    </div>
+    <p class="note">At 48px the outer swirl band and the drain dot still read; the shine and cream tip become simple accents.</p>
+  </section>
+
+  <section>
+    <h2><span class="num">5</span>Lockup</h2>
+    <div class="lockup dark"><span class="icon"><img src="flush-kernel/v5-tooth-vortex.png" alt=""></span><span class="wordmark">corn</span></div>
+    <div class="lockup light"><span class="icon"><img src="flush-kernel/v5-tooth-vortex.png" alt=""></span><span class="wordmark">corn</span></div>
+  </section>
+
+  <section>
+    <h2><span class="num">6</span>Alternates</h2>
+    <div class="alts">
+      <figure><img src="flush-kernel/v3-vortex-bands.png" alt=""><figcaption><b>Vortex bands.</b> Cleanest geometry, nice drain dot, but the shape reads as a guitar pick.</figcaption></figure>
+      <figure><img src="flush-kernel/v1-swirl-cut.png" alt=""><figcaption><b>Swirl cut.</b> Strong flush swirl; same guitar-pick problem.</figcaption></figure>
+      <figure><img src="flush-kernel/v4-plump-drain.png" alt=""><figcaption><b>Plump drain.</b> Friendly, but the leaf and dimple make it look like an apple.</figcaption></figure>
+      <figure><img src="flush-kernel/v2-leaf-swirl.png" alt=""><figcaption><b>Leaf swirl.</b> Outlined, more cartoon; reads as fruit, not corn.</figcaption></figure>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>

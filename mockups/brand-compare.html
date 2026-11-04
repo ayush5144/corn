@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Corn vs Flush</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Fredoka:wght@600&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #F4F1EA; color: #1E1B14; font-family: Figtree, system-ui, sans-serif; font-size: 15px; line-height: 1.5; }
+  main { max-width: 420px; margin: 0 auto; padding: 28px 16px 56px; }
+  h1 { font-family: "Bricolage Grotesque", sans-serif; font-size: 30px; margin: 0 0 6px; }
+  .lede { color: #6D6553; margin: 0 0 22px; }
+  .brand { border-radius: 22px; padding: 18px 16px 20px; margin-bottom: 22px; }
+  .corn { background: #0F0E0B; color: #F5F0E1; }
+  .flush { background: #071226; color: #EAF4FF; }
+  .brand h2 { margin: 0; font-size: 28px; line-height: 1.1; }
+  .corn h2 { font-family: "Bricolage Grotesque", sans-serif; color: #FFC83D; }
+  .flush h2 { font-family: Fredoka, sans-serif; color: #3FD8FF; }
+  .tag { margin: 4px 0 16px; opacity: .8; font-size: 14px; }
+  .row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .opt { text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; font-size: 12.5px; line-height: 1.3; }
+  .opt img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 24%; display: block; }
+  .opt b { font-size: 13px; }
+  .pick { outline: 2px solid currentColor; outline-offset: 3px; border-radius: 24%; }
+  .swatches { display: flex; gap: 6px; margin: 16px 0 6px; }
+  .sw { flex: 1; height: 34px; border-radius: 8px; border: 1px solid rgba(255,255,255,.12); }
+  .small { font-size: 12.5px; opacity: .75; }
+  ul { margin: 10px 0 0; padding-left: 18px; font-size: 14px; }
+  .more { display: inline-block; margin-top: 12px; font-weight: 700; font-size: 14px; }
+  .corn .more { color: #FFC83D; } .flush .more { color: #3FD8FF; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; background: #fff; border-radius: 16px; overflow: hidden; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid #E5DFD0; vertical-align: top; }
+  th { background: #EDE7DA; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+  .note { font-size: 13px; color: #6D6553; margin-top: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Corn vs Flush</h1>
+  <p class="lede">Logo, colour and voice explorations. AI drafts for choosing a direction: whichever wins gets a clean vector redraw. Nothing in the app has changed.</p>
+
+  <section class="brand corn">
+    <h2>corn</h2>
+    <p class="tag">“Browse. Save what matters. Flush the rest.”</p>
+    <div class="row">
+      <a class="opt" href="logos/flush-kernel.html"><img src="logos/flush-kernel/v5-tooth-vortex.png" alt="Flush Kernel logo"><b>Flush Kernel</b>A kernel with a drain swirl inside</a>
+      <a class="opt" href="logos/corny.html"><img src="logos/corny/corny-shh-cob.png" alt="Corny logo"><b>Corny</b>Winking cob going “shh”</a>
+      <a class="opt" href="logos/tab-cob.html"><img src="logos/tab-cob/tabcob-v4-tight.png" alt="Tab Cob logo"><b>Tab Cob</b>Kernels are tabs; one flies off</a>
+    </div>
+    <div class="swatches"><div class="sw" style="background:#0F0E0B"></div><div class="sw" style="background:#25221B"></div><div class="sw" style="background:#FFC83D"></div><div class="sw" style="background:#86C64A"></div><div class="sw" style="background:#F5F0E1"></div></div>
+    <p class="small">Current palette: near-black, corn yellow, leaf green · Bricolage Grotesque</p>
+    <ul>
+      <li>“All gone. Fresh as a new cob. 🌽”</li>
+      <li>“Flushed. Nobody saw nothing.”</li>
+      <li>“Poof. Clean slate, same great corn.”</li>
+    </ul>
+  </section>
+
+  <section class="brand flush">
+    <h2>flush</h2>
+    <p class="tag">“Browse whatever. Flush whenever.”</p>
+    <div class="row">
+      <a class="opt" href="flush/index.html"><img class="pick" src="flush/flush-a-vortex.png" alt="Vortex logo"><b>A · Vortex</b>Water spiralling down the drain</a>
+      <a class="opt" href="flush/index.html"><img src="flush/flush-b-button.png" alt="Button logo"><b>B · Button</b>A push button with a whirlpool</a>
+      <a class="opt" href="flush/index.html"><img src="flush/flush-c-wink.png" alt="Wink logo"><b>C · Wink</b>A winking water drop</a>
+    </div>
+    <div class="swatches"><div class="sw" style="background:#071226"></div><div class="sw" style="background:#142749"></div><div class="sw" style="background:#1EA7FF"></div><div class="sw" style="background:#3FD8FF"></div><div class="sw" style="background:#EAF4FF"></div></div>
+    <p class="small">Navy + electric blue · Fredoka · every text colour passes WCAG 4.5:1 (dark and light)</p>
+    <ul>
+      <li>“One tap. No trace.”</li>
+      <li>“Swirl, swirl, gone. 🌀”</li>
+      <li>“Done. Feel free to wash your hands of it.”</li>
+    </ul>
+    <a class="more" href="flush/index.html">Full Flush brand board →</a>
+  </section>
+
+  <table>
+    <tr><th></th><th>Corn</th><th>Flush</th></tr>
+    <tr><td>Says what it does</td><td>No, it's a joke you learn</td><td>Yes: the name is the main feature</td></tr>
+    <tr><td>Discreet on a home screen</td><td>A cute corn icon</td><td>A blue swirl that looks like any app</td></tr>
+    <tr><td>Searchable / trademark</td><td>Common word; not checked</td><td>Very common word, and “Flush button in Flush” clash; not checked</td></tr>
+    <tr><td>Cost to switch</td><td>None</td><td>App name, app ID, logos, copy, docs; cheap only before launch</td></tr>
+  </table>
+  <p class="note">Outlined Flush icon = the brand agent's recommendation. Tap any logo for its full mockup: app icon on dark and light, home screen, 192/96/48 px, wordmark lockup and alternates.</p>
+</main>
+</body>
+</html>

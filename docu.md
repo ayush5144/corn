@@ -125,3 +125,8 @@
 - Code: `data/CornSettings.kt` (`cookie_banners` default false), `ui/SettingsScreen.kt` (switch description).
 - Updated `docs/01-product/01-prd.md` (feature + defaults), `03-features.md` (evidence: Reddit login), `02-decision-log.md` (Round 13).
 
+## 2026-11-05 — Logo and name exploration mockups; missing basics planned
+
+- Added `mockups/brand-compare.html`, `mockups/logos/` (Flush Kernel, Corny, Tab Cob) and `mockups/flush/` (Flush brand board); PNGs reduced to 512 px (originals kept outside the repo).
+- Updated `docs/01-product/02-decision-log.md` (Round 14) and `docs/03-planning/02-checklist.md` (six new Phase 3 tasks; PiP and print in the backlog).
+

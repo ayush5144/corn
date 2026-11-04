@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tab Cob logo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --yellow:#FFC83D; --ink:#2A1E00; --black:#0F0E0B; --leaf:#86C64A;
+    --bg:#FBF6EA; --card:#FFFFFF; --text:#1C1708; --muted:#6E654F; --line:#ECE3CC;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:Figtree,system-ui,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+  main{max-width:420px;margin:0 auto;padding:28px 16px 64px}
+  h1,h2,.wordmark{font-family:"Bricolage Grotesque",sans-serif}
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  h1{font-size:40px;font-weight:800;letter-spacing:-.02em;line-height:1.05;margin:6px 0 10px}
+  .lede{color:#3d3420;font-size:15.5px}
+  section{margin-top:36px}
+  h2{font-size:20px;font-weight:700;letter-spacing:-.01em;margin-bottom:12px;display:flex;gap:8px;align-items:baseline}
+  h2 .n{font-size:13px;color:var(--muted);font-family:Figtree,sans-serif;font-weight:600}
+  .note{font-size:13px;color:var(--muted);margin-top:8px}
+
+  .hero{border-radius:28px;overflow:hidden;background:var(--black);box-shadow:0 20px 50px -20px rgba(42,30,0,.45)}
+  .hero img{display:block;width:100%;height:auto}
+
+  /* Android adaptive-icon style squircle */
+  .icon{display:block;border-radius:24%;overflow:hidden;background:var(--black);
+        box-shadow:0 1px 0 rgba(255,255,255,.06) inset, 0 6px 16px -6px rgba(0,0,0,.45)}
+  .icon img{display:block;width:100%;height:100%;object-fit:cover}
+
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .tile{border-radius:20px;padding:26px 0;display:flex;flex-direction:column;align-items:center;gap:10px;font-size:12px;font-weight:500}
+  .tile.dark{background:#16130C;color:#B9AE93}
+  .tile.light{background:#F1EEE6;color:#6E654F;border:1px solid var(--line)}
+  .tile .icon{width:96px;height:96px}
+
+  /* Fake home screen */
+  .phone{border-radius:32px;padding:26px 18px 22px;color:#fff;
+    background:radial-gradient(120% 80% at 20% 0%,#3B4A5E 0%,#1C2430 55%,#12161D 100%)}
+  .status{display:flex;justify-content:space-between;font-size:12px;font-weight:600;opacity:.85;margin-bottom:26px}
+  .clockbig{font-family:"Bricolage Grotesque",sans-serif;font-size:52px;font-weight:500;letter-spacing:-.03em;line-height:1}
+  .date{font-size:13px;opacity:.75;margin:4px 0 30px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);row-gap:18px;column-gap:6px}
+  .app{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11.5px;font-weight:500;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+  .app .icon,.app .ph{width:56px;height:56px}
+  .ph{border-radius:24%;display:grid;place-items:center;position:relative}
+  .ph::before,.ph::after{content:"";position:absolute}
+  .ph.clock{background:#E9ECF1}
+  .ph.clock::before{width:30px;height:30px;border-radius:50%;border:3px solid #2B3240}
+  .ph.clock::after{width:3px;height:11px;background:#2B3240;top:17px;left:27px;border-radius:2px;box-shadow:5px 9px 0 -0px transparent}
+  .ph.notes{background:#F4D35E}
+  .ph.notes::before{width:26px;height:3px;background:#5A4A12;top:20px;border-radius:2px;box-shadow:0 8px 0 #5A4A12,0 16px 0 #5A4A12}
+  .ph.cam{background:#3A3F48}
+  .ph.cam::before{width:30px;height:22px;border-radius:6px;background:#C9CFD8}
+  .ph.cam::after{width:12px;height:12px;border-radius:50%;background:#3A3F48;border:2px solid #C9CFD8}
+  .ph.msg{background:#5BA4F5}
+  .ph.msg::before{width:30px;height:22px;border-radius:11px;background:#fff}
+  .ph.cal{background:#fff}
+  .ph.cal::before{width:100%;height:16px;top:0;background:#E5534B;border-radius:13px 13px 0 0}
+  .ph.cal::after{content:"12";position:static;font:700 20px Figtree,sans-serif;color:#222;margin-top:12px}
+  .ph.files{background:#7C6CE0}
+  .ph.files::before{width:30px;height:22px;border-radius:4px;background:#E7E3FF;top:20px}
+  .ph.files::after{width:13px;height:6px;border-radius:3px 3px 0 0;background:#E7E3FF;top:16px;left:13px}
+  .ph.calc{background:#2E8B6E}
+  .ph.calc::before{width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:12px 0 #fff,24px 0 #fff,0 12px #fff,12px 12px #fff,24px 12px #fff;top:16px;left:13px}
+  .ph.set{background:#8A93A3}
+  .ph.set::before{width:26px;height:26px;border-radius:50%;border:5px dotted #EEF1F5}
+  .ph.set::after{width:10px;height:10px;border-radius:50%;background:#EEF1F5}
+  .dock{margin-top:26px;height:5px;width:110px;border-radius:3px;background:rgba(255,255,255,.55);margin-inline:auto}
+
+  .sizes{display:flex;align-items:flex-end;gap:16px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px 16px;overflow:hidden}
+  .sizes figure{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+  .s192{width:192px;height:192px;flex:none}
+  .s96{width:96px;height:96px}
+  .s48{width:48px;height:48px}
+
+  .lockup{display:flex;align-items:center;gap:14px;padding:28px 20px;border-radius:20px}
+  .lockup .icon{width:72px;height:72px;flex:none}
+  .wordmark{font-size:64px;font-weight:800;letter-spacing:-.045em;line-height:.9}
+  .lockup.on-light{background:var(--card);border:1px solid var(--line)}
+  .lockup.on-light .wordmark{color:var(--ink)}
+  .lockup.on-dark{background:var(--black);margin-top:10px}
+  .lockup.on-dark .wordmark{color:var(--yellow)}
+
+  .alts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .alts figure{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .alts img{display:block;width:100%;height:auto}
+  .alts figcaption{font-size:12.5px;padding:8px 10px 10px;color:#3d3420}
+  .alts figcaption b{font-weight:600}
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">Corn logo concept</div>
+  <h1>Tab Cob</h1>
+  <p class="lede">Each kernel is a browser tab, so the corn literally <em>is</em> the browser. One tab is already flying off the top: that's the Flush Button in a single image, with your tabs cleared before you finish reading. It's flat and geometric with one sharp leaf, so it stays clever without looking like a real cob.</p>
+
+  <section>
+    <h2><span class="n">01</span>The mark</h2>
+    <div class="hero"><img src="tab-cob/tabcob-v4-tight.png" alt="Tab Cob logo: corn cob of yellow tab-shaped kernels with one tab flying away"></div>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span>App icon</h2>
+    <div class="pair">
+      <div class="tile dark"><span class="icon"><img src="tab-cob/tabcob-v4-tight.png" alt=""></span>Dark wallpaper</div>
+      <div class="tile light"><span class="icon"><img src="tab-cob/tabcob-v4-tight.png" alt=""></span>Light wallpaper</div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span>On the home screen</h2>
+    <div class="phone">
+      <div class="status"><span>9:41</span><span>5G ▮▮▮ 82%</span></div>
+      <div class="clockbig">9:41</div>
+      <div class="date">Thursday, 5 November</div>
+      <div class="grid">
+        <div class="app"><span class="ph clock"></span>Clock</div>
+        <div class="app"><span class="ph notes"></span>Notes</div>
+        <div class="app"><span class="ph cam"></span>Camera</div>
+        <div class="app"><span class="ph msg"></span>Messages</div>
+        <div class="app"><span class="ph cal"></span>Calendar</div>
+        <div class="app"><span class="icon"><img src="tab-cob/tabcob-v4-tight.png" alt=""></span>Corn</div>
+        <div class="app"><span class="ph files"></span>Files</div>
+        <div class="app"><span class="ph calc"></span>Calculator</div>
+        <div class="app"><span class="ph set"></span>Settings</div>
+      </div>
+      <div class="dock"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span>Small sizes</h2>
+    <div class="sizes">
+      <figure><span class="icon s192"><img src="tab-cob/tabcob-v4-tight.png" alt=""></span>192</figure>
+      <div style="display:flex;flex-direction:column;gap:16px;align-items:center">
+        <figure><span class="icon s96"><img src="tab-cob/tabcob-v4-tight.png" alt=""></span>96</figure>
+        <figure><span class="icon s48"><img src="tab-cob/tabcob-v4-tight.png" alt=""></span>48</figure>
+      </div>
+    </div>
+    <p class="note">On a 420px screen the 192px icon uses most of the width, so 96 and 48 are stacked next to it.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span>Lockup</h2>
+    <div class="lockup on-light"><span class="icon"><img src="tab-cob/tabcob-v4-tight.png" alt=""></span><span class="wordmark">corn</span></div>
+    <div class="lockup on-dark"><span class="icon"><img src="tab-cob/tabcob-v4-tight.png" alt=""></span><span class="wordmark">corn</span></div>
+  </section>
+
+  <section>
+    <h2><span class="n">06</span>Alternates</h2>
+    <div class="alts">
+      <figure><img src="tab-cob/tabcob-v4.png" alt=""><figcaption><b>v4 original.</b> The chosen mark as generated, with wide padding.</figcaption></figure>
+      <figure><img src="tab-cob/tabcob-v2.png" alt=""><figcaption><b>v2 Pill grid.</b> Boldest at 48px, but the kernels look like dice, not tabs.</figcaption></figure>
+      <figure><img src="tab-cob/tabcob-v1.png" alt=""><figcaption><b>v1 Tab field.</b> Many tabs with "…" dots. Too busy at small sizes.</figcaption></figure>
+      <figure><img src="tab-cob/tabcob-v3.png" alt=""><figcaption><b>v3 Flush trail.</b> Three tabs arc away on yellow. The kernels read as folders.</figcaption></figure>
+      <figure><img src="tab-cob/tabcob-v5.png" alt=""><figcaption><b>v5 Capsule stack.</b> Horizontal pills, but the shape reads as a beehive.</figcaption></figure>
+    </div>
+  </section>
+</main>
+</body>
+</html>

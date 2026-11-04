@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Corny logo concept</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --corn: #FFC83D;
+    --ink: #2A1E00;
+    --black: #0F0E0B;
+    --leaf: #86C64A;
+    --paper: #FFF8E6;
+    --muted: #7A6A45;
+    --line: #EADFC2;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: Figtree, system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  main { max-width: 420px; margin: 0 auto; padding: 28px 16px 56px; }
+  h1, h2, .wordmark { font-family: "Bricolage Grotesque", sans-serif; }
+  h1 { font-size: 40px; font-weight: 800; letter-spacing: -0.02em; margin: 4px 0 8px; line-height: 1; }
+  h2 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 40px 0 12px; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  p { margin: 0 0 10px; }
+  .note { font-size: 13px; color: var(--muted); margin-top: 8px; }
+
+  .hero { border-radius: 28px; overflow: hidden; border: 3px solid var(--ink); box-shadow: 6px 6px 0 var(--ink); }
+  .hero img { display: block; width: 100%; height: auto; }
+
+  .squircle { border-radius: 23%; overflow: hidden; display: block; }
+  .squircle img { width: 100%; height: 100%; display: block; }
+
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .bg { border-radius: 20px; padding: 28px 0 18px; display: flex; flex-direction: column; align-items: center; gap: 10px; font-size: 13px; }
+  .bg.dark { background: #1B1A17; color: #CFC6B0; }
+  .bg.light { background: #F1F1F3; color: #555; border: 1px solid #E0E0E4; }
+  .bg .squircle { width: 96px; height: 96px; }
+  .bg.light .squircle { box-shadow: 0 2px 6px rgba(0,0,0,.18); }
+
+  /* Fake home screen */
+  .phone {
+    border-radius: 28px; padding: 22px 18px 26px;
+    background: linear-gradient(160deg, #2E3B4E 0%, #1C2230 55%, #3A2F3F 100%);
+    color: #fff;
+  }
+  .status { display: flex; justify-content: space-between; font-size: 12px; opacity: .85; margin-bottom: 22px; }
+  .clockw { font-family: "Bricolage Grotesque", sans-serif; font-size: 44px; font-weight: 600; line-height: 1; margin-bottom: 2px; }
+  .datew { font-size: 13px; opacity: .8; margin-bottom: 28px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); row-gap: 18px; justify-items: center; }
+  .app { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 11.5px; width: 64px; text-align: center; }
+  .app .ic { width: 54px; height: 54px; border-radius: 23%; display: grid; place-items: center; }
+  .app .squircle { width: 54px; height: 54px; }
+  .ic i { display: block; }
+  .ic.clock { background: #E8EAF0; }
+  .ic.clock i { width: 26px; height: 26px; border: 3px solid #3B4252; border-radius: 50%; position: relative; }
+  .ic.clock i::after { content: ""; position: absolute; left: 9px; top: 3px; width: 3px; height: 10px; background: #3B4252; border-radius: 2px; }
+  .ic.notes { background: #F6E7A8; }
+  .ic.notes i { width: 22px; height: 26px; background: #fff; border-radius: 3px; box-shadow: inset 0 6px 0 #C9B460, inset 0 -14px 0 #fff, inset 0 -15px 0 #ddd; }
+  .ic.cal { background: #fff; }
+  .ic.cal i { width: 26px; height: 24px; border: 3px solid #4A6CF7; border-top-width: 8px; border-radius: 4px; }
+  .ic.cam { background: #3B3F46; }
+  .ic.cam i { width: 22px; height: 22px; border-radius: 50%; border: 4px solid #C9CDD4; }
+  .ic.msg { background: #5FB47A; }
+  .ic.msg i { width: 26px; height: 20px; background: #fff; border-radius: 10px 10px 10px 3px; }
+  .ic.photos { background: #fff; }
+  .ic.photos i { width: 26px; height: 26px; border-radius: 50%; background: conic-gradient(#F4B400 0 25%, #DB4437 0 50%, #4285F4 0 75%, #0F9D58 0); }
+  .ic.set { background: #6B7280; }
+  .ic.set i { width: 24px; height: 24px; border-radius: 50%; border: 5px dotted #E5E7EB; }
+  .dock { margin-top: 26px; display: flex; justify-content: center; }
+  .dock span { width: 110px; height: 4px; border-radius: 4px; background: rgba(255,255,255,.6); }
+
+  .sizes { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 16px; background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 20px 16px; }
+  .sizes figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+  .s192 { width: 192px; height: 192px; flex: none; }
+  .s96 { width: 96px; height: 96px; flex: none; }
+  .s48 { width: 48px; height: 48px; flex: none; }
+
+  .lockup { border-radius: 20px; padding: 26px 20px; display: flex; align-items: center; gap: 14px; }
+  .lockup + .lockup { margin-top: 12px; }
+  .lockup .squircle { width: 72px; height: 72px; flex: none; }
+  .wordmark { font-size: 64px; font-weight: 800; letter-spacing: -0.04em; line-height: .9; }
+  .lockup.on-dark { background: var(--black); color: var(--corn); }
+  .lockup.on-light { background: var(--corn); color: var(--ink); border: 3px solid var(--ink); }
+
+  .alts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .alts figure { margin: 0; }
+  .alts img { width: 100%; display: block; border-radius: 18px; }
+  .alts figcaption { font-size: 13px; margin-top: 6px; }
+  .alts figcaption b { display: block; font-weight: 600; }
+  .alts figcaption span { color: var(--muted); font-size: 12px; }
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">Corn logo concept</div>
+  <h1>Corny</h1>
+  <p>Corny is a stubby, sticker-style cob who winks with a finger to his lips. The "shh" says privacy without a padlock, and the wink says Corn doesn't take itself too seriously. The kernel rows and husk leaves keep it clearly corn, and with flat colours and thick ink outlines it reads as a character rather than produce.</p>
+
+  <h2>1 · The mark</h2>
+  <div class="hero"><img src="corny/corny-shh-cob.png" alt="Corny: a winking corn cob with a finger to its lips"></div>
+
+  <h2>2 · Android app icon</h2>
+  <div class="pair">
+    <div class="bg dark"><span class="squircle" style="width:96px;height:96px"><img src="corny/corny-shh-cob.png" alt=""></span>On dark</div>
+    <div class="bg light"><span class="squircle" style="width:96px;height:96px"><img src="corny/corny-shh-cob.png" alt=""></span>On light</div>
+  </div>
+
+  <h2>3 · On the home screen</h2>
+  <div class="phone">
+    <div class="status"><span>9:41</span><span>●●● ▮</span></div>
+    <div class="clockw">9:41</div>
+    <div class="datew">Thursday, 5 November</div>
+    <div class="grid">
+      <div class="app"><div class="ic clock"><i></i></div>Clock</div>
+      <div class="app"><div class="ic notes"><i></i></div>Notes</div>
+      <div class="app"><div class="ic cal"><i></i></div>Calendar</div>
+      <div class="app"><div class="ic cam"><i></i></div>Camera</div>
+      <div class="app"><div class="ic msg"><i></i></div>Messages</div>
+      <div class="app"><span class="squircle"><img src="corny/corny-shh-cob.png" alt=""></span>Corn</div>
+      <div class="app"><div class="ic photos"><i></i></div>Photos</div>
+      <div class="app"><div class="ic set"><i></i></div>Settings</div>
+    </div>
+    <div class="dock"><span></span></div>
+  </div>
+
+  <h2>4 · Small sizes</h2>
+  <div class="sizes">
+    <figure><span class="squircle s192"><img src="corny/corny-shh-cob.png" alt=""></span>192</figure>
+    <figure><span class="squircle s96"><img src="corny/corny-shh-cob.png" alt=""></span>96</figure>
+    <figure><span class="squircle s48"><img src="corny/corny-shh-cob.png" alt=""></span>48</figure>
+  </div>
+  <p class="note">The 192px tile is wider than a phone screen, so this row scrolls sideways. At 48px the wink, finger and green leaves still come through.</p>
+
+  <h2>5 · Lockup</h2>
+  <div class="lockup on-dark"><span class="squircle"><img src="corny/corny-shh-cob.png" alt=""></span><span class="wordmark">corn</span></div>
+  <div class="lockup on-light"><span class="squircle"><img src="corny/corny-shh-cob.png" alt=""></span><span class="wordmark">corn</span></div>
+
+  <h2>6 · Alternates</h2>
+  <div class="alts">
+    <figure><img src="corny/corny-shh.png" alt="Single kernel, shh pose"><figcaption><b>Kernel, shh</b><span>Same joke on a single kernel. Cleaner, but it reads more like a mango than corn.</span></figcaption></figure>
+    <figure><img src="corny/corny-shades.png" alt="Kernel in sunglasses"><figcaption><b>Shades</b><span>Cool at a glance, but the dark glasses vanish on a dark background, and it looks like an apple.</span></figcaption></figure>
+    <figure><img src="corny/corny-wink.png" alt="Cob giving a peace sign"><figcaption><b>Peace out</b><span>The most character, with a full body and a peace sign. Too busy for 48px, but it would make a great sticker or empty state.</span></figcaption></figure>
+  </div>
+</main>
+</body>
+</html>
