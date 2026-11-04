@@ -210,6 +210,12 @@ class Passwords(private val context: Context, private val c: CornController) {
 
     // ---------------- page messages ----------------
 
+    /** A tab was closed: its login-form note and fill chip are useless now, so drop them (no leftovers). */
+    fun forgetTab(entry: TabEntry) {
+        frames.remove(entry.id)
+        offers.remove(entry.id)
+    }
+
     /** A tab's main frame started a new page: forget its form and chip. */
     fun onPageStarted(entry: TabEntry) {
         frames.remove(entry.id)

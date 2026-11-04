@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -59,12 +60,23 @@ fun BoxScope.Sheets(c: CornController) {
     if (s != null) last = s
     Sheet(visible = s != null, onDismiss = { c.dismissSheet() }, onHeight = { c.sheetHeightPx = it }) {
         when (val shown = s ?: last) {
+            // These three keep their main buttons pinned at the bottom (their content can get long).
+            is Sheet.Save -> SaveSheet(c, shown)
+            is Sheet.Group -> GroupSheet(c, shown.groupId)
+            Sheet.SplitPick -> SplitPickSheet(c)
+            else -> SheetScroll { OtherSheet(c, shown) }
+        }
+    }
+}
+
+/** Every sheet whose whole content scrolls (short sheets and lists without a main button). */
+@Composable
+private fun OtherSheet(c: CornController, shown: Sheet?) {
+        when (shown) {
             is Sheet.Link -> LinkSheet(c, shown)
             Sheet.Menu -> MenuSheet(c)
             Sheet.Engine -> EngineSheet(c)
             Sheet.Shield -> ShieldSheet(c)
-            is Sheet.Save -> SaveSheet(c, shown)
-            is Sheet.Group -> GroupSheet(c, shown.groupId)
             Sheet.ConfirmFlush -> ConfirmFlushSheet(c)
             is Sheet.DeleteItem -> DeleteItemSheet(c, shown)
             is Sheet.HistoryEntry -> HistoryEntrySheet(c, shown)
@@ -73,11 +85,9 @@ fun BoxScope.Sheets(c: CornController) {
             Sheet.ConfirmClearHistory -> ConfirmClearHistorySheet(c)
             is Sheet.SitePermissionAsk -> SitePermissionSheet(c, shown)
             is Sheet.Download -> DownloadSheet(c, shown)
-            Sheet.SplitPick -> SplitPickSheet(c)
             is Sheet.Password -> PasswordSheetContent(c, shown.kind)
-            null -> {}
+            else -> {}
         }
-    }
 }
 
 @Composable
@@ -112,10 +122,11 @@ private fun MenuSheet(c: CornController) {
 
 /** Menu → Split screen: the open tab stays in the first pane; pick what goes in the second. */
 @Composable
-private fun SplitPickSheet(c: CornController) {
+private fun ColumnScope.SplitPickSheet(c: CornController) {
     val cur = c.tabs.current
     val landscape = LocalConfiguration.current.let { it.screenWidthDp > it.screenHeightDp }
     val others = c.tabs.tabs.filter { it.id != cur?.id }
+    SheetScroll {
     SheetTitle(
         "Split screen",
         if (landscape) "This tab stays on the left. Tap a tab to show it on the right." else "This tab stays on top. Tap a tab to show it below.",
@@ -132,6 +143,8 @@ private fun SplitPickSheet(c: CornController) {
         }
         Spacer(Modifier.height(18.dp))
     }
+    }
+    // Pinned: "New tab" stays visible with many tabs.
     BigButton("New tab", { c.startSplit(null) }, icon = CornIcons.Plus, ghost = others.isNotEmpty())
 }
 
@@ -212,7 +225,7 @@ private fun ShieldSheet(c: CornController) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun SaveSheet(c: CornController, s: Sheet.Save) {
+private fun ColumnScope.SaveSheet(c: CornController, s: Sheet.Save) {
     val collections = remember(c.data.vaultVersion.intValue) { c.data.collections() }
     var title by remember(s) { mutableStateOf(s.title) }
     // No Collection by default: the link is saved once and always shows in All.
@@ -222,6 +235,7 @@ private fun SaveSheet(c: CornController, s: Sheet.Save) {
     val tags = remember(s) { mutableStateListOf<String>() }
     var tagInput by remember(s) { mutableStateOf("") }
 
+    SheetScroll {
     SheetTitle("Save to Vault", s.url)
     Label("Title")
     Field(title, { title = it }, "Title")
@@ -250,7 +264,9 @@ private fun SaveSheet(c: CornController, s: Sheet.Save) {
         if (t.isNotEmpty() && t !in tags) tags += t
         tagInput = ""
     })
-    Spacer(Modifier.height(18.dp))
+    }
+    // Pinned: Save stays visible with many Collections or tags.
+    Spacer(Modifier.height(14.dp))
     BigButton("Save", {
         // A new Collection typed but not confirmed with the keyboard's Done key still counts.
         val typed = newName.trim()
@@ -265,9 +281,10 @@ private fun SaveSheet(c: CornController, s: Sheet.Save) {
 }
 
 @Composable
-private fun GroupSheet(c: CornController, groupId: Int) {
+private fun ColumnScope.GroupSheet(c: CornController, groupId: Int) {
     val g = c.tabs.group(groupId) ?: run { c.sheet = null; return }
     val members = c.tabs.groupTabs(groupId)
+    SheetScroll {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(Modifier.size(18.dp).clip(CircleShape).background(g.color).clickable { c.cycleGroupColor(groupId) })
         Spacer(Modifier.width(10.dp))
@@ -289,7 +306,9 @@ private fun GroupSheet(c: CornController, groupId: Int) {
             }
         }
     }
-    Spacer(Modifier.height(18.dp))
+    }
+    // Pinned: always visible however many tabs the group has.
+    Spacer(Modifier.height(14.dp))
     BigButton("Save group to Vault", { c.saveGroup(groupId) }, icon = CornIcons.VaultAdd)
     Spacer(Modifier.height(10.dp))
     BigButton("New tab in group", { c.newTabInGroup(groupId) }, icon = CornIcons.Plus, ghost = true)

@@ -509,6 +509,7 @@ class CornController(private val context: Context) : TabHost {
         passwords.onMessage(entry, data, sourceOrigin, isMainFrame, reply)
 
     override fun onLoginPageStarted(entry: TabEntry) = passwords.onPageStarted(entry)
+    override fun onTabClosed(entry: TabEntry) = passwords.forgetTab(entry)
 
     override fun onFindResult(active: Int, total: Int) {
         findActive = active

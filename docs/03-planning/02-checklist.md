@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 02:00 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 02:23 IST
 
 The single list of what's done, what's next and who owns it. Product decisions live in the [decision log](../01-product/02-decision-log.md); this file tracks **work**.
 
@@ -85,7 +85,9 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [x] | **Corn password store** in the Vault, survives Flush: Keystore-wrapped AES-256-GCM, own form script, save/update/never prompts, fill on tap (PIN when Vault locked; switchable), Passwords screen. Verified on the emulator (save, PIN fill, no-PIN fill, kept after Flush) | Claude | Saved password fills a login after Flush |
 | [x] | Password review #4: clear a copied password when Corn leaves the screen (and on next start if it was closed). Verified by pasting | Claude | Nothing pastes after leaving Corn |
 | [x] | Split screen: "New tab in group" adds the tab to the group in the background (both panes stay); toast "Open" puts it in the focused pane. Verified | Claude | Panes unchanged; tab in the group |
-| [ ] | Password review #2 (re-check the page's site right before filling) and #3 (forget a closed tab's login-form note): waiting for the founder | Founder | Decided |
+| [x] | Password review #3: closing a tab (or a Flush) forgets its login-form note and fill chip, so nothing useless stays in memory | Claude | No leftovers for closed tabs |
+| [ ] | Password review #2 (re-check the page's site right before filling): waiting for the founder | Founder | Decided |
+| [x] | Main buttons stay visible on long screens: Tabs screen Flush bar pinned at the bottom; group sheet (Save group / New tab in group), Save to Vault (Save) and split picker (New tab) pin their buttons while their content scrolls. Verified with 13 tabs | Claude | Buttons reachable without scrolling |
 | [ ] | Passwords on real sites and a real phone (StrongBox), then an independent security review before public launch | Both | Logins save and fill on 3 real sites; review notes committed |
 | [x] | **Split screen inside Corn**: two tabs, top/bottom (side by side in landscape), draggable divider, toolbar acts on the focused pane. Verified on the emulator | Claude | Two pages usable at once; divider resizes; closing works |
 | [ ] | Session saved in app-private SQLite + backups disabled | Claude | Kept Session restores after restart; backup tool finds nothing |

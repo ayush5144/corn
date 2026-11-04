@@ -78,6 +78,8 @@ interface TabHost {
     fun onLoginMessage(entry: TabEntry, data: String, sourceOrigin: String, isMainFrame: Boolean, reply: JavaScriptReplyProxy) {}
     /** The tab started loading a new page (its login form, if any, is gone). */
     fun onLoginPageStarted(entry: TabEntry) {}
+    /** A tab was closed (or every tab was, by a Flush): drop anything kept for it. */
+    fun onTabClosed(entry: TabEntry) {}
 }
 
 /** What a site can ask to use. */

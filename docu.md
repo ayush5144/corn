@@ -186,3 +186,8 @@
 - Code: `passwords/Passwords.kt` (copy-pending flag; `clearCopiedPassword`, `clearCopyLeftOver`; toast text), `CornController.kt` (clear on background/foreground; `newTabInGroup` in split screen), `browser/TabManager.kt` (`addToGroupInBackground`).
 - Updated `docs/05-review/03-password-review-2026-11-05.md` (status per finding), `docs/02-technical/12-security.md`, `docs/03-planning/02-checklist.md`, `docs/01-product/02-decision-log.md` (Round 20), `03-features.md`.
 
+## 2026-11-05 — Pinned main buttons; closed tabs leave no login notes
+
+- Code: `ui/Components.kt` (sheet container no longer scrolls as one block; `SheetScroll`), `ui/Sheets.kt` (group, Save, split picker pin their buttons; other sheets scroll as before), `ui/TabsScreen.kt` (Flush bar pinned at the bottom), `browser/TabManager.kt` + `CornTab.kt` (`onTabClosed`), `CornController.kt`, `passwords/Passwords.kt` (`forgetTab`).
+- Updated `docs/01-product/03-features.md`, `02-decision-log.md`, `docs/03-planning/02-checklist.md`, `docs/05-review/03-password-review-2026-11-05.md` (#3 fixed).
+

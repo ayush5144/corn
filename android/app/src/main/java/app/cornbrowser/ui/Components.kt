@@ -253,7 +253,7 @@ fun BoxScope.Sheet(visible: Boolean, onDismiss: () -> Unit, onHeight: (Int) -> U
             Modifier.fillMaxWidth().heightIn(max = 640.dp).onSizeChanged { onHeight(it.height) }
                 .clip(RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp)).background(C.Surface)
                 .clickable(remember { MutableInteractionSource() }, indication = null) {}
-                .navigationBarsPadding().verticalScroll(rememberScrollState())
+                .navigationBarsPadding()
                 .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 20.dp),
         ) {
             Box(Modifier.align(Alignment.CenterHorizontally).padding(top = 2.dp, bottom = 12.dp).width(40.dp).height(5.dp).clip(RoundedCornerShape(3.dp)).background(C.Line))
@@ -261,6 +261,14 @@ fun BoxScope.Sheet(visible: Boolean, onDismiss: () -> Unit, onHeight: (Int) -> U
         }
     }
 }
+
+/**
+ * The scrolling part of a sheet. Sheets put their content in here; a sheet whose main buttons
+ * must stay visible (group, Save to Vault, split picker) puts its buttons after it, pinned at the bottom.
+ */
+@Composable
+fun ColumnScope.SheetScroll(content: @Composable ColumnScope.() -> Unit) =
+    Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()), content = content)
 
 @Composable
 fun SheetTitle(title: String, sub: String? = null) {

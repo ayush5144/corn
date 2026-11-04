@@ -267,6 +267,7 @@ class TabManager(private val context: Context, private val host: TabHost) {
         if (stay != null) split = null
         entry.live?.destroy()
         entry.live = null
+        host.onTabClosed(entry)
         tabs.remove(entry)
         recent.remove(id)
         if (gid != null) {
@@ -415,7 +416,7 @@ class TabManager(private val context: Context, private val host: TabHost) {
     /** Destroy every tab and group (used by Flush). Leaves one fresh new-tab page. */
     fun reset() {
         split = null
-        tabs.forEach { it.live?.destroy(); it.live = null }
+        tabs.forEach { it.live?.destroy(); it.live = null; host.onTabClosed(it) }
         tabs.clear()
         groups.clear()
         recent.clear()

@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 02:00 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 02:23 IST
 
 Every feature in the Android app today, what it does for the user, and the evidence behind it. Nothing here is planned-only; planned work lives in the [checklist](../03-planning/02-checklist.md).
 
@@ -106,6 +106,8 @@ Every feature in the Android app today, what it does for the user, and the evide
 - **Tab Groups with the Tab Group Strip** 🔨
   - *What:* open a link in a new tab group (or a new tab in the current group); the strip shows each tab's real favicon for one-tap switching; `^` opens the group with previews, rename, colour, "Save group to Vault".
   - *Evidence:* built; not yet seen on a device.
+
+- **Main buttons stay visible** ✅: on the Tabs screen, a slim "Done with all of these?" bar with the Flush button (bottom right, as in the toolbar) is pinned at the bottom; the group sheet, Save to Vault and the split-screen picker keep their buttons pinned while their content scrolls. Verified with 13 tabs: the Flush bar, "Save group to Vault"/"New tab in group" and the picker's "New tab" stayed in place while the lists scrolled. Not pinned on purpose: Settings, History, Passwords, Vault (actions already in fixed headers) and short sheets.
 
 - **Tab previews** ✅
   - *What:* screenshots of tabs in the Tabs screen and group view, kept in memory only (~0.25 MB each).

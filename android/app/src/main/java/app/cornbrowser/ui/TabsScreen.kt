@@ -72,19 +72,23 @@ fun TabsScreen(c: CornController) {
                     }
                 }
             }
-            Row(
-                Modifier.fillMaxWidth().padding(top = 18.dp).clip(RoundedCornerShape(16.dp))
-                    .border(1.dp, C.Line, RoundedCornerShape(16.dp)).clickable { c.requestFlush() }.padding(14.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                CornIcon(CornIcons.Flush, 26.dp, C.Accent)
-                Spacer(Modifier.width(12.dp))
-                Column {
-                    T("Done with all of these?", 14.sp, weight = FontWeight.SemiBold)
-                    T("Flush wipes every tab and group. Your Vault stays.", 14.sp, C.Muted)
-                }
+        }
+        // Pinned at the bottom: the Flush button sits where it does in the browser toolbar (bottom right),
+        // so it's always reachable however many tabs there are.
+        Box(Modifier.fillMaxWidth().height(1.dp).background(C.Line))
+        Row(
+            Modifier.fillMaxWidth().background(C.Bg).padding(start = 16.dp, end = 12.dp, top = 8.dp, bottom = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(Modifier.weight(1f)) {
+                T("Done with all of these?", 14.sp, weight = FontWeight.SemiBold)
+                T("Flush wipes every tab and group. Your Vault stays.", 12.5.sp, C.Muted, maxLines = 2)
             }
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.width(12.dp))
+            Box(
+                Modifier.width(56.dp).height(44.dp).clip(RoundedCornerShape(14.dp)).background(C.Corn).clickable { c.requestFlush() },
+                contentAlignment = Alignment.Center,
+            ) { CornIcon(CornIcons.Flush, 24.dp, C.CornInk) }
         }
     }
 }
