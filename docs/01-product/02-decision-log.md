@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 00:39 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 00:41 IST
 
 Every product question asked and the founder's answer, in order. Settled answers flow into [01-prd.md](01-prd.md). New rounds are appended at the bottom.
 
@@ -437,7 +437,12 @@ Every product question asked and the founder's answer, in order. Settled answers
 ### Round 15 — Flush Button glyph (2026-11-05)
 - **Question:** a better Flush Button icon while the app is still Corn (not renamed to Flush).
 - **Answer:** option A, a **water swirl**: three arms of water spiralling into a drain, on the yellow pill. It says "flush" without a toilet and works under either name. Replaces the toilet icon everywhere (toolbar, Flush confirmation, Tabs screen, onboarding). A single-line spiral was tried first and read as a snail/hypnosis swirl, so the three-arm vortex was used.
-- **Also answered:** Titanium Browser (jqssun) is a full Chromium fork (Vanadium-based, GPL-2.0), not WebView; its time-range "Delete browsing data" is Chrome's own. Using the Corny mascot in the app (icon, new-tab page, onboarding, empty states) proposed; waiting on the founder.
+- **Also answered:** Titanium Browser (jqssun) is a full Chromium fork (Vanadium-based, GPL-2.0), not WebView; its time-range "Delete browsing data" is Chrome's own. Using the Corny mascot in the app proposed.
+
+### Round 16 — Corny is Corn's logo (2026-11-05)
+- **Answer:** the founder chose **Corny** (the winking "shh" cob) as the logo.
+- **Done:** adaptive app icon (Corny on #0C0B09, inside Android's 66 dp safe zone so circle/squircle launchers don't clip it; legacy icons too) and the in-app logo on the new-tab page and onboarding (background removed so it sits cleanly in light and dark mode). Masters: `brand/corny-logo-1024.png`, `brand/corny-logo-transparent-1024.png`. Seen on the emulator's home screen and new-tab page.
+- **Still to do:** a clean vector redraw (the art is an AI draft); Corny in empty states and the error page (still 🌽) if wanted; the name stays Corn for now.
 
 ### Round 14 — Logo and name exploration; missing browser basics (2026-11-05)
 - **Logo:** the current logo is "too real". Three Corn concepts (Flush Kernel, Corny, Tab Cob) and a full "Flush" rename exploration (3 logos, navy/electric-blue palette, Fredoka, copy kit) were generated with Codex image generation. Compare: `mockups/brand-compare.html`. Full-size originals are kept outside the repo (`~/Documents/corn-logo-originals`); the repo has 512 px copies. **Open:** name (Corn or Flush) and logo.

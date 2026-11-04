@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 00:39 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 00:41 IST
 
 Every feature in the Android app today, what it does for the user, and the evidence behind it. Nothing here is planned-only; planned work lives in the [checklist](../03-planning/02-checklist.md).
 
@@ -179,6 +179,10 @@ Every feature in the Android app today, what it does for the user, and the evide
 - **Opens links from other apps** ✅: tested with links sent to Corn.
 - **`http://` sites load** ✅: the Android default would block them; the count-test page loaded over http.
 - **Fullscreen video** 🔨: built in the spike; not re-checked in the new UI.
+
+## Brand
+
+- **Corny logo** ✅: the app icon (adaptive, works with every launcher shape) and the logo on the new-tab page and onboarding are Corny, the winking "shh" cob. Seen on the emulator's home screen and new-tab page.
 
 ## Home page
 

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Corn's app icon: Corny (the winking "shh" cob) on Corn's near-black, as an adaptive icon
+     so every launcher shape (circle, squircle, square) crops it cleanly. Master art: brand/corny-logo-*.png -->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/ic_launcher_background" />
+    <foreground android:drawable="@mipmap/ic_launcher_foreground" />
+</adaptive-icon>

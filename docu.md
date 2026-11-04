@@ -141,3 +141,8 @@
 - Code: `ui/Icons.kt` (new `CornIcons.Flush`, three-arm vortex + drain, 18-unit visible height; toilet icon removed), used in `BrowserScreen.kt`, `Sheets.kt`, `TabsScreen.kt`, `OnboardingScreen.kt`.
 - Updated `docs/01-product/01-prd.md` (Flush Button row), `02-decision-log.md` (Round 15), `03-features.md`.
 
+## 2026-11-05 — Corny becomes the logo
+
+- Assets: `res/mipmap-anydpi-v26/ic_launcher.xml` + `ic_launcher_foreground.png` (5 densities), new legacy `ic_launcher.png`, `res/values/colors.xml`, `res/drawable-nodpi/corn_logo.png` (transparent Corny); `brand/corny-logo-1024.png`, `brand/corny-logo-transparent-1024.png`.
+- Updated `docs/01-product/02-decision-log.md` (Round 16) and `03-features.md` (Brand).
+
