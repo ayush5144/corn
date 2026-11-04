@@ -270,7 +270,7 @@ private fun SplitPanes(c: CornController, split: app.cornbrowser.browser.SplitSt
 }
 
 /** Thickness of the split-screen divider (its whole width is the drag handle). */
-private val SPLIT_DIVIDER = 14.dp
+private val SPLIT_DIVIDER = 24.dp // tested: 14 dp was easy to miss with a finger
 
 /** One split-screen pane: the tab's page, a × to close the pane, and the focus outline. */
 @Composable
