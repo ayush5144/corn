@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-05 · **Last updated:** 2026-11-05, 02:00 IST
+> **Created:** 2026-11-05 · **Last updated:** 2026-11-05, 02:30 IST
 
 ## The code is the source of truth
 
@@ -59,6 +59,7 @@ If the Keystore key disappears (Corn's data moved to a different phone, the phon
 - Corn fills **only when you tap** "Fill as …": never silently (silent autofill lets hidden form fields on a malicious page receive passwords).
 - **https only** (local test addresses allowed in debug builds) and **only the exact site** the password was saved for.
 - The password is sent only to the page frame that showed the login form, and only if that frame's site matches.
+- **Two locks against the wrong site:** when a tab starts loading a new page, Corn drops its connection to the old login form; and at the moment you tap Fill, Corn checks again that the tab is showing the login's exact site right now, and refuses otherwise (`Passwords.fill()`).
 - Copies are marked sensitive (Android 13+). The clipboard is cleared after 45 s, **or as soon as Corn leaves the screen**, whichever is first; if Corn was closed before it could clear, it clears on its next start (verified). It only clears when the clipboard still holds Corn's copy (when Android doesn't let Corn check, it clears to be safe). The Passwords screens block screenshots (`FLAG_SECURE`, verified: screenshots come out black).
 
 ## Other data on the phone

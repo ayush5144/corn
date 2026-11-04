@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 02:23 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 02:30 IST
 
 Every product question asked and the founder's answer, in order. Settled answers flow into [01-prd.md](01-prd.md). New rounds are appended at the bottom.
 
@@ -444,7 +444,7 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Later:** unlimited wrong PIN attempts; two-step logins. **Info:** a page can prompt to save for its own site; in-memory compare on login.
 - **Waiting for the founder:** review #2 (re-check the site right before filling) and #3 (forget closed tabs' login-form notes).
 - **Floating buttons (decided after):** pin the main buttons where they sit after a list that can grow: Tabs screen Flush (slim bar, bottom right like the toolbar), group sheet, Save to Vault, split picker. Not elsewhere (Settings has no single main action; History/Passwords/Vault already have fixed headers; short sheets fit). Built and verified.
-- **Review #3 fixed** (closed tabs' login-form notes dropped: keep the app lean). #2 still to explain/decide.
+- **Review #3 fixed** (closed tabs' login-form notes dropped: keep the app lean). **#2 fixed** after the founder's go (second site check right before filling).
 
 ### Round 19 — Colours: switches and split focus (2026-11-05)
 - **Answer:** switches use Corny's leaf green (#86C64A) with a cream dot (#FBF8F1, the Settings background) in both themes; the split-screen focus outline is corn yellow (#FFC83D, the Flush button's yellow), 3 dp. Yellow = actions and selection; green = "on".

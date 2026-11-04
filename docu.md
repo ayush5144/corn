@@ -191,3 +191,8 @@
 - Code: `ui/Components.kt` (sheet container no longer scrolls as one block; `SheetScroll`), `ui/Sheets.kt` (group, Save, split picker pin their buttons; other sheets scroll as before), `ui/TabsScreen.kt` (Flush bar pinned at the bottom), `browser/TabManager.kt` + `CornTab.kt` (`onTabClosed`), `CornController.kt`, `passwords/Passwords.kt` (`forgetTab`).
 - Updated `docs/01-product/03-features.md`, `02-decision-log.md`, `docs/03-planning/02-checklist.md`, `docs/05-review/03-password-review-2026-11-05.md` (#3 fixed).
 
+## 2026-11-05 — Second site check before filling (review #2)
+
+- Code: `passwords/Passwords.kt` (`fill()` refuses unless the tab's current page is the login's site, main frames too; commented).
+- Updated `docs/02-technical/12-security.md` (two locks), `docs/05-review/03-password-review-2026-11-05.md` (#2 fixed), `docs/05-review/01-audit-2026-11-01.md` (password and history storage, password logs), `docs/03-planning/02-checklist.md`, `docs/01-product/02-decision-log.md`.
+

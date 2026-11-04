@@ -294,9 +294,12 @@ class Passwords(private val context: Context, private val c: CornController) {
         val frame = frames[tabId]
         val entry = c.tabs.tabs.firstOrNull { it.id == tabId }
         // The form must still be on the login's exact site, in a tab still showing that site.
-        if (frame == null || entry == null || frame.origin != login.origin ||
-            (frame.isMainFrame.not() && LoginMatching.originOf(entry.url, allowLocalHttp) != login.origin)
-        ) {
+        // Second, independent check (review #2): the tab's page RIGHT NOW must be the login's site,
+        // for main frames too. The first lock is onPageStarted dropping the form when the tab
+        // navigates; this one refuses even if that were ever missed, so a password can't reach
+        // a different site than the one it was saved for.
+        val pageOrigin = LoginMatching.originOf(entry?.url, allowLocalHttp)
+        if (frame == null || entry == null || frame.origin != login.origin || pageOrigin != login.origin) {
             c.showToast("The login form is gone. Reload the page and try again.")
             return
         }
