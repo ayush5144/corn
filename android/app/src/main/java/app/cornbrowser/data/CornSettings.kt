@@ -66,6 +66,8 @@ class CornSettings(context: Context) {
     var safeSearch by pref("safe_search", false)
     /** Settings → Appearance: "dark" (default), "light" or "system" (match the phone). */
     var theme by stringPref("theme", "dark")
+    /** Settings → Appearance → Text size: page text in percent (100 = the site's own size). */
+    var textSize by intPref("text_size", 100)
     /** Record pages visited (on this phone only). On by default; Flush clears it. */
     var keepHistory by pref("keep_history", true)
     var tabMemory by mutableStateOf(TabMemory.of(prefs.getString("tab_memory", null)))

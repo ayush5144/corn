@@ -88,16 +88,6 @@ fun SettingsScreen(c: CornController, onNeedPin: () -> Unit) {
             }
             Caption("These sites stay logged in after a Flush: Corn keeps their cookies and saved site databases (IndexedDB). Not history or passwords. Tip: add the site you're on from its shield.")
 
-            Label("History and data")
-            SettingsGroup {
-                ToggleRow("Keep history", "Pages you visit, on this phone only. Flush clears it.", s.keepHistory) { s.keepHistory = it }
-                SettingRow("History", onClick = { c.openHistory() }, leading = { CornIcon(CornIcons.Clock, tint = C.Muted) },
-                    trailing = { CornIcon(CornIcons.ChevRight, 18.dp, C.Muted) })
-                SettingRow("Delete browsing data", "History, cookies, cache or tabs. Keep List sites stay logged in.",
-                    onClick = { c.sheet = Sheet.DeleteData }, leading = { CornIcon(CornIcons.Trash, tint = C.Muted) },
-                    trailing = { CornIcon(CornIcons.ChevRight, 18.dp, C.Muted) })
-            }
-
             Label("Privacy")
             SettingsGroup {
                 ToggleRow("App Lock", "Ask for your PIN to open Corn.", s.appLock) { on ->
@@ -111,6 +101,16 @@ fun SettingsScreen(c: CornController, onNeedPin: () -> Unit) {
                 ToggleRow("Close cookie banners", "Off by default. When on, Corn clicks \"Reject\" for you; it can sometimes close other pop-ups, like a login box. Applies to new tabs.", s.cookieBanners) { s.cookieBanners = it }
                 ToggleRow("Black screen in recent apps", "Hides what's on screen in the app switcher.", s.blackRecents) { s.blackRecents = it }
                 SettingRow("Notifications", "Corn never notifies you while it's closed.", leading = { CornIcon(CornIcons.BellOff, tint = C.Muted) })
+            }
+
+            Label("History and data")
+            SettingsGroup {
+                ToggleRow("Keep history", "Pages you visit, on this phone only. Flush clears it.", s.keepHistory) { s.keepHistory = it }
+                SettingRow("History", onClick = { c.openHistory() }, leading = { CornIcon(CornIcons.Clock, tint = C.Muted) },
+                    trailing = { CornIcon(CornIcons.ChevRight, 18.dp, C.Muted) })
+                SettingRow("Delete browsing data", "History, cookies, cache or tabs. Keep List sites stay logged in.",
+                    onClick = { c.sheet = Sheet.DeleteData }, leading = { CornIcon(CornIcons.Trash, tint = C.Muted) },
+                    trailing = { CornIcon(CornIcons.ChevRight, 18.dp, C.Muted) })
             }
 
             Label("Search")
@@ -130,11 +130,13 @@ fun SettingsScreen(c: CornController, onNeedPin: () -> Unit) {
                     val keys = listOf("dark", "light", "system")
                     Segmented(listOf("Dark", "Light", "Phone"), keys.indexOf(s.theme).coerceAtLeast(0)) { s.theme = keys[it] }
                 })
-            }
-            Caption("Pages follow it too: in dark mode, pages without their own dark style are darkened. \"Phone\" matches your phone's dark mode.")
-
-            Label("Layout")
-            SettingsGroup {
+                SettingRow("Text size", "Page text, for every site.", trailing = {
+                    val sizes = listOf(85, 100, 115, 130)
+                    Segmented(listOf("S", "M", "L", "XL"), sizes.indexOf(s.textSize).coerceAtLeast(1)) {
+                        s.textSize = sizes[it]
+                        c.applyTextSize()
+                    }
+                })
                 SettingRow("Address bar", trailing = {
                     Segmented(listOf("Top", "Bottom"), if (s.addressBarBottom) 1 else 0) { i ->
                         s.addressBarBottom = i == 1
@@ -142,6 +144,7 @@ fun SettingsScreen(c: CornController, onNeedPin: () -> Unit) {
                     }
                 })
             }
+            Caption("Pages follow the theme too: in dark mode, pages without their own dark style are darkened. \"Phone\" matches your phone's dark mode. Text size: S 85%, M 100% (the site's own size), L 115%, XL 130%.")
 
             Label("Advanced: background tabs")
             SettingsGroup {

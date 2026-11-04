@@ -18,6 +18,8 @@ import androidx.compose.runtime.setValue
 import app.cornbrowser.browser.BlockKind
 import app.cornbrowser.browser.ClearChoice
 import app.cornbrowser.browser.DataClearing
+import app.cornbrowser.browser.DownloadRequest
+import app.cornbrowser.browser.SitePermission
 import app.cornbrowser.browser.Flusher
 import app.cornbrowser.browser.NEW_TAB
 import app.cornbrowser.browser.TabEntry
@@ -54,7 +56,14 @@ sealed interface Sheet {
     data object ConfirmClearHistory : Sheet
     /** Confirmation before "Keep all tabs in memory". */
     data object ConfirmKeepAllTabs : Sheet
+    /** A site asks for the camera, microphone or location. */
+    data class SitePermissionAsk(val site: String, val kinds: Set<SitePermission>) : Sheet
+    /** Confirm a download. */
+    data class Download(val request: DownloadRequest, val fileName: String) : Sheet
 }
+
+/** An address-bar suggestion, from the Vault or History (computed on the phone, never sent anywhere). */
+data class Suggestion(val title: String, val url: String, val fromVault: Boolean)
 
 /**
  * Corn's app state and actions. Screens read its Compose state and call its methods.
@@ -257,6 +266,7 @@ class CornController(private val context: Context) : TabHost {
     }
 
     fun switchTab(id: Int) {
+        if (findQuery != null) closeFind()
         tabs.switchTo(id)
         sheet = null
         screen = Screen.Browser
@@ -265,7 +275,8 @@ class CornController(private val context: Context) : TabHost {
     fun back(): Boolean {
         when {
             fullscreen != null -> exitFullscreen?.invoke()
-            sheet != null -> sheet = null
+            sheet != null -> dismissSheet()
+            findQuery != null -> closeFind()
             screen != Screen.Browser && screen != Screen.Onboarding -> screen = Screen.Browser
             tabs.current?.canGoBack == true -> tabs.goBack()
             tabs.backGoesHome -> tabs.goHome()
@@ -388,6 +399,221 @@ class CornController(private val context: Context) : TabHost {
 
     /** True while MainActivity.onCreate runs start() (the app is visible: a relaunch is allowed). */
     private var isStarting = false
+
+    // ---------------- address-bar suggestions ----------------
+
+    /** The address bar's text while it's being edited (null when not editing): drives suggestions. */
+    var addressQuery by mutableStateOf<String?>(null)
+
+    /** Up to 6 matches: saved Vault links first, then History. Local only. */
+    fun suggestions(query: String): List<Suggestion> {
+        val q = query.trim()
+        if (q.length < 2) return emptyList()
+        val out = LinkedHashMap<String, Suggestion>()
+        // A locked Vault never shows its links here: only when it's unlocked (or the lock is off).
+        val vaultOpen = !settings.vaultLock || vaultUnlocked
+        if (vaultOpen) runCatching { data.search(q) }.getOrDefault(emptyList()).take(3)
+            .forEach { out.putIfAbsent(it.url, Suggestion(it.title.ifBlank { it.url }, it.url, true)) }
+        data.history(q, 30).forEach { v -> if (out.size < 6) out.putIfAbsent(v.url, Suggestion(v.title.ifBlank { v.host }, v.url, false)) }
+        return out.values.take(6)
+    }
+
+    fun openSuggestion(s: Suggestion) {
+        addressQuery = null
+        quip = null
+        tabs.load(s.url)
+    }
+
+    // ---------------- find in page ----------------
+
+    /** Non-null while the find bar is open. */
+    var findQuery by mutableStateOf<String?>(null)
+        private set
+    var findActive by mutableIntStateOf(0)
+        private set
+    var findTotal by mutableIntStateOf(0)
+        private set
+
+    fun openFind() {
+        sheet = null
+        if (tabs.current?.live == null) { showToast("Open a page first"); return }
+        findQuery = ""
+        findTotal = 0
+    }
+
+    fun find(query: String) {
+        findQuery = query
+        if (query.isEmpty()) findTotal = 0
+        tabs.current?.live?.find(query)
+    }
+
+    fun findNext(forward: Boolean) = tabs.current?.live?.findNext(forward)
+
+    fun closeFind() {
+        tabs.current?.live?.clearFind()
+        findQuery = null
+        findTotal = 0
+    }
+
+    override fun onFindResult(active: Int, total: Int) {
+        findActive = active
+        findTotal = total
+    }
+
+    // ---------------- text size ----------------
+
+    override val textZoom: Int get() = settings.textSize
+
+    fun applyTextSize() = tabs.forEachLive { it.setTextZoom(settings.textSize) }
+
+    // ---------------- file uploads ----------------
+
+    /** Set by MainActivity: opens Android's file picker. */
+    var fileChooserLauncher: ((Intent) -> Unit)? = null
+    private var pendingFiles: android.webkit.ValueCallback<Array<android.net.Uri>>? = null
+
+    override fun onFileChooser(callback: android.webkit.ValueCallback<Array<android.net.Uri>>, params: android.webkit.WebChromeClient.FileChooserParams): Boolean {
+        val launch = fileChooserLauncher ?: return false
+        val intent = runCatching { params.createIntent() }.getOrNull() ?: return false
+        if (params.mode == android.webkit.WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE) intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        pendingFiles?.onReceiveValue(null) // a page may only have one picker open
+        pendingFiles = callback
+        return runCatching { launch(intent) }.map { true }.getOrElse {
+            pendingFiles = null
+            showToast("No app on this phone can pick files")
+            false
+        }
+    }
+
+    /** The picker closed: hand the chosen files (or nothing) back to the page. Always answers. */
+    fun onFilesChosen(resultCode: Int, data: Intent?) {
+        val callback = pendingFiles ?: return
+        pendingFiles = null
+        val ok = resultCode == android.app.Activity.RESULT_OK
+        val uris = data?.clipData?.let { clip -> Array(clip.itemCount) { clip.getItemAt(it).uri } }
+            ?: android.webkit.WebChromeClient.FileChooserParams.parseResult(resultCode, data)
+        callback.onReceiveValue(if (ok) uris else null)
+    }
+
+    // ---------------- site permissions (camera, microphone, location) ----------------
+
+    /** Set by MainActivity: asks Android for runtime permissions, then reports each result. */
+    var androidPermissionRequester: ((Array<String>, (Map<String, Boolean>) -> Unit) -> Unit)? = null
+
+    /** This session's answers per site. Not saved: a restart or Flush forgets them. */
+    val sitePermissions = androidx.compose.runtime.mutableStateMapOf<Pair<String, SitePermission>, Boolean>()
+    private var pendingPermission: ((Boolean) -> Unit)? = null
+
+    override fun onSitePermission(entry: TabEntry, site: String, kinds: Set<SitePermission>, answer: (Boolean) -> Unit) {
+        val known = kinds.map { sitePermissions[site to it] }
+        when {
+            known.any { it == false } -> answer(false)
+            known.all { it == true } -> ensureAndroidPermissions(kinds, answer)
+            else -> {
+                pendingPermission?.invoke(false)
+                pendingPermission = answer
+                sheet = Sheet.SitePermissionAsk(site, kinds)
+            }
+        }
+    }
+
+    fun answerSitePermission(site: String, kinds: Set<SitePermission>, allow: Boolean) {
+        val answer = pendingPermission ?: return
+        pendingPermission = null
+        sheet = null
+        kinds.forEach { sitePermissions[site to it] = allow }
+        if (allow) ensureAndroidPermissions(kinds, answer) else answer(false)
+    }
+
+    override fun onSitePermissionCancelled() {
+        pendingPermission = null
+        if (sheet is Sheet.SitePermissionAsk) sheet = null
+    }
+
+    /** Forget this session's answer for a site (shield sheet). */
+    fun forgetSitePermission(site: String, kind: SitePermission) = sitePermissions.remove(site to kind)
+
+    private fun ensureAndroidPermissions(kinds: Set<SitePermission>, done: (Boolean) -> Unit) {
+        val needed = kinds.flatMap {
+            when (it) {
+                SitePermission.CAMERA -> listOf(android.Manifest.permission.CAMERA)
+                SitePermission.MICROPHONE -> listOf(android.Manifest.permission.RECORD_AUDIO)
+                SitePermission.LOCATION -> listOf(android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION)
+            }
+        }
+        val granted = { p: String -> androidx.core.content.ContextCompat.checkSelfPermission(context, p) == android.content.pm.PackageManager.PERMISSION_GRANTED }
+        fun satisfied(has: (String) -> Boolean) = kinds.all {
+            when (it) {
+                SitePermission.CAMERA -> has(android.Manifest.permission.CAMERA)
+                SitePermission.MICROPHONE -> has(android.Manifest.permission.RECORD_AUDIO)
+                SitePermission.LOCATION -> has(android.Manifest.permission.ACCESS_FINE_LOCATION) || has(android.Manifest.permission.ACCESS_COARSE_LOCATION)
+            }
+        }
+        if (satisfied(granted)) { done(true); return }
+        val ask = androidPermissionRequester ?: run { done(false); return }
+        ask(needed.toTypedArray()) { results ->
+            val ok = satisfied { p -> results[p] == true || granted(p) }
+            if (!ok) showToast("Android didn't allow it. You can change this in the phone's Settings → Apps → Corn.")
+            done(ok)
+        }
+    }
+
+    // ---------------- downloads ----------------
+
+    private val downloads = mutableMapOf<Long, String>()
+
+    override fun onDownload(request: DownloadRequest) {
+        main.post {
+            if (!request.url.startsWith("https://") && !request.url.startsWith("http://")) {
+                showToast("Corn can't download this kind of file yet")
+                return@post
+            }
+            val name = android.webkit.URLUtil.guessFileName(request.url, request.contentDisposition, request.mimeType)
+            sheet = Sheet.Download(request, name)
+        }
+    }
+
+    /** Hand the file to Android's download manager (it downloads even if Corn is closed). */
+    fun startDownload(request: DownloadRequest, name: String) {
+        sheet = null
+        val dm = context.getSystemService(android.app.DownloadManager::class.java)
+        val req = android.app.DownloadManager.Request(android.net.Uri.parse(request.url))
+            .setTitle(name)
+            .setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE) // only while downloading
+            .addRequestHeader("User-Agent", request.userAgent)
+        request.mimeType?.takeIf { it.isNotBlank() }?.let { req.setMimeType(it) }
+        android.webkit.CookieManager.getInstance().getCookie(request.url)?.let { req.addRequestHeader("Cookie", it) }
+        if (android.os.Build.VERSION.SDK_INT >= 29) {
+            req.setDestinationInExternalPublicDir(android.os.Environment.DIRECTORY_DOWNLOADS, name)
+        } else {
+            req.setDestinationInExternalFilesDir(context, android.os.Environment.DIRECTORY_DOWNLOADS, name)
+        }
+        val id = runCatching { dm.enqueue(req) }.getOrElse { showToast("The download couldn't start"); return }
+        downloads[id] = name
+        showToast("Downloading $name…")
+    }
+
+    /** Android says a download finished (MainActivity listens while Corn is open). */
+    fun onDownloadComplete(id: Long) {
+        val name = downloads.remove(id) ?: return
+        val dm = context.getSystemService(android.app.DownloadManager::class.java)
+        val ok = dm.query(android.app.DownloadManager.Query().setFilterById(id)).use { c ->
+            c.moveToFirst() && c.getInt(c.getColumnIndexOrThrow(android.app.DownloadManager.COLUMN_STATUS)) == android.app.DownloadManager.STATUS_SUCCESSFUL
+        }
+        if (!ok) { showToast("$name didn't download"); return }
+        showToast("Downloaded $name", "Open") {
+            val uri = dm.getUriForDownloadedFile(id)
+            val open = Intent(Intent.ACTION_VIEW).setDataAndType(uri, dm.getMimeTypeForDownloadedFile(id))
+                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+            runCatching { context.startActivity(open) }.onFailure { showToast("No app on this phone can open this file") }
+        }
+    }
+
+    /** Closing any sheet: a site permission left unanswered counts as Block (not remembered). */
+    fun dismissSheet() {
+        if (sheet is Sheet.SitePermissionAsk) { pendingPermission?.invoke(false); pendingPermission = null }
+        sheet = null
+    }
 
     // ---------------- history ----------------
 

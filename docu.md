@@ -130,3 +130,9 @@
 - Added `mockups/brand-compare.html`, `mockups/logos/` (Flush Kernel, Corny, Tab Cob) and `mockups/flush/` (Flush brand board); PNGs reduced to 512 px (originals kept outside the repo).
 - Updated `docs/01-product/02-decision-log.md` (Round 14) and `docs/03-planning/02-checklist.md` (six new Phase 3 tasks; PiP and print in the backlog).
 
+## 2026-11-05 — Uploads, downloads, site permissions, suggestions, find, text size; design agents saved
+
+- Code: `browser/CornTab.kt` (file chooser, camera/mic/location requests, download listener, find, text zoom), `CornController.kt` (suggestions, find, uploads, permissions, downloads), `MainActivity.kt` (picker, permission and download-complete hooks), `data/CornSettings.kt` (`text_size`), `ui/BrowserScreen.kt` (find bar, suggestion list), `ui/Sheets.kt` (permission + download sheets, Find in page, shield permissions), `ui/SettingsScreen.kt` (reordered; Text size), `ui/Icons.kt`, `AndroidManifest.xml` (camera, microphone, location).
+- Added `design-agents/` (exact agent briefs), `.claude/agents/corn-logo-designer.md` and `flush-brand-designer.md`, Flush concept pages (`mockups/flush/vortex.html`, `button.html`, `wink.html`).
+- Updated `docs/01-product/01-prd.md`, `02-decision-log.md` (Round 14 status), `03-features.md`, `docs/03-planning/02-checklist.md`, `docs/02-technical/08-repo-structure.md`, `AGENTS.md`.
+

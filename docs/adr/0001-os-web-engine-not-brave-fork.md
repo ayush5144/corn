@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-04, 23:58 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 00:18 IST
 
 Corn runs on each platform's own web engine (Android System WebView, iOS WKWebView, Electron's Chromium on desktop) with a shared Rust core, instead of forking Brave Core. A fork needs a Linux build machine with 100 GB+ of disk, a rebuild for every weekly Chromium security fix, and its own update channel (Corn will likely be sideloaded because of Google Play's adult-content policy). One-person forks like Kiwi Browser died of exactly that work. On Android, Google patches WebView through the Play Store even when Corn itself is sideloaded.
 

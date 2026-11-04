@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 23:16 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 00:34 IST
 
 One public repository, `ayush5144/corn`, holds everything: docs, the shared Rust core, and every platform app.
 
@@ -65,6 +65,9 @@ corn/
 ├── desktop/                   ⏭️ LAPTOP APP (Electron + TypeScript + React)
 │   ├── package.json
 │   └── src/ (main/, renderer/)
+│
+├── design-agents/             the exact AI agent briefs used for logo/brand work (corn-design/, flush-design/)
+├── .claude/agents/            reusable Claude Code agents: corn-logo-designer, flush-brand-designer
 │
 └── scripts/                   build glue between the Rust core and each app
     ├── build-android-core.sh  ✅ cargo-ndk → .so files + Kotlin bindings

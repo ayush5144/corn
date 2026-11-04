@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flush Wink concept</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#071226;--surface:#0D1C36;--surface2:#142749;--line:#24395F;--text:#EAF4FF;--muted:#93A8C6;--accent:#3FD8FF;--fill:#1EA7FF;--ink:#03142B}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:#030914;color:var(--text);font:15px/1.5 Figtree,system-ui,sans-serif}
+main{max-width:420px;margin:0 auto;padding:28px 16px 56px;background:var(--bg)}
+h1,h2,.wm{font-family:Fredoka,Figtree,sans-serif}
+h1{font-size:44px;font-weight:700;letter-spacing:-.5px;margin:4px 0 10px;line-height:1}
+h2{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:40px 0 12px;font-family:Figtree,sans-serif}
+.eyebrow{font:600 11px/1 Figtree;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.nav{display:flex;gap:14px;font-size:13px;margin-bottom:22px}
+.nav a{color:var(--accent);text-decoration:none}
+p{margin:0 0 10px}
+.muted{color:var(--muted)}
+.note{font-size:13px;color:var(--muted);margin-top:8px}
+.pill{display:inline-block;font-size:12px;padding:3px 10px;border-radius:99px;background:var(--fill);color:var(--ink);font-weight:700;vertical-align:middle}
+.hero{border-radius:28px;overflow:hidden;border:1px solid var(--line);box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.hero img{display:block;width:100%;height:auto}
+.squircle{border-radius:23%;overflow:hidden;display:block;flex:none}
+.squircle img{width:100%;height:100%;display:block}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.bgx{border-radius:20px;padding:28px 0 18px;display:flex;flex-direction:column;align-items:center;gap:10px;font-size:13px}
+.bgx.dark{background:linear-gradient(160deg,#1b2333,#0b0f17);color:#cfd6e2}
+.bgx.light{background:linear-gradient(160deg,#eef1f5,#d9dee6);color:#2a3240}
+.bgx .squircle{width:96px;height:96px;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+.home{background:radial-gradient(120% 80% at 20% 0%,#2a3b5c,#0e1424 60%,#06080f);border-radius:28px;padding:22px 18px 22px}
+.status{display:flex;justify-content:space-between;font-size:12px;opacity:.85;margin-bottom:18px;color:#fff}
+.clock{color:#fff;font:300 48px/1 Figtree;text-align:center}
+.date{color:#c9d2e2;text-align:center;font-size:13px;margin-bottom:28px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px 8px}
+.app{display:flex;flex-direction:column;align-items:center;gap:6px;color:#e8edf6;font-size:11px}
+.app .squircle,.app i{width:56px;height:56px;border-radius:23%;display:block}
+.app i{position:relative}
+.app i::after{content:"";position:absolute;inset:30%;border-radius:30%;background:rgba(255,255,255,.75)}
+.app i.c::after{border-radius:50%}
+.app i.t::after{clip-path:polygon(50% 0,100% 100%,0 100%);border-radius:0}
+.dock{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:26px;padding:12px 6px;background:rgba(255,255,255,.08);border-radius:24px}
+.sizes{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:16px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px 16px}
+.sizes figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.s192{width:192px;height:192px}.s96{width:96px;height:96px}.s48{width:48px;height:48px}
+.lockup{border-radius:20px;padding:24px 20px;display:flex;align-items:center;gap:14px}
+.lockup+.lockup{margin-top:12px}
+.lockup .squircle{width:64px;height:64px}
+.wm{font-size:60px;font-weight:600;letter-spacing:-1.5px;line-height:.9}
+.lk-d{background:#03142B;color:#EAF4FF;border:1px solid var(--line)}
+.lk-l{background:#F5FAFF;color:#0A1A30}
+.alts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.alts figure{margin:0}
+.alts img{width:100%;display:block;border-radius:18px;border:1px solid var(--line)}
+.alts figcaption{font-size:12.5px;color:var(--muted);margin-top:6px}
+.alts b{color:var(--text);font-weight:600;display:block}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px}
+.toast{background:var(--surface2);border-radius:14px;padding:12px 14px;font-size:14px;display:flex;gap:10px;align-items:center}
+.toast+.toast{margin-top:10px}
+.toast em{font-style:normal;color:#3DDC97;font-weight:700}
+</style>
+</head>
+<body>
+<main>
+  <nav class="nav"><a href="index.html">&larr; Flush brand board</a><a href="../brand-compare.html">Corn vs Flush</a></nav>
+  <div class="eyebrow">Flush logo concept C</div>
+  <h1>The Wink</h1>
+  <p>The Wink is a water-drop mascot with a curl of whirlpool on top, giving you a knowing wink: "I didn't see anything." It carries the most personality of the three, the same cheeky secret-keeping energy Corny had.</p>
+  <p class="muted">It is the least abstract, so it may age faster as an app icon. It is strongest as the face of the brand elsewhere: stickers, onboarding, empty states and the toast you see after a Flush.</p>
+
+  <h2>1 · The mark</h2>
+  <div class="hero"><img src="wink/wink-original.png" alt="Winking water-drop character with a swirl curl on top"></div>
+
+  <h2>2 · Android app icon</h2>
+  <div class="pair">
+    <div class="bgx dark"><span class="squircle "><img src="wink/wink-original.png" alt=""></span>On dark</div>
+    <div class="bgx light"><span class="squircle "><img src="wink/wink-original.png" alt=""></span>On light</div>
+  </div>
+
+  <h2>3 · On the home screen</h2>
+  <div class="home">
+    <div class="status"><span>9:41</span><span>▴ ◔ ▮</span></div>
+    <div class="clock">9:41</div>
+    <div class="date">Thursday, 5 November</div>
+    <div class="grid">
+      <div class="app"><i style="background:#4b7bec"></i>Mail</div>
+      <div class="app"><i class="c" style="background:#20bf6b"></i>Phone</div>
+      <div class="app"><i class="t" style="background:#fa8231"></i>Maps</div>
+      <div class="app"><i style="background:#8854d0"></i>Notes</div>
+      <div class="app"><i class="c" style="background:#eb3b5a"></i>Music</div>
+      <div class="app"><span class="squircle "><img src="wink/wink-original.png" alt=""></span>Flush</div>
+      <div class="app"><i style="background:#778ca3"></i>Settings</div>
+      <div class="app"><i class="t" style="background:#0fb9b1"></i>Photos</div>
+    </div>
+    <div class="dock">
+      <div class="app"><i class="c" style="background:#20bf6b"></i></div>
+      <div class="app"><i style="background:#4b7bec"></i></div>
+      <div class="app"><i class="c" style="background:#f7b731"></i></div>
+      <div class="app"><i class="t" style="background:#a55eea"></i></div>
+    </div>
+  </div>
+
+  <h2>4 · Small sizes</h2>
+  <div class="sizes">
+    <figure><span class="squircle s192"><img src="wink/wink-original.png" alt=""></span>192</figure>
+    <figure><span class="squircle s96"><img src="wink/wink-original.png" alt=""></span>96</figure>
+    <figure><span class="squircle s48"><img src="wink/wink-original.png" alt=""></span>48</figure>
+  </div>
+  <p class="note">At 48px the wink and smile still read, and the curl on top keeps the drop tied to the flush swirl.</p>
+
+  <h2>5 · Lockup</h2>
+  <div class="lockup lk-d"><span class="squircle "><img src="wink/wink-original.png" alt=""></span><span class="wm">flush</span></div>
+  <div class="lockup lk-l"><span class="squircle "><img src="wink/wink-original.png" alt=""></span><span class="wm">flush</span></div>
+
+  <h2>6 · Alternates</h2>
+  <div class="alts">
+    <figure><img src="wink/wink-bubble.png" alt="Plain drop"><figcaption><b>Plain drop</b>The cleanest face and the boldest wink at 48px, but without the swirl it could be any water-tracking app.</figcaption></figure>
+    <figure><img src="wink/wink-swirl.png" alt="Riding the swirl"><figcaption><b>Riding the swirl</b>Full-body drop riding a whirlpool, with splashes. Lovely as a sticker or onboarding art, but far too busy for an icon.</figcaption></figure>
+  </div>
+
+  <h2>7 · After a Flush</h2>
+  <p class="muted">Toast lines that suit this mark's personality.</p>
+  <div class="toast"><em>✓</em> Flushed. Nobody saw nothing. 😉</div>
+  <div class="toast"><em>✓</em> All gone. Even we don't know what it was.</div>
+  <div class="toast"><em>✓</em> Done. Feel free to wash your hands of it.</div>
+
+  <p class="note" style="margin-top:40px">Exploration only. Logos are AI-generated drafts (Codex image generation) and would need a vector redraw and a trademark search before use.</p>
+</main>
+</body>
+</html>

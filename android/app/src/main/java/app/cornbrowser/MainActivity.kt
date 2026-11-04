@@ -29,6 +29,21 @@ class MainActivity : ComponentActivity() {
     private lateinit var c: CornController
     private var pinSetup by mutableStateOf(false)
 
+    // Sites' "choose file" and Android permission prompts (registered before the activity starts).
+    private val fileChooser = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()) {
+        c.onFilesChosen(it.resultCode, it.data)
+    }
+    private var permissionResult: ((Map<String, Boolean>) -> Unit)? = null
+    private val permissionAsker = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions()) {
+        permissionResult?.invoke(it)
+        permissionResult = null
+    }
+    private val downloadDone = object : android.content.BroadcastReceiver() {
+        override fun onReceive(context: android.content.Context, intent: Intent) {
+            c.onDownloadComplete(intent.getLongExtra(android.app.DownloadManager.EXTRA_DOWNLOAD_ID, -1))
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -36,6 +51,12 @@ class MainActivity : ComponentActivity() {
         CornEngine.start(applicationContext)
 
         c = CornController(this)
+        c.fileChooserLauncher = { fileChooser.launch(it) }
+        c.androidPermissionRequester = { perms, done -> permissionResult = done; permissionAsker.launch(perms) }
+        androidx.core.content.ContextCompat.registerReceiver(
+            this, downloadDone, android.content.IntentFilter(android.app.DownloadManager.ACTION_DOWNLOAD_COMPLETE),
+            androidx.core.content.ContextCompat.RECEIVER_EXPORTED, // sent by Android's download manager
+        )
         applyTheme() // before tabs are restored, so their pages start in the right theme
         c.start(
             intent?.dataString,
@@ -112,6 +133,7 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
+        runCatching { unregisterReceiver(downloadDone) }
         c.tabs.destroyAll()
         super.onDestroy()
     }

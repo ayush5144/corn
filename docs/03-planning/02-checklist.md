@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 00:18 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 00:34 IST
 
 The single list of what's done, what's next and who owns it. Product decisions live in the [decision log](../01-product/02-decision-log.md); this file tracks **work**.
 
@@ -108,12 +108,12 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [x] | Safe Search switch (off by default); search URLs unit-tested for all 5 engines | Claude | Engine gets the right parameter on and off |
 | [ ] | Delete a Vault item (long-press). **Built, not yet seen on device** | Claude | A saved link can be removed permanently |
 | [x] | HTTPS upgrade + http fallback (unit-tested) and link cleaning (verified: server received `/?id=42` from a link with 4 tracking tags) | Claude | Tracking tags never reach the site |
-| [ ] | **File uploads** (sites' "choose file / photo") | Claude | A test page receives a picked file |
-| [ ] | **Downloads** (download links save a file, with a confirm sheet) | Claude | A test file lands in Downloads |
-| [ ] | **Site permissions**: camera, microphone, location prompts (Allow / Block per site) | Claude | A test page gets access after Allow and is refused after Block |
-| [ ] | **Address-bar suggestions** from History and the Vault (on the phone only; nothing sent anywhere) | Claude | Typing part of a visited title shows it; tapping opens it |
-| [ ] | **Find in page** (menu → Find in page; matches count, next/previous) | Claude | Finds and steps through matches on a test page |
-| [ ] | **Text size** setting, and Settings reorganised into clear sections | Claude | Text size changes pages; every setting still reachable |
+| [x] | **File uploads** (sites' "choose file / photo"). Verified: test page received the picked 16-byte file | Claude | A test page receives a picked file |
+| [x] | **Downloads** (download links save a file, with a confirm sheet). Verified: 20,000-byte file saved intact | Claude | A test file lands in Downloads |
+| [x] | **Site permissions**: camera, microphone, location prompts (Allow / Block per site). Verified on https://example.com | Claude | A test page gets access after Allow and is refused after Block |
+| [x] | **Address-bar suggestions** from History and the Vault (on the phone only; nothing sent anywhere). Verified | Claude | Typing part of a visited title shows it; tapping opens it |
+| [x] | **Find in page** (menu → Find in page; matches count, next/previous). Verified 5 matches, 1/5 → 2/5 | Claude | Finds and steps through matches on a test page |
+| [x] | **Text size** setting (verified ×1.30 at XL), and Settings reorganised: Flush, Keep List, Privacy, History and data, Search, Appearance (theme, text size, address bar), Advanced, About | Claude | Text size changes pages; every setting still reachable |
 | [ ] | Cookie-banner closing (autoconsent). **Built, not yet seen closing a banner on device** | Founder | A cookie banner is rejected without a tap |
 
 ## Phase 4 — Beta

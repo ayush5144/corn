@@ -46,6 +46,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.onSizeChanged
@@ -74,12 +75,19 @@ import app.cornbrowser.browser.TabEntry
 fun BrowserScreen(c: CornController) {
     val cur = c.tabs.current ?: return
     Column(Modifier.fillMaxSize().background(C.Bg)) {
-        if (!c.settings.addressBarBottom) AddressBar(c, cur)
-        Box(Modifier.weight(1f).fillMaxWidth().background(C.Surface)) { PageArea(c, cur) }
+        if (!c.settings.addressBarBottom) { if (c.findQuery != null) FindBar(c) else AddressBar(c, cur) }
+        Box(Modifier.weight(1f).fillMaxWidth().background(C.Surface)) {
+            PageArea(c, cur)
+            // Suggestions while typing in the address bar (History + unlocked Vault, on the phone only).
+            val q = c.addressQuery
+            if (!q.isNullOrBlank()) {
+                SuggestionList(c, q, Modifier.align(if (c.settings.addressBarBottom) Alignment.BottomCenter else Alignment.TopCenter).padding(horizontal = 10.dp, vertical = 6.dp))
+            }
+        }
         Column(Modifier.fillMaxWidth().background(C.Bg).onSizeChanged { c.bottomBarHeightPx = it.height }) {
             Box(Modifier.fillMaxWidth().height(1.dp).background(C.Line))
             GroupStrip(c, cur)
-            if (c.settings.addressBarBottom) AddressBar(c, cur)
+            if (c.settings.addressBarBottom) { if (c.findQuery != null) FindBar(c) else AddressBar(c, cur) }
             Toolbar(c, cur)
         }
     }
@@ -116,15 +124,17 @@ private fun AddressBar(c: CornController, cur: TabEntry) {
                 if (value.text.isEmpty()) T("Search or type a site", 15.sp, C.Muted, maxLines = 1)
                 BasicTextField(
                     value = value,
-                    onValueChange = { if (editing) field = it },
+                    onValueChange = { if (editing) { field = it; c.addressQuery = it.text } },
                     singleLine = true,
                     textStyle = TextStyle(color = C.Text, fontSize = 15.sp, fontFamily = Ui),
                     cursorBrush = SolidColor(C.Accent),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Go),
-                    keyboardActions = KeyboardActions(onGo = { c.go(field.text); focus.clearFocus() }),
+                    keyboardActions = KeyboardActions(onGo = { c.go(field.text); c.addressQuery = null; focus.clearFocus() }),
                     modifier = Modifier.fillMaxWidth().onFocusChanged {
                         if (it.isFocused && !editing) field = TextFieldValue(shown, TextRange(0, shown.length))
                         editing = it.isFocused
+                        // Suggestions start once the user types (the selected URL alone shows none).
+                        c.addressQuery = if (it.isFocused) "" else null
                     },
                 )
             }
@@ -237,6 +247,64 @@ private fun ErrorPage(host: String, reason: String, onRetry: () -> Unit) {
     }
 }
 
+/** Address-bar suggestions: unlocked Vault links first, then History. Tap to open. */
+@Composable
+private fun SuggestionList(c: CornController, query: String, modifier: Modifier) {
+    val focus = LocalFocusManager.current
+    val items = remember(query, c.data.historyVersion.intValue, c.data.vaultVersion.intValue, c.vaultUnlocked) { c.suggestions(query) }
+    if (items.isEmpty()) return
+    Column(
+        modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(C.Surface2)
+            .border(1.dp, C.Line, RoundedCornerShape(16.dp)).padding(vertical = 4.dp),
+    ) {
+        items.forEach { s ->
+            Row(
+                Modifier.fillMaxWidth().clickable { focus.clearFocus(); c.openSuggestion(s) }.padding(horizontal = 14.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                CornIcon(if (s.fromVault) CornIcons.Vault else CornIcons.Clock, 18.dp, C.Muted)
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f)) {
+                    T(s.title, 14.5.sp, maxLines = 1)
+                    T(android.net.Uri.parse(s.url).host?.removePrefix("www.") ?: s.url, 12.sp, C.Muted, maxLines = 1)
+                }
+            }
+        }
+    }
+}
+
+/** Find in page: replaces the address bar while open. */
+@Composable
+private fun FindBar(c: CornController) {
+    val focusRequester = remember { androidx.compose.ui.focus.FocusRequester() }
+    LaunchedEffect(Unit) { focusRequester.requestFocus() }
+    val q = c.findQuery ?: ""
+    Row(Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            Modifier.weight(1f).height(42.dp).clip(RoundedCornerShape(21.dp)).background(C.Surface2).padding(horizontal = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            CornIcon(CornIcons.Search, 18.dp, C.Muted)
+            Spacer(Modifier.width(8.dp))
+            Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
+                if (q.isEmpty()) T("Find in page", 15.sp, C.Muted, maxLines = 1)
+                BasicTextField(
+                    q, { c.find(it) }, singleLine = true,
+                    textStyle = TextStyle(color = C.Text, fontSize = 15.sp, fontFamily = Ui),
+                    cursorBrush = SolidColor(C.Accent),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                    keyboardActions = KeyboardActions(onSearch = { c.findNext(true) }),
+                    modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
+                )
+            }
+            if (q.isNotEmpty()) T(if (c.findTotal == 0) "0/0" else "${c.findActive + 1}/${c.findTotal}", 13.sp, C.Muted)
+        }
+        IconBtn(CornIcons.ChevUp, "Previous match", { c.findNext(false) }, size = 38.dp, iconSize = 18.dp)
+        IconBtn(CornIcons.ChevDown, "Next match", { c.findNext(true) }, size = 38.dp, iconSize = 18.dp)
+        IconBtn(CornIcons.X, "Close find", { c.closeFind() }, size = 38.dp, iconSize = 18.dp)
+    }
+}
+
 @Composable
 private fun NewTabPage(c: CornController) {
     val focus = LocalFocusManager.current
@@ -278,6 +346,7 @@ private fun NewTabPage(c: CornController) {
                 )
             }
         }
+        if (q.isNotBlank()) SuggestionList(c, q, Modifier.fillMaxWidth())
         // Quick tiles: the newest Vault links (only when the Vault isn't locked) + the Vault itself.
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             recent.forEach { item ->

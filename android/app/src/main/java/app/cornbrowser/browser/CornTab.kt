@@ -62,7 +62,25 @@ interface TabHost {
     fun onVisited(entry: TabEntry, url: String, title: String)
     /** A page's title became known (for history). */
     fun onTitle(url: String, title: String)
+    /** Settings → Appearance → Text size, in percent (100 = the site's own size). */
+    val textZoom: Int
+    /** A page asked the user to pick files ("Upload photo"). Return false to cancel. */
+    fun onFileChooser(callback: android.webkit.ValueCallback<Array<android.net.Uri>>, params: WebChromeClient.FileChooserParams): Boolean
+    /** A page asked for the camera, microphone or location. Call [answer] exactly once. */
+    fun onSitePermission(entry: TabEntry, site: String, kinds: Set<SitePermission>, answer: (Boolean) -> Unit)
+    /** The page withdrew its request (e.g. it navigated away). */
+    fun onSitePermissionCancelled()
+    /** The user tapped a link that downloads a file. */
+    fun onDownload(request: DownloadRequest)
+    /** Find in page: match [active] (0-based) of [total]. */
+    fun onFindResult(active: Int, total: Int)
 }
+
+/** What a site can ask to use. */
+enum class SitePermission(val label: String) { CAMERA("camera"), MICROPHONE("microphone"), LOCATION("location") }
+
+/** A file a page wants to download. */
+data class DownloadRequest(val url: String, val userAgent: String, val contentDisposition: String?, val mimeType: String?, val length: Long)
 
 /**
  * The live part of a tab: a WebView wired to Corn's blocker.
@@ -95,7 +113,9 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
         s.setSupportMultipleWindows(true)
         s.javaScriptCanOpenWindowsAutomatically = true
         s.mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
-        s.setGeolocationEnabled(false)
+        // Location only after the user allows it for the site (onGeolocationPermissionsShowPrompt).
+        s.setGeolocationEnabled(true)
+        s.textZoom = host.textZoom
         s.userAgentString = BrowserIdentity.userAgent(s.userAgentString)
         setSafeBrowsing(host.safeBrowsingEnabled)
         // Light: white like other browsers. Dark: Corn's background, and WebView darkens pages that
@@ -113,7 +133,18 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
         webView.webChromeClient = Chrome()
         webView.setOnTouchListener { _, _ -> lastUserGestureAt = System.currentTimeMillis(); false }
         webView.setOnLongClickListener { onLongPress() }
+        webView.setDownloadListener { url, userAgent, disposition, mime, length ->
+            host.onDownload(DownloadRequest(url, userAgent, disposition, mime, length))
+        }
+        webView.setFindListener { active, total, done -> if (done) host.onFindResult(active, total) }
     }
+
+    // ---------- find in page ----------
+    fun find(query: String) = if (query.isEmpty()) webView.clearMatches() else webView.findAllAsync(query)
+    fun findNext(forward: Boolean) = webView.findNext(forward)
+    fun clearFind() = webView.clearMatches()
+
+    fun setTextZoom(percent: Int) { webView.settings.textZoom = percent }
 
     fun load(url: String) = webView.loadUrl(prepare(url))
 
@@ -378,6 +409,43 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
     }
 
     private inner class Chrome : WebChromeClient() {
+        override fun onShowFileChooser(view: WebView, callback: android.webkit.ValueCallback<Array<android.net.Uri>>, params: FileChooserParams): Boolean =
+            host.onFileChooser(callback, params)
+
+        /** Camera / microphone (WebRTC). Anything else (e.g. protected media IDs) is refused. */
+        override fun onPermissionRequest(request: android.webkit.PermissionRequest) {
+            val kinds = buildSet {
+                if (android.webkit.PermissionRequest.RESOURCE_VIDEO_CAPTURE in request.resources) add(SitePermission.CAMERA)
+                if (android.webkit.PermissionRequest.RESOURCE_AUDIO_CAPTURE in request.resources) add(SitePermission.MICROPHONE)
+            }
+            val site = request.origin.host?.removePrefix("www.") ?: ""
+            main.post {
+                if (kinds.isEmpty() || site.isEmpty()) { request.deny(); return@post }
+                host.onSitePermission(entry, site, kinds) { allow ->
+                    if (allow) {
+                        request.grant(request.resources.filter {
+                            it == android.webkit.PermissionRequest.RESOURCE_VIDEO_CAPTURE || it == android.webkit.PermissionRequest.RESOURCE_AUDIO_CAPTURE
+                        }.toTypedArray())
+                    } else {
+                        request.deny()
+                    }
+                }
+            }
+        }
+
+        override fun onPermissionRequestCanceled(request: android.webkit.PermissionRequest) {
+            main.post { host.onSitePermissionCancelled() }
+        }
+
+        override fun onGeolocationPermissionsShowPrompt(origin: String, callback: android.webkit.GeolocationPermissions.Callback) {
+            val site = Uri.parse(origin).host?.removePrefix("www.") ?: ""
+            if (site.isEmpty()) { callback.invoke(origin, false, false); return }
+            // retain = false: WebView doesn't store the answer; Corn remembers it for this session only.
+            host.onSitePermission(entry, site, setOf(SitePermission.LOCATION)) { allow -> callback.invoke(origin, allow, false) }
+        }
+
+        override fun onGeolocationPermissionsHidePrompt() = host.onSitePermissionCancelled()
+
         override fun onCreateWindow(view: WebView, isDialog: Boolean, isUserGesture: Boolean, resultMsg: Message?): Boolean {
             if (!shieldsHere().popups && resultMsg != null) return host.onPopupAllowed(entry, resultMsg)
             guardedOnPage.incrementAndGet()

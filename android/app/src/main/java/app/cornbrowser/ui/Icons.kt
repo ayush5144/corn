@@ -78,6 +78,7 @@ object CornIcons {
     val Backspace = line("M9 5h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9l-6-7z", "M12.5 9.5l5 5M17.5 9.5l-5 5")
     val Heart = line("M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z")
     val Check = line("M5 12.5l4.5 4.5L19 7")
+    val Download = line("M12 4v11", "M7 10.5l5 5 5-5", "M5 20h14")
     val Clock = line("M20.5 12a8.5 8.5 0 1 1-17 0a8.5 8.5 0 1 1 17 0z", "M12 7.5V12l3 2")
     val Trash = line("M4.5 6.5h15", "M9.5 6.5V4.5h5v2", "M6.5 6.5l1 13h9l1-13", "M10.3 10.5v5.5M13.7 10.5v5.5")
     val Folder = line("M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z")

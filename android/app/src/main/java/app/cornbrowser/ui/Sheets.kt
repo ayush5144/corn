@@ -29,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -55,7 +56,7 @@ fun BoxScope.Sheets(c: CornController) {
     var last by remember { mutableStateOf<Sheet?>(null) }
     val s = c.sheet
     if (s != null) last = s
-    Sheet(visible = s != null, onDismiss = { c.sheet = null }, onHeight = { c.sheetHeightPx = it }) {
+    Sheet(visible = s != null, onDismiss = { c.dismissSheet() }, onHeight = { c.sheetHeightPx = it }) {
         when (val shown = s ?: last) {
             is Sheet.Link -> LinkSheet(c, shown)
             Sheet.Menu -> MenuSheet(c)
@@ -69,6 +70,8 @@ fun BoxScope.Sheets(c: CornController) {
             Sheet.DeleteData -> DeleteDataSheet(c)
             Sheet.ConfirmKeepAllTabs -> ConfirmKeepAllTabsSheet(c)
             Sheet.ConfirmClearHistory -> ConfirmClearHistorySheet(c)
+            is Sheet.SitePermissionAsk -> SitePermissionSheet(c, shown)
+            is Sheet.Download -> DownloadSheet(c, shown)
             null -> {}
         }
     }
@@ -96,6 +99,7 @@ private fun MenuSheet(c: CornController) {
     val gid = cur?.groupId
     if (gid == null) Row50(CornIcons.GroupAdd, "New tab group", { c.newTabGroup() })
     else Row50(CornIcons.GroupAdd, "New tab in this group", { c.newTabInGroup(gid) }, hint = c.tabs.group(gid)?.name)
+    Row50(CornIcons.Search, "Find in page", { c.openFind() }, enabled = cur?.isNewTab == false)
     Row50(CornIcons.Clock, "History", { c.openHistory() })
     Row50(CornIcons.Share, "Share page", { cur?.takeIf { !it.isNewTab }?.let { c.share(it.url) } ?: run { c.sheet = null } }, enabled = cur?.isNewTab == false)
     Row50(CornIcons.Sliders, "Settings", { c.sheet = null; c.screen = app.cornbrowser.Screen.Settings })
@@ -148,6 +152,19 @@ private fun ShieldSheet(c: CornController) {
         }
     }
     T("Only turn things off if the page breaks. Changes apply to this site only and reload the page.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 10.dp))
+
+    // This session's camera / microphone / location answers for the site (forgotten on Flush or restart).
+    val answers = app.cornbrowser.browser.SitePermission.entries.mapNotNull { k -> c.sitePermissions[host to k]?.let { k to it } }
+    if (answers.isNotEmpty()) {
+        Spacer(Modifier.height(10.dp))
+        answers.forEach { (kind, allowed) ->
+            SettingRow(
+                kind.label.replaceFirstChar { it.uppercase() },
+                if (allowed) "Allowed for this session · tap to ask again" else "Blocked for this session · tap to ask again",
+                onClick = { c.forgetSitePermission(host, kind) },
+            )
+        }
+    }
 
     // Keep List, one tap from the page (also editable in Settings → Keep List).
     val kept = remember(c.data.vaultVersion.intValue, host) { host in c.data.keepList() }
@@ -325,6 +342,26 @@ private fun ConfirmKeepAllTabsSheet(c: CornController) {
     BigButton("Keep all tabs", { c.settings.chooseTabMemory(TabMemory.ALL); c.tabs.enforceLivePolicy(); c.sheet = null })
     Spacer(Modifier.height(10.dp))
     BigButton("Cancel", { c.sheet = null }, ghost = true)
+}
+
+@Composable
+private fun SitePermissionSheet(c: CornController, s: Sheet.SitePermissionAsk) {
+    val what = s.kinds.map { it.label }.let { if (it.size > 1) it.dropLast(1).joinToString(", ") + " and " + it.last() else it.first() }
+    SheetTitle("${s.site} wants to use your $what", "Corn remembers your answer only until the next Flush.")
+    BigButton("Allow", { c.answerSitePermission(s.site, s.kinds, true) })
+    Spacer(Modifier.height(10.dp))
+    BigButton("Block", { c.answerSitePermission(s.site, s.kinds, false) }, ghost = true)
+}
+
+@Composable
+private fun DownloadSheet(c: CornController, s: Sheet.Download) {
+    val size = s.request.length.takeIf { it > 0 }?.let { android.text.format.Formatter.formatShortFileSize(LocalContext.current, it) }
+    val from = android.net.Uri.parse(s.request.url).host?.removePrefix("www.") ?: ""
+    SheetTitle("Download this file?", listOfNotNull(s.fileName, size, from.takeIf { it.isNotBlank() }?.let { "from $it" }).joinToString(" · "))
+    BigButton("Download", { c.startDownload(s.request, s.fileName) }, icon = CornIcons.Download)
+    Spacer(Modifier.height(10.dp))
+    BigButton("Cancel", { c.sheet = null }, ghost = true)
+    T("Saved to your phone's Downloads folder. Files stay there after a Flush; delete them in your Files app.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 10.dp))
 }
 
 /** A search engine's favicon (bundled with the app, never fetched). */

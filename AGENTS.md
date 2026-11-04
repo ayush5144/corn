@@ -14,6 +14,7 @@ Corn is a free, private, mobile-first browser for adults. Start with `README.md`
 | Hard-to-reverse decisions | `docs/adr/` |
 | Mockups and prototypes | `mockups/` |
 | Logos | `brand/` |
+| Logo / brand explorations and the agents that made them | `mockups/brand-compare.html`, `design-agents/`, `.claude/agents/` |
 
 ## Rules
 

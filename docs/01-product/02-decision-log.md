@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 00:18 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 00:34 IST
 
 Every product question asked and the founder's answer, in order. Settled answers flow into [01-prd.md](01-prd.md). New rounds are appended at the bottom.
 
@@ -437,6 +437,8 @@ Every product question asked and the founder's answer, in order. Settled answers
 ### Round 14 — Logo and name exploration; missing browser basics (2026-11-05)
 - **Logo:** the current logo is "too real". Three Corn concepts (Flush Kernel, Corny, Tab Cob) and a full "Flush" rename exploration (3 logos, navy/electric-blue palette, Fredoka, copy kit) were generated with Codex image generation. Compare: `mockups/brand-compare.html`. Full-size originals are kept outside the repo (`~/Documents/corn-logo-originals`); the repo has 512 px copies. **Open:** name (Corn or Flush) and logo.
 - **Missing basics found by a code check:** file uploads, downloads, site camera/mic/location prompts, find in page, address-bar suggestions, text size: none were in the code. **Answer:** build the first five plus text size, and reorganise Settings. Picture-in-picture and print/save as PDF later.
+- **Status:** ✅ All built and verified on the emulator (see features doc for the data). Site permissions are remembered for the session only; Vault suggestions only while the Vault is unlocked; downloads go to the phone's Downloads folder and survive a Flush.
+- **Agents saved:** the exact logo/brand agent briefs are in `design-agents/` (`corn-design/`, `flush-design/`), with reusable definitions in `.claude/agents/`. Flush concepts now have their own pages (Vortex, Button, Wink).
 
 ### Round 13 — Cookie-banner closer off by default (2026-11-04)
 - **Data:** Reddit sign-in on the emulator. Closer on: the login box closed within ~7 s and "Continue with Google" was missing. Closer off: the box stayed open and the Google button showed. One run each; which autoconsent rule matched isn't known yet.
