@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 20:14 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-04, 23:58 IST
 
 Every feature in the Android app today, what it does for the user, and the evidence behind it. Nothing here is planned-only; planned work lives in the [checklist](../03-planning/02-checklist.md).
 
@@ -36,9 +36,9 @@ Every feature in the Android app today, what it does for the user, and the evide
   - *Evidence:* built; not separately measured.
 
 - **Cookie-banner closing** 🔨
-  - *What:* DuckDuckGo's open-source autoconsent (v17.2.0, unmodified) recognises "We use cookies" boxes and clicks **Reject** for you. Settings → Privacy, on by default.
+  - *What:* DuckDuckGo's open-source autoconsent (v17.2.0, unmodified) recognises "We use cookies" boxes and clicks **Reject** for you. Settings → Privacy, **off by default**.
   - *Benefit:* no consent boxes covering pages, and no accidental "Accept all".
-  - *Evidence:* the same library DuckDuckGo ships in its browsers. Not yet seen closing a banner in Corn; test on a European site.
+  - *Evidence:* the same library DuckDuckGo ships in its browsers. Not yet seen closing a banner in Corn. Known problem (why it's off by default): on Reddit, with it on, the login box closed within ~7 s and "Continue with Google" was missing; with it off, the login box stayed open and the Google button showed (one run each, on the emulator).
 
 - **Link cleaning** ✅
   - *What:* removes tracking tags such as `utm_source`, `fbclid`, `gclid`, `msclkid` (about 30 known names) from links before opening them, keeping the real parameters.

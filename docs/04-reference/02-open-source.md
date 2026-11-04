@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 20:14 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 23:16 IST
 
 What Corn takes from Brave, DuckDuckGo, Mozilla and others. Licences checked on GitHub on 2026-11-01.
 

@@ -120,3 +120,8 @@
 - Added `scripts/dev-start.sh` (emulator, optional debug install and test server) and `scripts/dev-stop.sh` (stops emulator, test servers, Gradle/Kotlin daemons, adb).
 - Updated `docs/02-technical/08-repo-structure.md` (scripts list) and `docs/03-planning/04-testing-on-a-phone.md` (Emulator on the Mac).
 
+## 2026-11-04 — Cookie-banner closer off by default
+
+- Code: `data/CornSettings.kt` (`cookie_banners` default false), `ui/SettingsScreen.kt` (switch description).
+- Updated `docs/01-product/01-prd.md` (feature + defaults), `03-features.md` (evidence: Reddit login), `02-decision-log.md` (Round 13).
+

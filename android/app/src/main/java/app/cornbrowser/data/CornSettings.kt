@@ -57,7 +57,9 @@ class CornSettings(context: Context) {
     var blackRecents by pref("black_recents", true)
     var engine by stringPref("engine", "ddg")
     var addressBarBottom by pref("address_bar_bottom", false)
-    var cookieBanners by pref("cookie_banners", true)
+    /** Off by default (founder decision, Round 13): the closer can mistake other pop-ups for consent
+     *  banners (it closed Reddit's login box in testing), so each user decides on each site's banner. */
+    var cookieBanners by pref("cookie_banners", false)
     /** Google Safe Browsing warnings in WebView. On by default (founder decision, Round 9). */
     var safeBrowsing by pref("safe_browsing", true)
     /** Ask search engines to filter explicit results. Off by default. */

@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 20:14 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-04, 23:58 IST
 
 - **Status:** Draft v2, being shaped through Q&A rounds ([02-decision-log.md](02-decision-log.md))
 - **Last updated:** 2026-11-01 (after Round 1)
@@ -63,7 +63,7 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | Per-site blocking: one main switch, plus **Advanced** switches for Ads, Trackers and Pop-ups & redirects | ✅ |
 | Home page **stats**: two all-time totals (trackers & ads blocked, pop-ups & redirects stopped), counts only | ✅ |
 | Google Safe Browsing: Settings switch, **on by default**; shown on onboarding with its on/off state and a switch | ✅ |
-| Cookie-banner closing: clicks "Reject" (DuckDuckGo autoconsent); Settings switch, on by default | ✅ |
+| Cookie-banner closing: clicks "Reject" (DuckDuckGo autoconsent); Settings switch, **off by default** (it closed Reddit's login box in testing) | ✅ |
 | Fingerprinting protection + Global Privacy Control (DuckDuckGo content-scope-scripts) | 🟡 proposed |
 | Link cleaning: strip tracking parameters (`utm_*`, `fbclid`, `gclid`…) | ✅ (redirect unwrapping later) |
 | Third-party cookies blocked | ✅ |
@@ -203,7 +203,7 @@ What a new user gets before changing anything.
 | Redirect guard | On | ✅ |
 | Third-party cookies | Blocked | ✅ |
 | Where Vault saves land | No Collection (shown in All) | ✅ |
-| Cookie banners | Auto-reject | 🟡 proposed |
+| Cookie banners | Off: the user handles each site's banner (closer can be switched on) | ✅ |
 | Fingerprinting protection + Global Privacy Control | On | 🟡 proposed |
 | Link cleaning | On | 🟡 proposed |
 | HTTPS upgrade | On | 🟡 proposed |

@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 20:14 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-04, 23:58 IST
 
 Every product question asked and the founder's answer, in order. Settled answers flow into [01-prd.md](01-prd.md). New rounds are appended at the bottom.
 
@@ -433,6 +433,11 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Typed http-only sites** and **Corn's error page** (founder approved).
 - **Background tabs** (founder agreed): load at once like Chrome; show the saved picture while an unloaded tab reloads; `pauseTimers()` while Corn is in the background. Per-tab freezing isn't possible in WebView (`onPause` doesn't pause JavaScript; `pauseTimers` is global).
 - **Rename to "Flush"**: raised by the founder; discussion only, nothing renamed.
+
+### Round 13 — Cookie-banner closer off by default (2026-11-04)
+- **Data:** Reddit sign-in on the emulator. Closer on: the login box closed within ~7 s and "Continue with Google" was missing. Closer off: the box stayed open and the Google button showed. One run each; which autoconsent rule matched isn't known yet.
+- **Answer:** Keep it **off by default**; users decide on each site's cookie banner themselves and can switch the closer on in Settings → Privacy.
+- **Also discussed:** renaming Corn to "Flush" (opinion given, nothing decided); engine alternatives (WebView, GeckoView, a Chromium fork; Servo is early on Android and has no official iOS support).
 
 ### "Unsorted" becomes "All"
 - **Answer:** Each link is saved once. Picking a Collection is optional. **All** is a view of every saved link, not a stored Collection, so nothing is ever saved twice. Existing Unsorted links moved to "no Collection" (they show in All); the Unsorted Collection was removed (database upgrade, unit-tested).
