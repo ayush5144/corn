@@ -72,6 +72,7 @@ fun BoxScope.Sheets(c: CornController) {
             Sheet.ConfirmClearHistory -> ConfirmClearHistorySheet(c)
             is Sheet.SitePermissionAsk -> SitePermissionSheet(c, shown)
             is Sheet.Download -> DownloadSheet(c, shown)
+            is Sheet.Password -> PasswordSheetContent(c, shown.kind)
             null -> {}
         }
     }

@@ -116,6 +116,33 @@ pub struct HistoryVisit {
     pub visited_at: i64,
 }
 
+/// A saved login. The username and password are encrypted by the app (AES-256-GCM); Rust only stores the blobs.
+#[derive(Debug, Clone, uniffi::Record)]
+pub struct Login {
+    pub id: i64,
+    /// `https://host[:port]`: the exact site the login belongs to.
+    pub origin: String,
+    pub username_enc: Vec<u8>,
+    pub password_enc: Vec<u8>,
+    pub created_at: i64,
+    pub last_used_at: i64,
+    pub times_used: i64,
+}
+
+impl From<corn_vault::Login> for Login {
+    fn from(l: corn_vault::Login) -> Self {
+        Self {
+            id: l.id,
+            origin: l.origin,
+            username_enc: l.username_enc,
+            password_enc: l.password_enc,
+            created_at: l.created_at,
+            last_used_at: l.last_used_at,
+            times_used: l.times_used,
+        }
+    }
+}
+
 impl From<corn_vault::Collection> for Collection {
     fn from(c: corn_vault::Collection) -> Self {
         Self { id: c.id, name: c.name, item_count: c.item_count }
@@ -198,6 +225,32 @@ impl CornStore {
     }
     pub fn clear_history(&self) -> Result<(), CornError> {
         Ok(self.inner.clear_history()?)
+    }
+
+    // Passwords (blobs encrypted by the app)
+    pub fn add_login(&self, origin: String, username_enc: Vec<u8>, password_enc: Vec<u8>) -> Result<Login, CornError> {
+        Ok(self.inner.add_login(&origin, &username_enc, &password_enc)?.into())
+    }
+    pub fn update_login(&self, id: i64, username_enc: Vec<u8>, password_enc: Vec<u8>) -> Result<(), CornError> {
+        Ok(self.inner.update_login(id, &username_enc, &password_enc)?)
+    }
+    pub fn delete_login(&self, id: i64) -> Result<(), CornError> {
+        Ok(self.inner.delete_login(id)?)
+    }
+    pub fn delete_all_logins(&self) -> Result<(), CornError> {
+        Ok(self.inner.delete_all_logins()?)
+    }
+    pub fn logins_for_origin(&self, origin: String) -> Result<Vec<Login>, CornError> {
+        Ok(self.inner.logins_for_origin(&origin)?.into_iter().map(Into::into).collect())
+    }
+    pub fn all_logins(&self) -> Result<Vec<Login>, CornError> {
+        Ok(self.inner.all_logins()?.into_iter().map(Into::into).collect())
+    }
+    pub fn login_count(&self) -> Result<i64, CornError> {
+        Ok(self.inner.login_count()?)
+    }
+    pub fn touch_login(&self, id: i64) -> Result<(), CornError> {
+        Ok(self.inner.touch_login(id)?)
     }
 
     // Key-value

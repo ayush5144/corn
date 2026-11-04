@@ -74,6 +74,10 @@ interface TabHost {
     fun onDownload(request: DownloadRequest)
     /** Find in page: match [active] (0-based) of [total]. */
     fun onFindResult(active: Int, total: Int)
+    /** A message from Corn's login-form script ([app.cornbrowser.passwords.LoginScript]). Origin and frame come from WebView. */
+    fun onLoginMessage(entry: TabEntry, data: String, sourceOrigin: String, isMainFrame: Boolean, reply: JavaScriptReplyProxy) {}
+    /** The tab started loading a new page (its login form, if any, is gone). */
+    fun onLoginPageStarted(entry: TabEntry) {}
 }
 
 /** What a site can ask to use. */
@@ -128,6 +132,7 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
         CookieManager.getInstance().setAcceptThirdPartyCookies(webView, false)
 
         installBridge()
+        installLoginBridge()
         installCookieBannerCloser(context)
         webView.webViewClient = Client()
         webView.webChromeClient = Chrome()
@@ -361,6 +366,7 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
             entry.favicon = favicon
             exceptions = emptyList()
             generichide = false
+            host.onLoginPageStarted(entry)
             sync()
         }
 
@@ -488,6 +494,21 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
             handleBridgeMessage(message, isMainFrame, reply)
         }
         WebViewCompat.addDocumentStartJavaScript(webView, PAGE_JS, setOf("*"))
+    }
+
+    /**
+     * Passwords: Corn's own login-form script in every frame, and a separate `cornLogins` channel.
+     * The script runs on https pages only; [TabHost.onLoginMessage] checks origin and frame again.
+     */
+    private fun installLoginBridge() {
+        if (!WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER) ||
+            !WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)
+        ) return
+        WebViewCompat.addWebMessageListener(webView, "cornLogins", setOf("*")) { _, message, sourceOrigin, isMainFrame, reply ->
+            val data = message.data ?: return@addWebMessageListener
+            host.onLoginMessage(entry, data, sourceOrigin.toString(), isMainFrame, reply)
+        }
+        WebViewCompat.addDocumentStartJavaScript(webView, app.cornbrowser.passwords.LoginScript.source(BuildConfig.DEBUG), setOf("*"))
     }
 
     /** DuckDuckGo autoconsent (unmodified, built into the app): clicks "Reject" on cookie banners. */

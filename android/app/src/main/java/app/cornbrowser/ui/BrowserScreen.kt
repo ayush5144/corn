@@ -83,6 +83,7 @@ fun BrowserScreen(c: CornController) {
             if (!q.isNullOrBlank()) {
                 SuggestionList(c, q, Modifier.align(if (c.settings.addressBarBottom) Alignment.BottomCenter else Alignment.TopCenter).padding(horizontal = 10.dp, vertical = 6.dp))
             }
+            PasswordFillChip(c) // "Fill as …" when the page has a login form with saved logins
         }
         Column(Modifier.fillMaxWidth().background(C.Bg).onSizeChanged { c.bottomBarHeightPx = it.height }) {
             Box(Modifier.fillMaxWidth().height(1.dp).background(C.Line))

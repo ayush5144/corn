@@ -14,6 +14,7 @@ import org.json.JSONObject
 import uniffi.corn_ffi.Collection
 import uniffi.corn_ffi.CornStore
 import uniffi.corn_ffi.HistoryVisit
+import uniffi.corn_ffi.Login
 import uniffi.corn_ffi.VaultItem
 
 /** What Corn blocks on a site. Default: everything on. */
@@ -137,6 +138,23 @@ class CornData(context: Context) {
         changed()
     }
 
+    // ---------- Passwords (see passwords/Passwords.kt) ----------
+    // Usernames and passwords arrive here already encrypted (passwords/LoginCipher); the site is in clear.
+    // Like the Vault, they survive every Flush and "Delete browsing data".
+    fun addLogin(origin: String, usernameEnc: ByteArray, passwordEnc: ByteArray): Login = store.addLogin(origin, usernameEnc, passwordEnc)
+    fun updateLogin(id: Long, usernameEnc: ByteArray, passwordEnc: ByteArray) = store.updateLogin(id, usernameEnc, passwordEnc)
+    fun deleteLogin(id: Long) = store.deleteLogin(id)
+    fun deleteAllLogins() = store.deleteAllLogins()
+    fun loginsForOrigin(origin: String): List<Login> = store.loginsForOrigin(origin)
+    fun allLogins(): List<Login> = store.allLogins()
+    fun loginCount(): Long = store.loginCount()
+    fun touchLogin(id: Long) = store.touchLogin(id)
+
+    /** Sites (origins) where Corn never offers to save a password. */
+    fun neverSaveList(): List<String> = readList(NEVER_SAVE)
+    fun addNeverSave(origin: String) = writeList(NEVER_SAVE, (neverSaveList() + origin).distinct())
+    fun removeNeverSave(origin: String) = writeList(NEVER_SAVE, neverSaveList() - origin)
+
     // ---------- Kept Session ----------
     fun saveSession(json: String) = store.kvSet(SESSION, json)
     fun loadSession(): String? = store.kvGet(SESSION)
@@ -157,6 +175,7 @@ class CornData(context: Context) {
         private const val KEEP = "keep_list"
         private const val SITE_SHIELDS = "site_shields"
         private const val SESSION = "kept_session"
+        private const val NEVER_SAVE = "login_never_save"
 
         /** "https://Mail.Example.com/inbox" or "mail.example.com" → "mail.example.com". */
         fun normalizeHost(input: String): String? {
