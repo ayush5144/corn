@@ -29,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -72,6 +73,7 @@ fun BoxScope.Sheets(c: CornController) {
             Sheet.ConfirmClearHistory -> ConfirmClearHistorySheet(c)
             is Sheet.SitePermissionAsk -> SitePermissionSheet(c, shown)
             is Sheet.Download -> DownloadSheet(c, shown)
+            Sheet.SplitPick -> SplitPickSheet(c)
             null -> {}
         }
     }
@@ -99,10 +101,29 @@ private fun MenuSheet(c: CornController) {
     val gid = cur?.groupId
     if (gid == null) Row50(CornIcons.GroupAdd, "New tab group", { c.newTabGroup() })
     else Row50(CornIcons.GroupAdd, "New tab in this group", { c.newTabInGroup(gid) }, hint = c.tabs.group(gid)?.name)
+    if (c.tabs.split == null) Row50(CornIcons.Split, "Split screen", { c.sheet = Sheet.SplitPick })
+    else Row50(CornIcons.Split, "Close split screen", { c.exitSplit() })
     Row50(CornIcons.Search, "Find in page", { c.openFind() }, enabled = cur?.isNewTab == false)
     Row50(CornIcons.Clock, "History", { c.openHistory() })
     Row50(CornIcons.Share, "Share page", { cur?.takeIf { !it.isNewTab }?.let { c.share(it.url) } ?: run { c.sheet = null } }, enabled = cur?.isNewTab == false)
     Row50(CornIcons.Sliders, "Settings", { c.sheet = null; c.screen = app.cornbrowser.Screen.Settings })
+}
+
+/** Menu → Split screen: the open tab stays in the first pane; pick what goes in the second. */
+@Composable
+private fun SplitPickSheet(c: CornController) {
+    val cur = c.tabs.current
+    val landscape = LocalConfiguration.current.let { it.screenWidthDp > it.screenHeightDp }
+    SheetTitle("Split screen", if (landscape) "This tab stays on the left. Pick what to show on the right." else "This tab stays on top. Pick what to show below it.")
+    Row50(CornIcons.TabNew, "New tab", { c.startSplit(null) })
+    c.tabs.tabs.filter { it.id != cur?.id }.forEach { t ->
+        SettingRow(
+            if (t.isNewTab) "New tab" else t.title,
+            if (t.isNewTab) null else t.host,
+            onClick = { c.startSplit(t.id) },
+            leading = { SiteIcon(t, 22.dp) },
+        )
+    }
 }
 
 @Composable

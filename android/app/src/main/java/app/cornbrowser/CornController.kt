@@ -60,6 +60,8 @@ sealed interface Sheet {
     data class SitePermissionAsk(val site: String, val kinds: Set<SitePermission>) : Sheet
     /** Confirm a download. */
     data class Download(val request: DownloadRequest, val fileName: String) : Sheet
+    /** Menu → Split screen: pick the tab for the second pane. */
+    data object SplitPick : Sheet
 }
 
 /** An address-bar suggestion, from the Vault or History (computed on the phone, never sent anywhere). */
@@ -270,6 +272,35 @@ class CornController(private val context: Context) : TabHost {
         tabs.switchTo(id)
         sheet = null
         screen = Screen.Browser
+    }
+
+    // ---------------- split screen ----------------
+
+    /** Start split screen with tab [otherId] in the second pane, or a new tab when null. */
+    fun startSplit(otherId: Int?) {
+        if (findQuery != null) closeFind()
+        sheet = null
+        if (otherId == null) tabs.startSplitWithNewTab() else tabs.startSplit(otherId)
+        screen = Screen.Browser
+    }
+
+    /** Menu → Close split screen: keeps the focused tab. */
+    fun exitSplit() {
+        sheet = null
+        tabs.exitSplit()
+    }
+
+    /** The × on a pane, or the divider dragged over it: closes the pane, not the tab. */
+    fun closePane(tabId: Int) {
+        if (findQuery != null) closeFind()
+        tabs.closePane(tabId)
+    }
+
+    /** A touch inside a pane focuses it: the address bar, toolbar and sheets now act on its tab. */
+    fun focusPane(tabId: Int) {
+        if (tabId == tabs.currentId || tabs.split?.contains(tabId) != true) return
+        if (findQuery != null) closeFind()
+        tabs.focusPane(tabId)
     }
 
     fun back(): Boolean {
