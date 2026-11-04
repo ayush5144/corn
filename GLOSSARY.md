@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-01, 20:14 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 01:12 IST
 
 Corn is a free, private, "use whenever you want" browser for adults. This glossary fixes the words we use for its product concepts so docs, UI copy and code all mean the same thing.
 
@@ -52,6 +52,10 @@ _Avoid_: Paused, sleeping
 **Unloaded**:
 A tab whose page has been closed to save memory. Corn keeps its preview, back/forward history and scroll position; opening it reloads the page.
 _Avoid_: Frozen, discarded, suspended
+
+**Split screen**:
+Two tabs shown at once inside Corn, top/bottom (side by side in landscape), with a draggable divider. The pane you last touched is the one the toolbar acts on.
+_Avoid_: Dual view, multi-window
 
 **Tab Group Strip**:
 The bar at the bottom of the screen showing one round site icon per Tab in the current Tab Group.

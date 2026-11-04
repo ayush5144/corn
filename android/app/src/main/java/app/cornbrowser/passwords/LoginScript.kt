@@ -45,9 +45,20 @@ object LoginScript {
             var s = getComputedStyle(el);
             return s.visibility !== 'hidden' && s.display !== 'none';
           }
-          function passwordFields(scope) {
-            return Array.prototype.filter.call((scope || document).querySelectorAll('input[type=password]'), visible);
+          // Fields that were ever password fields: a "show password" button turns them into
+          // type="text", but they're still the password (tested: without this, no save offer).
+          var seenPw = new WeakSet();
+          function remember(scope) {
+            Array.prototype.forEach.call((scope || document).querySelectorAll('input[type=password]'), function (el) { seenPw.add(el); });
           }
+          function isPw(el) { return !!el && el.tagName === 'INPUT' && (type(el) === 'password' || seenPw.has(el)); }
+          function passwordFields(scope) {
+            remember(scope);
+            return Array.prototype.filter.call((scope || document).querySelectorAll('input'), function (el) { return isPw(el) && visible(el); });
+          }
+          function hasPw(scope) { return passwordFields(scope).length > 0; }
+          document.addEventListener('focusin', function (e) { if (type(e.target) === 'password') seenPw.add(e.target); }, true);
+          document.addEventListener('input', function (e) { if (e.target && type(e.target) === 'password') seenPw.add(e.target); }, true);
           // The username: autocomplete="username" in the same form, else the nearest visible
           // text/email/tel field before the password field.
           function usernameFor(pw) {
@@ -58,7 +69,7 @@ object LoginScript {
             for (var i = 0; i < inputs.length; i++) {
               var el = inputs[i];
               if (el === pw) break;
-              if (USER_TYPES[type(el)] && visible(el)) found = el;
+              if (USER_TYPES[type(el)] && !seenPw.has(el) && visible(el)) found = el;
             }
             return found;
           }
@@ -80,12 +91,12 @@ object LoginScript {
           }
           document.addEventListener('submit', function (e) {
             var f = e.target;
-            if (f && f.tagName === 'FORM' && f.querySelector('input[type=password]')) capture(f);
+            if (f && f.tagName === 'FORM' && hasPw(f)) capture(f);
           }, true);
           document.addEventListener('keydown', function (e) {
             if (e.key !== 'Enter' || !e.target || e.target.tagName !== 'INPUT') return;
             var t = e.target, scope = t.form || document;
-            if (type(t) === 'password' || passwordFields(scope).length) capture(t.form || null);
+            if (isPw(t) || passwordFields(scope).length) capture(t.form || null);
           }, true);
           document.addEventListener('click', function (e) {
             var b = e.target && e.target.closest && e.target.closest('button,input[type=submit],input[type=image],[role=button]');
@@ -94,7 +105,7 @@ object LoginScript {
             var label = ((b.getAttribute('aria-label') || '') + ' ' + (b.textContent || '') + ' ' + (b.className || '')).slice(0, 200);
             if (/show|hide|reveal|visib|toggle|eye/i.test(label)) return;
             var f = b.form || (b.closest && b.closest('form'));
-            if (f && f.querySelector('input[type=password]')) {
+            if (f && hasPw(f)) {
               if (b.tagName === 'BUTTON' && b.type !== 'submit') return; // type="button": not the form's submit
               capture(f);
               return;

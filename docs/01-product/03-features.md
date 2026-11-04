@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 00:41 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 01:12 IST
 
 Every feature in the Android app today, what it does for the user, and the evidence behind it. Nothing here is planned-only; planned work lives in the [checklist](../03-planning/02-checklist.md).
 
@@ -179,6 +179,14 @@ Every feature in the Android app today, what it does for the user, and the evide
 - **Opens links from other apps** ✅: tested with links sent to Corn.
 - **`http://` sites load** ✅: the Android default would block them; the count-test page loaded over http.
 - **Fullscreen video** 🔨: built in the spike; not re-checked in the new UI.
+
+## Passwords and split screen
+
+- **Password store** ✅: after you log in, "Save password for example.com?" (Save / Not now / Never for this site; "Update password?" for a changed one). Next time a "Fill as you@…" chip appears; Corn fills only when you tap, only on https (local test addresses allowed in debug builds) and only on the exact site. If the Vault is locked, filling asks your PIN first (Settings → "Ask for PIN before filling" can turn that off). Vault → Passwords: search, grouped by site, reveal/copy/edit with the PIN, copies cleared from the clipboard after 45 s, screenshots blocked. Encrypted AES-256-GCM with a key protected by the Android Keystore; survives every Flush; never synced or sent.
+  - *Evidence (emulator):* a real login on a test page brought the save offer; a fill after the PIN put the exact saved password in the field; a second fill in the same session didn't ask the PIN; after a Flush the login was still offered. A bug found in testing and fixed: after tapping a site's "Show password" button the password field becomes a text field and no save offer appeared; the script now remembers password fields. 6 crypto + 6 matching JVM tests, 3 Rust tests (incl. no trace left after update/delete and the v2→v3 upgrade).
+  - *Not yet:* two-step logins (username and password on separate pages: only the password is saved), export/import.
+- **Split screen** ✅: Menu → Split screen → pick a tab or New tab. Two tabs at once, top/bottom (side by side in landscape), a draggable divider (25–75%; drag to an edge to close a pane), the toolbar and address bar act on the pane you last touched (outlined), × on a pane closes the pane, not the tab.
+  - *Evidence (emulator):* both pages full size (1080×930 each); tapping a pane moved the address bar to it and links still opened in that pane; dragging resized (548/1313 px, stopped at about 74/26%); landscape showed them side by side with content intact; "Try again" on an error page reloaded only that pane; × closed the pane and kept both tabs. The divider was widened from 14 to 24 dp after a drag 40 px off-centre missed it. 10 JVM tests.
 
 ## Brand
 

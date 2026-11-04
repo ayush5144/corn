@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 00:50 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 01:12 IST
 
 Every product question asked and the founder's answer, in order. Settled answers flow into [01-prd.md](01-prd.md). New rounds are appended at the bottom.
 
@@ -444,6 +444,7 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Fill gate:** PIN only when the Vault is locked; a Settings switch **"Ask for PIN before filling"** (on by default) can turn it off.
 - **Split screen inside Corn:** two tabs at once, **top/bottom with a draggable divider** in portrait, side by side in landscape; the toolbar acts on the last-touched pane; both stay in memory. Android's own split screen (two Corn windows) later.
 - **Order:** both built in parallel by two agents in separate git worktrees, then merged and tested.
+- **Status:** ✅ both merged and verified on the emulator (see features doc). Fixed during testing: the show-password toggle hid the password field from the save offer; the split divider's touch area was too thin (14 → 24 dp). Agent choices accepted: the picked tab goes in the bottom pane and gets focus; sites and usernames are visible once the Vault is open, only passwords always need the PIN.
 
 ### Round 16 — Corny is Corn's logo (2026-11-05)
 - **Answer:** the founder chose **Corny** (the winking "shh" cob) as the logo.

@@ -155,3 +155,9 @@
 - Code: `CornController.kt` (`closeTab`: closing the last tab leaves a fresh home page, returns to the browser, clears an old Flush one-liner), `ui/TabsScreen.kt` ("1 tab" singular; "Tabs" label when there are no groups).
 - Verified on the emulator (founder report: closing the only tab seemed to do nothing).
 
+## 2026-11-05 — Password store and split screen merged and verified
+
+- Code (password store, agent branch): `core/crates/corn-vault` (schema v3, `logins`; migration fix so the v1 rebuild only runs below v2), `corn-ffi`, new `android/.../passwords/` (LoginCipher, LoginKeys, LoginMatching, LoginScript, Passwords, PasswordsScreen), hooks in CornTab/CornController/Sheets/BrowserScreen/VaultScreen/SettingsScreen/CornSettings/CornData; fix in `LoginScript.kt` (remember password fields through show-password toggles).
+- Code (split screen, agent branch): `browser/SplitState.kt`, `TabManager.kt`, `CornController.kt`, `ui/BrowserScreen.kt` (divider 24 dp), `ui/Sheets.kt`, `ui/TabsScreen.kt`, `ui/Icons.kt`.
+- Updated `docs/01-product/01-prd.md`, `02-decision-log.md`, `03-features.md`, `GLOSSARY.md` (Split screen), `docs/02-technical/03-android.md`, `05-flush-model.md`, `10-storage.md`, `docs/03-planning/02-checklist.md`.
+

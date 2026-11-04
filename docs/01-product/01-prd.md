@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 00:39 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 01:12 IST
 
 - **Status:** Draft v2, being shaped through Q&A rounds ([02-decision-log.md](02-decision-log.md))
 - **Last updated:** 2026-11-01 (after Round 1)
@@ -137,7 +137,8 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | Address-bar suggestions from History and the unlocked Vault, on the phone only | ✅ |
 | Find in page; Text size (S/M/L/XL) in Settings → Appearance | ✅ |
 | Picture-in-picture video; print / save as PDF | ⏭️ Later |
-| **Corn's own password store** (inside the Vault), survives a Flush | ✅ (tentatively v1.1 🟡) |
+| **Corn's own password store** (inside the Vault), survives a Flush: save/update/never prompts, fill on tap with PIN when the Vault is locked (switchable), Passwords screen | ✅ v1 (built) |
+| **Split screen** inside Corn: two tabs, top/bottom (side by side in landscape), draggable divider | ✅ (built) |
 
 ### 6.5 Vault
 
