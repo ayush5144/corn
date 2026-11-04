@@ -6,3 +6,6 @@ local.properties
 build/
 target/
 .work/
+
+# Claude Code agent worktrees (temporary working copies)
+.claude/worktrees/
