@@ -123,6 +123,20 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [x] | **Text size** setting (verified ×1.30 at XL), and Settings reorganised: Flush, Keep List, Privacy, History and data, Search, Appearance (theme, text size, address bar), Advanced, About | Claude | Text size changes pages; every setting still reachable |
 | [ ] | Cookie-banner closing (autoconsent). **Built, not yet seen closing a banner on device** | Founder | A cookie banner is rejected without a tap |
 
+### QA fixes from [04-qa-where-corn-fails](../05-review/04-qa-where-corn-fails-2026-11-05.md) (2026-11-05, in this order)
+
+| ✓ | Task | Owner | Done when |
+|---|---|---|---|
+| [ ] | **1. New windows follow the tap rule**: a tapped `target=_blank` link or `window.open` opens a new tab; no tap = blocked; burst guard; a page closing its own window (`onCloseWindow`) closes the tab and returns to the opener | Claude | Test page: tapped link and button open, no-tap blocked, self-closing window returns to opener; ayushpatil.com links open |
+| [ ] | **2. Links to other apps** (`tel`, `mailto`, `sms`, `geo`, `intent://`, other app schemes): after a tap, a sheet "Open in <app>?"; `intent://` made safe (browsable, no component/selector), web fallback; nothing opens without a tap | Claude | All 5 test links open the right app after a tap; fallback loads; no-tap does nothing |
+| [ ] | **3. Fullscreen inside its split pane**: video fills only its pane, other pane and system bars stay; Back always leaves fullscreen; closing the tab exits fullscreen | Claude | Two YouTube panes: fullscreen one, the other stays visible; Back and closing work |
+| [ ] | **4. Pages follow the site's theme**: no forced darkening by default, white default page background, optional "Darken all websites" switch (off) | Claude | ayushpatil.com's light toggle shows white; Hacker News shows its beige |
+| [ ] | **5. Image long-press menu**: Save image, Open in new tab, Share, Copy link (plain and linked images) | Claude | Long-press on a plain image shows the menu; Save lands in Downloads |
+| [ ] | **5b. Link long-press title**: the link's label, not the first text inside it (YouTube showed the duration "4:02") | Claude | YouTube video link shows the video title |
+| [ ] | **6. Ad scriptlets (like Brave)**: engine loads Brave's scriptlet resources and a list with scriptlet rules (downloaded at runtime, never in the repo), Corn injects them at document start; per-site Ads switch still applies | Claude (agent) | YouTube's player data has no ad schedule on 3 videos; no ads seen; other sites unaffected |
+| [ ] | **7. Repeatable QA**: test pages in the repo, decision functions unit-tested, one script runs the emulator checks and prints pass/fail | Claude (agent) | `scripts/qa-run.sh` passes on the emulator |
+| [ ] | **Downloads screen** (list of Corn's downloads: open, share, delete; Flush clears the list, files stay). Recommended, not started | Founder | Founder decides |
+
 ## Phase 4 — Beta
 
 **Goal:** Real users, real feedback, no privacy surprises.
