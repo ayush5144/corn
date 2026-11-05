@@ -121,8 +121,13 @@ def back():
 
 
 def input_text(s):
-    # `input text` needs spaces as %s; QA URLs never contain spaces.
-    adb("shell", "input text '" + s.replace(" ", "%s").replace("'", "") + "'")
+    # `input text` needs spaces as %s; QA URLs never contain spaces. Sent in short pieces with a
+    # pause: one long burst arrives faster than Corn's address bar (and its suggestion list)
+    # redraws, and characters went missing (always late in the address).
+    s = s.replace(" ", "%s").replace("'", "")
+    for i in range(0, len(s), 8):
+        adb("shell", "input text '" + s[i:i + 8] + "'")
+        time.sleep(0.15)
 
 
 # ---------------- apps and activities ----------------

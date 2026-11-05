@@ -315,8 +315,15 @@ def scheme_no_tap(r):
 
 @check("intent-fallback-loads")
 def intent_fallback(r):
+    # Corn asks before any link leaves the web (Android 11+ hides most installed apps, so Corn
+    # can't tell "not installed" from "hidden"). Tapping Open for an app that isn't installed
+    # must fall back to the link's web version.
     key = open_page("schemes.html", r)
     tap_element(key, "#intentfb")
+    sheet = d.wait_for(lambda: d.find(d.ui_nodes(), text="Open", web=False), 4)
+    if not sheet:
+        raise Fail(f"no ask sheet (sheet: {sheet_texts(d.ui_nodes()) or 'none'})")
+    d.tap(*sheet.center)
     ok = requested(hit("intent-fallback", r), 6)
     fg = d.foreground_package()
     extra = ""
@@ -325,7 +332,7 @@ def intent_fallback(r):
         dismiss_sheet_if_any()
     if fg != d.APP:
         d.bring_corn_back()
-    return ok, f"tapped intent:// for an app that isn't installed; fallback requests: {len(requests_for(hit('intent-fallback', r)))}; foreground: {fg}{extra}"
+    return ok, f"tapped intent:// for an app that isn't installed, then Open; fallback requests: {len(requests_for(hit('intent-fallback', r)))}; foreground: {fg}{extra}"
 
 
 # ---------------- theme ----------------
@@ -434,9 +441,14 @@ def type_in_address_bar(url):
             d.adb("shell", "input keycombination 113 29")
             d.key(67)
         d.input_text(url)
-        time.sleep(0.6)
-        bar = next((n for n in d.ui_nodes() if n.cls.endswith("EditText") and not n.in_web), None)
-        if bar and bar.text == url:
+        # Typing a long address takes a while: wait for the field to hold all of it (up to 3 s)
+        # before judging, instead of reading it back too early.
+        def full():
+            b = next((n for n in d.ui_nodes() if n.cls.endswith("EditText") and not n.in_web), None)
+            return b if b and b.text == url else None
+        done = d.wait_for(full, 3)
+        bar = done or next((n for n in d.ui_nodes() if n.cls.endswith("EditText") and not n.in_web), None)
+        if done:
             d.key(66)
             return
     raise Fail(f"couldn't type the address (field shows {bar.text if bar else None!r})")
