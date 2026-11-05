@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 01:33 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 10:20 IST
 
 Everything stays in Corn's **private app storage** on the phone. Other apps can't read it (Android sandbox), the phone encrypts it while locked (file-based encryption), and Corn opts out of every backup.
 
@@ -19,7 +19,7 @@ Everything stays in Corn's **private app storage** on the phone. Other apps can'
 | **History** (page address, title, site, visit times) | `corn.db`: `history_entries` (one per page) + `history_visits` (one per visit) | ❌ Wiped by Flush | Shared format for every platform; "Keep history" off stops recording |
 | **Settings** (Flush mode, toggles, default engine, address bar position, theme, background tabs) | Android app settings file (SharedPreferences) | ✅ Yes | Simple on/off values, no browsing data |
 | **Vault PIN** | Settings file, as a salted PBKDF2 hash (never the PIN itself) | ✅ Yes | Lets Corn check the PIN without storing it |
-| **Blocking engines** | Cache files `ads-v1.dat` (EasyList) and `trackers-v1.dat` (EasyPrivacy); last refresh time in `corn_engine` settings | ✅ Yes | Rebuilt from downloaded lists every 4 days |
+| **Blocking engines** | Cache files `ads-v2.dat` (EasyList + uBlock Origin), `trackers-v1.dat` (EasyPrivacy) and `scriptlets-v1.json` (uBO scriptlet code); last refresh time in `corn_engine` settings | ✅ Yes | Rebuilt from downloaded lists every 4 days |
 | **Cookies, site data, cache** | WebView's own storage (`app_webview/`, cache folder) | ❌ Wiped (except Keep List cookies and IndexedDB; see [11](11-keep-list.md)) | Owned by the web engine |
 | **Tab previews** | Memory only | ❌ Gone on Flush or app close | Never written to disk |
 

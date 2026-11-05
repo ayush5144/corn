@@ -10,3 +10,7 @@ license.workspace = true
 # but Android WebView checks requests on several threads at once.
 adblock = { workspace = true, features = ["embedded-domain-resolver", "full-regex-handling"] }
 thiserror.workspace = true
+# Already in the dependency tree through adblock-rust; used to build and store scriptlet resources.
+base64 = "0.22"
+regex = "1"
+serde_json = "1"
