@@ -1,0 +1,17 @@
+<!doctype html>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>QA video</title>
+<script src="qa.js"></script>
+<!-- The bright background lets a screenshot tell this pane apart from a black fullscreen video. -->
+<body style="font:18px sans-serif;margin:0;padding:12px;background:#2e7d32;color:#fff;min-height:100vh;box-sizing:border-box">
+<h3 style="margin:0 0 8px">Video <span id="label"></span></h3>
+<video id="v" src="test.mp4" muted loop playsinline style="display:block;width:100%;background:#000"></video>
+<button id="fs" style="font-size:18px;padding:14px;width:100%;margin-top:8px">Fullscreen</button>
+<script>
+  document.getElementById('label').textContent = QA.param('pane') || '';
+  var v = document.getElementById('v');
+  v.play().catch(function () {});
+  document.getElementById('fs').onclick = function () {
+    (v.requestFullscreen ? v.requestFullscreen() : v.webkitRequestFullscreen()).catch(function (e) { window.qaFsError = String(e); });
+  };
+</script>
