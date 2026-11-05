@@ -74,6 +74,8 @@ fun BoxScope.Sheets(c: CornController) {
 private fun OtherSheet(c: CornController, shown: Sheet?) {
         when (shown) {
             is Sheet.Link -> LinkSheet(c, shown)
+            is Sheet.Image -> ImageSheet(c, shown)
+            is Sheet.ExternalApp -> ExternalAppSheet(c, shown)
             Sheet.Menu -> MenuSheet(c)
             Sheet.Engine -> EngineSheet(c)
             Sheet.Shield -> ShieldSheet(c)
@@ -118,6 +120,35 @@ private fun MenuSheet(c: CornController) {
     Row50(CornIcons.Clock, "History", { c.openHistory() })
     Row50(CornIcons.Share, "Share page", { cur?.takeIf { !it.isNewTab }?.let { c.share(it.url) } ?: run { c.sheet = null } }, enabled = cur?.isNewTab == false)
     Row50(CornIcons.Sliders, "Settings", { c.sheet = null; c.screen = app.cornbrowser.Screen.Settings })
+}
+
+/** Long-press on an image: image actions, plus the link's when the image is a link. */
+@Composable
+private fun ImageSheet(c: CornController, s: Sheet.Image) {
+    val web = s.imageUrl.startsWith("https://") || s.imageUrl.startsWith("http://")
+    SheetTitle(s.title ?: "Image", s.linkUrl ?: s.imageUrl.takeIf { web } ?: "")
+    if (s.linkUrl != null) {
+        Row50(CornIcons.ChevRight, "Open link", { c.sheet = null; c.tabs.load(s.linkUrl) })
+        Row50(CornIcons.TabNew, "Open link in new tab", { c.openLinkInNewTab(s.linkUrl) })
+    }
+    Row50(CornIcons.Download, "Save image", { c.saveImage(s.imageUrl) }, enabled = web)
+    Row50(CornIcons.TabNew, "Open image in new tab", { c.openLinkInNewTab(s.imageUrl) }, enabled = web)
+    Row50(CornIcons.Share, "Share image link", { c.share(s.imageUrl) }, enabled = web)
+    Row50(CornIcons.Copy, if (s.linkUrl != null) "Copy link" else "Copy image link", { c.copyLink(s.linkUrl ?: s.imageUrl) }, enabled = s.linkUrl != null || web)
+}
+
+/** A tapped link to another app (phone, email, SMS, map, an app): Corn asks before leaving. */
+@Composable
+private fun ExternalAppSheet(c: CornController, s: Sheet.ExternalApp) {
+    SheetTitle(s.title, s.detail)
+    BigButton(if (s.appName != null) "Open ${s.appName}" else "Open", { c.openExternalApp(s) }, icon = CornIcons.ChevRight)
+    Spacer(Modifier.height(10.dp))
+    if (s.fallbackUrl != null) {
+        BigButton("Open web version", { c.openExternalFallback(s) }, ghost = true)
+        Spacer(Modifier.height(10.dp))
+    }
+    BigButton("Cancel", { c.sheet = null }, ghost = true)
+    T("The other app sees this link. Nothing else from Corn is shared.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 10.dp))
 }
 
 /** Menu → Split screen: the open tab stays in the first pane; pick what goes in the second. */

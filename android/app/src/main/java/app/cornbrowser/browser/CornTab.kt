@@ -47,8 +47,15 @@ interface TabHost {
     fun onPopupAllowed(opener: TabEntry, resultMsg: Message): Boolean
     fun onBlockedRedirect(target: String)
     fun onLinkLongPress(entry: TabEntry, url: String, title: String)
+    /** Long-press on an image ([linkUrl] set when the image is also a link). */
+    fun onImageLongPress(entry: TabEntry, imageUrl: String, linkUrl: String?, title: String?)
+    /** The user tapped a link to another app (phone, email, SMS, map, `intent://`…). Ask before leaving Corn. */
+    fun onExternalLink(entry: TabEntry, url: String)
+    /** A tab opened as a new window closed itself (`window.close()`, e.g. after a sign-in). */
+    fun onWindowClosed(entry: TabEntry) {}
     fun onMediaChanged()
-    fun onEnterFullscreen(view: View, exit: () -> Unit)
+    /** [entry]'s page went fullscreen (a video). In split screen it stays inside that tab's pane. */
+    fun onEnterFullscreen(entry: TabEntry, view: View, exit: () -> Unit)
     fun onExitFullscreen()
     /** The page process died (crash or the system reclaimed memory). */
     fun onPageCrashed(entry: TabEntry)
@@ -58,6 +65,8 @@ interface TabHost {
     val safeBrowsingEnabled: Boolean
     /** Settings → Appearance: pages in light mode (white background, prefers-color-scheme: light). */
     val lightPages: Boolean
+    /** Settings → Appearance → Darken all websites (off by default): WebView darkens light-only pages in dark mode. */
+    val darkenWebsites: Boolean
     /** A tab's address changed (for history). */
     fun onVisited(entry: TabEntry, url: String, title: String)
     /** A page's title became known (for history). */
@@ -107,6 +116,8 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
     @Volatile private var exceptions: List<String> = emptyList()
     @Volatile private var generichide: Boolean = false
     private var lastUserGestureAt = 0L
+    /** When this tab last opened a new window (WindowPolicy's one-window-per-tap rule). */
+    private var lastWindowAt = 0L
     private val main = Handler(Looper.getMainLooper())
 
     init {
@@ -114,8 +125,8 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
         s.javaScriptEnabled = true
         s.domStorageEnabled = true
         s.mediaPlaybackRequiresUserGesture = true
-        // Every pop-up attempt (tapped or scripted) reaches onCreateWindow, where Corn decides
-        // per site and counts it. Left off, WebView would drop scripted pop-ups silently.
+        // Every new-window request (tapped target=_blank link, window.open, scripted pop-up) reaches
+        // onCreateWindow, where Corn applies WindowPolicy: tapped = new tab, untapped = blocked.
         s.setSupportMultipleWindows(true)
         s.javaScriptCanOpenWindowsAutomatically = true
         s.mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
@@ -124,11 +135,15 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
         s.textZoom = host.textZoom
         s.userAgentString = BrowserIdentity.userAgent(s.userAgentString)
         setSafeBrowsing(host.safeBrowsingEnabled)
-        // Light: white like other browsers. Dark: Corn's background, and WebView darkens pages that
-        // have no dark style of their own (otherwise their default black text sits on a dark page).
-        webView.setBackgroundColor(if (host.lightPages) android.graphics.Color.WHITE else 0xFF0F0E0B.toInt())
+        // Pages follow the site (like Chrome): sites with a dark mode go dark because the theme above
+        // says the user prefers dark; light-only sites stay as designed, and a site's own light/dark
+        // switch works. White is the web's default page background, so text without a colour stays
+        // readable. Forced darkening only with Settings → Darken all websites (QA 2026-11-05, #2: it
+        // turned ayushpatil.com's own light mode back to black and Hacker News's beige to near-black).
+        val darken = host.darkenWebsites && !host.lightPages
+        webView.setBackgroundColor(if (darken) 0xFF0F0E0B.toInt() else android.graphics.Color.WHITE)
         if (androidx.webkit.WebViewFeature.isFeatureSupported(androidx.webkit.WebViewFeature.ALGORITHMIC_DARKENING)) {
-            androidx.webkit.WebSettingsCompat.setAlgorithmicDarkeningAllowed(webView.settings, !host.lightPages)
+            androidx.webkit.WebSettingsCompat.setAlgorithmicDarkeningAllowed(webView.settings, darken)
         }
 
         CookieManager.getInstance().setAcceptThirdPartyCookies(webView, false)
@@ -271,18 +286,49 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
         when (hit.type) {
             WebView.HitTestResult.SRC_ANCHOR_TYPE -> {
                 val url = hit.extra ?: return false
-                requestLinkTitle { title -> host.onLinkLongPress(entry, url, title ?: url) }
+                requestLinkHref { _, title -> linkTitle(url, title) { best -> host.onLinkLongPress(entry, url, best ?: url) } }
                 return true
             }
             WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE -> {
-                requestLinkHref { url, title -> if (url != null) host.onLinkLongPress(entry, url, title ?: url) }
+                val image = hit.extra
+                requestLinkHref { url, title ->
+                    when {
+                        url == null && image != null -> host.onImageLongPress(entry, image, null, null)
+                        url == null -> Unit
+                        image != null -> linkTitle(url, title) { best -> host.onImageLongPress(entry, image, url, best) }
+                        else -> linkTitle(url, title) { best -> host.onLinkLongPress(entry, url, best ?: url) }
+                    }
+                }
+                return true
+            }
+            WebView.HitTestResult.IMAGE_TYPE -> {
+                val image = hit.extra ?: return false
+                host.onImageLongPress(entry, image, null, null)
                 return true
             }
         }
         return false
     }
 
-    private fun requestLinkTitle(done: (String?) -> Unit) = requestLinkHref { _, title -> done(title) }
+    /**
+     * The link's title for the long-press sheet. WebView only gives the first text inside the link,
+     * which on video sites is the duration ("4:02"). Ask the page for every link to the same address
+     * (labels first, then text) and let [LinkTitles.pick] skip durations and counters.
+     */
+    private fun linkTitle(url: String, fallback: String?, done: (String?) -> Unit) {
+        val js = "(function(u){var out=[];var as=document.querySelectorAll('a[href]');" +
+            "for(var i=0;i<as.length&&out.length<40;i++){var a=as[i];if(a.href!==u)continue;" +
+            "out.push(a.getAttribute('aria-label'),a.getAttribute('title'));" +
+            "var im=a.querySelector('img[alt]');if(im)out.push(im.getAttribute('alt'));" +
+            "out.push((a.innerText||'').slice(0,300));}return out;})(" + JSONObject.quote(url) + ")"
+        webView.evaluateJavascript(js) { result ->
+            val fromPage = runCatching {
+                val arr = JSONArray(result)
+                List(arr.length()) { i -> if (arr.isNull(i)) null else arr.optString(i) }
+            }.getOrDefault(emptyList())
+            done(LinkTitles.pick(fromPage + fallback))
+        }
+    }
 
     private fun requestLinkHref(done: (url: String?, title: String?) -> Unit) {
         val handler = Handler(Looper.getMainLooper()) { msg ->
@@ -331,7 +377,15 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
         override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
             val target = request.url
             val scheme = target.scheme ?: return true
-            if (scheme != "http" && scheme != "https") return true // never jump out to other apps silently
+            if (scheme != "http" && scheme != "https") {
+                // Links to other apps (phone, email, SMS, maps, intent://): only after a tap, and Corn
+                // asks first. A page can never send the user to another app by itself.
+                val tapped = request.hasGesture() || System.currentTimeMillis() - lastUserGestureAt < 1500
+                if (tapped && ExternalLinks.kind(target.toString()) != ExternalLinks.Kind.IGNORE) {
+                    host.onExternalLink(entry, target.toString())
+                }
+                return true
+            }
             if (!request.isForMainFrame) return false
             if (!request.isRedirect) {
                 val currentHost = Uri.parse(entry.url).host?.removePrefix("www.")
@@ -455,12 +509,26 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
         override fun onGeolocationPermissionsHidePrompt() = host.onSitePermissionCancelled()
 
         override fun onCreateWindow(view: WebView, isDialog: Boolean, isUserGesture: Boolean, resultMsg: Message?): Boolean {
-            if (!shieldsHere().popups && resultMsg != null) return host.onPopupAllowed(entry, resultMsg)
+            // Tapped links and buttons ("open in new tab", "Sign in with Google", "Share") open as a
+            // new tab; windows a page opens by itself are pop-ups. See WindowPolicy.
+            val now = System.currentTimeMillis()
+            val decision = WindowPolicy.newWindow(
+                userGesture = isUserGesture,
+                siteBlocksPopups = shieldsHere().popups,
+                msSinceLastOpened = if (lastWindowAt == 0L) Long.MAX_VALUE else now - lastWindowAt,
+            )
+            if (decision == WindowPolicy.Decision.OPEN_TAB && resultMsg != null && host.onPopupAllowed(entry, resultMsg)) {
+                lastWindowAt = now
+                return true
+            }
             guardedOnPage.incrementAndGet()
             sync()
             host.onBlockedPopup()
             return false
         }
+
+        /** A window this tab was opened as closed itself (sign-in pop-ups do this when done). */
+        override fun onCloseWindow(window: WebView) = host.onWindowClosed(entry)
 
         override fun onReceivedTitle(view: WebView, title: String?) {
             if (!title.isNullOrBlank()) {
@@ -477,7 +545,7 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
         override fun onConsoleMessage(message: android.webkit.ConsoleMessage): Boolean = true
 
         override fun onShowCustomView(view: View, callback: CustomViewCallback) {
-            host.onEnterFullscreen(view) { callback.onCustomViewHidden() }
+            host.onEnterFullscreen(entry, view) { callback.onCustomViewHidden() }
         }
 
         override fun onHideCustomView() = host.onExitFullscreen()

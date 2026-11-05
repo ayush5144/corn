@@ -288,6 +288,8 @@ private fun Pane(c: CornController, entry: TabEntry, focused: Boolean, closing: 
             },
     ) {
         PageContent(c, entry, onTouch = { focusThis.value() })
+        // This tab's video went fullscreen in split screen: it fills only this pane (QA 2026-11-05, #4).
+        if (c.fullscreenInPane && c.fullscreenTabId == entry.id) c.fullscreen?.let { v -> FullscreenView(v, Modifier.matchParentSize()) }
         // Corn yellow, the Flush button's colour and the Tabs screen's "current tab" outline.
         if (focused) Box(Modifier.matchParentSize().border(3.dp, C.Corn))
         if (closing) {

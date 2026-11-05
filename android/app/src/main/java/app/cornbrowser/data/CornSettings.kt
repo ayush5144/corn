@@ -64,6 +64,9 @@ class CornSettings(context: Context) {
     var safeBrowsing by pref("safe_browsing", true)
     /** Ask search engines to filter explicit results. Off by default. */
     var safeSearch by pref("safe_search", false)
+    /** Settings → Appearance → Darken all websites. Off by default: pages follow the site's own
+     *  light/dark look (QA 2026-11-05, #2). On: in dark mode WebView also darkens light-only pages. */
+    var darkenWebsites by pref("darken_websites", false)
     /** Settings → Appearance: "dark" (default), "light" or "system" (match the phone). */
     var theme by stringPref("theme", "dark")
     /** Settings → Appearance → Text size: page text in percent (100 = the site's own size). */

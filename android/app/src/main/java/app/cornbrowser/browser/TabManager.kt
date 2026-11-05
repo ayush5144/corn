@@ -67,6 +67,8 @@ class TabEntry(val id: Int, url: String, groupId: Int?) {
     internal var savedScrollY: Int = 0
     internal var live: CornTab? = null
     internal var saved: Bundle? = null
+    /** Set when a page opened this tab as a new window: only such tabs may close themselves. */
+    internal var openerId: Int? = null
 }
 
 /**
@@ -231,6 +233,7 @@ class TabManager(private val context: Context, private val host: TabHost) {
     /** A pop-up the site is allowed to open: becomes a new tab next to its opener. */
     fun openPopup(opener: TabEntry, resultMsg: android.os.Message): Boolean {
         val entry = TabEntry(nextTabId++, "about:blank", opener.groupId)
+        entry.openerId = opener.id
         tabs.add((tabs.indexOf(opener) + 1).coerceIn(0, tabs.size), entry)
         val live = newLive(entry)
         val transport = resultMsg.obj as? android.webkit.WebView.WebViewTransport ?: return false
@@ -290,6 +293,18 @@ class TabManager(private val context: Context, private val host: TabHost) {
                 ?: tabs[idx.coerceAtMost(tabs.lastIndex)]
             switchTo(next.id)
         }
+    }
+
+    /**
+     * A tab a page opened as a new window called `window.close()` (sign-in windows do when done).
+     * Like other browsers, only tabs opened by a page may close themselves; the opener comes back.
+     */
+    fun closeOpenedWindow(entry: TabEntry) {
+        val openerId = entry.openerId ?: return
+        if (tabs.none { it.id == entry.id }) return
+        val wasCurrent = currentId == entry.id
+        close(entry.id)
+        if (wasCurrent && tabs.any { it.id == openerId }) switchTo(openerId)
     }
 
     /** Throw away a tab's dead WebView; it reloads its URL when shown again. */

@@ -71,7 +71,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             LaunchedEffect(c.settings.blackRecents) { applyRecentsPrivacy(c.settings.blackRecents) }
             LaunchedEffect(c.settings.theme) { applyTheme() }
-            LaunchedEffect(c.fullscreen) { setSystemBarsHidden(c.fullscreen != null) }
+            LaunchedEffect(c.fullscreen, c.fullscreenInPane) { setSystemBarsHidden(c.fullscreen != null && !c.fullscreenInPane) }
             CornApp(
                 c, pinSetup,
                 onPinSetupDone = { pinSetup = false; c.settings.appLock = true; c.showToast("App Lock is on") },

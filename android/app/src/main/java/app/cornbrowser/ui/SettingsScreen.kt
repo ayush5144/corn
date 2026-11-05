@@ -144,8 +144,12 @@ fun SettingsScreen(c: CornController, onNeedPin: () -> Unit) {
                         c.showToast(if (i == 1) "Address bar moved to the bottom" else "Address bar moved to the top")
                     }
                 })
+                ToggleRow("Darken all websites", "In dark mode, also darken sites that only have a light look. It can override a site's own light mode.", s.darkenWebsites) {
+                    s.darkenWebsites = it
+                    c.onThemeChanged()
+                }
             }
-            Caption("Pages follow the theme too: in dark mode, pages without their own dark style are darkened. \"Phone\" matches your phone's dark mode. Text size: S 85%, M 100% (the site's own size), L 115%, XL 130%.")
+            Caption("Sites with their own dark mode follow the theme. \"Phone\" matches your phone's dark mode. Text size: S 85%, M 100% (the site's own size), L 115%, XL 130%.")
 
             Label("Advanced: background tabs")
             SettingsGroup {

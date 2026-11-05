@@ -66,19 +66,30 @@ fun CornApp(
                 }
             }
         }
-        // Fullscreen video covers everything, including the system bars.
-        c.fullscreen?.let { v ->
-            AndroidView(
-                modifier = Modifier.fillMaxSize().background(Color.Black),
-                factory = { ctx -> FrameLayout(ctx) },
-                update = { box ->
-                    if (box.getChildAt(0) !== v) {
-                        box.removeAllViews()
-                        (v.parent as? ViewGroup)?.removeView(v)
-                        box.addView(v, FrameLayout.LayoutParams(-1, -1))
-                    }
-                },
-            )
+        // Fullscreen video covers everything, including the system bars. In split screen it stays
+        // inside its tab's pane instead (BrowserScreen's Pane draws it there).
+        if (!c.fullscreenInPane) c.fullscreen?.let { v -> FullscreenView(v, Modifier.fillMaxSize()) }
+        // Fullscreen that started in a pane ends when that tab leaves split screen (pane closed, split ended).
+        val split = c.tabs.split
+        androidx.compose.runtime.LaunchedEffect(split, c.fullscreenTabId) {
+            val id = c.fullscreenTabId
+            if (c.fullscreenInPane && id != null && split?.contains(id) != true) c.exitFullscreen()
         }
     }
+}
+
+/** A page's fullscreen view (WebView's onShowCustomView), on black. */
+@Composable
+fun FullscreenView(v: android.view.View, modifier: Modifier) {
+    AndroidView(
+        modifier = modifier.background(Color.Black),
+        factory = { ctx -> FrameLayout(ctx) },
+        update = { box ->
+            if (box.getChildAt(0) !== v) {
+                box.removeAllViews()
+                (v.parent as? ViewGroup)?.removeView(v)
+                box.addView(v, FrameLayout.LayoutParams(-1, -1))
+            }
+        },
+    )
 }

@@ -42,6 +42,10 @@ enum class Screen { Onboarding, Browser, Tabs, Vault, Settings, History }
 /** Which bottom sheet is open. */
 sealed interface Sheet {
     data class Link(val url: String, val title: String) : Sheet
+    /** Long-press on an image; [linkUrl] is set when the image is also a link. */
+    data class Image(val imageUrl: String, val linkUrl: String?, val title: String?) : Sheet
+    /** A tapped link to another app: ask before leaving Corn. [intent] is already made safe. */
+    data class ExternalApp(val title: String, val detail: String, val appName: String?, val intent: Intent, val fallbackUrl: String?) : Sheet
     data object Menu : Sheet
     data object Engine : Sheet
     data object Shield : Sheet
@@ -104,6 +108,12 @@ class CornController(private val context: Context) : TabHost {
     var vaultUnlocked by mutableStateOf(false)
     var appLocked by mutableStateOf(settings.appLock && settings.hasPin)
     var fullscreen by mutableStateOf<View?>(null)
+        private set
+    /** The tab whose page is fullscreen. */
+    var fullscreenTabId by mutableStateOf<Int?>(null)
+        private set
+    /** Fullscreen started while that tab was in split screen: the video fills only its pane. */
+    var fullscreenInPane by mutableStateOf(false)
         private set
     private var exitFullscreen: (() -> Unit)? = null
 
@@ -322,7 +332,7 @@ class CornController(private val context: Context) : TabHost {
 
     fun back(): Boolean {
         when {
-            fullscreen != null -> exitFullscreen?.invoke()
+            fullscreen != null -> exitFullscreen()
             sheet != null -> dismissSheet()
             findQuery != null -> closeFind()
             screen != Screen.Browser && screen != Screen.Onboarding -> screen = Screen.Browser
@@ -509,7 +519,16 @@ class CornController(private val context: Context) : TabHost {
         passwords.onMessage(entry, data, sourceOrigin, isMainFrame, reply)
 
     override fun onLoginPageStarted(entry: TabEntry) = passwords.onPageStarted(entry)
-    override fun onTabClosed(entry: TabEntry) = passwords.forgetTab(entry)
+    override fun onTabClosed(entry: TabEntry) {
+        passwords.forgetTab(entry)
+        // Its WebView is gone: nothing would ever report the end of its fullscreen.
+        if (fullscreenTabId == entry.id) onExitFullscreen()
+    }
+
+    /** A tab opened as a new window closed itself: close it and go back to the page that opened it. */
+    override fun onWindowClosed(entry: TabEntry) {
+        main.post { tabs.closeOpenedWindow(entry) }
+    }
 
     override fun onFindResult(active: Int, total: Int) {
         findActive = active
@@ -758,14 +777,97 @@ class CornController(private val context: Context) : TabHost {
         sheet = Sheet.Link(url, title)
     }
 
+    override fun onImageLongPress(entry: TabEntry, imageUrl: String, linkUrl: String?, title: String?) {
+        sheet = Sheet.Image(imageUrl, linkUrl, title)
+    }
+
+    /** Image sheet → Save image: the same confirm sheet and Downloads folder as any download. */
+    fun saveImage(imageUrl: String) {
+        if (!imageUrl.startsWith("https://") && !imageUrl.startsWith("http://")) {
+            sheet = null
+            showToast("Corn can't save this image")
+            return
+        }
+        val ext = android.webkit.MimeTypeMap.getFileExtensionFromUrl(imageUrl)
+        val mime = android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext)
+        val ua = tabs.current?.live?.webView?.settings?.userAgentString ?: ""
+        onDownload(DownloadRequest(imageUrl, ua, null, mime, -1))
+    }
+
+    // ---------------- links to other apps ----------------
+
+    /**
+     * A tapped link to another app. Builds a safe intent (browsable only, no component or selector,
+     * no permission grants, never Corn itself), the way Chrome and DuckDuckGo do, then asks.
+     */
+    override fun onExternalLink(entry: TabEntry, url: String) {
+        main.post {
+            val kind = app.cornbrowser.browser.ExternalLinks.kind(url)
+            val scheme = url.substringBefore(':').lowercase()
+            val intent = runCatching {
+                when (scheme) {
+                    "intent" -> Intent.parseUri(url, Intent.URI_INTENT_SCHEME)
+                    "android-app" -> Intent.parseUri(url, Intent.URI_ANDROID_APP_SCHEME)
+                    else -> Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url))
+                }
+            }.getOrNull()
+            if (intent == null) { showToast("Corn can't open this link"); return@post }
+            val fallback = app.cornbrowser.browser.ExternalLinks.fallback(intent.getStringExtra("browser_fallback_url"))
+            intent.addCategory(Intent.CATEGORY_BROWSABLE)
+            intent.component = null
+            intent.selector = null
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK // drops any URI permission grants the page asked for
+            if (intent.`package` == context.packageName) return@post
+            // The app's name, when Android lets Corn see it. Since Android 11 most installed apps are
+            // hidden from other apps, so "unknown" doesn't mean "not installed": Open still tries, and
+            // falls back to the link's web version (if it has one) only when no app takes it.
+            val pm = context.packageManager
+            val target = runCatching { pm.resolveActivity(intent, android.content.pm.PackageManager.MATCH_DEFAULT_ONLY) }.getOrNull()
+            // "android" = Android's own app chooser (several apps can open it): no single name to show.
+            val appName = target?.activityInfo?.takeIf { it.packageName != "android" }?.loadLabel(pm)?.toString()
+            sheet = Sheet.ExternalApp(
+                title = app.cornbrowser.browser.ExternalLinks.title(kind, appName),
+                detail = app.cornbrowser.browser.ExternalLinks.detail(kind, url),
+                appName = appName,
+                intent = intent,
+                fallbackUrl = fallback,
+            )
+        }
+    }
+
+    /** Ask sheet → Open web version (only offered when the link has one). */
+    fun openExternalFallback(s: Sheet.ExternalApp) {
+        sheet = null
+        s.fallbackUrl?.let { tabs.load(it) }
+    }
+
+    /** Ask sheet → Open. */
+    fun openExternalApp(s: Sheet.ExternalApp) {
+        sheet = null
+        val opened = runCatching { context.startActivity(s.intent) }.isSuccess
+        if (opened) return
+        if (s.fallbackUrl != null) tabs.load(s.fallbackUrl) else showToast("No app on this phone can open this link")
+    }
+
     override fun onMediaChanged() {
         if (tabs.anyMediaPlaying) onUserActivity()
     }
 
-    override fun onEnterFullscreen(view: View, exit: () -> Unit) {
+    override fun onEnterFullscreen(entry: TabEntry, view: View, exit: () -> Unit) {
         fullscreen = view
+        fullscreenTabId = entry.id
+        fullscreenInPane = tabs.split?.contains(entry.id) == true
         exitFullscreen = exit
     }
+
+    /** Leave fullscreen: tell the page, and clear Corn's state even if the page never answers. */
+    fun exitFullscreen() {
+        val exit = exitFullscreen
+        onExitFullscreen()
+        runCatching { exit?.invoke() }
+    }
+
+    override val darkenWebsites: Boolean get() = settings.darkenWebsites
 
     /** Pages use the same theme as Corn (Settings → Appearance). */
     override val lightPages: Boolean get() = app.cornbrowser.ui.C.light
@@ -786,6 +888,8 @@ class CornController(private val context: Context) : TabHost {
 
     override fun onExitFullscreen() {
         fullscreen = null
+        fullscreenTabId = null
+        fullscreenInPane = false
         exitFullscreen = null
     }
 
