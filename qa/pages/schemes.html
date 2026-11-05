@@ -1,0 +1,27 @@
+<!doctype html>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>QA app links</title>
+<script src="qa.js"></script>
+<body style="font:20px sans-serif;margin:0;padding:16px;background:#fff;color:#111">
+<style>a{display:block;padding:16px;margin:0 0 10px;background:#e8f0fe;color:#0b57d0}</style>
+<h2 style="margin:0 0 12px">Links to other apps</h2>
+<a id="tel" href="tel:+15551234567">Call (tel:)</a>
+<a id="mailto" href="mailto:hello@example.com">Email (mailto:)</a>
+<a id="sms" href="sms:+15551234567">Text (sms:)</a>
+<a id="geo" href="geo:37.42,-122.08">Map (geo:)</a>
+<a id="intent" href="intent://scan/#Intent;scheme=zxing;package=com.google.zxing.client.android;end">Open in app (intent://, no fallback)</a>
+<a id="intentfb">Open in app (intent://, with web fallback)</a>
+<p id="auto">No-tap tel: only with ?auto=1</p>
+<script>
+  // An app that is not installed, so the browser must load the fallback address.
+  document.getElementById('intentfb').href =
+    'intent://qa/#Intent;scheme=cornqa;package=org.example.notinstalled;S.browser_fallback_url=' +
+    encodeURIComponent(QA.hit('intent-fallback')) + ';end';
+  if (QA.param('auto') === '1') {
+    setTimeout(function () {
+      window.qaAutoRan = true;
+      document.getElementById('auto').textContent = 'No-tap tel: ran';
+      location.href = 'tel:+15557654321';
+    }, 3000);
+  }
+</script>

@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>QA site theme</title>
+<script src="qa.js"></script>
+<script>
+  // Like many sites: start from the browser's preference, let the visitor switch.
+  document.documentElement.className = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+</script>
+<style>
+  html.light { color-scheme: light; }
+  html.dark { color-scheme: dark; }
+  html.light body { background: #ffffff; color: #111111; }
+  html.dark body { background: #121212; color: #eeeeee; }
+  body { font: 20px sans-serif; margin: 0; padding: 16px; min-height: 100vh; box-sizing: border-box; }
+  button { font-size: 20px; padding: 16px; width: 100%; margin-bottom: 12px; }
+</style>
+<body>
+<h2 style="margin:0 0 12px">Site with its own theme switch</h2>
+<button id="light" onclick="document.documentElement.className='light'">Use light theme</button>
+<button id="dark" onclick="document.documentElement.className='dark'">Use dark theme</button>
+<p>The page background is pure white in light and #121212 in dark.</p>
+</body>
+</html>

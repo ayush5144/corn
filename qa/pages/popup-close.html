@@ -1,0 +1,13 @@
+<!doctype html>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>QA self-closing pop-up</title>
+<script src="qa.js"></script>
+<body style="font:22px sans-serif;padding:16px;background:#fff8e1;color:#111">
+<h2>Self-closing pop-up</h2>
+<p>This window calls window.close() on itself after 2 seconds, like a sign-in window does.</p>
+<script>
+  setTimeout(function () {
+    // Tell the server we are about to close, so the log proves the timer ran.
+    fetch(QA.hit('popup-close-closing')).catch(function () {}).finally(function () { window.close(); });
+  }, 2000);
+</script>

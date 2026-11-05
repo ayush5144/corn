@@ -1,0 +1,15 @@
+<!doctype html>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>QA link titles</title>
+<script src="qa.js"></script>
+<body style="font:20px sans-serif;margin:0;padding:16px;background:#fff;color:#111">
+<h2 style="margin:0 0 12px">Video list (like YouTube)</h2>
+<!-- The thumbnail link's first text is the duration overlay; the real title is a second link
+     to the same address. Long-pressing the thumbnail should show the title, not "4:02". -->
+<div style="position:relative">
+  <a id="thumb" data-n="video-1" style="display:block;position:relative">
+    <span id="duration" style="position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:14px;padding:2px 6px;border-radius:4px">4:02</span>
+    <img src="picture.png?n=thumb" alt="" style="display:block;width:100%;height:auto">
+  </a>
+</div>
+<a id="title" data-n="video-1" style="display:block;padding:10px 0;color:#111;text-decoration:none;font-weight:bold">Sunrise over a quiet lake</a>
