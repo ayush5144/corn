@@ -25,10 +25,10 @@ object CornIcons {
 
     // Arrows are open shapes, so they look bigger than boxes of the same height:
     // drawn smaller on purpose (optical sizing), 15.5 dp visible vs 18 dp for the others.
-    val Back = line("M19.2 12H5.2", "M12 18.8L5.2 12 12 5.2")
-    val Forward = line("M4.8 12h14", "M12 5.2l6.8 6.8-6.8 6.8")
-    /** Back when it returns to Corn's home page: a curved "↩" arrow, same optical size as Back. */
-    val BackHome = line("M9.5 13.8L5 9.3l4.5-4.5", "M5 9.3h9a4.75 4.75 0 0 1 0 9.5h-3.5")
+    /** Every back button: a curved "↩" arrow (founder's choice, 2026-11-05; first drawn for "back to home page"). */
+    val Back = line("M9.5 13.8L5 9.3l4.5-4.5", "M5 9.3h9a4.75 4.75 0 0 1 0 9.5h-3.5")
+    /** Back mirrored ("↪"). */
+    val Forward = line("M14.5 13.8L19 9.3l-4.5-4.5", "M19 9.3h-9a4.75 4.75 0 0 0 0 9.5h3.5")
     val Vault = toolbar(RECT_VAULT, "M15.5 11a3.5 3.5 0 1 1-7 0a3.5 3.5 0 1 1 7 0z", "M12 7.5v1M12 13.5v1M8.5 11h1M14.5 11h1", FEET)
     val VaultAdd = toolbar(RECT_VAULT, "M12 7.4v7.2M8.4 11h7.2", FEET)
     val VaultSaved = toolbar(RECT_VAULT, "M8.3 11.2l2.6 2.6 4.8-5", FEET)

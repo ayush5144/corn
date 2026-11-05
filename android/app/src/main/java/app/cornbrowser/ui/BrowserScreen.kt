@@ -588,7 +588,7 @@ private fun Toolbar(c: CornController, cur: TabEntry) {
             contentAlignment = Alignment.Center,
         ) {
             CornIcon(
-                if (home) CornIcons.BackHome else CornIcons.Back, TOOLBAR_ICON,
+                CornIcons.Back, TOOLBAR_ICON,
                 tint = if (cur.canGoBack || home) C.Text else C.Muted.copy(alpha = 0.45f),
             )
         }
