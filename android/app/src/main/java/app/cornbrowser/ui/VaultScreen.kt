@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.cornbrowser.CornController
 import app.cornbrowser.Screen
+import app.cornbrowser.Sheet
 import app.cornbrowser.data.CornSettings
 import uniffi.corn_ffi.Collection
 import uniffi.corn_ffi.VaultItem
@@ -76,8 +77,6 @@ fun VaultScreen(c: CornController) {
     }
 
     var query by remember { mutableStateOf("") }
-    var naming by remember { mutableStateOf(false) }
-    var newName by remember { mutableStateOf("") }
     val version = c.data.vaultVersion.intValue
     val collections = remember(version) { c.data.collections() }
     val total = remember(version) { c.data.itemCount() }
@@ -107,12 +106,7 @@ fun VaultScreen(c: CornController) {
                                 if (col != null) {
                                     CollectionTile(col, Modifier.weight(1f).fillMaxHeight()) { openCollection = col.id }
                                 } else {
-                                    NewCollectionTile(naming, newName, { newName = it }, { naming = true }, Modifier.weight(1f).fillMaxHeight()) {
-                                        c.data.createCollection(newName)?.let { created -> openCollection = created.id }
-                                            ?: c.showToast("Pick a different name")
-                                        naming = false
-                                        newName = ""
-                                    }
+                                    NewCollectionTile(Modifier.weight(1f).fillMaxHeight()) { c.sheet = Sheet.NewCollection }
                                 }
                             }
                             if (row.size == 1) Spacer(Modifier.weight(1f))
@@ -145,19 +139,15 @@ private fun CollectionTile(col: Collection, modifier: Modifier, onOpen: () -> Un
 }
 
 @Composable
-private fun NewCollectionTile(naming: Boolean, name: String, onName: (String) -> Unit, onStart: () -> Unit, modifier: Modifier, onDone: () -> Unit) {
+private fun NewCollectionTile(modifier: Modifier, onTap: () -> Unit) {
     Column(
         modifier.heightIn(min = 108.dp).clip(RoundedCornerShape(16.dp)).border(1.dp, C.Line, RoundedCornerShape(16.dp))
-            .clickable(onClick = onStart).padding(14.dp),
+            .clickable(onClick = onTap).padding(14.dp),
         verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        if (naming) {
-            Field(name, onName, "Name it", height = 40.dp, onDone = onDone)
-        } else {
-            CornIcon(CornIcons.Plus, 22.dp, C.Muted)
-            Spacer(Modifier.height(6.dp))
-            T("New collection", 14.sp, C.Muted)
-        }
+        CornIcon(CornIcons.Plus, 22.dp, C.Muted)
+        Spacer(Modifier.height(6.dp))
+        T("New collection", 14.sp, C.Muted)
     }
 }
 

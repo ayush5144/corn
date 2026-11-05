@@ -75,6 +75,7 @@ private fun OtherSheet(c: CornController, shown: Sheet?) {
         when (shown) {
             is Sheet.Link -> LinkSheet(c, shown)
             is Sheet.Image -> ImageSheet(c, shown)
+            Sheet.NewCollection -> NewCollectionSheet(c)
             is Sheet.ExternalApp -> ExternalAppSheet(c, shown)
             Sheet.Menu -> MenuSheet(c)
             Sheet.Engine -> EngineSheet(c)
@@ -120,6 +121,30 @@ private fun MenuSheet(c: CornController) {
     Row50(CornIcons.Clock, "History", { c.openHistory() })
     Row50(CornIcons.Share, "Share page", { cur?.takeIf { !it.isNewTab }?.let { c.share(it.url) } ?: run { c.sheet = null } }, enabled = cur?.isNewTab == false)
     Row50(CornIcons.Sliders, "Settings", { c.sheet = null; c.screen = app.cornbrowser.Screen.Settings })
+}
+
+/**
+ * Vault → New collection. A sheet with its own Create button (the old tile turned into a text box
+ * with no button, and empty or repeated names only said "Pick a different name").
+ */
+@Composable
+private fun NewCollectionSheet(c: CornController) {
+    var name by remember { mutableStateOf("") }
+    val taken = remember(c.data.vaultVersion.intValue) { c.data.collections().map { it.name.trim().lowercase() }.toSet() + "all" }
+    val trimmed = name.trim()
+    val duplicate = trimmed.lowercase() in taken
+    val ok = trimmed.isNotEmpty() && !duplicate
+    val focus = remember { androidx.compose.ui.focus.FocusRequester() }
+    androidx.compose.runtime.LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
+    SheetTitle("New collection", "Group saved links, like “Recipes” or “Read later”.")
+    Field(name, { name = it.take(40) }, "Name", onDone = { if (ok) c.createCollection(trimmed) }, focus = focus)
+    T(
+        if (duplicate) "You already have a collection called “$trimmed”." else " ",
+        12.5.sp, C.Accent, modifier = Modifier.padding(top = 6.dp, bottom = 8.dp),
+    )
+    BigButton("Create", { c.createCollection(trimmed) }, icon = CornIcons.Folder, enabled = ok)
+    Spacer(Modifier.height(10.dp))
+    BigButton("Cancel", { c.sheet = null }, ghost = true)
 }
 
 /** Long-press on an image: image actions, plus the link's when the image is a link. */

@@ -42,6 +42,8 @@ enum class Screen { Onboarding, Browser, Tabs, Vault, Settings, History }
 /** Which bottom sheet is open. */
 sealed interface Sheet {
     data class Link(val url: String, val title: String) : Sheet
+    /** Vault → New collection: name it, then Create. */
+    data object NewCollection : Sheet
     /** Long-press on an image; [linkUrl] is set when the image is also a link. */
     data class Image(val imageUrl: String, val linkUrl: String?, val title: String?) : Sheet
     /** A tapped link to another app: ask before leaving Corn. [intent] is already made safe. */
@@ -372,6 +374,14 @@ class CornController(private val context: Context) : TabHost {
     }
 
     // ---------------- Vault ----------------
+
+    /** New collection sheet → Create. The sheet already checked the name is new and not empty. */
+    fun createCollection(name: String) {
+        val created = data.createCollection(name)
+        if (created == null) { showToast("Couldn't create that collection"); return }
+        sheet = null
+        showToast("Collection “${created.name}” created")
+    }
 
     fun openSaveSheet() {
         val cur = tabs.current ?: return

@@ -10,6 +10,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -105,10 +107,11 @@ fun IconBtn(icon: ImageVector, label: String, onClick: () -> Unit, tint: Color =
 }
 
 @Composable
-fun BigButton(text: String, onClick: () -> Unit, icon: ImageVector? = null, ghost: Boolean = false, modifier: Modifier = Modifier) {
+fun BigButton(text: String, onClick: () -> Unit, icon: ImageVector? = null, ghost: Boolean = false, modifier: Modifier = Modifier, enabled: Boolean = true) {
     Row(
         modifier.fillMaxWidth().height(50.dp).clip(RoundedCornerShape(14.dp))
-            .background(if (ghost) C.Surface2 else C.Corn).clickable(onClick = onClick),
+            .alpha(if (enabled) 1f else 0.4f)
+            .background(if (ghost) C.Surface2 else C.Corn).clickable(enabled = enabled, onClick = onClick),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -217,7 +220,7 @@ fun Caption(text: String) = T(text, 12.5.sp, C.Muted, modifier = Modifier.paddin
 // ---------------- fields ----------------
 
 @Composable
-fun Field(value: String, onChange: (String) -> Unit, placeholder: String, modifier: Modifier = Modifier, onDone: (() -> Unit)? = null, height: Dp = 46.dp, leading: @Composable (() -> Unit)? = null) {
+fun Field(value: String, onChange: (String) -> Unit, placeholder: String, modifier: Modifier = Modifier, onDone: (() -> Unit)? = null, height: Dp = 46.dp, leading: @Composable (() -> Unit)? = null, focus: androidx.compose.ui.focus.FocusRequester? = null) {
     Row(
         modifier.fillMaxWidth().height(height).clip(RoundedCornerShape(12.dp)).background(C.Surface2).padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -231,7 +234,7 @@ fun Field(value: String, onChange: (String) -> Unit, placeholder: String, modifi
                 cursorBrush = SolidColor(C.Accent),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { onDone?.invoke() }),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().let { m -> if (focus != null) m.focusRequester(focus) else m },
             )
         }
     }
