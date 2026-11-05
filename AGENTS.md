@@ -16,6 +16,7 @@ Corn is a free, private, mobile-first browser for adults. Start with `README.md`
 | Logos | `brand/` |
 | Security and encryption (passwords, PIN, what's protected) | `docs/02-technical/12-security.md` |
 | Logo / brand explorations and the agents that made them | `mockups/brand-compare.html`, `design-agents/`, `.claude/agents/` |
+| Emulator QA suite (run before calling a fix done) | `scripts/qa-run.sh` (`--list` for checks), pages in `qa/pages/`, how-to in `qa/README.md` |
 | Engineering agents (scriptlets, QA suite) | `.claude/agents/corn-scriptlet-engineer.md`, `.claude/agents/corn-qa-engineer.md` |
 
 ## Rules

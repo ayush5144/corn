@@ -201,3 +201,12 @@
 
 - Added `docs/05-review/04-qa-where-corn-fails-2026-11-05.md`: 8 findings with emulator data, cause in code and fix (tapped new-tab links blocked as pop-ups, forced page darkening, YouTube ads without scriptlets, fullscreen ignores split panes, tel/mailto/sms/geo/intent links dead, no image long-press menu, blocked pop-up looks opened, one unreproduced fullscreen hang), what passed, fix order.
 - Updated `docs/README.md` (Review index row 04).
+
+## 2026-11-05 — QA fixes 1–7, scriptlets, QA suite, collection sheet, nav arrow
+
+- Code: `browser/WebRules.kt` (WindowPolicy, ExternalLinks, LinkTitles) + tests; `CornTab.kt` (tap rule, onCloseWindow, app links, theme, long-press); `CornController.kt` (ExternalApp/Image/NewCollection sheets, fullscreen per pane); `ScriptletInjector.kt`, `CornEngine.kt`, `corn-block` scriptlets/preprocess (agent).
+- Added the QA suite: `qa/pages/`, `scripts/qa/`, `scripts/qa-run.sh`, `qa/README.md` (17/17 on the new build).
+- Updated `docs/01-product/02-decision-log.md` (Round 21), `03-features.md` (pop-up guard, app links, image menu, light/dark mode).
+- Updated `docs/03-planning/02-checklist.md` (QA fixes ticked with evidence; delete a collection added).
+- Updated `docs/05-review/04-qa-where-corn-fails-2026-11-05.md` (Status section); `AGENTS.md` (QA suite row).
+- Scriptlet agent updated `docs/02-technical/09-filter-lists.md`, `10-storage.md`, `docs/04-reference/02-open-source.md`.

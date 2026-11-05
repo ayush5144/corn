@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 02:23 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 11:15 IST
 
 Every feature in the Android app today, what it does for the user, and the evidence behind it. Nothing here is planned-only; planned work lives in the [checklist](../03-planning/02-checklist.md).
 
@@ -26,9 +26,15 @@ Every feature in the Android app today, what it does for the user, and the evide
   - *Evidence:* built on two separate engines (EasyList and EasyPrivacy). The switches' effect hasn't been checked on a device. The split is close but not exact, because the two lists overlap slightly.
 
 - **Pop-up and redirect guard** ✅
-  - *What:* every pop-up window (tapped or scripted) is stopped, and pages can't send the whole tab to another site unless you tapped.
-  - *Benefit:* no surprise pop-unders or redirect chains, which are common on adult sites.
-  - *Evidence:* a test page's scripted pop-up was stopped and counted (**1 of 1**).
+  - *What:* windows a page opens by itself are stopped; a link or button you tap that opens a new window opens as a new tab (one per tap), like Chrome. A sign-in window that closes itself brings back the page that opened it. Pages can't send the whole tab to another site unless you tapped.
+  - *Benefit:* no surprise pop-unders or redirect chains, which are common on adult sites, while "open in new tab" links, "Sign in with Google" and share buttons still work.
+  - *Evidence (2026-11-05, `scripts/qa-run.sh`):* tapped `target=_blank` link and tapped `window.open` each opened 1 page; no-tap pop-up 0 requests; one tap asking for 3 windows opened 1; self-closing window returned to its opener. ayushpatil.com's links open (they were all blocked before).
+
+- **Links to other apps** ✅
+  - *What:* phone, email, SMS, map and "open in app" links: after a tap, Corn asks ("Call this number?", "Open in <app>?"): Open, Open web version (when the link has one), Cancel. Never without a tap; `intent://` links are made safe like Chrome and DuckDuckGo do.
+  - *Evidence:* tel/mailto/sms/geo opened Phone, Gmail, Messages and Maps after Open; a no-tap `tel:` did nothing; an app that isn't installed fell back to the web version.
+
+- **Image long-press menu** ✅: Save image (through the download sheet), Open image in new tab, Share image link, Copy. Linked images also get the link's actions. Link titles come from the page's labels, so YouTube shows the video title instead of its duration.
 
 - **Element hiding** 🔨
   - *What:* leftover empty ad boxes are hidden using EasyList's hiding rules.
@@ -168,7 +174,7 @@ Every feature in the Android app today, what it does for the user, and the evide
 - **Five search engines with a one-tap switcher** ✅: DuckDuckGo (default), Google, Brave Search, Startpage, Bing, each with its favicon (bundled, never fetched). Seen in the address bar and the engine sheet.
 - **Full address in the address bar** ✅: always shows the page's full URL (e.g. `https://duckduckgo.com/?q=corn+browser`), like Brave.
 - **Address bar top or bottom** 🔨: a Settings choice.
-- **Light and dark mode** ✅: Settings → Appearance: Dark (default), Light, or Phone (follows the phone's dark mode). Pages follow it: the WebView gets the matching theme, so sites see the user's preference (`prefers-color-scheme`); in dark mode WebView darkens pages that have no dark style (`setAlgorithmicDarkeningAllowed`); in light mode pages are white. Verified: a page with no background of its own showed black text on white in light mode and light text on dark in dark mode (before, it was black on near-black and unreadable); NeverSSL showed darkened in dark mode. Switching rebuilds open pages so they change immediately.
+- **Light and dark mode** ✅: Settings → Appearance: Dark (default), Light, or Phone (follows the phone's dark mode). Sites see the user's preference (`prefers-color-scheme`), so sites with a dark mode follow it; pages are otherwise shown as the site designed them, on the web's white default background, and a site's own light/dark switch works. **Darken all websites** (off by default) makes WebView also darken light-only pages in dark mode (`setAlgorithmicDarkeningAllowed`). Verified 2026-11-05: a site's own switch to light shows white on screen (was black); a beige light-only page shows its beige (was near-black). Switching rebuilds open pages so they change immediately.
 - **Typed addresses fall back to http** ✅: typing `example.com` starts from `http://` and Corn's HTTPS upgrade tries https first. Verified: `httpforever.com` (https fails with a handshake error, checked from the Mac) opened at `http://httpforever.com/`; before, it showed a connection error. Unit-tested.
 - **Corn's error page** ✅: a site that can't load shows "Can't open this page" with a plain-language reason and Try again, instead of WebView's grey page. Verified with an address that can't exist (`.invalid`): "Corn couldn't find this site. Check the address, or your connection."
 - **Pull to refresh** ✅: pulling down while the page is at the top reloads it (Android's SwipeRefreshLayout, corn-yellow spinner). Each tab's page has its own pull container: SwipeRefreshLayout only ever measures the first child it saw, so swapping another tab's page into a shared one left it 0×0 and blank (bug from the first version, fixed; verified: switching between group tabs shows each page at full size, and pull still reloads after switching). Verified: the test server saw the page requested again after a pull (4 → 5); an upward scroll did not reload it. Like Chrome (since v41, 2015), Safari (iOS 15) and Firefox for Android (opt-in). Known limit: on pages that scroll inside their own box rather than the whole page, a pull at the top of the page can reload even if the inner box isn't at its top.

@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 02:30 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 11:15 IST
 
 Every product question asked and the founder's answer, in order. Settled answers flow into [01-prd.md](01-prd.md). New rounds are appended at the bottom.
 
@@ -438,6 +438,19 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Question:** a better Flush Button icon while the app is still Corn (not renamed to Flush).
 - **Answer:** option A, a **water swirl**: three arms of water spiralling into a drain, on the yellow pill. It says "flush" without a toilet and works under either name. Replaces the toilet icon everywhere (toolbar, Flush confirmation, Tabs screen, onboarding). A single-line spiral was tried first and read as a snail/hypnosis swirl, so the three-arm vortex was used.
 - **Also answered:** Titanium Browser (jqssun) is a full Chromium fork (Vanadium-based, GPL-2.0), not WebView; its time-range "Delete browsing data" is Chrome's own. Using the Corny mascot in the app proposed.
+
+### Round 21 — QA fixes: how Corn should behave like a real browser (2026-11-05)
+- **Source:** emulator QA, [04-qa-where-corn-fails](../05-review/04-qa-where-corn-fails-2026-11-05.md), and the founder's screenshots (YouTube played two ads; long-press showed "4:02").
+- **Principle (founder):** Corn's code stays generic; downloaded lists decide what happens on which site, like Brave. Site-specific behaviour is fine when it comes from lists.
+- **New windows:** a tapped `target=_blank` link or `window.open` opens a new tab; untapped windows are pop-ups and blocked; one window per tap. A sign-in window that closes itself returns to its opener. Same rule as Chrome, Brave and DuckDuckGo.
+- **Links to other apps:** only after a tap, Corn asks first ("Call this number?", "Open in <app>?") with Open / Open web version / Cancel. Not straight to the web version like Chrome: since Android 11 most installed apps are hidden from Corn, so "not installed" can't be told apart from "hidden".
+- **Page theme:** pages follow the site (no forced darkening, white default background). New Settings → Appearance → **Darken all websites**, off by default.
+- **Fullscreen in split screen:** the video fills only its own pane; the other pane and the system bars stay.
+- **YouTube ads:** uBlock Origin's lists and scriptlets (GPL-3.0) are downloaded at runtime into the ads engine, never in the repo or APK; the bundled starter engine stays EasyList/EasyPrivacy. A fresh install gets scriptlets with its first download.
+- **Image and link long-press:** image menu (Save, Open in new tab, Share, Copy); link titles from the page's labels, skipping durations.
+- **Vault:** New collection opens a sheet with Create / Cancel (was an inline box with no button).
+- **Nav bar:** the bottom bar's Back always uses the curved ↩ arrow; screen headers keep the straight ←.
+- **Later (founder to decide):** a Downloads screen (recommended: list of Corn's downloads, cleared by Flush, files stay); deleting a collection (no way to today).
 
 ### Round 20 — Password review decisions; split-screen "New tab in group" (2026-11-05)
 - **Fixed:** a copied password is cleared when Corn leaves the screen (and on next start if it was closed). Split screen: "New tab in group" no longer changes the panes being viewed.

@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-05 · **Last updated:** 2026-11-05, 03:00 IST
+> **Created:** 2026-11-05 · **Last updated:** 2026-11-05, 11:15 IST
 
 A hands-on QA pass on the emulator (`corn_pixel`, WebView DevTools via `adb forward`), looking for places where Corn breaks a normal user flow. **No app code was changed.** The one setting changed for a test (pop-up blocking off for ayushpatil.com) was turned back on, and the site settings were checked afterwards (`site_shields = {}`).
 
@@ -11,6 +11,10 @@ A hands-on QA pass on the emulator (`corn_pixel`, WebView DevTools via `adb forw
 - **Page state** (classes, colours, fullscreen state, YouTube's player data) was read from inside the page through Chrome DevTools (`Runtime.evaluate`).
 - **"Did a request happen?"** was answered from the local test server's access log, so there was no guessing from the screen.
 - **Screenshots** were taken with `adb screencap`; on-screen pixels were sampled with Python.
+
+## Status (2026-11-05, later the same day)
+
+**Fixed and verified** on the emulator: #1–#7 (checklist "QA fixes"). The repeatable suite `scripts/qa-run.sh` passes **17/17** (the old build: 3/17). Real sites: ayushpatil.com's links open; two YouTube videos in split screen with fullscreen kept to one pane; YouTube's ad data (`adPlacements`, `playerAds`) gone on 4 videos, and back when Ads is off for the site. #8 got the safeguard (Back clears fullscreen; closing its tab ends it). How each was fixed: decision log Round 21.
 
 ## Summary
 

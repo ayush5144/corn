@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 02:30 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 11:15 IST
 
 The single list of what's done, what's next and who owns it. Product decisions live in the [decision log](../01-product/02-decision-log.md); this file tracks **work**.
 
@@ -127,14 +127,16 @@ The single list of what's done, what's next and who owns it. Product decisions l
 
 | ✓ | Task | Owner | Done when |
 |---|---|---|---|
-| [ ] | **1. New windows follow the tap rule**: a tapped `target=_blank` link or `window.open` opens a new tab; no tap = blocked; burst guard; a page closing its own window (`onCloseWindow`) closes the tab and returns to the opener | Claude | Test page: tapped link and button open, no-tap blocked, self-closing window returns to opener; ayushpatil.com links open |
-| [ ] | **2. Links to other apps** (`tel`, `mailto`, `sms`, `geo`, `intent://`, other app schemes): after a tap, a sheet "Open in <app>?"; `intent://` made safe (browsable, no component/selector), web fallback; nothing opens without a tap | Claude | All 5 test links open the right app after a tap; fallback loads; no-tap does nothing |
-| [ ] | **3. Fullscreen inside its split pane**: video fills only its pane, other pane and system bars stay; Back always leaves fullscreen; closing the tab exits fullscreen | Claude | Two YouTube panes: fullscreen one, the other stays visible; Back and closing work |
-| [ ] | **4. Pages follow the site's theme**: no forced darkening by default, white default page background, optional "Darken all websites" switch (off) | Claude | ayushpatil.com's light toggle shows white; Hacker News shows its beige |
-| [ ] | **5. Image long-press menu**: Save image, Open in new tab, Share, Copy link (plain and linked images) | Claude | Long-press on a plain image shows the menu; Save lands in Downloads |
-| [ ] | **5b. Link long-press title**: the link's label, not the first text inside it (YouTube showed the duration "4:02") | Claude | YouTube video link shows the video title |
-| [ ] | **6. Ad scriptlets (like Brave)**: engine loads Brave's scriptlet resources and a list with scriptlet rules (downloaded at runtime, never in the repo), Corn injects them at document start; per-site Ads switch still applies | Claude (agent) | YouTube's player data has no ad schedule on 3 videos; no ads seen; other sites unaffected |
-| [ ] | **7. Repeatable QA**: test pages in the repo, decision functions unit-tested, one script runs the emulator checks and prints pass/fail | Claude (agent) | `scripts/qa-run.sh` passes on the emulator |
+| [x] | **1. New windows follow the tap rule**: a tapped `target=_blank` link or `window.open` opens a new tab; no tap = blocked; burst guard; a page closing its own window (`onCloseWindow`) closes the tab and returns to the opener | Claude | Test page: tapped link and button open, no-tap blocked, self-closing window returns to opener; ayushpatil.com links open |
+| [x] | **2. Links to other apps** (`tel`, `mailto`, `sms`, `geo`, `intent://`, other app schemes): after a tap, a sheet "Open in <app>?"; `intent://` made safe (browsable, no component/selector), web fallback; nothing opens without a tap | Claude | All 5 test links open the right app after a tap; fallback loads; no-tap does nothing |
+| [x] | **3. Fullscreen inside its split pane**: video fills only its pane, other pane and system bars stay; Back always leaves fullscreen; closing the tab exits fullscreen | Claude | Two YouTube panes: fullscreen one, the other stays visible; Back and closing work |
+| [x] | **4. Pages follow the site's theme**: no forced darkening by default, white default page background, optional "Darken all websites" switch (off) | Claude | ayushpatil.com's light toggle shows white; Hacker News shows its beige |
+| [x] | **5. Image long-press menu**: Save image, Open in new tab, Share, Copy link (plain and linked images) | Claude | Long-press on a plain image shows the menu; Save lands in Downloads |
+| [x] | **5b. Link long-press title**: the link's label, not the first text inside it (YouTube showed the duration "4:02") | Claude | YouTube video link shows the video title |
+| [x] | **6. Ad scriptlets (like Brave)**: engine loads Brave's scriptlet resources and a list with scriptlet rules (downloaded at runtime, never in the repo), Corn injects them at document start; per-site Ads switch still applies | Claude (agent) | YouTube's player data has no ad schedule on 3 videos; no ads seen; other sites unaffected |
+| [x] | **7. Repeatable QA**: test pages in the repo, decision functions unit-tested, one script runs the emulator checks and prints pass/fail | Claude (agent) | `scripts/qa-run.sh` passes on the emulator |
+| [x] | Verified 2026-11-05 on the emulator: `scripts/qa-run.sh` **17/17** (old build 3/17); ayushpatil.com's Vishlyst link opens a new tab; two YouTube videos in split screen, fullscreen in the bottom pane only (top kept playing, ~0.6 s, one Back exits); YouTube `adPlacements`/`playerAds` gone on 4 videos (were present on 3 before), back with Ads off, gone again with Ads on; video plays; long-press title "Billie Jean…" instead of "4:56"; New collection sheet (Create, duplicate name note) | Claude | Done |
+| [ ] | Delete a collection (there's no way to today; found while testing the New collection sheet) | Claude | A collection can be removed; its links stay in All |
 | [ ] | **Downloads screen** (list of Corn's downloads: open, share, delete; Flush clears the list, files stay). Recommended, not started | Founder | Founder decides |
 
 ## Phase 4 — Beta

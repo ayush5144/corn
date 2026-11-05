@@ -9,3 +9,4 @@ target/
 
 # Claude Code agent worktrees (temporary working copies)
 .claude/worktrees/
+__pycache__/

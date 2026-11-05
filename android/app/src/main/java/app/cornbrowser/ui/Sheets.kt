@@ -245,7 +245,7 @@ private fun ShieldSheet(c: CornController) {
     }
     AnimatedVisibility(advanced) {
         Column {
-            SettingRow("Ads", "Ad networks and ad scripts (EasyList)", onClick = { c.setShields(host, sh.copy(ads = !sh.ads)) }, trailing = { CornSwitch(sh.ads) })
+            SettingRow("Ads", "Ad networks and ad scripts (EasyList, uBlock Origin)", onClick = { c.setShields(host, sh.copy(ads = !sh.ads)) }, trailing = { CornSwitch(sh.ads) })
             SettingRow("Trackers", "Analytics and tracking scripts (EasyPrivacy)", onClick = { c.setShields(host, sh.copy(trackers = !sh.trackers)) }, trailing = { CornSwitch(sh.trackers) })
             SettingRow("Pop-ups & redirects", "New windows and pages jumping to other sites", onClick = { c.setShields(host, sh.copy(popups = !sh.popups)) }, trailing = { CornSwitch(sh.popups) })
         }
