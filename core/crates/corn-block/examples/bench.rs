@@ -21,7 +21,7 @@ fn main() {
 
     let bytes = blocker.serialize();
     let t = Instant::now();
-    let cached = Blocker::from_serialized(&bytes).expect("load");
+    let cached = Blocker::from_serialized(&bytes, Vec::new()).expect("load");
     let load = t.elapsed();
 
     let urls = [

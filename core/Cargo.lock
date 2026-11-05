@@ -244,6 +244,9 @@ name = "corn-block"
 version = "0.1.0"
 dependencies = [
  "adblock",
+ "base64",
+ "regex",
+ "serde_json",
  "thiserror 2.0.21",
 ]
 

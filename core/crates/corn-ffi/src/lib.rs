@@ -40,6 +40,49 @@ impl From<corn_vault::VaultError> for CornError {
     }
 }
 
+/// One downloaded filter list. Trusted lists (uBlock Origin's own) may use uBO's `trusted-*` scriptlets.
+#[derive(Debug, Clone, uniffi::Record)]
+pub struct FilterList {
+    pub text: String,
+    pub trusted: bool,
+}
+
+/// What a list asks for after its `!#if` blocks are resolved: the `!#include`d file names
+/// (plain names in the list's own folder). The app downloads them and passes them as more lists.
+#[uniffi::export]
+pub fn filter_list_includes(text: String) -> Vec<String> {
+    corn_block::preprocess::preprocess(&text).includes
+}
+
+/// The relative paths one uBlock Origin scriptlet module imports (`./x.js`, `../y.js`).
+#[uniffi::export]
+pub fn scriptlet_module_imports(source: String) -> Vec<String> {
+    corn_block::scriptlets::module_imports(&source)
+}
+
+/// Scriptlet resources assembled from uBO's module files.
+#[derive(Debug, Clone, uniffi::Record)]
+pub struct ScriptletSet {
+    /// adblock-rust's resources JSON; store it and pass it to the engine constructors.
+    pub json: String,
+    pub count: u32,
+}
+
+/// Turn the text of all uBO scriptlet modules into resources. Fails (keep the last good set)
+/// if the files don't look like a complete uBO release.
+#[uniffi::export]
+pub fn assemble_scriptlets(sources: Vec<String>) -> Result<ScriptletSet, CornError> {
+    let resources = corn_block::scriptlets::assemble(&sources).map_err(|e| CornError::EngineLoad { msg: e.to_string() })?;
+    Ok(ScriptletSet { json: corn_block::scriptlets::to_json(&resources), count: resources.len() as u32 })
+}
+
+fn parse_scriptlets(json: Option<String>) -> Result<Vec<corn_block::Resource>, CornError> {
+    match json {
+        None => Ok(Vec::new()),
+        Some(j) => corn_block::scriptlets::from_json(&j).map_err(|e| CornError::EngineLoad { msg: e.to_string() }),
+    }
+}
+
 #[derive(uniffi::Object)]
 pub struct CornBlocker {
     inner: corn_block::Blocker,
@@ -53,12 +96,36 @@ impl CornBlocker {
         Arc::new(Self { inner: corn_block::Blocker::from_lists(&lists) })
     }
 
+    /// Parse downloaded filter lists (with their `!#include`d files as separate entries) into a new
+    /// engine that can run `+js(...)` scriptlets. `scriptlets_json` comes from
+    /// `assemble_scriptlets`; None = no scriptlets. Slow: run off the main thread.
+    #[uniffi::constructor]
+    pub fn from_filter_lists(lists: Vec<FilterList>, scriptlets_json: Option<String>) -> Result<Arc<Self>, CornError> {
+        let resources = parse_scriptlets(scriptlets_json)?;
+        let lists: Vec<corn_block::FilterList<String>> =
+            lists.into_iter().map(|l| corn_block::FilterList { text: l.text, trusted: l.trusted }).collect();
+        Ok(Arc::new(Self { inner: corn_block::Blocker::from_filter_lists(&lists, resources) }))
+    }
+
     /// Load a cached engine produced by `serialize`.
     #[uniffi::constructor]
     pub fn from_serialized(bytes: Vec<u8>) -> Result<Arc<Self>, CornError> {
-        corn_block::Blocker::from_serialized(&bytes)
+        Self::from_serialized_with_scriptlets(bytes, None)
+    }
+
+    /// Load a cached engine plus its scriptlets (they aren't part of the saved engine).
+    #[uniffi::constructor]
+    pub fn from_serialized_with_scriptlets(bytes: Vec<u8>, scriptlets_json: Option<String>) -> Result<Arc<Self>, CornError> {
+        let resources = parse_scriptlets(scriptlets_json)?;
+        corn_block::Blocker::from_serialized(&bytes, resources)
             .map(|inner| Arc::new(Self { inner }))
             .map_err(|e| CornError::EngineLoad { msg: e.to_string() })
+    }
+
+    /// The scriptlets to run at document start on the page at `url` (empty if none).
+    /// Depends only on the host name, so callers may cache it per host.
+    pub fn scriptlets(&self, url: String) -> String {
+        self.inner.scriptlets(&url)
     }
 
     pub fn serialize(&self) -> Vec<u8> {

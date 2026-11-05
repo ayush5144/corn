@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 02:23 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 10:20 IST
 
 What Corn takes from Brave, DuckDuckGo, Mozilla and others. Licences checked on GitHub on 2026-11-01.
 
@@ -12,9 +12,10 @@ What Corn takes from Brave, DuckDuckGo, Mozilla and others. Licences checked on 
 |---|---|---|
 | [brave/adblock-rust](https://github.com/brave/adblock-rust) | MPL-2.0 | **The blocking engine** (Rust): request checks, cosmetic hiding, scriptlets |
 | [brave/adblock-lists](https://github.com/brave/adblock-lists) | MPL-2.0 | Brave's extra filter lists |
-| [brave/adblock-resources](https://github.com/brave/adblock-resources) | MPL-2.0 | Scriptlets and replacement resources (beats anti-adblock walls) |
+| [brave/adblock-resources](https://github.com/brave/adblock-resources) | MPL-2.0 | Not used yet. Its published `dist/resources.json` holds only Brave's own 17 resources (for Brave's lists); the uBO scriptlets Brave runs are assembled on Brave's servers and shipped through Brave's updater, which other apps can't fetch (HTTP 403). |
 | [EasyList / EasyPrivacy](https://github.com/easylist/easylist) | GPL-3.0 or CC BY-SA 3.0+ (dual) | Core ad and tracker rules |
-| [uBlockOrigin/uAssets](https://github.com/uBlockOrigin/uAssets) | GPL-3.0 | uBlock Origin's filters: annoyances, badware, unbreak fixes |
+| [uBlockOrigin/uAssets](https://github.com/uBlockOrigin/uAssets) | GPL-3.0 | ✅ In use: `filters.txt` (+ the files it `!#include`s), `quick-fixes.txt`, `unbreak.txt` in the **ads** engine. They carry the scriptlet rules (YouTube's included). Downloaded at runtime only, never in the repo or the starter engine (GPL-only). |
+| [gorhill/uBlock](https://github.com/gorhill/uBlock) | GPL-3.0 | ✅ In use: the scriptlet code (`src/js/resources/*.js` and what it imports) of uBO's latest release, downloaded at runtime, unmodified, and turned into adblock-rust resources on the phone (`corn-block/src/scriptlets.rs`), as Brave's build does. Never in the repo or the APK. |
 | [AdguardTeam/AdguardFilters](https://github.com/AdguardTeam/AdguardFilters) | GPL-3.0 | Optional extra lists (pop-ups, mobile ads) |
 
 Filter lists are **downloaded on the device at runtime** as data and credited in About, the same way Brave and uBlock Origin handle them.

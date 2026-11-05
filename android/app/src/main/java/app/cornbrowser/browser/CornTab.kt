@@ -119,6 +119,8 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
     /** When this tab last opened a new window (WindowPolicy's one-window-per-tap rule). */
     private var lastWindowAt = 0L
     private val main = Handler(Looper.getMainLooper())
+    /** Scriptlets from the ads lists, at document start; respects the site's Ads switch. */
+    private val scriptlets = ScriptletInjector(webView) { site -> host.shields(site).ads }
 
     init {
         val s = webView.settings
@@ -346,6 +348,7 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
         override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
             val reqUrl = request.url.toString()
             if (request.isForMainFrame) {
+                scriptlets.prepare(reqUrl) // Scriptlets hook (see ScriptletInjector): before the page's document exists
                 // A new page is starting: reset per-page state before its sub-requests arrive.
                 pageUrl = reqUrl
                 adsOnPage.set(0)
@@ -387,6 +390,7 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
                 return true
             }
             if (!request.isForMainFrame) return false
+            if (request.isRedirect) scriptlets.prepare(target.toString()) // Scriptlets hook: redirects skip shouldInterceptRequest
             if (!request.isRedirect) {
                 val currentHost = Uri.parse(entry.url).host?.removePrefix("www.")
                 // Redirect guard: the page navigating the whole tab to another site with no recent tap.
