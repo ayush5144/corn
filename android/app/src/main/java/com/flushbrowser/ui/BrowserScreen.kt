@@ -481,10 +481,10 @@ private fun NewTabPage(c: AppController) {
             // After a Flush: its one-liner, with the board's ✓ in Success.
             val quip = c.quip
             if (quip != null) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(verticalAlignment = Alignment.Top) { // ✓ beside the first line when the text wraps
                     T("✓", 19.sp, C.Success, FontWeight.Bold)
                     Spacer(Modifier.width(8.dp))
-                    T(quip, 19.sp, C.Accent, FontWeight.SemiBold, display = true)
+                    T(Copy.oneSentencePerLine(quip), 19.sp, C.Accent, FontWeight.SemiBold, display = true)
                 }
             } else {
                 T(TAGLINE, 19.sp, C.Text, FontWeight.SemiBold, display = true)

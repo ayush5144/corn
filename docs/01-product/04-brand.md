@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-11 · **Last updated:** 2026-11-11, 23:02 IST
+> **Created:** 2026-11-11 · **Last updated:** 2026-11-11, 23:38 IST
 
 The browser's name, logo, colours, fonts, voice and copy. Source: the brand board [`mockups/flush/index.html`](../../mockups/flush/index.html) and [decision log](02-decision-log.md) Round 22. Words for product concepts (Flush, Flush Button, Vault…) are in the [glossary](../../GLOSSARY.md).
 
@@ -97,6 +97,8 @@ Both are bundled in the app with their licence texts in `assets/licenses/` and l
 - Clean sessions. Clear conscience.
 
 **After a Flush** (toast one-liners; the app's list is in `browser/Flusher.kt`)
+
+A line with two sentences shows **one sentence per line** ("All gone." / "Even we don't know what it was."), in toasts and after a Flush: `ui/Copy.kt` (`Copy.oneSentencePerLine`, unit-tested). A sentence ending before an emoji stays on one line ("Swirl, swirl, gone. 🌀").
 - Swirl, swirl, gone. 🌀
 - Flushed. Nobody saw nothing.
 - Squeaky clean. Like it never happened.

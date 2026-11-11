@@ -229,3 +229,8 @@
 - Step 1 (names in code and data), 2a (brand in the app, agent), 2b (docs, agent) merged; internal new-tab marker `corn://new` -> `flush://new` (no migration: new app ID, fresh storage).
 - Updated `docs/01-product/03-features.md` (Flush brand ✅ with evidence) and `docs/03-planning/02-checklist.md` (rename steps 1–4 ticked, verification row, QA first-check flake task, emulator PIN note).
 - APKs in Downloads: `Flush-0.2.0-test.apk` (release, debug-key signed), `Flush-0.2.0-debug.apk`.
+
+## 2026-11-11 — One sentence per line in toasts and after a Flush
+
+- Added `ui/Copy.kt` (`oneSentencePerLine`) + `CopyTest` (6 tests); used by `ToastHost` (`ui/Components.kt`) and the after-Flush line (`ui/BrowserScreen.kt`, ✓ aligned to the first line).
+- Updated `docs/01-product/04-brand.md` (Copy kit: the rule).
