@@ -18,6 +18,9 @@ import xml.etree.ElementTree as ET
 
 ADB = os.environ.get("ADB") or os.path.expanduser("~/Library/Android/sdk/platform-tools/adb")
 APP = "com.flushbrowser.android"
+# The activity's class lives in package com.flushbrowser, not in the app ID, so the
+# short ".MainActivity" form doesn't work.
+ACTIVITY = "com.flushbrowser.MainActivity"
 
 
 def adb(*args, check=False, timeout=30):
@@ -156,7 +159,7 @@ def open_url(url):
 
 
 def bring_app_back():
-    adb("shell", f"am start -n {APP}/.MainActivity")
+    adb("shell", f"am start -n {APP}/{ACTIVITY}")
 
 
 def app_pid():
