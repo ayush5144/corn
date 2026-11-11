@@ -18,7 +18,7 @@ import com.flushbrowser.ui.C
 import org.json.JSONArray
 import org.json.JSONObject
 
-const val NEW_TAB = "corn://new"
+const val NEW_TAB = "flush://new"
 
 /** A named set of tabs browsed together. */
 class TabGroup(val id: Int, name: String, color: Color, autoNamed: Boolean = false) {

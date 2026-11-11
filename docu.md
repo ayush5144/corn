@@ -223,3 +223,9 @@
 - Agent briefs renamed: `.claude/agents/qa-engineer.md`, `.claude/agents/scriptlet-engineer.md`.
 - Added `docs/01-product/04-brand.md` (name, Vortex logo, palette and contrast, fonts, voice, copy kit, nav bar with the centre Flush Button).
 - Historical records keep "Corn" with a one-line rename note: decision log, `docs/05-review/*`, spike results, ADR 0001, `design-agents/corn-design/*`, `design-agents/README.md`, `.claude/agents/corn-logo-designer.md`, `.claude/agents/flush-brand-designer.md` (marked decided). `mockups/brand-compare.html` and `mockups/flush/index.html` now say Flush was chosen on 2026-11-11.
+
+## 2026-11-11 — Rename to Flush: code, brand, docs merged and verified
+
+- Step 1 (names in code and data), 2a (brand in the app, agent), 2b (docs, agent) merged; internal new-tab marker `corn://new` -> `flush://new` (no migration: new app ID, fresh storage).
+- Updated `docs/01-product/03-features.md` (Flush brand ✅ with evidence) and `docs/03-planning/02-checklist.md` (rename steps 1–4 ticked, verification row, QA first-check flake task, emulator PIN note).
+- APKs in Downloads: `Flush-0.2.0-test.apk` (release, debug-key signed), `Flush-0.2.0-debug.apk`.
