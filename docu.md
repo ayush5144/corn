@@ -210,3 +210,9 @@
 - Updated `docs/03-planning/02-checklist.md` (QA fixes ticked with evidence; delete a collection added).
 - Updated `docs/05-review/04-qa-where-corn-fails-2026-11-05.md` (Status section); `AGENTS.md` (QA suite row).
 - Scriptlet agent updated `docs/02-technical/09-filter-lists.md`, `10-storage.md`, `docs/04-reference/02-open-source.md`.
+
+## 2026-11-11 — Rename plan: Corn → Flush
+
+- Added `docs/03-planning/05-rename-to-flush.md` (decisions, names in code and data, docs rules, order of work, risks).
+- Updated `docs/01-product/02-decision-log.md` (Round 22) and `docs/README.md` (planning row 05).
+- Tagged the last Corn version `corn-final` (f9865d4).

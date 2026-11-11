@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 11:15 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-11, 22:40 IST
 
 Every product question asked and the founder's answer, in order. Settled answers flow into [01-prd.md](01-prd.md). New rounds are appended at the bottom.
 
@@ -438,6 +438,13 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Question:** a better Flush Button icon while the app is still Corn (not renamed to Flush).
 - **Answer:** option A, a **water swirl**: three arms of water spiralling into a drain, on the yellow pill. It says "flush" without a toilet and works under either name. Replaces the toilet icon everywhere (toolbar, Flush confirmation, Tabs screen, onboarding). A single-line spiral was tried first and read as a snail/hypnosis swirl, so the three-arm vortex was used.
 - **Also answered:** Titanium Browser (jqssun) is a full Chromium fork (Vanadium-based, GPL-2.0), not WebView; its time-range "Delete browsing data" is Chrome's own. Using the Corny mascot in the app proposed.
+
+### Round 22 — Corn is renamed Flush (2026-11-11)
+- **Answer:** the browser is renamed **Flush** ("Flush Browser" in full) before its first release. Reasons the founder accepted: the name is the main action and explains itself in public (Product Hunt, press); it frames Flush as private browsing for anything, not only adult sites; it lasts as long as the Flush Button does; flushbrowser.com was free on 2026-11-11. Store search (Flush toilet-finder apps) doesn't matter to the founder.
+- **Brand:** the brand board's Vortex logo (original, four arms and bubbles), its dark/light palette, Fredoka for display text (Figtree stays), its taglines, after-Flush lines, onboarding and empty-state copy. Voice unchanged.
+- **Nav bar:** the Flush Button moves to the centre as a raised round button (Back · Tabs · Flush · Vault · Menu), as on the board.
+- **Code:** app ID `com.flushbrowser.android`; app-wide internal names become brand-neutral; names pages can see carry no brand. Feature names (Flush, Flush Button, Vault…) don't change.
+- **Plan:** [05-rename-to-flush](../03-planning/05-rename-to-flush.md). The last Corn version is tagged `corn-final`.
 
 ### Round 21 — QA fixes: how Corn should behave like a real browser (2026-11-05)
 - **Source:** emulator QA, [04-qa-where-corn-fails](../05-review/04-qa-where-corn-fails-2026-11-05.md), and the founder's screenshots (YouTube played two ads; long-press showed "4:02").
