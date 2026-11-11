@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! flush-url: URL hygiene shared by every Corn platform.
+//! flush-url: URL hygiene shared by every Flush platform.
 //!
 //! - [`clean`] removes well-known tracking parameters (`utm_*`, `fbclid`, `gclid`…)
 //!   from a link before it's opened. The page is the same; the site just can't see
@@ -101,7 +101,7 @@ mod tests {
 
     #[test]
     fn leaves_clean_urls_untouched() {
-        let u = "https://example.com/search?q=corn&page=2#top";
+        let u = "https://example.com/search?q=flush&page=2#top";
         assert_eq!(clean(u), u);
         assert_eq!(clean("not a url"), "not a url");
         assert_eq!(clean("mailto:a@example.com?subject=hi"), "mailto:a@example.com?subject=hi");

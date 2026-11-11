@@ -49,7 +49,7 @@ interface TabHost {
     fun onLinkLongPress(entry: TabEntry, url: String, title: String)
     /** Long-press on an image ([linkUrl] set when the image is also a link). */
     fun onImageLongPress(entry: TabEntry, imageUrl: String, linkUrl: String?, title: String?)
-    /** The user tapped a link to another app (phone, email, SMS, map, `intent://`…). Ask before leaving Corn. */
+    /** The user tapped a link to another app (phone, email, SMS, map, `intent://`…). Ask before leaving Flush. */
     fun onExternalLink(entry: TabEntry, url: String)
     /** A tab opened as a new window closed itself (`window.close()`, e.g. after a sign-in). */
     fun onWindowClosed(entry: TabEntry) {}
@@ -83,7 +83,7 @@ interface TabHost {
     fun onDownload(request: DownloadRequest)
     /** Find in page: match [active] (0-based) of [total]. */
     fun onFindResult(active: Int, total: Int)
-    /** A message from Corn's login-form script ([com.flushbrowser.passwords.LoginScript]). Origin and frame come from WebView. */
+    /** A message from Flush's login-form script ([com.flushbrowser.passwords.LoginScript]). Origin and frame come from WebView. */
     fun onLoginMessage(entry: TabEntry, data: String, sourceOrigin: String, isMainFrame: Boolean, reply: JavaScriptReplyProxy) {}
     /** The tab started loading a new page (its login form, if any, is gone). */
     fun onLoginPageStarted(entry: TabEntry) {}
@@ -98,7 +98,7 @@ enum class SitePermission(val label: String) { CAMERA("camera"), MICROPHONE("mic
 data class DownloadRequest(val url: String, val userAgent: String, val contentDisposition: String?, val mimeType: String?, val length: Long)
 
 /**
- * The live part of a tab: a WebView wired to Corn's blocker.
+ * The live part of a tab: a WebView wired to Flush's blocker.
  * A tab that isn't live (frozen) has no WebTab, only its TabEntry with a preview and saved state.
  */
 @SuppressLint("SetJavaScriptEnabled", "ClickableViewAccessibility")
@@ -128,7 +128,7 @@ class WebTab(context: Context, private val entry: TabEntry, private val host: Ta
         s.domStorageEnabled = true
         s.mediaPlaybackRequiresUserGesture = true
         // Every new-window request (tapped target=_blank link, window.open, scripted pop-up) reaches
-        // onCreateWindow, where Corn applies WindowPolicy: tapped = new tab, untapped = blocked.
+        // onCreateWindow, where Flush applies WindowPolicy: tapped = new tab, untapped = blocked.
         s.setSupportMultipleWindows(true)
         s.javaScriptCanOpenWindowsAutomatically = true
         s.mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
@@ -143,7 +143,7 @@ class WebTab(context: Context, private val entry: TabEntry, private val host: Ta
         // readable. Forced darkening only with Settings → Darken all websites (QA 2026-11-05, #2: it
         // turned ayushpatil.com's own light mode back to black and Hacker News's beige to near-black).
         val darken = host.darkenWebsites && !host.lightPages
-        webView.setBackgroundColor(if (darken) 0xFF0F0E0B.toInt() else android.graphics.Color.WHITE)
+        webView.setBackgroundColor(if (darken) 0xFF071226.toInt() /* the dark theme's Bg */ else android.graphics.Color.WHITE)
         if (androidx.webkit.WebViewFeature.isFeatureSupported(androidx.webkit.WebViewFeature.ALGORITHMIC_DARKENING)) {
             androidx.webkit.WebSettingsCompat.setAlgorithmicDarkeningAllowed(webView.settings, darken)
         }
@@ -179,7 +179,7 @@ class WebTab(context: Context, private val entry: TabEntry, private val host: Ta
         }
     }
 
-    /** https versions Corn tried, mapped to the http original to fall back to if they fail. */
+    /** https versions Flush tried, mapped to the http original to fall back to if they fail. */
     private val upgraded = mutableMapOf<String, String>()
 
     /** Link cleaning (tracking parameters removed), then HTTPS upgrade unless this site is known to lack https. */
@@ -192,12 +192,12 @@ class WebTab(context: Context, private val entry: TabEntry, private val host: Ta
         return u
     }
 
-    /** Plain-language reason for Corn's error page (WebViewClient error codes). */
+    /** Plain-language reason for Flush's error page (WebViewClient error codes). */
     private fun errorText(code: Int): String = when (code) {
-        WebViewClient.ERROR_HOST_LOOKUP -> "Corn couldn't find this site. Check the address, or your connection."
+        WebViewClient.ERROR_HOST_LOOKUP -> "Flush couldn't find this site. Check the address, or your connection."
         WebViewClient.ERROR_CONNECT, WebViewClient.ERROR_TIMEOUT -> "The site didn't respond. It may be down, or your connection is slow."
         WebViewClient.ERROR_FAILED_SSL_HANDSHAKE -> "A secure connection to this site failed."
-        WebViewClient.ERROR_UNSUPPORTED_SCHEME -> "Corn can't open this kind of link."
+        WebViewClient.ERROR_UNSUPPORTED_SCHEME -> "Flush can't open this kind of link."
         WebViewClient.ERROR_TOO_MANY_REQUESTS -> "The site is getting too many requests. Try again in a moment."
         else -> "This page couldn't be loaded."
     }
@@ -381,7 +381,7 @@ class WebTab(context: Context, private val entry: TabEntry, private val host: Ta
             val target = request.url
             val scheme = target.scheme ?: return true
             if (scheme != "http" && scheme != "https") {
-                // Links to other apps (phone, email, SMS, maps, intent://): only after a tap, and Corn
+                // Links to other apps (phone, email, SMS, maps, intent://): only after a tap, and Flush
                 // asks first. A page can never send the user to another app by itself.
                 val tapped = request.hasGesture() || System.currentTimeMillis() - lastUserGestureAt < 1500
                 if (tapped && ExternalLinks.kind(target.toString()) != ExternalLinks.Kind.IGNORE) {
@@ -454,7 +454,7 @@ class WebTab(context: Context, private val entry: TabEntry, private val host: Ta
             handler.cancel() // never load a page with a broken certificate
             if (fallBackToHttp(view, error.url)) return
             if (error.url == view.url || entry.url == error.url) {
-                entry.loadError = "This site's security certificate isn't valid, so Corn didn't open it."
+                entry.loadError = "This site's security certificate isn't valid, so Flush didn't open it."
                 entry.showingSnapshot = false
                 entry.loading = false
             }
@@ -506,7 +506,7 @@ class WebTab(context: Context, private val entry: TabEntry, private val host: Ta
         override fun onGeolocationPermissionsShowPrompt(origin: String, callback: android.webkit.GeolocationPermissions.Callback) {
             val site = Uri.parse(origin).host?.removePrefix("www.") ?: ""
             if (site.isEmpty()) { callback.invoke(origin, false, false); return }
-            // retain = false: WebView doesn't store the answer; Corn remembers it for this session only.
+            // retain = false: WebView doesn't store the answer; Flush remembers it for this session only.
             host.onSitePermission(entry, site, setOf(SitePermission.LOCATION)) { allow -> callback.invoke(origin, allow, false) }
         }
 
@@ -571,7 +571,7 @@ class WebTab(context: Context, private val entry: TabEntry, private val host: Ta
     }
 
     /**
-     * Passwords: Corn's own login-form script in every frame, and a separate `loginBridge` channel.
+     * Passwords: Flush's own login-form script in every frame, and a separate `loginBridge` channel.
      * The script runs on https pages only; [TabHost.onLoginMessage] checks origin and frame again.
      */
     private fun installLoginBridge() {

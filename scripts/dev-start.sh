@@ -3,7 +3,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 #
-# Start Corn's local development setup. Stop everything with scripts/dev-stop.sh.
+# Start Flush's local development setup. Stop everything with scripts/dev-stop.sh.
 #
 #   scripts/dev-start.sh                      start the Android emulator only
 #   scripts/dev-start.sh --install            ...and build + install the debug app

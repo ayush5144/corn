@@ -42,7 +42,7 @@ class TabEntry(val id: Int, url: String, groupId: Int?) {
     var canGoBack by mutableStateOf(false)
     var canGoForward by mutableStateOf(false)
 
-    /** True when this tab shows Corn's own new-tab page instead of a website. */
+    /** True when this tab shows Flush's own new-tab page instead of a website. */
     val isNewTab: Boolean get() = url == NEW_TAB
 
     val host: String get() = Uri.parse(url).host?.removePrefix("www.") ?: ""
@@ -52,7 +52,7 @@ class TabEntry(val id: Int, url: String, groupId: Int?) {
     var loading by mutableStateOf(false)
     /** Set when the page process died; the page shows a reload card. */
     var crashed by mutableStateOf(false)
-    /** True when this tab's first page was opened from Corn's home page: Back returns home. */
+    /** True when this tab's first page was opened from Flush's home page: Back returns home. */
     var openedFromHome by mutableStateOf(false)
     /** After returning home with Back, Forward reopens this address. */
     internal var homeForwardUrl: String? = null
@@ -61,7 +61,7 @@ class TabEntry(val id: Int, url: String, groupId: Int?) {
     internal var lastVisitAt: Long = 0
     /** True while an unloaded tab reloads: its saved picture covers the page until the page draws. */
     var showingSnapshot by mutableStateOf(false)
-    /** Set when the page couldn't load (no connection, site not found…); shows Corn's error page. */
+    /** Set when the page couldn't load (no connection, site not found…); shows Flush's error page. */
     var loadError by mutableStateOf<String?>(null)
     /** Scroll position saved when the tab was unloaded, restored after it reloads. */
     internal var savedScrollY: Int = 0
@@ -78,14 +78,14 @@ class TabEntry(val id: Int, url: String, groupId: Int?) {
  * - **Open tab**: the one on screen. Fully running.
  * - **Kept in memory**: the N most recently used other tabs (N from Settings → Advanced →
  *   Background tabs, via [keepInMemory]). Their WebView stays alive, so returning is instant
- *   and keeps scroll position, video position and typed text. On leaving, Corn pauses every
+ *   and keeps scroll position, video position and typed text. On leaving, Flush pauses every
  *   video/audio element and blocks it from restarting ([WebTab.keepInBackground]), and calls
  *   `WebView.onPause()`. What that does NOT do, per Android's own documentation:
  *   *"Note that this call does not pause JavaScript."* Measured on the emulator: a page kept
  *   in memory learns it is hidden and its timers are slowed about 5× (to about once a second),
  *   but it still runs. `pauseTimers()` would stop scripts, but it is global ("for all WebViews"),
- *   so it would also stop the open tab; Corn never calls it.
- * - **Unloaded**: every other tab. The WebView is destroyed (nothing runs), Corn keeps the
+ *   so it would also stop the open tab; Flush never calls it.
+ * - **Unloaded**: every other tab. The WebView is destroyed (nothing runs), Flush keeps the
  *   preview picture, the back/forward history and the scroll position. Opening it reloads the
  *   page and scrolls back to where it was.
  * - **Opened in the background** ("Open in new tab", "…in new tab group"): starts loading at once
@@ -93,11 +93,11 @@ class TabEntry(val id: Int, url: String, groupId: Int?) {
  *   over the limit, the oldest kept tab is unloaded. Not when the user keeps 0 tabs in memory.
  * - **Reloading an unloaded tab** shows its saved picture until the page has drawn
  *   (`showingSnapshot`, cleared in `onPageCommitVisible`), so there's no blank screen.
- * - **Corn in the background:** `pauseTimers()` stops every page's timers (it's global, which is
+ * - **Flush in the background:** `pauseTimers()` stops every page's timers (it's global, which is
  *   exactly right here); `resumeTimers()` on return. Measured: 20 pings in 20 s on screen, 0 in the
  *   background, back to normal on return.
- * - When Android warns that memory is low, Corn unloads every kept-in-memory tab ([trimMemory]).
- * - A tab on Corn's home page has no WebView at all and costs nothing.
+ * - When Android warns that memory is low, Flush unloads every kept-in-memory tab ([trimMemory]).
+ * - A tab on Flush's home page has no WebView at all and costs nothing.
  * - **Split screen** ([split], [SplitState]): two tabs on screen at once. The current tab is the
  *   focused pane's tab (the pane last touched), so everything that acts on "the open tab" acts on
  *   it. Both panes' tabs are fully running and never unloaded while split (not even by
@@ -195,7 +195,7 @@ class TabManager(private val context: Context, private val host: TabHost) {
         switchTo(otherId)
     }
 
-    /** Start split screen with a new tab (Corn's home page) in the second pane. */
+    /** Start split screen with a new tab (Flush's home page) in the second pane. */
     fun startSplitWithNewTab() {
         val entry = open(NEW_TAB, switchTo = false)
         startSplit(entry.id)
@@ -247,7 +247,7 @@ class TabManager(private val context: Context, private val host: TabHost) {
     fun load(url: String) {
         val cur = current ?: open(NEW_TAB)
         if (cur.isNewTab) {
-            cur.openedFromHome = true   // Back from this page returns to Corn's home page
+            cur.openedFromHome = true   // Back from this page returns to Flush's home page
             cur.homeForwardUrl = null
         }
         cur.url = url
@@ -338,7 +338,7 @@ class TabManager(private val context: Context, private val host: TabHost) {
         }
     }
 
-    /** True when Back should return to Corn's home page (no earlier web page in this tab). */
+    /** True when Back should return to Flush's home page (no earlier web page in this tab). */
     val backGoesHome: Boolean get() = current?.let { !it.isNewTab && !it.canGoBack && it.openedFromHome } ?: false
 
     /** Back from a tab's first page when it was opened from the home page: show the home page again. */
@@ -400,7 +400,7 @@ class TabManager(private val context: Context, private val host: TabHost) {
         tabs.filter { !isOnScreen(it.id) }.forEach { unload(it) }
     }
 
-    /** Corn left the screen: stop every page's timers (Android's global pause), resumed on return. */
+    /** Flush left the screen: stop every page's timers (Android's global pause), resumed on return. */
     fun pauseAllTimers() = tabs.firstNotNullOfOrNull { it.live }?.webView?.pauseTimers()
 
     fun resumeAllTimers() = tabs.firstNotNullOfOrNull { it.live }?.webView?.resumeTimers()

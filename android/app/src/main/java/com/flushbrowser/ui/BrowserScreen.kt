@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -52,6 +53,11 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -91,7 +97,9 @@ fun BrowserScreen(c: AppController) {
             }
             PasswordFillChip(c) // "Fill as …" when the page has a login form with saved logins
         }
-        Column(Modifier.fillMaxWidth().background(C.Bg).onSizeChanged { c.bottomBarHeightPx = it.height }) {
+        // The raised Flush Button reaches above this column: count it, so toasts sit above it.
+        val liftPx = with(androidx.compose.ui.platform.LocalDensity.current) { flushButtonLift(c).roundToPx() }
+        Column(Modifier.fillMaxWidth().background(C.Bg).onSizeChanged { c.bottomBarHeightPx = it.height + liftPx }) {
             Box(Modifier.fillMaxWidth().height(1.dp).background(C.Line))
             GroupStrip(c, cur)
             if (c.settings.addressBarBottom) { if (c.findQuery != null) FindBar(c) else AddressBar(c, cur) }
@@ -153,10 +161,10 @@ private fun AddressBar(c: AppController, cur: TabEntry) {
                     .padding(horizontal = 7.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Glyph(if (off) Glyphs.ShieldOff else Glyphs.Shield, 18.dp, if (off) C.Muted else C.Success)
+                Glyph(if (off) Glyphs.ShieldOff else Glyphs.Shield, 18.dp, if (off) C.Muted else C.SuccessOnSurface)
                 if (!off && !cur.isNewTab) {
                     Spacer(Modifier.width(3.dp))
-                    T(cur.blocked.toString(), 12.sp, C.Success, FontWeight.Bold)
+                    T(cur.blocked.toString(), 12.sp, C.SuccessOnSurface, FontWeight.Bold)
                 }
             }
         }
@@ -290,7 +298,7 @@ private fun Pane(c: AppController, entry: TabEntry, focused: Boolean, closing: B
         PageContent(c, entry, onTouch = { focusThis.value() })
         // This tab's video went fullscreen in split screen: it fills only this pane (QA 2026-11-05, #4).
         if (c.fullscreenInPane && c.fullscreenTabId == entry.id) c.fullscreen?.let { v -> FullscreenView(v, Modifier.matchParentSize()) }
-        // Corn yellow, the Flush button's colour and the Tabs screen's "current tab" outline.
+        // Fill blue, the Tabs screen's "current tab" outline.
         if (focused) Box(Modifier.matchParentSize().border(3.dp, C.Fill))
         if (closing) {
             Box(Modifier.matchParentSize().background(C.Scrim), contentAlignment = Alignment.Center) {
@@ -305,7 +313,7 @@ private fun Pane(c: AppController, entry: TabEntry, focused: Boolean, closing: B
     }
 }
 
-/** One tab's page: Corn's home page, the WebView, or Corn's crashed / error page. */
+/** One tab's page: Flush's home page, the WebView, or Flush's crashed / error page. */
 @Composable
 private fun PageContent(c: AppController, cur: TabEntry, onTouch: (() -> Unit)?) {
     Box(Modifier.fillMaxSize()) {
@@ -333,7 +341,7 @@ private fun PageContent(c: AppController, cur: TabEntry, onTouch: (() -> Unit)?)
                                 return super.dispatchTouchEvent(ev)
                             }
                         }.apply {
-                            setColorSchemeColors(0xFFFFC83D.toInt())               // corn yellow spinner
+                            setColorSchemeColors(C.Fill.toArgb())                  // Flush blue spinner
                             setProgressBackgroundColorSchemeColor(C.Surface2.toArgb())
                             setOnRefreshListener {
                                 reload.value()
@@ -362,8 +370,8 @@ private fun PageContent(c: AppController, cur: TabEntry, onTouch: (() -> Unit)?)
 @Composable
 private fun CrashedPage(host: String, onReload: () -> Unit) {
     Column(Modifier.fillMaxSize().background(C.Bg).padding(32.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-        T("🌽", 44.sp)
-        Spacer(Modifier.height(12.dp))
+        BrandMark(56.dp)
+        Spacer(Modifier.height(14.dp))
         T("This page stopped", 22.sp, weight = FontWeight.ExtraBold, display = true)
         Spacer(Modifier.height(6.dp))
         T("$host ran out of memory or crashed. Your other tabs are fine.", 14.sp, C.Muted)
@@ -372,12 +380,12 @@ private fun CrashedPage(host: String, onReload: () -> Unit) {
     }
 }
 
-/** Corn's own page for a site that couldn't load, instead of WebView's plain grey one. */
+/** Flush's own page for a site that couldn't load, instead of WebView's plain grey one. */
 @Composable
 private fun ErrorPage(host: String, reason: String, onRetry: () -> Unit) {
     Column(Modifier.fillMaxSize().background(C.Bg).padding(32.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-        T("🌽", 44.sp)
-        Spacer(Modifier.height(12.dp))
+        BrandMark(56.dp)
+        Spacer(Modifier.height(14.dp))
         T("Can't open this page", 22.sp, weight = FontWeight.ExtraBold, display = true)
         Spacer(Modifier.height(6.dp))
         if (host.isNotBlank()) T(host, 14.sp, C.Text, FontWeight.SemiBold)
@@ -463,11 +471,24 @@ private fun NewTabPage(c: AppController) {
         verticalArrangement = Arrangement.spacedBy(22.dp),
     ) {
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-            Image(painterResource(R.drawable.flush_logo), null, Modifier.size(76.dp))
-            Spacer(Modifier.height(8.dp))
-            T("corn", 44.sp, C.Accent, FontWeight.ExtraBold, display = true)
-            Spacer(Modifier.height(4.dp))
-            T(c.quip ?: "Browse. Save what matters. Flush the rest.", 19.sp, if (c.quip != null) C.Accent else C.Text, FontWeight.SemiBold, display = true)
+            // The board's lockup: the Vortex on its navy squircle + the lowercase "flush" wordmark.
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                BrandMark(48.dp)
+                Spacer(Modifier.width(12.dp))
+                Wordmark(40.sp)
+            }
+            Spacer(Modifier.height(10.dp))
+            // After a Flush: its one-liner, with the board's ✓ in Success.
+            val quip = c.quip
+            if (quip != null) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    T("✓", 19.sp, C.Success, FontWeight.Bold)
+                    Spacer(Modifier.width(8.dp))
+                    T(quip, 19.sp, C.Accent, FontWeight.SemiBold, display = true)
+                }
+            } else {
+                T(TAGLINE, 19.sp, C.Text, FontWeight.SemiBold, display = true)
+            }
         }
         Row(
             Modifier.fillMaxWidth().height(52.dp).clip(RoundedCornerShape(16.dp)).background(C.Surface2).padding(horizontal = 14.dp),
@@ -504,13 +525,13 @@ private fun NewTabPage(c: AppController) {
                 }
             }
         }
-        // All-time totals: real counts of requests Corn blocked, kept across Flushes (numbers only).
+        // All-time totals: real counts of requests Flush blocked, kept across Flushes (numbers only).
         Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(C.Surface).padding(18.dp)) {
             T("STATS", 12.sp, C.Muted, FontWeight.Bold)
             Spacer(Modifier.height(12.dp))
             Row(Modifier.fillMaxWidth()) {
                 Stat(c.settings.totalBlocked, "Trackers & ads blocked", C.Accent, Modifier.weight(1f))
-                Stat(c.settings.totalPopups, "Pop-ups & redirects stopped", C.Success, Modifier.weight(1f))
+                Stat(c.settings.totalPopups, "Pop-ups & redirects stopped", C.SuccessOnSurface, Modifier.weight(1f))
             }
         }
     }
@@ -571,11 +592,35 @@ private fun GroupStrip(c: AppController, cur: TabEntry) {
 
 // ---------------- toolbar ----------------
 
+/** Toolbar row height. */
+private val TOOLBAR_HEIGHT = 58.dp
+
+/** The Flush Button's face (the brand board's .flushbtn is 68 px). */
+private val FLUSH_BUTTON = 68.dp
+
+/** The ring of Bg around the Flush Button (the board's 6 px box-shadow ring). */
+private val FLUSH_RING = 6.dp
+
+/** Smaller face when the button can't rise (see [flushButtonLift]), so it fits inside the bar. */
+private val FLUSH_BUTTON_FLAT = 50.dp
+
+/**
+ * How far the Flush Button reaches above the toolbar: half its face (the brand board's raised
+ * centre button) when the page is right above the bar. 0 when the bottom address bar, find bar or
+ * a Tab Group strip sits right above it: rising would cover them and turn taps on them into Flushes.
+ */
+internal fun flushButtonLift(c: AppController): androidx.compose.ui.unit.Dp {
+    val cur = c.tabs.current ?: return 0.dp
+    val stacked = c.settings.addressBarBottom || (cur.groupId != null && c.tabs.group(cur.groupId) != null)
+    return if (stacked) 0.dp else FLUSH_BUTTON / 2
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun Toolbar(c: AppController, cur: TabEntry) {
-    Row(Modifier.fillMaxWidth().height(58.dp).padding(horizontal = 6.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
-        // Back (hold for Forward). On a tab's first page opened from Corn's home page, Back shows
+    // Founder's layout (2026-11-11): Back · Vault · Flush (centre, raised) · Tabs · Menu.
+    Row(Modifier.fillMaxWidth().height(TOOLBAR_HEIGHT).background(C.Surface).padding(horizontal = 6.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
+        // Back (hold for Forward). On a tab's first page opened from Flush's home page, Back shows
         // a curved ↩ and returns to the home page.
         val home = !cur.isNewTab && !cur.canGoBack && cur.openedFromHome
         Box(
@@ -593,19 +638,44 @@ private fun Toolbar(c: AppController, cur: TabEntry) {
             )
         }
         ToolbarButton({ c.openVault() }) { Glyph(Glyphs.Vault, TOOLBAR_ICON) }
+        FlushButton(c)
         ToolbarButton({ c.openTabsScreen() }) {
             // 18 dp: the same visible height as the other toolbar icons.
             Box(Modifier.size(18.dp).border(1.9.dp, C.Text, RoundedCornerShape(5.dp)), contentAlignment = Alignment.Center) {
                 T(c.tabs.tabs.size.toString(), 11.sp, weight = FontWeight.ExtraBold)
             }
         }
-        // Flush (second from the right)
-        ToolbarButton({ c.requestFlush() }) {
-            Box(Modifier.width(46.dp).height(40.dp).clip(RoundedCornerShape(14.dp)).background(C.Fill), contentAlignment = Alignment.Center) {
-                Glyph(Glyphs.Flush, TOOLBAR_ICON, C.Ink)
+        ToolbarButton({ c.sheet = Sheet.Menu }) { Glyph(Glyphs.Dots, TOOLBAR_ICON) }
+    }
+}
+
+/**
+ * The Flush Button in the middle of the toolbar: a round button raised half above the bar, with a
+ * ring of Bg around it and the board's blue glow. Its face is the "Riding the swirl" drop
+ * (brand/flush-button-wink-1024.png) on the logo's navy; the art is blue, so it never sits on Fill.
+ */
+@Composable
+private fun FlushButton(c: AppController) {
+    val lift = flushButtonLift(c)
+    val face = if (lift > 0.dp) FLUSH_BUTTON else FLUSH_BUTTON_FLAT
+    val ring = face + FLUSH_RING * 2
+    // Centred in the bar, then moved up so the face's top edge is [lift] above the bar.
+    val dy = if (lift > 0.dp) -(lift - (face - TOOLBAR_HEIGHT) / 2) else 0.dp
+    Box(Modifier.width(ring).height(TOOLBAR_HEIGHT), contentAlignment = Alignment.Center) {
+        Box(
+            Modifier.offset(y = dy).requiredSize(ring)
+                .shadow(10.dp, CircleShape, ambientColor = C.Fill, spotColor = C.Fill)
+                .clip(CircleShape).background(C.Bg),
+            contentAlignment = Alignment.Center,
+        ) {
+            Box(
+                Modifier.requiredSize(face).clip(CircleShape).background(C.LogoBg)
+                    .semantics { contentDescription = "Flush"; role = Role.Button }
+                    .clickable { c.requestFlush() },
+            ) {
+                Image(painterResource(R.drawable.flush_button), null, Modifier.fillMaxSize())
             }
         }
-        ToolbarButton({ c.sheet = Sheet.Menu }) { Glyph(Glyphs.Dots, TOOLBAR_ICON) }
     }
 }
 

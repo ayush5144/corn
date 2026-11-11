@@ -63,6 +63,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.painterResource
+import com.flushbrowser.R
 import com.flushbrowser.browser.TabEntry
 
 // ---------------- text ----------------
@@ -87,6 +89,32 @@ fun T(
     overflow = TextOverflow.Ellipsis,
     lineHeight = (size.value * 1.3f).sp,
 )
+
+// ---------------- brand ----------------
+
+/** The primary tagline from the brand board's copy kit. */
+const val TAGLINE = "Browse whatever. Flush whenever."
+
+/** The wordmark: lowercase "flush" in Fredoka 600, tracked in a little like the board's lockup. */
+@Composable
+fun Wordmark(size: TextUnit, color: Color = C.Text) = Text(
+    "flush",
+    color = color,
+    fontSize = size,
+    fontWeight = FontWeight.SemiBold,
+    fontFamily = Display,
+    letterSpacing = (-size.value * 0.022f).sp,
+    lineHeight = size,
+    maxLines = 1,
+)
+
+/** The logo as the board shows it: the Vortex on its navy squircle (rounded 23 %), the same in both themes. */
+@Composable
+fun BrandMark(size: Dp, modifier: Modifier = Modifier) {
+    Box(modifier.size(size).clip(RoundedCornerShape(size * 0.23f)).background(C.LogoBg)) {
+        Image(painterResource(R.drawable.flush_logo), null, Modifier.fillMaxSize())
+    }
+}
 
 @Composable
 fun Label(text: String, modifier: Modifier = Modifier) =
@@ -122,13 +150,13 @@ fun BigButton(text: String, onClick: () -> Unit, icon: ImageVector? = null, ghos
 }
 
 @Composable
-fun Pill(text: String, onClick: () -> Unit, icon: ImageVector? = null, corn: Boolean = false) {
+fun Pill(text: String, onClick: () -> Unit, icon: ImageVector? = null, filled: Boolean = false) {
     Row(
-        Modifier.height(38.dp).clip(RoundedCornerShape(19.dp)).background(if (corn) C.Fill else C.Surface2)
+        Modifier.height(38.dp).clip(RoundedCornerShape(19.dp)).background(if (filled) C.Fill else C.Surface2)
             .clickable(onClick = onClick).padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val fg = if (corn) C.Ink else C.Text
+        val fg = if (filled) C.Ink else C.Text
         if (icon != null) { Glyph(icon, 16.dp, fg); Spacer(Modifier.width(6.dp)) }
         T(text, 14.sp, fg, FontWeight.SemiBold)
     }
@@ -287,7 +315,7 @@ fun SheetTitle(title: String, sub: String? = null) {
 fun SiteIcon(entry: TabEntry, size: Dp = 22.dp) {
     val fav = entry.favicon
     if (entry.isNewTab) {
-        Box(Modifier.size(size), contentAlignment = Alignment.Center) { T("🌽", (size.value * 0.7f).sp) }
+        BrandMark(size)
     } else if (fav != null) {
         Image(fav.asImageBitmap(), null, Modifier.size(size).clip(RoundedCornerShape(size * 0.3f)), contentScale = ContentScale.Crop)
     } else {
@@ -395,7 +423,8 @@ fun BoxScope.ToastHost(msg: ToastMsg?, bottomPadding: Dp, onAction: () -> Unit) 
             verticalAlignment = Alignment.CenterVertically,
         ) {
             T(m.text, 14.sp, C.Bg, FontWeight.SemiBold, modifier = Modifier.weight(1f))
-            if (m.action != null) T(m.action, 14.sp, if (C.light) C.Fill else Color(0xFF8A5B00), FontWeight.ExtraBold, modifier = Modifier.clickable(onClick = onAction).padding(start = 12.dp))
+            // The toast is inverted (Text background), so its action uses the other theme's Accent.
+            if (m.action != null) T(m.action, 14.sp, if (C.light) Color(0xFF3FD8FF) else Color(0xFF005FCC), FontWeight.ExtraBold, modifier = Modifier.clickable(onClick = onAction).padding(start = 12.dp))
         }
     }
 }

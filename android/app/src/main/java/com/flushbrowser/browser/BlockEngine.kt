@@ -18,14 +18,14 @@ import uniffi.flush_ffi.filterListIncludes
 import uniffi.flush_ffi.scriptletModuleImports
 
 /**
- * Owns Corn's blocking engines: Brave's adblock-rust, unmodified, loaded twice:
+ * Owns Flush's blocking engines: Brave's adblock-rust, unmodified, loaded twice:
  * - **ads**: EasyList + uBlock Origin's filters (also supply element hiding and scriptlets)
  * - **trackers**: EasyPrivacy
  * Two engines let each site turn ads and trackers on or off separately without
  * changing the engine itself. (The lists overlap a little.)
  *
  * **Scriptlets** (`+js(...)` rules, e.g. the ones that strip YouTube's ad schedule) need their
- * code, which uBlock Origin publishes as source modules. Corn downloads those unmodified, the Rust
+ * code, which uBlock Origin publishes as source modules. Flush downloads those unmodified, the Rust
  * core assembles them into adblock-rust resources (as Brave's build does), and they're stored
  * next to the engines in [SCRIPTLETS_CACHE]. Which scriptlet runs on which site is decided only
  * by the downloaded lists; [ScriptletInjector] runs them.
@@ -108,7 +108,7 @@ object BlockEngine {
         }, "engine-load").start()
     }
 
-    /** Called when Corn comes to the foreground; cheap when nothing is due. */
+    /** Called when Flush comes to the foreground; cheap when nothing is due. */
     fun refreshIfStale(context: Context) {
         val app = context.applicationContext
         val last = lastUpdated(app)

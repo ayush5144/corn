@@ -43,7 +43,7 @@ android {
     }
 }
 
-// Build the Rust core (Brave's adblock engine + Corn code) for Android and generate Kotlin bindings.
+// Build the Rust core (Brave's adblock engine + Flush code) for Android and generate Kotlin bindings.
 val buildRustCore by tasks.registering(Exec::class) {
     val repoRoot = layout.projectDirectory.dir("../..").asFile
     workingDir = repoRoot

@@ -2,16 +2,16 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! flush-store: Corn's local database (SQLite).
+//! flush-store: Flush's local database (SQLite).
 //!
-//! Holds everything Corn keeps that could reveal browsing:
+//! Holds everything Flush keeps that could reveal browsing:
 //! - the **Vault**: saved links (Vault Items), each stored once, optionally in one Collection.
 //!   "All" is not stored: it is simply every saved link.
 //! - **History**: one entry per page plus a visit log with timestamps (cleared by Flush).
 //!   Deletion is all-or-nothing, per visit, or per site (history only): no time ranges.
 //! - a small key-value area for the Keep List, per-site shields and the Kept Session.
 //! - **Passwords** (`logins`): one row per saved login. The site (origin) is stored in clear so
-//!   Corn can look logins up; the username and password are opaque blobs encrypted by the app
+//!   Flush can look logins up; the username and password are opaque blobs encrypted by the app
 //!   (AES-256-GCM with a key protected by the phone's keystore). This crate never sees them in clear.
 //!   Like the Vault, passwords survive every Flush.
 //!

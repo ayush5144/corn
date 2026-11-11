@@ -65,8 +65,8 @@ class Node:
 def ui_nodes():
     """All nodes on screen, in document order. Retries: uiautomator fails while the UI animates."""
     for _ in range(4):
-        out = adb("shell", "uiautomator dump /sdcard/corn-qa-ui.xml")
-        xml = adb_bytes("exec-out", "cat", "/sdcard/corn-qa-ui.xml")
+        out = adb("shell", "uiautomator dump /sdcard/flush-qa-ui.xml")
+        xml = adb_bytes("exec-out", "cat", "/sdcard/flush-qa-ui.xml")
         if b"<hierarchy" in xml and "dumped" in out.lower():
             break
         time.sleep(0.5)
@@ -88,7 +88,7 @@ def ui_nodes():
 
 
 def app_texts(nodes=None):
-    """Text shown by Corn itself (sheets, bars, toasts), not by web pages."""
+    """Text shown by Flush itself (sheets, bars, toasts), not by web pages."""
     nodes = ui_nodes() if nodes is None else nodes
     return [n.label() for n in nodes if not n.in_web and n.cls != "android.webkit.WebView" and n.label()]
 
@@ -125,7 +125,7 @@ def back():
 
 def input_text(s):
     # `input text` needs spaces as %s; QA URLs never contain spaces. Sent in short pieces with a
-    # pause: one long burst arrives faster than Corn's address bar (and its suggestion list)
+    # pause: one long burst arrives faster than Flush's address bar (and its suggestion list)
     # redraws, and characters went missing (always late in the address).
     s = s.replace(" ", "%s").replace("'", "")
     for i in range(0, len(s), 8):

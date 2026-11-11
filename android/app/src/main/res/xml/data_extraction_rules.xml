@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Corn excludes everything from cloud backup and device-to-device transfer. -->
+<!-- Flush excludes everything from cloud backup and device-to-device transfer. -->
 <data-extraction-rules>
     <cloud-backup>
         <exclude domain="root" path="." />

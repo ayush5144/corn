@@ -30,7 +30,7 @@ import uniffi.flush_ffi.CoreBlocker
  *   response arrives;
  * - from `shouldOverrideUrlLoading` for server redirects (e.g. youtube.com → m.youtube.com), which
  *   don't pass through `shouldInterceptRequest`.
- * Why not other ways: one static script that asks Corn for its scriptlets would have to `eval`
+ * Why not other ways: one static script that asks Flush for its scriptlets would have to `eval`
  * them, which sites with Trusted Types (YouTube sends `require-trusted-types-for 'script'`)
  * block; `evaluateJavascript` at page start runs too late to catch the page's first scripts.
  *

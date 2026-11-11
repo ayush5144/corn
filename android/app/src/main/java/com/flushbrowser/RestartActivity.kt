@@ -11,10 +11,10 @@ import android.os.Bundle
 import android.os.Process
 
 /**
- * Restarts Corn's process after cookies were deleted from WebView's cookie file, so WebView
+ * Restarts Flush's process after cookies were deleted from WebView's cookie file, so WebView
  * reloads the cleaned file instead of its in-memory copy (DuckDuckGo does the same after its
  * Fire Button). Runs in its own short-lived process (":restart" in the manifest): the main
- * process exits, this activity relaunches Corn and exits too.
+ * process exits, this activity relaunches Flush and exits too.
  */
 class RestartActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +34,7 @@ class RestartActivity : Activity() {
         const val EXTRA_QUIP = "flush.quip"
         const val EXTRA_TOAST = "flush.toast"
 
-        /** Relaunch Corn in a fresh process, optionally showing a Flush one-liner or a toast. */
+        /** Relaunch Flush in a fresh process, optionally showing a Flush one-liner or a toast. */
         fun restart(context: Context, quip: String? = null, toast: String? = null) {
             val i = Intent(context, RestartActivity::class.java)
                 .putExtra(EXTRA_PID, Process.myPid())

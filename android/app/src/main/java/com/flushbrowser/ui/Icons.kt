@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.unit.dp
 
 /**
- * Corn's icon set: 24×24 line icons, tint with Icon(tint = …).
+ * Flush's icon set: 24×24 line icons, tint with Icon(tint = …).
  * Toolbar icons share one visible height: their drawing spans y = 3…21 (18 of 24 units),
  * so at 24 dp every one of them is 18 dp tall without stretching.
  */

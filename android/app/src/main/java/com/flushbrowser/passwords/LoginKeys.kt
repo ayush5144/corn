@@ -22,9 +22,9 @@ import javax.crypto.spec.GCMParameterSpec
  * - The data key is 256 random bits. It is never written down in clear: only "wrapped", i.e.
  *   encrypted by a key-encryption key (KEK) that lives inside the Android Keystore (StrongBox chip
  *   when the phone has one), can't be exported, and never leaves the secure hardware.
- * - The wrapped data key sits in Corn's private settings file `corn_logins` (not in corn.db).
+ * - The wrapped data key sits in Flush's private settings file `logins` (not in flush.db).
  *
- * If the KEK is gone (Corn's data copied to a new phone, or the keystore was reset), the wrapped key
+ * If the KEK is gone (Flush's data copied to a new phone, or the keystore was reset), the wrapped key
  * can't be unwrapped and every saved password is unreadable: [cipher] returns null and the UI offers
  * "Reset passwords" ([reset]). Nothing here ever logs a key, username or password.
  */

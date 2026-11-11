@@ -54,7 +54,7 @@ class LoginMatchingTest {
         assertEquals(SaveDecision.New, decideSave(saved, "cy", "x") { pw[it] })
         assertEquals(SaveDecision.AlreadySaved(1), decideSave(saved, "ana@example.com", "old") { pw[it] })
         assertEquals(SaveDecision.Update(1), decideSave(saved, "ana@example.com", "new") { pw[it] })
-        // Password-only form: with one login it's that login; with several, Corn can't tell, so it's new.
+        // Password-only form: with one login it's that login; with several, Flush can't tell, so it's new.
         assertEquals(SaveDecision.Update(1), decideSave(listOf(login(1, "ana")), "", "new") { "old" })
         assertEquals(SaveDecision.AlreadySaved(1), decideSave(listOf(login(1, "ana")), "", "old") { "old" })
         assertEquals(SaveDecision.New, decideSave(saved, "", "new") { pw[it] })

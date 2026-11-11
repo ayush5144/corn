@@ -17,7 +17,7 @@ class LoginCipherTest {
 
     @Test fun roundTrip() {
         val c = cipher()
-        for (text in listOf("hunter2", "", "pässwörd 🌽 with spaces", "x".repeat(2000))) {
+        for (text in listOf("hunter2", "", "pässwörd 🌀 with spaces", "x".repeat(2000))) {
             assertEquals(text, c.decrypt(c.encrypt(text, origin, Field.PASSWORD), origin, Field.PASSWORD))
         }
     }

@@ -13,7 +13,7 @@ import java.security.SecureRandom
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
 
-/** When Corn flushes on its own. Default: KEEP (Kept Session). */
+/** When the app flushes on its own. Default: KEEP (Kept Session). */
 enum class FlushMode(val key: String, val delayMs: Long?) {
     KEEP("keep", null),
     LEAVE_NOW("leave0", 0L),
@@ -37,7 +37,7 @@ enum class TabMemory(val key: String) {
 }
 
 /**
- * Corn's plain settings: on/off values only, no browsing data
+ * Flush's plain settings: on/off values only, no browsing data
  * (the Keep List and per-site choices live in the SQLite store).
  * Every field is Compose state, so screens redraw when it changes.
  * Defaults match docs/01-product/01-prd.md §8.
@@ -143,7 +143,7 @@ class AppSettings(context: Context) {
 
     // ---------- all-time totals: two plain numbers, nothing about which site or what was blocked ----------
 
-    // Kept in memory while browsing and written to disk only when leaving Corn (see persist()).
+    // Kept in memory while browsing and written to disk only when leaving Flush (see persist()).
     /** Requests blocked by the ad + tracker filters (each blocked request counts once). */
     var totalBlocked by mutableStateOf(prefs.getLong("total_blocked", 0L))
     /** Pop-ups denied + redirects stopped. */
@@ -153,8 +153,8 @@ class AppSettings(context: Context) {
     var lastActivityAt: Long = prefs.getLong("last_activity_at", System.currentTimeMillis())
 
     /**
-     * Write the in-memory counters and timestamps in one go (called when leaving Corn).
-     * `now = true` writes before returning: used right before Corn restarts its process.
+     * Write the in-memory counters and timestamps in one go (called when leaving Flush).
+     * `now = true` writes before returning: used right before Flush restarts its process.
      */
     fun persist(now: Boolean = false) {
         val e = prefs.edit()

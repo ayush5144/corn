@@ -16,30 +16,38 @@ import androidx.compose.ui.text.font.FontWeight
 import com.flushbrowser.R
 
 /**
- * Corn's palette, the same tokens as mockups/prototype.html, in a dark and a light version.
+ * Flush's palette, the same tokens as the brand board (mockups/flush/index.html), in a dark and a light version.
  * [light] is Compose state, so every screen redraws when Settings → Appearance changes.
  */
 object C {
     var light by mutableStateOf(false)
 
-    val Bg get() = if (light) Color(0xFFFBF8F1) else Color(0xFF0F0E0B)
-    val Surface get() = if (light) Color(0xFFF2EDE1) else Color(0xFF1A1813)
-    val Surface2 get() = if (light) Color(0xFFE8E1D0) else Color(0xFF25221B)
-    val Line get() = if (light) Color(0xFFD8CFBA) else Color(0xFF36312A)
-    val Text get() = if (light) Color(0xFF1E1B14) else Color(0xFFF5F0E1)
-    val Muted get() = if (light) Color(0xFF6D6553) else Color(0xFFA8A08C)
-    /** Corn yellow for fills (buttons, switches, the Flush button): the same in both themes. */
-    val Fill = Color(0xFFFFC83D)
-    /** Corn yellow for text and icons: deeper gold in light mode so it stays readable on light backgrounds. */
-    val Accent get() = if (light) Color(0xFF9A6500) else Color(0xFFFFC83D)
-    val Ink = Color(0xFF2A1E00)
-    val Success get() = if (light) Color(0xFF4E8A1E) else Color(0xFF86C64A)
-    /** Switches when on: Corny's leaf green, the same in both themes. */
-    val SwitchOn = Color(0xFF86C64A)
-    /** The switch dot: the light theme's warm cream background, in both themes (founder's choice over white). */
-    val SwitchDot = Color(0xFFFBF8F1)
-    /** Switches when off: a neutral track, a touch darker than Line in light mode so the cream dot shows. */
-    val SwitchOff get() = if (light) Color(0xFFC8BEA7) else Color(0xFF4A443A)
+    val Bg get() = if (light) Color(0xFFF5FAFF) else Color(0xFF071226)
+    val Surface get() = if (light) Color(0xFFE8F1FC) else Color(0xFF0D1C36)
+    val Surface2 get() = if (light) Color(0xFFDAE7F7) else Color(0xFF142749)
+    val Line get() = if (light) Color(0xFFC3D5EC) else Color(0xFF24395F)
+    val Text get() = if (light) Color(0xFF0A1A30) else Color(0xFFEAF4FF)
+    val Muted get() = if (light) Color(0xFF4D6280) else Color(0xFF93A8C6)
+    /** Flush blue for fills (buttons, switches, the Flush Button): the same in both themes. */
+    val Fill = Color(0xFF1EA7FF)
+    /** Accent for text and icons: cyan in dark mode, a deeper blue in light mode so it stays readable on light backgrounds. */
+    val Accent get() = if (light) Color(0xFF005FCC) else Color(0xFF3FD8FF)
+    /** Text and icons on [Fill]: navy ink (white on the blue would only reach about 2.4 : 1). */
+    val Ink = Color(0xFF03142B)
+    val Success get() = if (light) Color(0xFF11804E) else Color(0xFF3DDC97)
+    /**
+     * Success for text on Surface / Surface2. In light mode the board's #11804E reaches only
+     * 4.36 : 1 on Surface and 3.97 : 1 on Surface2, so a slightly deeper green (≥ 4.5 : 1 on all three).
+     */
+    val SuccessOnSurface get() = if (light) Color(0xFF0E7647) else Success
+    /** Switches when on: the Fill blue, the same in both themes. */
+    val SwitchOn = Fill
+    /** The switch dot: the light theme's near-white background, in both themes. */
+    val SwitchDot = Color(0xFFF5FAFF)
+    /** Switches when off: a neutral blue-grey track from the palette (the other theme's Muted), so the dot shows. */
+    val SwitchOff get() = if (light) Color(0xFF93A8C6) else Color(0xFF4D6280)
+    /** The logo's navy (the Vortex art's own background): behind the logo and the Flush Button in both themes. */
+    val LogoBg = Color(0xFF071226)
     val Scrim = Color(0x8C000000)
 
     val GroupColors = listOf(
@@ -55,13 +63,13 @@ object C {
 }
 
 @OptIn(ExperimentalTextApi::class)
-private fun bricolage(w: Int) = Font(R.font.bricolage, FontWeight(w), variationSettings = FontVariation.Settings(FontVariation.weight(w)))
+private fun fredoka(w: Int) = Font(R.font.fredoka, FontWeight(w), variationSettings = FontVariation.Settings(FontVariation.weight(w)))
 
 @OptIn(ExperimentalTextApi::class)
 private fun figtree(w: Int) = Font(R.font.figtree, FontWeight(w), variationSettings = FontVariation.Settings(FontVariation.weight(w)))
 
-/** Display face: wordmark, headings. */
-val Display = FontFamily(bricolage(500), bricolage(700), bricolage(800))
+/** Display face (Fredoka, weights 300–700): wordmark, headings. ExtraBold requests get 700, its boldest. */
+val Display = FontFamily(fredoka(500), fredoka(600), fredoka(700))
 
 /** UI face: everything else. */
 val Ui = FontFamily(figtree(400), figtree(500), figtree(600), figtree(700))

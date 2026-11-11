@@ -6,7 +6,7 @@
 //!
 //! adblock-rust needs the scriptlet code as [`Resource`]s. Brave builds them on its servers from
 //! uBO's `src/js/resources/*.js` modules (each registered scriptlet's `fn.toString()`) and ships
-//! the result in a component only Brave's updater can fetch. Corn does the same on the phone:
+//! the result in a component only Brave's updater can fetch. Flush does the same on the phone:
 //! the app downloads uBO's unmodified module files and this code turns them into resources.
 //!
 //! uBO's modules are ES modules. Running them would need a JavaScript engine, so this reads them
@@ -24,7 +24,7 @@ use base64::{engine::general_purpose::STANDARD as BASE64, Engine as _};
 use regex::Regex;
 
 /// Permission bit for uBO's "trusted" scriptlets (`requiresTrust: true`, e.g.
-/// `trusted-replace-xhr-response`). Only lists Corn marks as trusted can use them, the same bit
+/// `trusted-replace-xhr-response`). Only lists Flush marks as trusted can use them, the same bit
 /// Brave uses for its default lists.
 pub const TRUSTED: PermissionMask = PermissionMask::from_bits(1);
 

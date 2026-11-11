@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- To refresh filter lists on Wi-Fi only (never reads anything about browsing). -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!-- Asked only when a site wants them and the user taps Allow in Corn's prompt. -->
+    <!-- Asked only when a site wants them and the user taps Allow in Flush's prompt. -->
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
@@ -14,13 +14,14 @@
     <uses-feature android:name="android.hardware.microphone" android:required="false" />
     <uses-feature android:name="android.hardware.location" android:required="false" />
 
-    <!-- allowBackup=false + empty extraction rules: Corn never lets Android back up app data.
+    <!-- allowBackup=false + empty extraction rules: Flush never lets Android back up app data.
          usesCleartextTraffic: a browser must be able to open http:// sites. -->
     <application
         android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.Flush"
@@ -38,7 +39,7 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <!-- Lets Corn open web links from other apps (and from adb while testing). -->
+            <!-- Lets Flush open web links from other apps (and from adb while testing). -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -47,7 +48,7 @@
                 <data android:scheme="https" />
             </intent-filter>
         </activity>
-        <!-- Relaunches Corn after cookies were deleted from WebView's cookie file (own process). -->
+        <!-- Relaunches Flush after cookies were deleted from WebView's cookie file (own process). -->
         <activity
             android:name=".RestartActivity"
             android:exported="false"

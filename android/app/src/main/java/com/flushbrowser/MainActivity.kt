@@ -96,7 +96,7 @@ class MainActivity : ComponentActivity() {
         intent.dataString?.let { c.openInNewTab(it) }
     }
 
-    /** "Match phone" follows the phone's dark mode, which can change while Corn is open. */
+    /** "Match phone" follows the phone's dark mode, which can change while Flush is open. */
     override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
         super.onConfigurationChanged(newConfig)
         applyTheme()

@@ -1,6 +1,6 @@
 [package]
 name = "flush-ffi"
-description = "UniFFI bindings exposing Corn's Rust core to Kotlin and Swift"
+description = "UniFFI bindings exposing Flush's Rust core to Kotlin and Swift"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

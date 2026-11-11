@@ -6,16 +6,16 @@
 //!
 //! uBlock Origin's lists use them to pick rules per browser and to split one list into several
 //! files. adblock-rust treats them as comments, so without this step it would load both sides of
-//! every `!#if`. Corn evaluates them as an Android, Chromium-based mobile browser, the same way
+//! every `!#if`. Flush evaluates them as an Android, Chromium-based mobile browser, the same way
 //! Brave's list packager does for Brave (plus `env_mobile`). Unknown conditions are false, as in
 //! uBO.
 
-/// Conditions Corn answers "true" to. Everything else is false.
+/// Conditions Flush answers "true" to. Everything else is false.
 const TRUE_CONDITIONS: &[&str] = &[
     "ext_ublock",          // the list's uBO-syntax rules are for us (Brave says the same)
     "env_chromium",        // Android System WebView is Chromium
     "env_mobile",          // a phone browser
-    "cap_user_stylesheet", // matches Brave; Corn's hiding CSS is !important
+    "cap_user_stylesheet", // matches Brave; Flush's hiding CSS is !important
     "adguard_ext_chromium",
 ];
 

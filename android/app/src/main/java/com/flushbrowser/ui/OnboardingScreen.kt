@@ -36,7 +36,8 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -50,23 +51,24 @@ fun OnboardingScreen(settings: com.flushbrowser.data.AppSettings, onStart: () ->
 
     Column(
         Modifier.fillMaxSize()
-            .background(Brush.radialGradient(listOf(Color(0xFF2A2410), C.Bg), radius = 1400f, center = androidx.compose.ui.geometry.Offset(540f, 0f)))
+            .background(Brush.radialGradient(listOf(C.Surface2, C.Bg), radius = 1400f, center = androidx.compose.ui.geometry.Offset(540f, 0f)))
             .verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 28.dp),
     ) {
-        Spacer(Modifier.height(40.dp))
-        Image(
-            painterResource(R.drawable.flush_logo), "Corn logo",
-            Modifier.size(112.dp).offset(x = (-8).dp, y = (-6 * lift).dp).rotate(-4f * lift),
+        Spacer(Modifier.height(32.dp))
+        BrandMark(
+            96.dp,
+            Modifier.offset(y = (-6 * lift).dp).rotate(-4f * lift).semantics { contentDescription = "Flush logo" },
         )
+        Spacer(Modifier.height(18.dp))
+        Wordmark(60.sp)
         Spacer(Modifier.height(14.dp))
-        T("corn", 64.sp, C.Accent, FontWeight.ExtraBold, display = true)
-        Spacer(Modifier.height(10.dp))
-        T("The private browser that keeps you organised.", 24.sp, weight = FontWeight.SemiBold, display = true)
+        T(TAGLINE, 28.sp, weight = FontWeight.SemiBold, display = true)
         Spacer(Modifier.height(22.dp))
+        // The brand board's onboarding lines.
         Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-            Bullet(Glyphs.Shield, "Blocks ads, trackers and pop-ups")
-            Bullet(Glyphs.Vault, "Saves what matters to a locked Vault")
-            Bullet(Glyphs.Flush, "Flushes everything else in one tap")
+            Bullet(Glyphs.TabNew, "Every session starts empty. No history waiting for you.")
+            Bullet(Glyphs.Flush, "One tap of the Flush Button wipes your tabs, cookies and history.")
+            Bullet(Glyphs.Vault, "Your Vault keeps only what you choose, locked, on this phone.")
         }
         Spacer(Modifier.height(28.dp))
         // Two choices people should make up front, shown with their current state.
@@ -101,7 +103,7 @@ private fun OnboardingToggle(title: String, state: String, sub: String, on: Bool
             Row(verticalAlignment = Alignment.CenterVertically) {
                 T(title, 15.5.sp, weight = FontWeight.SemiBold)
                 Spacer(Modifier.width(8.dp))
-                T(state, 13.sp, if (on) C.Success else C.Muted, FontWeight.Bold)
+                T(state, 13.sp, if (on) C.SuccessOnSurface else C.Muted, FontWeight.Bold)
             }
             T(sub, 13.sp, C.Muted)
         }

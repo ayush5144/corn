@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build Corn's Rust core for Android and generate its Kotlin bindings.
+# Build Flush's Rust core for Android and generate its Kotlin bindings.
 # Called automatically by Gradle (preBuild) and safe to run by hand from the repo root.
 set -euo pipefail
 

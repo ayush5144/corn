@@ -85,7 +85,7 @@ fn main() {
         "https://m.youtube.com/watch?v=kJQP7kiw5Fk",
         "https://www.youtube.com/watch?v=kJQP7kiw5Fk",
         "https://www.youtube-nocookie.com/embed/kJQP7kiw5Fk",
-        "https://en.wikipedia.org/wiki/Corn",
+        "https://en.wikipedia.org/wiki/Water",
         "https://example.com/",
     ] {
         let host = url.split('/').nth(2).unwrap();

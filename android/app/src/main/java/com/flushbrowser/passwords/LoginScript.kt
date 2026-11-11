@@ -5,18 +5,18 @@
 package com.flushbrowser.passwords
 
 /**
- * Corn's own small login-form script (no third-party library), injected at document start in
+ * Flush's own small login-form script (no third-party library), injected at document start in
  * every frame next to a `loginBridge` WebMessageListener (see WebTab.installLoginBridge).
  *
- * Page → Corn messages:
- * - `{t:"form"}`: a visible password field appeared (Corn may offer to fill).
+ * Page → app messages:
+ * - `{t:"form"}`: a visible password field appeared (Flush may offer to fill).
  * - `{t:"login", u, p}`: the user submitted a login (form submit, Enter, or tapping the form's button).
  *
- * Corn → page message: `{t:"fill", u, p}`, sent only after the user taps "Fill" in Corn.
+ * App → page message: `{t:"fill", u, p}`, sent only after the user taps "Fill" in Flush.
  * Values are set with the native `value` setter (captured before page scripts run) and followed by
  * `input` and `change` events, so React/Vue forms notice.
  *
- * Only runs on https pages (plus local test pages over http in debug builds). Corn checks the
+ * Only runs on https pages (plus local test pages over http in debug builds). Flush checks the
  * origin and frame again on its side; the script is not trusted.
  */
 object LoginScript {
@@ -114,7 +114,7 @@ object LoginScript {
             if (!f) { var pws = passwordFields(document); if (pws.length === 1 && val(pws[0])) capture(null); }
           }, true);
 
-          // ---- tell Corn when a login form is on the page ----
+          // ---- tell the app when a login form is on the page ----
           var reported = false, timer = null;
           function check() {
             timer = null;
@@ -129,7 +129,7 @@ object LoginScript {
           }
           if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 
-          // ---- fill, only when Corn asks (after the user's tap) ----
+          // ---- fill, only when the app asks (after the user's tap) ----
           function set(el, v) {
             el.focus();
             if (setValue) setValue.call(el, v); else el.value = v;
@@ -144,7 +144,7 @@ object LoginScript {
             var user = usernameFor(pw);
             if (user && m.u) set(user, m.u);
             set(pw, m.p || '');
-            lastKey = (m.u || '') + '\u0000' + (m.p || ''); lastAt = Date.now() + 600000; // don't offer to re-save what Corn filled
+            lastKey = (m.u || '') + '\u0000' + (m.p || ''); lastAt = Date.now() + 600000; // don't offer to re-save what the app filled
           };
         })();
     """.trimIndent()
