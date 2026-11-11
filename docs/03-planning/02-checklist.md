@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 11:15 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-11, 23:02 IST
 
 The single list of what's done, what's next and who owns it. Product decisions live in the [decision log](../01-product/02-decision-log.md); this file tracks **work**.
 
@@ -17,7 +17,7 @@ The single list of what's done, what's next and who owns it. Product decisions l
 
 ## Phase 0 — Product definition 🔄 in progress
 
-**Goal:** Everyone can say exactly what Corn v1 is and isn't.
+**Goal:** Everyone can say exactly what Flush v1 is and isn't.
 
 | ✓ | Task | Owner | Done when |
 |---|---|---|---|
@@ -45,7 +45,7 @@ The single list of what's done, what's next and who owns it. Product decisions l
 
 ## Phase 2A — Design (runs alongside 2B)
 
-**Goal:** See and feel Corn before writing app code.
+**Goal:** See and feel Flush before writing app code.
 
 | ✓ | Task | Owner | Done when |
 |---|---|---|---|
@@ -70,7 +70,7 @@ The single list of what's done, what's next and who owns it. Product decisions l
 
 ## Phase 3 — Android v1 build
 
-**Goal:** A Corn APK the Founder uses daily.
+**Goal:** A Flush APK the Founder uses daily.
 
 | ✓ | Task | Owner | Done when |
 |---|---|---|---|
@@ -82,14 +82,14 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [ ] | Background tabs (Settings → Advanced: automatic by memory, recent 0/1/2/3/5, all with warning; unload on low memory; scroll restore; media held paused). **Built, not yet tested on device** | Claude | No crashes with 30 tabs |
 | [ ] | **Flush Button** + Kept Session (default) + Auto-Flush (leave delay, inactivity; video counts as activity) | Claude | Flush tests in [05-flush-model](../02-technical/05-flush-model.md) pass |
 | [ ] | **Keep List**: chosen sites stay logged in across Flush (cookies + IndexedDB kept, verified with a test site; not yet with a real login) | Claude | Keep List site still logged in after Flush |
-| [x] | **Corn password store** in the Vault, survives Flush: Keystore-wrapped AES-256-GCM, own form script, save/update/never prompts, fill on tap (PIN when Vault locked; switchable), Passwords screen. Verified on the emulator (save, PIN fill, no-PIN fill, kept after Flush) | Claude | Saved password fills a login after Flush |
-| [x] | Password review #4: clear a copied password when Corn leaves the screen (and on next start if it was closed). Verified by pasting | Claude | Nothing pastes after leaving Corn |
+| [x] | **Password store** in the Vault, survives Flush: Keystore-wrapped AES-256-GCM, own form script, save/update/never prompts, fill on tap (PIN when Vault locked; switchable), Passwords screen. Verified on the emulator (save, PIN fill, no-PIN fill, kept after Flush) | Claude | Saved password fills a login after Flush |
+| [x] | Password review #4: clear a copied password when the app leaves the screen (and on next start if it was closed). Verified by pasting | Claude | Nothing pastes after leaving the app |
 | [x] | Split screen: "New tab in group" adds the tab to the group in the background (both panes stay); toast "Open" puts it in the focused pane. Verified | Claude | Panes unchanged; tab in the group |
 | [x] | Password review #3: closing a tab (or a Flush) forgets its login-form note and fill chip, so nothing useless stays in memory | Claude | No leftovers for closed tabs |
 | [x] | Password review #2: re-check the page's site right before filling (second lock). Normal fill verified afterwards | Claude | Fill refuses if the tab isn't on the login's site |
 | [x] | Main buttons stay visible on long screens: Tabs screen Flush bar pinned at the bottom; group sheet (Save group / New tab in group), Save to Vault (Save) and split picker (New tab) pin their buttons while their content scrolls. Verified with 13 tabs | Claude | Buttons reachable without scrolling |
 | [ ] | Passwords on real sites and a real phone (StrongBox), then an independent security review before public launch | Both | Logins save and fill on 3 real sites; review notes committed |
-| [x] | **Split screen inside Corn**: two tabs, top/bottom (side by side in landscape), draggable divider, toolbar acts on the focused pane. Verified on the emulator | Claude | Two pages usable at once; divider resizes; closing works |
+| [x] | **Split screen inside Flush**: two tabs, top/bottom (side by side in landscape), draggable divider, toolbar acts on the focused pane. Verified on the emulator | Claude | Two pages usable at once; divider resizes; closing works |
 | [ ] | Session saved in app-private SQLite + backups disabled | Claude | Kept Session restores after restart; backup tool finds nothing |
 | [x] | Filter lists refresh automatically (every 4 days, on Wi-Fi), engine rebuilt in the background. Verified: refreshed 8 s after first launch | Claude | Lists newer than 4 days after a week of use |
 | [x] | Starter engine bundled in the app for first launch without internet. Verified: starter loaded before any download | Claude | Fresh install in airplane mode still blocks ads |
@@ -104,7 +104,7 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [x] | Fix blank page when switching tabs (pull-to-refresh container per tab). Verified: group tabs show full size | Claude | Switching tabs always shows the page |
 | [x] | Light mode (Settings → Appearance: Dark / Light / Phone), pages follow it. Verified both themes on a plain page | Claude | Plain pages readable in both themes |
 | [x] | Menu: New tab group (groups current tab) / New tab in this group. Verified | Claude | Group created with the current tab |
-| [x] | Typed addresses fall back to http; Corn error page. Verified with httpforever.com and a `.invalid` address | Claude | http-only sites open; failures show Corn's page |
+| [x] | Typed addresses fall back to http; Flush error page. Verified with httpforever.com and a `.invalid` address | Claude | http-only sites open; failures show Flush's page |
 | [x] | Background tabs load at once; saved picture while reloading; pauseTimers in background. Verified with server timings | Claude | Background tab loaded before tap; no blank reload; 0 timers in background |
 | [ ] | **Vault**: save link + title, optional tags, **Collections**, PIN/biometric lock | Claude | Save, find, lock, delete all work |
 | [ ] | Privacy: black recents screen, optional App Lock, no notifications while closed | Claude | Verified on a real phone |
@@ -133,11 +133,11 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [x] | **4. Pages follow the site's theme**: no forced darkening by default, white default page background, optional "Darken all websites" switch (off) | Claude | ayushpatil.com's light toggle shows white; Hacker News shows its beige |
 | [x] | **5. Image long-press menu**: Save image, Open in new tab, Share, Copy link (plain and linked images) | Claude | Long-press on a plain image shows the menu; Save lands in Downloads |
 | [x] | **5b. Link long-press title**: the link's label, not the first text inside it (YouTube showed the duration "4:02") | Claude | YouTube video link shows the video title |
-| [x] | **6. Ad scriptlets (like Brave)**: engine loads Brave's scriptlet resources and a list with scriptlet rules (downloaded at runtime, never in the repo), Corn injects them at document start; per-site Ads switch still applies | Claude (agent) | YouTube's player data has no ad schedule on 3 videos; no ads seen; other sites unaffected |
+| [x] | **6. Ad scriptlets (like Brave)**: engine loads Brave's scriptlet resources and a list with scriptlet rules (downloaded at runtime, never in the repo), Flush injects them at document start; per-site Ads switch still applies | Claude (agent) | YouTube's player data has no ad schedule on 3 videos; no ads seen; other sites unaffected |
 | [x] | **7. Repeatable QA**: test pages in the repo, decision functions unit-tested, one script runs the emulator checks and prints pass/fail | Claude (agent) | `scripts/qa-run.sh` passes on the emulator |
 | [x] | Verified 2026-11-05 on the emulator: `scripts/qa-run.sh` **17/17** (old build 3/17); ayushpatil.com's Vishlyst link opens a new tab; two YouTube videos in split screen, fullscreen in the bottom pane only (top kept playing, ~0.6 s, one Back exits); YouTube `adPlacements`/`playerAds` gone on 4 videos (were present on 3 before), back with Ads off, gone again with Ads on; video plays; long-press title "Billie Jean…" instead of "4:56"; New collection sheet (Create, duplicate name note) | Claude | Done |
 | [ ] | Delete a collection (there's no way to today; found while testing the New collection sheet) | Claude | A collection can be removed; its links stay in All |
-| [ ] | **Downloads screen** (list of Corn's downloads: open, share, delete; Flush clears the list, files stay). Recommended, not started | Founder | Founder decides |
+| [ ] | **Downloads screen** (list of the app's downloads: open, share, delete; Flush clears the list, files stay). Recommended, not started | Founder | Founder decides |
 
 ### Rename: Corn → Flush (2026-11-11, plan: [05-rename-to-flush](05-rename-to-flush.md))
 
@@ -161,7 +161,7 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [ ] | Distribution: website / GitHub Releases / Obtainium | Founder | Download link works |
 | [ ] | Donation link live | Founder | First donation possible |
 | [ ] | Small adult-only beta group | Founder | 10+ testers, feedback logged |
-| [ ] | Network audit: Corn's own traffic contains no browsing data | Claude | Audit notes committed |
+| [ ] | Network audit: Flush's own traffic contains no browsing data | Claude | Audit notes committed |
 
 ---
 
@@ -181,11 +181,11 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | **Time ranges for deleting history** ("last 15 min / hour / 24 h / 7 days") | Exact for history (and possible for cookies via the cookie database), but site storage and the cache can only be deleted all at once (`clearCache` is per-application). To avoid a half-working option, v1 offers "delete everything" only. Founder decision, Round 11 |
 | **Keep List C: keep Keep List sites' local storage** | Android can't delete one site's local storage (`deleteOrigin` doesn't cover it, measured). DuckDuckGo edits WebView's LevelDB files with a LevelDB library to spare Fireproof sites. Until then, Keep List sites keep cookies only, which is what the Keep List promises |
 | **Keep List D: offer "Keep this site logged in?" after you log in** | DuckDuckGo watches for a submitted password form and asks on the next page (Ask / Always / Never). Optional, later if needed |
-| Picture-in-picture video (video keeps playing in a small floating window when you leave Corn) | Founder: later |
+| Picture-in-picture video (video keeps playing in a small floating window when you leave the app) | Founder: later |
 | Print / save page as PDF (Android's print dialog) | Founder: later |
 | Limit wrong PIN attempts; check the PIN with a Keystore key (password review #1) | Founder: later. Today: unlimited tries on a 4-digit PIN; passwords stay encrypted either way |
 | Two-step logins: remember the username from the previous page (password review #7) | Founder: later. Today only the password is saved when the username is on an earlier page |
-| *Info:* a page can trigger "Save password?" for its own site; Corn decrypts a saved password in memory to compare on login (password review #5, #6) | By design; optional later: limit prompts per page |
+| *Info:* a page can trigger "Save password?" for its own site; Flush decrypts a saved password in memory to compare on login (password review #5, #6) | By design; optional later: limit prompts per page |
 | Auto-delete history older than 90 days | Idea from Eddy, for people who never Flush. Discuss first |
 
 ## Out ❌

@@ -1,5 +1,7 @@
 # Agent: Corn logo concept 1, "The Flush Kernel"
 
+Corn was renamed Flush on 2026-11-11 (decision log Round 22); this record keeps the old name.
+
 - **Run on:** 2026-11-05, as a Claude Code subagent (`general-purpose`), in the background, in parallel with concepts 2 and 3.
 - **Tools it used:** Bash (Codex CLI image generation, `sips`, headless Chrome), Read (to look at each PNG), Write.
 - **Output:** `mockups/logos/flush-kernel.html` and `mockups/logos/flush-kernel/*.png` (chosen: `v5-tooth-vortex.png`). Full-size originals: `~/Documents/corn-logo-originals/logos/flush-kernel/`.

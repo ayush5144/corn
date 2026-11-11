@@ -1,25 +1,25 @@
-# 10 — Storage: What Corn Keeps, and Where
+# 10 — Storage: What Flush Keeps, and Where
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 10:21 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-11, 23:02 IST
 
-Everything stays in Corn's **private app storage** on the phone. Other apps can't read it (Android sandbox), the phone encrypts it while locked (file-based encryption), and Corn opts out of every backup.
+Everything stays in Flush's **private app storage** on the phone. Other apps can't read it (Android sandbox), the phone encrypts it while locked (file-based encryption), and Flush opts out of every backup.
 
 ## What goes where
 
 | Data | Stored in | Survives Flush? | Why there |
 |---|---|---|---|
-| **Vault** (Collections, Vault Items, tags) | SQLite database `corn.db`, written by the Rust core (`corn-vault`). Each link saved once; its Collection is optional (All = every link) | ✅ Yes | One format for Android, iPhone and desktop |
-| **Saved passwords** | `corn.db` table `logins`: site in clear (for lookup), username and password **AES-256-GCM encrypted** (site + field bound as associated data). The 256-bit data key is stored only wrapped by a non-exportable **Android Keystore** key (`corn_logins_kek`, StrongBox when available) in the `corn_logins` settings file. "Never save" sites: kv `login_never_save` | ✅ Yes | Like Firefox (`logins`) and DuckDuckGo (Keystore-protected keys); details in [12-security](12-security.md). If the key can't be unwrapped (e.g. data restored to another phone), passwords are unreadable and the Passwords screen offers a reset |
-| **Keep List** (sites that stay logged in) | `corn.db`, key-value area | ✅ Yes | Reveals sites, so it lives with the Vault, not in plain settings |
-| **Per-site shields** (ads / trackers / pop-ups on or off) | `corn.db`, key-value area | ✅ Yes | Same reason |
+| **Vault** (Collections, Vault Items, tags) | SQLite database `flush.db`, written by the Rust core (`flush-store`). Each link saved once; its Collection is optional (All = every link) | ✅ Yes | One format for Android, iPhone and desktop |
+| **Saved passwords** | `flush.db` table `logins`: site in clear (for lookup), username and password **AES-256-GCM encrypted** (site + field bound as associated data). The 256-bit data key is stored only wrapped by a non-exportable **Android Keystore** key (`logins_kek`, StrongBox when available) in the `logins` settings file. "Never save" sites: kv `login_never_save` | ✅ Yes | Like Firefox (`logins`) and DuckDuckGo (Keystore-protected keys); details in [12-security](12-security.md). If the key can't be unwrapped (e.g. data restored to another phone), passwords are unreadable and the Passwords screen offers a reset |
+| **Keep List** (sites that stay logged in) | `flush.db`, key-value area | ✅ Yes | Reveals sites, so it lives with the Vault, not in plain settings |
+| **Per-site shields** (ads / trackers / pop-ups on or off) | `flush.db`, key-value area | ✅ Yes | Same reason |
 | **Totals** (trackers & ads blocked, pop-ups stopped) | Settings file: two numbers | ✅ Yes | Counts only: no URLs, sites or times |
-| **Kept Session** (open tabs, Tab Groups, their URLs) | `corn.db`, key-value area | ❌ Wiped by Flush | Restores your tabs after a restart when Kept Session is on |
-| **History** (page address, title, site, visit times) | `corn.db`: `history_entries` (one per page) + `history_visits` (one per visit) | ❌ Wiped by Flush | Shared format for every platform; "Keep history" off stops recording |
+| **Kept Session** (open tabs, Tab Groups, their URLs) | `flush.db`, key-value area | ❌ Wiped by Flush | Restores your tabs after a restart when Kept Session is on |
+| **History** (page address, title, site, visit times) | `flush.db`: `history_entries` (one per page) + `history_visits` (one per visit) | ❌ Wiped by Flush | Shared format for every platform; "Keep history" off stops recording |
 | **Settings** (Flush mode, toggles, default engine, address bar position, theme, background tabs) | Android app settings file (SharedPreferences) | ✅ Yes | Simple on/off values, no browsing data |
-| **Vault PIN** | Settings file, as a salted PBKDF2 hash (never the PIN itself) | ✅ Yes | Lets Corn check the PIN without storing it |
-| **Blocking engines** | Cache files `ads-v2.dat` (EasyList + uBlock Origin), `trackers-v1.dat` (EasyPrivacy) and `scriptlets-v1.json` (uBO scriptlet code); last refresh time in `corn_engine` settings | ✅ Yes | Rebuilt from downloaded lists every 4 days |
+| **Vault PIN** | Settings file, as a salted PBKDF2 hash (never the PIN itself) | ✅ Yes | Lets Flush check the PIN without storing it |
+| **Blocking engines** | Cache files `ads-v2.dat` (EasyList + uBlock Origin), `trackers-v1.dat` (EasyPrivacy) and `scriptlets-v1.json` (uBO scriptlet code); last refresh time in `engine` settings | ✅ Yes | Rebuilt from downloaded lists every 4 days |
 | **Cookies, site data, cache** | WebView's own storage (`app_webview/`, cache folder) | ❌ Wiped (except Keep List cookies and IndexedDB; see [11](11-keep-list.md)) | Owned by the web engine |
 | **Tab previews** | Memory only | ❌ Gone on Flush or app close | Never written to disk |
 
@@ -27,20 +27,20 @@ Everything stays in Corn's **private app storage** on the phone. Other apps can'
 
 Founder decision (decision log, Round 5). SQLCipher would only add protection when someone gets the raw file: a rooted phone, malware with root access, or forensic extraction tools. In normal use, Android's sandbox and phone encryption already protect the file, the same level as Chrome's bookmarks and history on Android.
 
-**Deleting leaves no trace:** `corn.db` runs with `PRAGMA secure_delete = ON` (deleted rows are overwritten with zeros) and every history deletion empties the write-ahead log (`wal_checkpoint(TRUNCATE)`), so deleted pages can't be read back from `corn.db` or `corn.db-wal`. Unit-tested.
+**Deleting leaves no trace:** `flush.db` runs with `PRAGMA secure_delete = ON` (deleted rows are overwritten with zeros) and every history deletion empties the write-ahead log (`wal_checkpoint(TRUNCATE)`), so deleted pages can't be read back from `flush.db` or `flush.db-wal`. Unit-tested.
 
-**Size:** history costs about 160 bytes per visit (1,000 visits ≈ 160 KB, measured with Corn's tables).
+**Size:** history costs about 160 bytes per visit (1,000 visits ≈ 160 KB, measured with Flush's tables).
 
-**Schema upgrades:** `corn.db` carries a version (`PRAGMA user_version`, now 3; version 3 added the `logins` table). Version 2 made a link's Collection optional and moved "Unsorted" links to no Collection (shown in All). Upgrades run once on open and keep all data (unit-tested).
+**Schema upgrades:** `flush.db` carries a version (`PRAGMA user_version`, now 3; version 3 added the `logins` table). Version 2 made a link's Collection optional and moved "Unsorted" links to no Collection (shown in All). Upgrades run once on open and keep all data (unit-tested).
 
-**Switching back later:** in `core/Cargo.toml` change rusqlite's feature to `bundled-sqlcipher-vendored-openssl`, add `PRAGMA key` in `Store::open`, and keep the key in the Android Keystore. Nothing outside `corn-vault` changes.
+**Switching back later:** in `core/Cargo.toml` change rusqlite's feature to `bundled-sqlcipher-vendored-openssl`, add `PRAGMA key` in `Store::open`, and keep the key in the Android Keystore. Nothing outside `flush-store` changes.
 
 ## What the Vault lock does
 
-The Vault PIN or fingerprint is a gate in the app: nobody sees Vault contents in Corn without it. It does not scramble the file on disk.
+The Vault PIN or fingerprint is a gate in the app: nobody sees Vault contents in Flush without it. It does not scramble the file on disk.
 
-## What Corn never stores or logs
+## What Flush never stores or logs
 
 - No list of blocked requests, sites or URLs, anywhere (database, files or Android's system log).
 - History is kept only while "Keep history" is on, only on the phone, and only until the next Flush.
-- Corn's own log lines contain no URLs; WebView usage metrics to Google are opted out.
+- Flush's own log lines contain no URLs; WebView usage metrics to Google are opted out.

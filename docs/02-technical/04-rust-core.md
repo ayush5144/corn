@@ -2,15 +2,15 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 02:23 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-11, 23:02 IST
 
 ## The honest headline
 
-**Rust will not make the web engine use less memory.** The biggest memory consumer in Corn is the web engine itself (Blink/V8 or WebKit renderers, video buffers, page JavaScript), and Google, Apple or Electron own that code.
+**Rust will not make the web engine use less memory.** The biggest memory consumer in Flush is the web engine itself (Blink/V8 or WebKit renderers, video buffers, page JavaScript), and Google, Apple or Electron own that code.
 
 Rust earns its place in three ways:
 
-1. **Blocking**, the biggest memory lever Corn controls inside a page. Every ad script, iframe and video ad that never loads is memory and CPU never spent.
+1. **Blocking**, the biggest memory lever Flush controls inside a page. Every ad script, iframe and video ad that never loads is memory and CPU never spent.
 2. **One implementation on every platform.** Blocking, URL cleaning, flush rules and the Vault format behave identically on Android, iPhone and laptop.
 3. **Control and safety** for security-critical code (encryption, parsing untrusted filter lists) without garbage-collector pauses or memory-safety bugs.
 
@@ -19,7 +19,7 @@ Rust earns its place in three ways:
 | Rank | Lever | Who owns it | Impact |
 |---|---|---|---|
 | 1 | Limit live tabs; freeze the rest ([03](03-android.md)) | Platform shell (Kotlin/Swift/TS) | **Largest.** Each live web view carries a renderer. |
-| 2 | Block ads, trackers and pop-ups before they load | **Rust** (`corn-block`) | **Large.** Ad scripts and video ads are heavy. |
+| 2 | Block ads, trackers and pop-ups before they load | **Rust** (`flush-block`) | **Large.** Ad scripts and video ads are heavy. |
 | 3 | Small blocking-engine footprint | **Rust** (adblock-rust + FlatBuffers) | **Medium.** Brave cut adblock-rust memory ~75% (~45 MB) by moving filters into FlatBuffers. One engine instance is shared by all tabs. |
 | 4 | Writing app logic in Rust instead of Kotlin/Swift | Rust | **Small.** Not a reason on its own. |
 
@@ -27,13 +27,13 @@ Rust earns its place in three ways:
 
 | Crate | Job | Why Rust | Phase |
 |---|---|---|---|
-| `corn-block` | Wraps adblock-rust: request checks, cosmetic CSS, scriptlets | Same engine as Brave Shields; ~5 µs per request check | 1 |
-| `corn-lists` | Download, verify, compile and cache filter lists as a compact binary engine | Off-main-thread, memory-compact, identical everywhere | 1 |
-| `corn-url` | ✅ Strip tracking parameters, HTTPS upgrade. ⏳ Redirect unwrapping, site keys (Public Suffix List) | Parses untrusted input; shared rules | 1 |
-| `corn-flush` | Flush **policy**: what to clear, when, and which Keep-list sites to spare | Same rules on every platform | 2 |
-| `corn-vault` | SQLite database (rusqlite): Collections, Vault Items, tags, search, key-value area for Keep List / session | One Vault format everywhere; security-critical | 2 |
-| `corn-ffi` | UniFFI bindings (Kotlin, Swift) | Generated glue; keeps the API small | 1 |
-| `corn-node` | napi-rs bindings for the Electron desktop app | UniFFI doesn't target Node.js | Desktop |
+| `flush-block` | Wraps adblock-rust: request checks, cosmetic CSS, scriptlets | Same engine as Brave Shields; ~5 µs per request check | 1 |
+| `flush-lists` | Download, verify, compile and cache filter lists as a compact binary engine | Off-main-thread, memory-compact, identical everywhere | 1 |
+| `flush-url` | ✅ Strip tracking parameters, HTTPS upgrade. ⏳ Redirect unwrapping, site keys (Public Suffix List) | Parses untrusted input; shared rules | 1 |
+| `flush-policy` | Flush **policy**: what to clear, when, and which Keep-list sites to spare | Same rules on every platform | 2 |
+| `flush-store` | SQLite database (rusqlite): Collections, Vault Items, tags, search, key-value area for Keep List / session | One Vault format everywhere; security-critical | 2 |
+| `flush-ffi` | UniFFI bindings (Kotlin, Swift) | Generated glue; keeps the API small | 1 |
+| `flush-node` | napi-rs bindings for the Electron desktop app | UniFFI doesn't target Node.js | Desktop |
 
 ## What stays out of Rust ❌
 
@@ -50,18 +50,18 @@ Rust earns its place in three ways:
 ## How it's wired
 
 ```
-corn-core/                      (Rust workspace, separate from the app shells)
+core/                           (Rust workspace, separate from the app shells)
 ├── crates/
-│   ├── corn-block/             adblock-rust wrapper
-│   ├── corn-lists/             filter list manager
-│   ├── corn-url/               URL cleaning
-│   ├── corn-flush/             flush policy
-│   ├── corn-vault/             SQLite storage
-│   ├── corn-ffi/               UniFFI bindings (Kotlin, Swift)
-│   └── corn-node/              napi-rs bindings (Electron)
+│   ├── flush-block/            adblock-rust wrapper
+│   ├── flush-lists/            filter list manager
+│   ├── flush-url/              URL cleaning
+│   ├── flush-policy/           flush policy
+│   ├── flush-store/            SQLite storage
+│   ├── flush-ffi/              UniFFI bindings (Kotlin, Swift)
+│   └── flush-node/             napi-rs bindings (Electron)
 └── Cargo.toml
 
-        corn-ffi
+        flush-ffi
            │
    ┌───────┼──────────────┐
    ▼       ▼              ▼

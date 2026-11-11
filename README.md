@@ -1,4 +1,4 @@
-# Corn 🌽
+# Flush
 
 **A free, private, "use whenever you want" browser for adults.**
 
@@ -28,18 +28,18 @@ The code is always the source of truth. The docs in [`docs/`](docs/README.md) ex
 ## Repository
 
 ```
-corn/
+./
 ├── README.md       this file
 ├── AGENTS.md       rules for AI coding agents (CLAUDE.md imports it)
 ├── GLOSSARY.md     product vocabulary (Session, Flush, Vault, …)
 ├── LICENSE         MPL-2.0
-├── TRADEMARKS.md   the name and logo aren't covered by the licence
+├── TRADEMARKS.md   the Flush name and logo aren't covered by the licence
 ├── docs/           product, technical, planning, reference, ADRs (start at docs/README.md)
-├── core/           shared Rust core: Brave's ad-block engine + Corn logic
+├── core/           shared Rust core: Brave's ad-block engine + Flush logic
 ├── android/        Android app (Kotlin + Compose + WebView)
 ├── scripts/        build glue between the Rust core and the apps
 ├── mockups/        clickable HTML mockups
-└── brand/          logo files
+└── brand/          logo and Flush Button masters (brand page: docs/01-product/04-brand.md)
 ```
 
 Planned: `ios/` (Swift) and `desktop/` (Electron). Full layout and rules: [docs/02-technical/08-repo-structure.md](docs/02-technical/08-repo-structure.md).
@@ -48,10 +48,10 @@ Planned: `ios/` (Swift) and `desktop/` (Electron). Full layout and rules: [docs/
 
 - Nothing about your browsing leaves the device by default.
 - No accounts, ads or tracking. Free, funded by donations.
-- Flush clears this device only. Corn never claims to erase what websites, networks or the OS recorded.
-- Corn is a browser. It does not host, index or recommend content.
+- Flush clears this device only. Flush never claims to erase what websites, networks or the OS recorded.
+- Flush is a browser. It does not host, index or recommend content.
 
 ## Licence
 
-Code: [MPL-2.0](LICENSE). The Corn name and logo are trademarks and aren't covered by the licence; see [TRADEMARKS.md](TRADEMARKS.md).
+Code: [MPL-2.0](LICENSE). The Flush name and logo are trademarks and aren't covered by the licence; see [TRADEMARKS.md](TRADEMARKS.md).
 

@@ -2,41 +2,48 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 10:21 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-11, 23:02 IST
 
-What Corn takes from Brave, DuckDuckGo, Mozilla and others. Licences checked on GitHub on 2026-11-01.
+What Flush takes from Brave, DuckDuckGo, Mozilla and others. Licences checked on GitHub on 2026-11-01.
 
 ## Ad blocking
 
-| Project | Licence | What Corn uses |
+| Project | Licence | What Flush uses |
 |---|---|---|
 | [brave/adblock-rust](https://github.com/brave/adblock-rust) | MPL-2.0 | **The blocking engine** (Rust): request checks, cosmetic hiding, scriptlets |
 | [brave/adblock-lists](https://github.com/brave/adblock-lists) | MPL-2.0 | Brave's extra filter lists |
 | [brave/adblock-resources](https://github.com/brave/adblock-resources) | MPL-2.0 | Not used yet. Its published `dist/resources.json` holds only Brave's own 17 resources (for Brave's lists); the uBO scriptlets Brave runs are assembled on Brave's servers and shipped through Brave's updater, which other apps can't fetch (HTTP 403). |
 | [EasyList / EasyPrivacy](https://github.com/easylist/easylist) | GPL-3.0 or CC BY-SA 3.0+ (dual) | Core ad and tracker rules |
 | [uBlockOrigin/uAssets](https://github.com/uBlockOrigin/uAssets) | GPL-3.0 | ✅ In use: `filters.txt` (+ the files it `!#include`s), `quick-fixes.txt`, `unbreak.txt` in the **ads** engine. They carry the scriptlet rules (YouTube's included). Downloaded at runtime only, never in the repo or the starter engine (GPL-only). |
-| [gorhill/uBlock](https://github.com/gorhill/uBlock) | GPL-3.0 | ✅ In use: the scriptlet code (`src/js/resources/*.js` and what it imports) of uBO's latest release, downloaded at runtime, unmodified, and turned into adblock-rust resources on the phone (`corn-block/src/scriptlets.rs`), as Brave's build does. Never in the repo or the APK. |
+| [gorhill/uBlock](https://github.com/gorhill/uBlock) | GPL-3.0 | ✅ In use: the scriptlet code (`src/js/resources/*.js` and what it imports) of uBO's latest release, downloaded at runtime, unmodified, and turned into adblock-rust resources on the phone (`flush-block/src/scriptlets.rs`), as Brave's build does. Never in the repo or the APK. |
 | [AdguardTeam/AdguardFilters](https://github.com/AdguardTeam/AdguardFilters) | GPL-3.0 | Optional extra lists (pop-ups, mobile ads) |
 
 Filter lists are **downloaded on the device at runtime** as data and credited in About, the same way Brave and uBlock Origin handle them.
 
 ## Privacy protections
 
-| Project | Licence | What Corn uses |
+| Project | Licence | What Flush uses |
 |---|---|---|
-| [duckduckgo/Android](https://github.com/duckduckgo/Android) | Apache-2.0 | **Corn's closest twin**: a Kotlin + WebView browser. Reference for the Fire Button, WebView setup, request interception, tab handling and privacy settings. |
+| [duckduckgo/Android](https://github.com/duckduckgo/Android) | Apache-2.0 | **Flush's closest twin**: a Kotlin + WebView browser. Reference for the Fire Button, WebView setup, request interception, tab handling and privacy settings. |
 | [duckduckgo/content-scope-scripts](https://github.com/duckduckgo/content-scope-scripts) | Apache-2.0 | Scripts injected at page start: fingerprinting protection, Global Privacy Control, other in-page protections |
 | [duckduckgo/autoconsent](https://github.com/duckduckgo/autoconsent) | MPL-2.0 | ✅ In use: version 17.2.0 standalone build, unmodified, fetched at build time and bundled with its licence. Clicks "Reject" on cookie banners. Version pinned in `scripts/build-starter-assets.sh` (bump by hand; Dependabot can't see it). |
-| [ClearURLs/Rules](https://github.com/ClearURLs/Rules) | LGPL-3.0 | Tracking-parameter and redirect-wrapper rules for `corn-url` |
+| [ClearURLs/Rules](https://github.com/ClearURLs/Rules) | LGPL-3.0 | Tracking-parameter and redirect-wrapper rules for `flush-url` |
 | [publicsuffix/list](https://github.com/publicsuffix/list) | MPL-2.0 | Works out which site a URL belongs to (Keep List, third-party detection) |
 | [duckduckgo/apple-browsers](https://github.com/duckduckgo/apple-browsers) | Apache-2.0 | iPhone later: WKWebView browser reference |
 
 ## Plumbing
 
-| Project | Licence | What Corn uses |
+| Project | Licence | What Flush uses |
 |---|---|---|
 | [mozilla/uniffi-rs](https://github.com/mozilla/uniffi-rs) | MPL-2.0 | Generates Kotlin and Swift bindings for the Rust core |
 | [SQLite](https://sqlite.org) (via [rusqlite](https://github.com/rusqlite/rusqlite)) | Public domain / MIT | Local database for the Vault, Keep List and session |
+
+## Fonts
+
+| Project | Licence | What Flush uses |
+|---|---|---|
+| [Fredoka](https://github.com/google/fonts/tree/main/ofl/fredoka) (google/fonts) | SIL OFL 1.1 | Display face: the lowercase **flush** wordmark (600) and headings. Replaces Bricolage Grotesque (Round 22). Bundled unmodified with its licence text in `assets/licenses/` |
+| [Figtree](https://github.com/google/fonts/tree/main/ofl/figtree) (google/fonts) | SIL OFL 1.1 | UI text. Bundled unmodified with its licence text (`assets/licenses/OFL-figtree.txt`) |
 
 ## How each protection is built
 
@@ -44,8 +51,8 @@ Filter lists are **downloaded on the device at runtime** as data and credited in
 |---|---|---|
 | Ad / tracker / pop-up blocking | adblock-rust + filter lists | Rust, from `shouldInterceptRequest` |
 | Cookie banners | **autoconsent** clicks "reject"; **EasyList Cookie List** hides leftovers | Injected at page start; cosmetic rules in adblock-rust |
-| Fingerprinting + Global Privacy Control | **content-scope-scripts** code with **Corn's own config** | Injected at page start (`addDocumentStartJavaScript`) |
-| Link cleaning | **AdGuard URL Tracking filter** (`$removeparam`, supported by adblock-rust) + **ClearURLs** redirect rules | Rust `corn-url`, on top-level navigations |
+| Fingerprinting + Global Privacy Control | **content-scope-scripts** code with **Flush's own config** | Injected at page start (`addDocumentStartJavaScript`) |
+| Link cleaning | **AdGuard URL Tracking filter** (`$removeparam`, supported by adblock-rust) + **ClearURLs** redirect rules | Rust `flush-url`, on top-level navigations |
 | Third-party cookies | WebView's own switch (`setAcceptThirdPartyCookies(false)`) | Android setting |
 | HTTPS upgrade | Rewrite `http://` → `https://`, fall back if it fails; never allow mixed content | Kotlin |
 
@@ -53,15 +60,15 @@ Filter lists are **downloaded on the device at runtime** as data and credited in
 
 | Project | Why not |
 |---|---|
-| DuckDuckGo privacy-configuration | CC BY-NC-SA 4.0 (non-commercial). Corn writes its own config for content-scope-scripts. |
+| DuckDuckGo privacy-configuration | CC BY-NC-SA 4.0 (non-commercial). Flush writes its own config for content-scope-scripts. |
 | DuckDuckGo Tracker Blocklists / Tracker Radar | CC BY-NC-SA 4.0 (**non-commercial**). It would block a future paid Cloud Vault. EasyPrivacy covers the same need. |
 | Firefox Android (`mozilla-mobile/firefox-android`) | Archived and built on GeckoView; ideas only |
-| Brave's Chromium-level privacy code (fingerprint randomisation, debouncing in C++) | Lives inside Chromium; it can't be lifted into WebView. Corn re-creates the ideas (e.g. redirect unwrapping in Rust). |
+| Brave's Chromium-level privacy code (fingerprint randomisation, debouncing in C++) | Lives inside Chromium; it can't be lifted into WebView. Flush re-creates the ideas (e.g. redirect unwrapping in Rust). |
 | DuckDuckGo iOS (`duckduckgo/iOS`) | Archived; moved to `apple-browsers` |
 
 ## Licence obligations (summary, not legal advice)
 
 - **Apache-2.0 / BSD:** keep copyright and licence notices; list them in About → Open-source licences.
-- **MPL-2.0:** if Corn modifies an MPL file, that file's changes must be published. Using it unmodified only needs the notice.
-- **GPL-3.0 / LGPL-3.0 lists and rules:** fetched as data at runtime and credited; not merged into Corn's own code.
+- **MPL-2.0:** if Flush modifies an MPL file, that file's changes must be published. Using it unmodified only needs the notice.
+- **GPL-3.0 / LGPL-3.0 lists and rules:** fetched as data at runtime and credited; not merged into Flush's own code.
 - Legal review before the public launch.

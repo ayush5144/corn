@@ -2,42 +2,42 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 00:34 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-11, 23:02 IST
 
-One public repository, `ayush5144/corn`, holds everything: docs, the shared Rust core, and every platform app.
+One public repository, `ayush5144/corn` (to be renamed `flush` with the founder's OK, plan step 5), holds everything: docs, the shared Rust core, and every platform app.
 
 **Legend:** ✅ exists · 🔜 next · ⏭️ later
 
 ```
-corn/
+./
 ├── README.md                  ✅ project overview
 ├── AGENTS.md                  ✅ rules for AI coding agents (CLAUDE.md imports it)
 ├── CLAUDE.md                  ✅ one line: @AGENTS.md
 ├── GLOSSARY.md                ✅ product vocabulary
 ├── LICENSE                    ✅ MPL-2.0
-├── TRADEMARKS.md              ✅ name and logo aren't covered by the licence
+├── TRADEMARKS.md              ✅ the Flush name and logo aren't covered by the licence
 ├── .gitignore                 ✅
 ├── .github/
 │   ├── dependabot.yml         ✅ weekly PRs for new Rust + Android dependency versions
 │   └── workflows/             ⏭️ CI: Rust tests, Android build, iOS build
 │
 ├── docs/                      ✅ product, technical, planning, reference, reviews, ADRs (see docs/README.md)
-├── brand/                     ✅ logo source files
+├── brand/                     ✅ logo and Flush Button masters (see docs/01-product/04-brand.md)
 ├── mockups/                   ✅ clickable HTML mockups (never hosted as artifacts)
 │   └── prototype.html
 │
 ├── core/                      ✅ SHARED RUST CORE: one implementation for every platform
 │   ├── Cargo.toml             ✅ workspace: shared versions, release profile
 │   └── crates/
-│       ├── corn-block/        ✅ wraps Brave's adblock-rust: request checks, element hiding
+│       ├── flush-block/       ✅ wraps Brave's adblock-rust: request checks, element hiding
 │       │   ├── examples/bench.rs  ✅ benchmark on real filter lists
-│       │   └── src/bin/corn-compile.rs ✅ build-time tool: compiles the offline starter list
-│       ├── corn-lists/        🔜 download, verify, cache and refresh filter lists
-│       ├── corn-url/          ✅ link cleaning (tracking parameters), HTTPS upgrade
-│       ├── corn-flush/        ⏭️ Flush rules: what to clear, Keep List matching
-│       ├── corn-vault/        ✅ SQLite: Vault, Collections, tags, search, Keep List, session
-│       ├── corn-ffi/          ✅ UniFFI bindings → Kotlin (Android) and Swift (iOS)
-│       └── corn-node/         ⏭️ napi-rs bindings → Node.js (desktop Electron app)
+│       │   └── src/bin/flush-compile.rs ✅ build-time tool: compiles the offline starter list
+│       ├── flush-lists/       🔜 download, verify, cache and refresh filter lists
+│       ├── flush-url/         ✅ link cleaning (tracking parameters), HTTPS upgrade
+│       ├── flush-policy/      ⏭️ Flush rules: what to clear, Keep List matching
+│       ├── flush-store/       ✅ SQLite: Vault, Collections, tags, search, Keep List, session
+│       ├── flush-ffi/         ✅ UniFFI bindings → Kotlin (Android) and Swift (iOS)
+│       └── flush-node/        ⏭️ napi-rs bindings → Node.js (desktop Electron app)
 │
 ├── android/                   ✅ ANDROID APP (Kotlin + Jetpack Compose + System WebView)
 │   ├── settings.gradle.kts, build.gradle.kts, gradle/libs.versions.toml, gradlew
@@ -46,28 +46,28 @@ corn/
 │       ├── proguard-rules.pro ✅ keeps JNA + UniFFI classes through R8
 │       └── src/main/
 │           ├── AndroidManifest.xml          ✅ no backups, http allowed, WebView metrics opt-out
-│           ├── java/app/cornbrowser/        ✅ Corn's Kotlin code
+│           ├── java/com/flushbrowser/       ✅ Flush's Kotlin code
 │           │   ├── MainActivity.kt          ✅ lifecycle, back button, recents privacy, fullscreen
-│           │   ├── CornController.kt        ✅ app state: screens, sheets, Flush, Auto-Flush, shields, totals
-│           │   ├── browser/                 ✅ CornTab (WebView + hooks), TabManager (tabs, groups, live-tab rule),
-│           │   │                               CornEngine (ads + trackers engines), Flusher, BrowserIdentity
-│           │   ├── data/                    ✅ CornData (corn.db), CornSettings, SearchEngines
-│           │   └── ui/                      ✅ Compose screens, sheets, components, theme, icons
+│           │   ├── AppController.kt         ✅ app state: screens, sheets, Flush, Auto-Flush, shields, totals
+│           │   ├── browser/                 ✅ WebTab (WebView + hooks), TabManager (tabs, groups, live-tab rule),
+│           │   │                               BlockEngine (ads + trackers engines), Flusher, BrowserIdentity
+│           │   ├── data/                    ✅ AppData (flush.db), AppSettings, SearchEngines
+│           │   └── ui/                      ✅ AppRoot (root screen), Compose screens, sheets, components (ToggleSwitch…), theme, icons (Glyphs)
 │           ├── assets/licenses/             ✅ font licences (OFL)
 │           (app/src/test/)                  ✅ JVM unit tests (SearchEnginesTest)
 │           └── res/                         ✅ icons, fonts, engine favicons, logo, theme, backup exclusion rules
 │
 ├── ios/                       ⏭️ IPHONE APP (Swift + SwiftUI + WKWebView)
-│   ├── Corn.xcodeproj
-│   ├── Corn/                  Swift app code
-│   └── CornCore/              Swift package wrapping the Rust core (.xcframework + bindings)
+│   ├── Flush.xcodeproj
+│   ├── Flush/                 Swift app code
+│   └── FlushCore/             Swift package wrapping the Rust core (.xcframework + bindings)
 │
 ├── desktop/                   ⏭️ LAPTOP APP (Electron + TypeScript + React)
 │   ├── package.json
 │   └── src/ (main/, renderer/)
 │
-├── design-agents/             the exact AI agent briefs used for logo/brand work (corn-design/, flush-design/)
-├── .claude/agents/            reusable Claude Code agents: corn-logo-designer, flush-brand-designer
+├── design-agents/             the exact AI agent briefs used for logo/brand work (corn-design/ is the pre-rename record, flush-design/)
+├── .claude/agents/            reusable Claude Code agents: qa-engineer, scriptlet-engineer, flush-brand-designer (corn-logo-designer kept as a record)
 │
 └── scripts/                   build glue between the Rust core and each app
     ├── build-android-core.sh  ✅ cargo-ndk → .so files + Kotlin bindings
@@ -85,14 +85,14 @@ corn/
 Does every platform need the same behaviour?
 ├─ Yes (blocking, link cleaning, Flush rules, Vault format) ──► core/crates/<crate>/
 └─ No, it touches platform APIs or UI
-      ├─ Android ──► android/app/src/main/java/app/cornbrowser/
-      ├─ iPhone  ──► ios/Corn/
+      ├─ Android ──► android/app/src/main/java/com/flushbrowser/
+      ├─ iPhone  ──► ios/Flush/
       └─ Laptop  ──► desktop/src/
 ```
 
 - **Shared logic lives in Rust once.** Never re-implement blocking, URL cleaning or the Vault format per platform.
 - **Platform code stays thin:** UI, web-view wiring, OS security APIs (Keystore, Keychain), memory handling.
-- **Only `corn-ffi` and `corn-node` talk to apps.** Other crates are plain Rust libraries with their own tests.
+- **Only `flush-ffi` and `flush-node` talk to apps.** Other crates are plain Rust libraries with their own tests.
 - **Upstream code is never edited** (see `AGENTS.md`): Brave's engine and other dependencies are pinned versions behind thin wrappers.
 
 ## Generated files (never committed)
@@ -100,8 +100,8 @@ Does every platform need the same behaviour?
 | Generated | Made by | Location |
 |---|---|---|
 | Rust build output | `cargo` | `core/target/` |
-| Android native libraries (`libcorn_ffi.so`) | `scripts/build-android-core.sh` | `android/app/build/generated/uniffi/jniLibs/` |
-| Kotlin bindings (`corn_ffi.kt`) | UniFFI bindgen | `android/app/build/generated/uniffi/kotlin/` |
+| Android native libraries (`libflush_ffi.so`) | `scripts/build-android-core.sh` | `android/app/build/generated/uniffi/jniLibs/` |
+| Kotlin bindings (`flush_ffi.kt`) | UniFFI bindgen | `android/app/build/generated/uniffi/kotlin/` |
 | Android build output | Gradle | `android/app/build/`, `android/.gradle/` |
 | Machine-specific SDK path | Android Studio / you | `android/local.properties` |
 
@@ -110,7 +110,7 @@ Does every platform need the same behaviour?
 | What | Command (from repo root) |
 |---|---|
 | Rust tests | `cd core && cargo test` |
-| Engine benchmark | `cd core && cargo run --release -p corn-block --example bench -- easylist.txt easyprivacy.txt` |
+| Engine benchmark | `cd core && cargo run --release -p flush-block --example bench -- easylist.txt easyprivacy.txt` |
 | Android debug app | `cd android && ./gradlew assembleDebug` (also builds the Rust core) |
 | Android release app (8.7 MB, unsigned) | `cd android && ./gradlew assembleRelease` |
 | Android unit tests | `cd android && ./gradlew testDebugUnitTest` |
@@ -122,6 +122,8 @@ Does every platform need the same behaviour?
 
 | Thing | Name |
 |---|---|
-| Android application ID / Kotlin package | `app.cornbrowser` (🟡 confirm before first public release; it can't change after) |
-| Rust crates | `corn-<area>` (kebab-case), library names `corn_<area>` |
-| Generated Kotlin package | `uniffi.corn_ffi` |
+| Android application ID | `com.flushbrowser.android` (✅ decided 2026-11-11, Round 22; permanent once uploaded to Google Play) |
+| Kotlin package | `com.flushbrowser` |
+| Rust crates | `flush-<area>` (kebab-case), library names `flush_<area>` |
+| App-wide internal names | Brand-neutral where "Flush" would read as the Flush action (`AppController`, `AppSettings`, `BlockEngine`, Rust `CoreStore`); names pages can see carry no brand (`pageBridge`, `loginBridge`) |
+| Generated Kotlin package | `uniffi.flush_ffi` |

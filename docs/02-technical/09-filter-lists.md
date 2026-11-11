@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 10:21 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-11, 23:02 IST
 
 ## What they are
 
@@ -16,7 +16,7 @@ example.org##.ad-banner            ← on example.org, hide elements with class 
 ##.sponsored-box                   ← hide "sponsored-box" on every site
 ```
 
-## Lists Corn uses
+## Lists Flush uses
 
 | List | Purpose | Size (Nov 2026) | Licence | Status |
 |---|---|---|---|---|
@@ -32,8 +32,8 @@ example.org##.ad-banner            ← on example.org, hide elements with class 
 ## Why they're not in the repo
 
 1. **They go stale in days.** Fetching from the authors means users get yesterday's fixes, not last month's.
-2. **They aren't ours.** The phone fetches them like any web page, so their GPL licence stays separate from Corn's MPL licence.
-3. **Volunteers maintain them for free.** Fetching from the source keeps that work flowing to Corn without us maintaining copies.
+2. **They aren't ours.** The phone fetches them like any web page, so their GPL licence stays separate from Flush's MPL licence.
+3. **Volunteers maintain them for free.** Fetching from the source keeps that work flowing to Flush without us maintaining copies.
 4. **Smaller app.** About 6 MB is fetched once instead of being shipped in every update.
 
 ## Lifecycle on the phone
@@ -48,17 +48,17 @@ Fresh install:  load the built-in starter list instantly → first download on a
 
 **Why two engines:** each site can switch ads and trackers off separately (shield → Advanced) without changing adblock-rust. Both are the same unmodified engine loaded with a different list. The lists overlap slightly, so the split is close but not exact.
 
-Corn's own servers are never involved. Downloading a list sends no browsing data.
+Flush's own servers are never involved. Downloading a list sends no browsing data.
 
 ## Scriptlets (YouTube ads and the like)
 
-Some ads can't be blocked by address: YouTube's ad video comes from the same servers as the real one. Lists handle these with **scriptlets**, `+js(...)` rules that run a small script in the page before the site's own code, e.g. `m.youtube.com##+js(set, ytInitialPlayerResponse.adPlacements, undefined)`. Corn's code knows no site: the lists decide what runs where, as in Brave.
+Some ads can't be blocked by address: YouTube's ad video comes from the same servers as the real one. Lists handle these with **scriptlets**, `+js(...)` rules that run a small script in the page before the site's own code, e.g. `m.youtube.com##+js(set, ytInitialPlayerResponse.adPlacements, undefined)`. Flush's code knows no site: the lists decide what runs where, as in Brave.
 
 | Piece | Where |
 |---|---|
-| Scriptlet code: uBO's `src/js/resources/scriptlets.js` and every module it imports (latest release tag, from GitHub's `releases/latest` redirect) | `CornEngine.downloadScriptlets` |
-| Turn those files into adblock-rust resources (each registered function's text, as `fn.toString()` gives it, its aliases, dependencies, and `requiresTrust` → permission mask 1, Brave's bit for uBO). Checked: ≥ 80 scriptlets and the key ones present, else the last good set stays | `corn-block/src/scriptlets.rs` |
-| `!#if` / `!#include` in uBO's lists (Corn = Chromium, mobile; unknown conditions false) | `corn-block/src/preprocess.rs` |
+| Scriptlet code: uBO's `src/js/resources/scriptlets.js` and every module it imports (latest release tag, from GitHub's `releases/latest` redirect) | `BlockEngine.downloadScriptlets` |
+| Turn those files into adblock-rust resources (each registered function's text, as `fn.toString()` gives it, its aliases, dependencies, and `requiresTrust` → permission mask 1, Brave's bit for uBO). Checked: ≥ 80 scriptlets and the key ones present, else the last good set stays | `flush-block/src/scriptlets.rs` |
+| `!#if` / `!#include` in uBO's lists (Flush = Chromium, mobile; unknown conditions false) | `flush-block/src/preprocess.rs` |
 | Resources aren't inside the saved engine, so they're stored in `scriptlets-v1.json` and passed every time an engine is loaded | `Blocker::from_serialized(bytes, resources)` |
 | Inject at document start, per host, before the page's document exists | `browser/ScriptletInjector.kt` |
 
@@ -66,7 +66,7 @@ Some ads can't be blocked by address: YouTube's ad video comes from the same ser
 
 **Injection:** each host with scriptlets gets its own `WebViewCompat.addDocumentStartJavaScript` registration limited to its origin, made as the navigation starts (`shouldInterceptRequest` for the main frame, `shouldOverrideUrlLoading` for redirects). A single generic script that fetched and `eval`'d the scriptlets doesn't work: YouTube sends `require-trusted-types-for 'script'`, which blocks `eval`. The per-site Ads switch removes the host's registration before the next load. The scriptlets are wrapped in a private function scope with the `scriptletGlobals` object uBO's code expects.
 
-Measured on a Mac M4 (`cargo run --release -p corn-block --example scriptlets`, lists of 2026-11-05):
+Measured on a Mac M4 (`cargo run --release -p flush-block --example scriptlets`, lists of 2026-11-05):
 
 | Measure | Value |
 |---|---|
@@ -78,7 +78,7 @@ Measured on a Mac M4 (`cargo run --release -p corn-block --example scriptlets`, 
 
 In desktop Chrome, the m.youtube.com bundle loaded before a page script removed `adPlacements`, `playerAds` and `adSlots` from `ytInitialPlayerResponse` (kept `videoDetails`) and pruned them from `JSON.parse` results; it left no globals behind.
 
-## Measured (Mac M4, `core/crates/corn-block/examples/bench.rs`)
+## Measured (Mac M4, `core/crates/flush-block/examples/bench.rs`)
 
 | Measure | EasyList + EasyPrivacy (134,076 lines) |
 |---|---|
@@ -93,11 +93,11 @@ Phone figures go in the spike results.
 
 | Gap | Plan | Tracked in |
 |---|---|---|
-| Lists refresh | ✅ Every 4 days on Wi-Fi (`CornEngine.refreshIfStale`, checked on start and when Corn comes to the foreground) | Done |
-| Fresh install with no internet | ✅ Starter engines compiled at build time from that day's lists (`scripts/build-starter-assets.sh`, `corn-compile`), never committed | Done |
+| Lists refresh | ✅ Every 4 days on Wi-Fi (`BlockEngine.refreshIfStale`, checked on start and when Flush comes to the foreground) | Done |
+| Fresh install with no internet | ✅ Starter engines compiled at build time from that day's lists (`scripts/build-starter-assets.sh`, `flush-compile`), never committed | Done |
 | A corrupted download could break blocking | ✅ Last good engine kept; new one swapped in only after it builds and is saved | Done |
 | A list could be tampered with in transit | ✅ HTTPS only; rejected if under 10,000 lines | Done |
 
 ## Credits
 
-Every list Corn uses is credited by name, author and licence in **About → Open-source licences**.
+Every list Flush uses is credited by name, author and licence in **About → Open-source licences**.

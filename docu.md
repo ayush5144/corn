@@ -216,3 +216,10 @@
 - Added `docs/03-planning/05-rename-to-flush.md` (decisions, names in code and data, docs rules, order of work, risks).
 - Updated `docs/01-product/02-decision-log.md` (Round 22) and `docs/README.md` (planning row 05).
 - Tagged the last Corn version `corn-final` (f9865d4).
+
+## 2026-11-11 — Rename step 2b: docs say Flush
+
+- Current-state docs now say Flush and use the renamed code paths and names (`com/flushbrowser/`, `AppController`, `WebTab`, `BlockEngine`, `AppData`, `AppSettings`, `flush-block`/`flush-url`/`flush-store`/`flush-ffi`, `flush.db`, prefs `settings`/`engine`/`logins`, `logins_kek`, `flush-login/v1`): `README.md`, `AGENTS.md`, `GLOSSARY.md` (new "Flush (the app)" and "Corn" entries; "Leaving Corn" is now "Leaving the app"), `TRADEMARKS.md`, `docs/README.md`, PRD (centre Flush Button, look and feel settled), features, every `docs/02-technical/` file, roadmap, checklist (task text only), testing on a phone (`Flush-0.2.0-*.apk`, app ID `com.flushbrowser.android`), `docs/04-reference/` (Fredoka and Figtree added), `qa/README.md`.
+- Agent briefs renamed: `.claude/agents/qa-engineer.md`, `.claude/agents/scriptlet-engineer.md`.
+- Added `docs/01-product/04-brand.md` (name, Vortex logo, palette and contrast, fonts, voice, copy kit, nav bar with the centre Flush Button).
+- Historical records keep "Corn" with a one-line rename note: decision log, `docs/05-review/*`, spike results, ADR 0001, `design-agents/corn-design/*`, `design-agents/README.md`, `.claude/agents/corn-logo-designer.md`, `.claude/agents/flush-brand-designer.md` (marked decided). `mockups/brand-compare.html` and `mockups/flush/index.html` now say Flush was chosen on 2026-11-11.

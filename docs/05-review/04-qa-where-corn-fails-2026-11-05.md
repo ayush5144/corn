@@ -2,7 +2,9 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-05 · **Last updated:** 2026-11-05, 11:15 IST
+> **Created:** 2026-11-05 · **Last updated:** 2026-11-11, 23:02 IST
+
+Corn was renamed Flush on 2026-11-11 (decision log Round 22); this record keeps the old name.
 
 A hands-on QA pass on the emulator (`corn_pixel`, WebView DevTools via `adb forward`), looking for places where Corn breaks a normal user flow. **No app code was changed.** The one setting changed for a test (pop-up blocking off for ayushpatil.com) was turned back on, and the site settings were checked afterwards (`site_shields = {}`).
 

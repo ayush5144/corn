@@ -1,8 +1,8 @@
-# Corn Docs
+# Flush Docs
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-11, 22:40 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-11, 23:02 IST
 
 Read in folder order. Start with the product, then the technical plan.
 
@@ -12,9 +12,10 @@ Read in folder order. Start with the product, then the technical plan.
 
 | # | Doc | What it covers |
 |---|---|---|
-| 01 | [PRD](01-product/01-prd.md) | What Corn is, who it's for, every feature with ✅ settled / 🟡 open status |
+| 01 | [PRD](01-product/01-prd.md) | What Flush is, who it's for, every feature with ✅ settled / 🟡 open status |
 | 02 | [Decision log](01-product/02-decision-log.md) | Every question asked and the founder's answer, round by round |
 | 03 | [Features](01-product/03-features.md) | Every built feature, its user benefit, and the evidence (verified / tested / built) |
+| 04 | [Brand](01-product/04-brand.md) | Name and why, Vortex logo, dark/light palette with contrast, Fredoka + Figtree, voice, copy kit, nav bar with the centre Flush Button |
 
 ## 02 — Technical: *how* we build it
 
@@ -28,8 +29,8 @@ Read in folder order. Start with the product, then the technical plan.
 | 06 | [iPhone](02-technical/06-iphone.md) | iOS stack and App Store notes |
 | 07 | [Desktop](02-technical/07-desktop.md) | Laptop stack: Electron vs Tauri vs native |
 | 08 | [Repo structure](02-technical/08-repo-structure.md) | Every folder (Android, iPhone, desktop, Rust core), where new code goes, how to build |
-| 09 | [Filter lists](02-technical/09-filter-lists.md) | What filter lists are, which ones Corn uses, why they're fetched not stored |
-| 10 | [Storage](02-technical/10-storage.md) | What Corn keeps, where (SQLite, settings, WebView), and what survives a Flush |
+| 09 | [Filter lists](02-technical/09-filter-lists.md) | What filter lists are, which ones Flush uses, why they're fetched not stored |
+| 10 | [Storage](02-technical/10-storage.md) | What Flush keeps, where (SQLite, settings, WebView), and what survives a Flush |
 | 11 | [Keep List and data clearing](02-technical/11-keep-list.md) | What Keep List sites keep, how Flush and Delete browsing data delete everything else, built-in vs workaround, limits |
 | 12 | [Security and encryption](02-technical/12-security.md) | How saved passwords are encrypted (data key + Android Keystore), the PIN, filling rules, what's protected where, known gaps |
 
@@ -48,13 +49,15 @@ Read in folder order. Start with the product, then the technical plan.
 | # | Doc | What it covers |
 |---|---|---|
 | 01 | [Sources](04-reference/01-sources.md) | Every external fact and where it came from |
-| 02 | [Open source we build on](04-reference/02-open-source.md) | What Corn takes from Brave, DuckDuckGo, Mozilla and others, with licences |
+| 02 | [Open source we build on](04-reference/02-open-source.md) | What Flush takes from Brave, DuckDuckGo, Mozilla and others, with licences |
 
 ## 05 — Reviews and audits
 
+Reviews are historical records: they keep the name Corn, which the browser had when they were written.
+
 | # | Doc | What it covers |
 |---|---|---|
-| 01 | [Privacy & efficiency audit, 2026-11-01](05-review/01-audit-2026-11-01.md) | What Corn stores, logs and sends; size and memory measured; fixes |
+| 01 | [Privacy & efficiency audit, 2026-11-01](05-review/01-audit-2026-11-01.md) | What the app stored, logged and sent on that date; size and memory measured; fixes |
 | 02 | [Build review, 2026-11-01](05-review/02-review-2026-11-01.md) | Mockup parity, what's verified, bugs fixed, what's not built and whether it's needed |
 | 03 | [Password store code review, 2026-11-05](05-review/03-password-review-2026-11-05.md) | Line-by-line review of the password store: what's right, 7 findings (none leaks a password), what's not covered |
 | 04 | [QA: where Corn fails, 2026-11-05](05-review/04-qa-where-corn-fails-2026-11-05.md) | Emulator QA with data: tapped links blocked as pop-ups, forced page darkening, YouTube ads, fullscreen in split screen, app links, image long-press; causes and fixes |

@@ -4,6 +4,8 @@ description: Designs ONE logo concept for the Corn browser with Codex image gene
 tools: Bash, Read, Write, Edit, Glob, Grep
 ---
 
+Corn was renamed Flush on 2026-11-11 (decision log Round 22); this record keeps the old name.
+
 You are designing ONE logo concept for "Corn", a free, private, mobile-first Android browser for adults whose personality is "cool, funny, modern" (a bit quirky and cheeky, always tasteful). Its signature feature is the **Flush Button**: one tap wipes all browsing (tabs, cookies, history) like a toilet flush. The original logo (`brand/cornbrowser-logo-square-transparent-1024.png`) is a glossy realistic corn cob that the founder found "too real". Never modify anything in `brand/`.
 
 The caller gives you the concept direction and a short folder name (`<concept>`). Look at the existing concept pages first (`mockups/logos/*.html`) so your page matches the format, and so your concept is genuinely different from them.

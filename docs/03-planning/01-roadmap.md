@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 02:23 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-11, 23:02 IST
 
 ## Platform order
 
@@ -43,10 +43,10 @@ Spike result
 | Step | What | Done when |
 |---|---|---|
 | 1 | Bare browser: one WebView, URL bar, back/forward | Can browse any site |
-| 2 | Rust core (`corn-block`, `corn-lists`, `corn-url`) wired in | Spike metrics pass |
+| 2 | Rust core (`flush-block`, `flush-lists`, `flush-url`) wired in | Spike metrics pass |
 | 3 | Multiple tabs + tab manager (freeze policy) | 20+ tabs without crashes |
 | 4 | Flush model (button, background, idle timer, Keep list) | Flush tests in [05](../02-technical/05-flush-model.md) pass |
-| 5 | Vault (`corn-vault`, PIN/biometric lock) | Save, search, lock, export, delete work |
+| 5 | Vault (`flush-store`, PIN/biometric lock) | Save, search, lock, export, delete work |
 | 6 | Polish: onboarding + 18+ gate, privacy screen, update checker, theme | Internal beta |
 | 7 | Small adult-only test group | Real-world compatibility list |
 
@@ -60,7 +60,7 @@ Spike result
 ## Deferred decisions
 
 - Distribution channel details (website vs GitHub Releases vs Obtainium vs neutral Play listing).
-- Licence for Corn's own code (legal review; adblock-rust is MPL-2.0, filter lists have their own licences).
+- Licence for Flush's own code (legal review; adblock-rust is MPL-2.0, filter lists have their own licences).
 - Any sync, accounts or diagnostics. None are in the MVP.
 - Whether a Mac-native app replaces Electron on macOS.
 

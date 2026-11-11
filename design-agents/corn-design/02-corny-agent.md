@@ -1,5 +1,7 @@
 # Agent: Corn logo concept 2, "Corny"
 
+Corn was renamed Flush on 2026-11-11 (decision log Round 22); this record keeps the old name.
+
 - **Run on:** 2026-11-05, as a Claude Code subagent (`general-purpose`), in the background, in parallel with concepts 1 and 3.
 - **Tools it used:** Bash (Codex CLI image generation, `sips`), Read (to look at each PNG), Write.
 - **Output:** `mockups/logos/corny.html` and `mockups/logos/corny/*.png` (chosen: `corny-shh-cob.png`). Full-size originals: `~/Documents/corn-logo-originals/logos/corny/`.
