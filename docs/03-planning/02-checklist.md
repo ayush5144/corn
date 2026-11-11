@@ -146,7 +146,7 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [x] | 0. Plan + decision log Round 22; last Corn version tagged `corn-final` | Claude | Committed and pushed |
 | [ ] | 1. Names in code and data: app ID `com.flushbrowser.android`, package `com.flushbrowser`, brand-neutral class names, Rust crates `flush-*`, stored names, page-visible names | Claude | Rust + Kotlin tests pass; QA suite 17/17 under the new app ID |
 | [ ] | 2a. Brand in the app: palette, Fredoka, Vortex logo + launcher icons, centre Flush button, onboarding, new-tab lockup, toasts, empty states, all user-facing "Corn" text | Agent `flush-brand-engineer` | Screenshots dark + light; contrast as on the board; no "Corn" on screen |
-| [ ] | 2b. Docs: current-state docs say Flush, historical records keep Corn with a rename note, new brand page | Agent `flush-docs-writer` | `git grep -i corn docs` shows only historical records and notes |
+| [x] | 2b. Docs: current-state docs say Flush, historical records keep Corn with a rename note, new brand page | Agent `flush-docs-writer` | `git grep -i corn docs` shows only historical records and notes |
 | [ ] | 3. Merge and verify: tests, QA suite, YouTube + ayushpatil.com, screenshots, leftover-name report, release size | Claude | All pass |
 | [ ] | 4. APKs in Downloads as `Flush-0.2.0-*.apk`, push | Claude | Pushed; APKs install |
 | [ ] | 5. Rename GitHub repo to `flush`, local folder to `~/dev/flush`, uninstall old Corn app on the emulator, register flushbrowser.com, trademark search | Founder | Done or declined |

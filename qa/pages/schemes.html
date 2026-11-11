@@ -15,7 +15,7 @@
 <script>
   // An app that is not installed, so the browser must load the fallback address.
   document.getElementById('intentfb').href =
-    'intent://qa/#Intent;scheme=cornqa;package=org.example.notinstalled;S.browser_fallback_url=' +
+    'intent://qa/#Intent;scheme=flushqa;package=org.example.notinstalled;S.browser_fallback_url=' +
     encodeURIComponent(QA.hit('intent-fallback')) + ';end';
   if (QA.param('auto') === '1') {
     setTimeout(function () {

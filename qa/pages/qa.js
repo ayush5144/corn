@@ -1,4 +1,4 @@
-// Shared helper for Corn's QA pages (scripts/qa-run.sh).
+// Shared helper for Flush's QA pages (scripts/qa-run.sh).
 // Every page is opened with ?r=<run id>. Elements with data-n get an href (or a URL in
 // data-url) of the form hit.html?n=<name>&r=<run id>, so each request in the server log is
 // unique to one check of one run.
