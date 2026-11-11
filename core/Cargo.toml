@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/corn-block", "crates/corn-url", "crates/corn-vault", "crates/corn-ffi"]
+members = ["crates/flush-block", "crates/flush-url", "crates/flush-store", "crates/flush-ffi"]
 
 [workspace.package]
 version = "0.1.0"

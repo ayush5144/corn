@@ -1,0 +1,21 @@
+[package]
+name = "flush-ffi"
+description = "UniFFI bindings exposing Corn's Rust core to Kotlin and Swift"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lib]
+name = "flush_ffi"
+crate-type = ["cdylib", "lib"]
+
+[[bin]]
+name = "uniffi-bindgen"
+path = "src/bin/uniffi-bindgen.rs"
+
+[dependencies]
+flush-block = { path = "../flush-block" }
+flush-store = { path = "../flush-store" }
+flush-url = { path = "../flush-url" }
+thiserror.workspace = true
+uniffi = { workspace = true, features = ["cli"] }

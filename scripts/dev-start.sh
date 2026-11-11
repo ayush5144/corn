@@ -10,7 +10,7 @@
 #   scripts/dev-start.sh --serve DIR          ...and serve DIR at http://10.0.2.2:8765 (test pages)
 #   scripts/dev-start.sh --install --serve DIR --port 8080
 #
-# Settings (environment variables): CORN_AVD (default corn_pixel), ANDROID_HOME, JAVA_HOME.
+# Settings (environment variables): FLUSH_AVD (default corn_pixel), ANDROID_HOME, JAVA_HOME.
 # Test pages are never kept in this repo; point --serve at a folder outside it.
 
 set -euo pipefail
@@ -18,8 +18,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SDK="${ANDROID_HOME:-$HOME/Library/Android/sdk}"
 ADB="$SDK/platform-tools/adb"
-AVD="${CORN_AVD:-corn_pixel}"
-STATE="${TMPDIR:-/tmp}/corn-dev"   # pid files and logs, so dev-stop.sh knows what to stop
+AVD="${FLUSH_AVD:-corn_pixel}"
+STATE="${TMPDIR:-/tmp}/flush-dev"   # pid files and logs, so dev-stop.sh knows what to stop
 mkdir -p "$STATE"
 
 INSTALL=0

@@ -170,7 +170,7 @@ def tap_menu_item(label):
 def ensure_ready():
     """Start each check from Corn in front, no fullscreen, no sheet."""
     if d.foreground_package() != d.APP:
-        d.bring_corn_back()
+        d.bring_app_back()
         d.wait_for(lambda: d.foreground_package() == d.APP, 5)
     for p in cdp.pages():
         if p["info"].get("attached") and p["url"].startswith(BASE) and cdp.evaluate(p["url"], "!!document.fullscreenElement"):
@@ -266,12 +266,12 @@ def scheme_check(r, link_id, uri):
         return False, f"tap did nothing: no sheet, still in Corn (Android would open {want})"
     if s[0] == "left":
         fg = d.foreground_package()
-        d.bring_corn_back()
+        d.bring_app_back()
         return False, f"opened {fg} without asking first"
     texts = sheet_texts(s[1])
     d.tap(*s[2].center)
     fg = d.wait_for(lambda: (lambda p: p if p == want else None)(d.foreground_package()), 6) or d.foreground_package()
-    d.bring_corn_back()
+    d.bring_app_back()
     d.wait_for(lambda: d.foreground_package() == d.APP, 5)
     return fg == want, f"sheet {texts}; after Open, foreground app: {fg} (want {want})"
 
@@ -307,7 +307,7 @@ def scheme_no_tap(r):
     nodes = d.ui_nodes()
     sheet = [t for t in sheet_texts(nodes) if t.startswith("Open")]
     if fg != d.APP:
-        d.bring_corn_back()
+        d.bring_app_back()
     elif sheet:
         dismiss_sheet_if_any()
     return fg == d.APP and not sheet, f"no-tap location='tel:…' ran; foreground: {fg}; sheet: {sheet or 'none'}"
@@ -331,7 +331,7 @@ def intent_fallback(r):
         extra = f"; sheet: {sheet_texts(d.ui_nodes()) or 'none'}"
         dismiss_sheet_if_any()
     if fg != d.APP:
-        d.bring_corn_back()
+        d.bring_app_back()
     return ok, f"tapped intent:// for an app that isn't installed, then Open; fallback requests: {len(requests_for(hit('intent-fallback', r)))}; foreground: {fg}{extra}"
 
 
@@ -518,8 +518,8 @@ def main(argv):
         for name, _ in CHECKS:
             print("  " + name)
         return 2
-    if not cdp.pages() and not d.corn_pid():
-        d.bring_corn_back()
+    if not cdp.pages() and not d.app_pid():
+        d.bring_app_back()
         time.sleep(2)
     fails = 0
     for i, (name, fn) in enumerate(chosen, 1):

@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "app.cornbrowser"
+    namespace = "com.flushbrowser"
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "app.cornbrowser"
+        applicationId = "com.flushbrowser.android"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

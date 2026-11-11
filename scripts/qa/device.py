@@ -17,7 +17,7 @@ import time
 import xml.etree.ElementTree as ET
 
 ADB = os.environ.get("ADB") or os.path.expanduser("~/Library/Android/sdk/platform-tools/adb")
-APP = "app.cornbrowser"
+APP = "com.flushbrowser.android"
 
 
 def adb(*args, check=False, timeout=30):
@@ -133,7 +133,7 @@ def input_text(s):
 # ---------------- apps and activities ----------------
 
 def foreground():
-    """The package/activity Android shows on top, e.g. 'app.cornbrowser/.MainActivity'."""
+    """The package/activity Android shows on top, e.g. 'com.flushbrowser.android/com.flushbrowser.MainActivity'."""
     out = adb("shell", "dumpsys activity activities")
     m = re.search(r"topResumedActivity=ActivityRecord\{\S+ \S+ (\S+)", out) or \
         re.search(r"mResumedActivity: ActivityRecord\{\S+ \S+ (\S+)", out)
@@ -155,11 +155,11 @@ def open_url(url):
     adb("shell", f"am start -a android.intent.action.VIEW -d '{url}' {APP}")
 
 
-def bring_corn_back():
+def bring_app_back():
     adb("shell", f"am start -n {APP}/.MainActivity")
 
 
-def corn_pid():
+def app_pid():
     return adb("shell", "pidof", APP).strip().split(" ")[0]
 
 

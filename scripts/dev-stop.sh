@@ -17,7 +17,7 @@ set -uo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SDK="${ANDROID_HOME:-$HOME/Library/Android/sdk}"
 ADB="$SDK/platform-tools/adb"
-STATE="${TMPDIR:-/tmp}/corn-dev"
+STATE="${TMPDIR:-/tmp}/flush-dev"
 
 # 1. Emulators: ask each one to shut down, then make sure the process is gone
 if [ -x "$ADB" ]; then

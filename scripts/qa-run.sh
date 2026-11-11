@@ -21,7 +21,7 @@ SDK="${ANDROID_HOME:-$HOME/Library/Android/sdk}"
 export ADB="${ADB:-$SDK/platform-tools/adb}"
 PORT="${QA_PORT:-8770}"
 export QA_CDP_PORT="${QA_CDP_PORT:-9334}"
-STATE="${TMPDIR:-/tmp}/corn-dev"
+STATE="${TMPDIR:-/tmp}/flush-dev"
 
 if [ "${1:-}" = "--list" ]; then exec python3 -I "$ROOT/scripts/qa/run.py" --list; fi
 if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then sed -n '6,15p' "$0"; exit 0; fi
@@ -47,15 +47,15 @@ for _ in $(seq 1 20); do
   sleep 0.25
 done
 
-if ! "$ADB" shell pm path app.cornbrowser >/dev/null 2>&1; then
-  echo "Corn (app.cornbrowser) isn't installed. Install a debug build first: scripts/dev-start.sh --install" >&2
+if ! "$ADB" shell pm path com.flushbrowser.android >/dev/null 2>&1; then
+  echo "Corn (com.flushbrowser.android) isn't installed. Install a debug build first: scripts/dev-start.sh --install" >&2
   exit 2
 fi
 
 export QA_BASE="http://10.0.2.2:$PORT"
 export QA_SERVER_LOG="$STATE/server-$PORT.log"
 export QA_RUN="$(date +%H%M%S)"
-echo "Corn QA run $QA_RUN on $("$ADB" shell getprop ro.product.model | tr -d '\r'), Android $("$ADB" shell getprop ro.build.version.release | tr -d '\r'), Corn $("$ADB" shell dumpsys package app.cornbrowser | sed -n 's/.*versionName=//p' | head -1 | tr -d '\r')"
+echo "Corn QA run $QA_RUN on $("$ADB" shell getprop ro.product.model | tr -d '\r'), Android $("$ADB" shell getprop ro.build.version.release | tr -d '\r'), Corn $("$ADB" shell dumpsys package com.flushbrowser.android | sed -n 's/.*versionName=//p' | head -1 | tr -d '\r')"
 echo
 
 set +e
@@ -64,5 +64,5 @@ status=$?
 set -e
 
 # Leave Corn in front (the app-link checks visit other apps).
-"$ADB" shell am start -n app.cornbrowser/.MainActivity >/dev/null 2>&1 || true
+"$ADB" shell am start -n com.flushbrowser.android/com.flushbrowser.MainActivity >/dev/null 2>&1 || true
 exit $status

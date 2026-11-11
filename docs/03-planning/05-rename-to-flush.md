@@ -16,7 +16,7 @@ The founder renamed the browser from **Corn** to **Flush** before its first rele
 | Fonts | **Fredoka** (display: wordmark, headings) replaces Bricolage Grotesque; **Figtree** stays for UI text |
 | Voice | Same as Corn: cool, quick, cheeky, tasteful. Jokes about your tracks going down the drain, never about what's in the bowl. Corn-specific jokes (cob, kernels, 🌽) are replaced by the board's lines |
 | Copy | Board's taglines (primary: "Browse whatever. Flush whenever."), after-Flush one-liners, onboarding, empty states, store description |
-| Nav bar | Board layout: Back · Tabs · **Flush (centre, raised round button)** · Vault · Menu |
+| Nav bar | Founder's layout (2026-11-11): Back · Vault · **Flush (centre, raised round button)** · Tabs · Menu. The button's face is the "Riding the swirl" drop from `mockups/flush/wink.html` (`wink-swirl.png`), not the swirl glyph |
 | Feature names | Unchanged: Flush, Flush Button, Auto-Flush, Kept Session, Keep List, Vault, Collection… The app is named after its main action |
 
 ## Names in code and data

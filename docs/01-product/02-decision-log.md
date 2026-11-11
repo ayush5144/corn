@@ -442,7 +442,7 @@ Every product question asked and the founder's answer, in order. Settled answers
 ### Round 22 — Corn is renamed Flush (2026-11-11)
 - **Answer:** the browser is renamed **Flush** ("Flush Browser" in full) before its first release. Reasons the founder accepted: the name is the main action and explains itself in public (Product Hunt, press); it frames Flush as private browsing for anything, not only adult sites; it lasts as long as the Flush Button does; flushbrowser.com was free on 2026-11-11. Store search (Flush toilet-finder apps) doesn't matter to the founder.
 - **Brand:** the brand board's Vortex logo (original, four arms and bubbles), its dark/light palette, Fredoka for display text (Figtree stays), its taglines, after-Flush lines, onboarding and empty-state copy. Voice unchanged.
-- **Nav bar:** the Flush Button moves to the centre as a raised round button (Back · Tabs · Flush · Vault · Menu), as on the board.
+- **Nav bar:** the Flush Button moves to the centre as a raised round button: Back · Vault · Flush · Tabs · Menu. Its face is the "Riding the swirl" drop from the Wink page, not the swirl glyph.
 - **Code:** app ID `com.flushbrowser.android`; app-wide internal names become brand-neutral; names pages can see carry no brand. Feature names (Flush, Flush Button, Vault…) don't change.
 - **Plan:** [05-rename-to-flush](../03-planning/05-rename-to-flush.md). The last Corn version is tagged `corn-final`.
 

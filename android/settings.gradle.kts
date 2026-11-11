@@ -12,5 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "Corn"
+rootProject.name = "Flush"
 include(":app")

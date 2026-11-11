@@ -27,7 +27,7 @@ _forwarded_pid = None
 
 def _forward():
     global _forwarded_pid
-    pid = device.corn_pid()
+    pid = device.app_pid()
     if not pid:
         raise RuntimeError("Corn isn't running")
     if pid != _forwarded_pid:

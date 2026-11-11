@@ -240,43 +240,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1c133bc6a41be0d194c306b5506d15e6feeea7b1d6604bd3f8310dfb2ca96486"
 
 [[package]]
-name = "corn-block"
-version = "0.1.0"
-dependencies = [
- "adblock",
- "base64",
- "regex",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "corn-ffi"
-version = "0.1.0"
-dependencies = [
- "corn-block",
- "corn-url",
- "corn-vault",
- "thiserror 2.0.21",
- "uniffi",
-]
-
-[[package]]
-name = "corn-url"
-version = "0.1.0"
-dependencies = [
- "url",
-]
-
-[[package]]
-name = "corn-vault"
-version = "0.1.0"
-dependencies = [
- "rusqlite",
- "thiserror 2.0.21",
-]
-
-[[package]]
 name = "displaydoc"
 version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -341,6 +304,43 @@ checksum = "35f6839d7b3b98adde531effaf34f0c2badc6f4735d26fe74709d8e513a96ef3"
 dependencies = [
  "bitflags",
  "rustc_version",
+]
+
+[[package]]
+name = "flush-block"
+version = "0.1.0"
+dependencies = [
+ "adblock",
+ "base64",
+ "regex",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "flush-ffi"
+version = "0.1.0"
+dependencies = [
+ "flush-block",
+ "flush-store",
+ "flush-url",
+ "thiserror 2.0.21",
+ "uniffi",
+]
+
+[[package]]
+name = "flush-store"
+version = "0.1.0"
+dependencies = [
+ "rusqlite",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "flush-url"
+version = "0.1.0"
+dependencies = [
+ "url",
 ]
 
 [[package]]

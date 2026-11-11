@@ -24,8 +24,8 @@ else
   if curl -sfL --max-time 60 -o "$SRC/easylist.txt" https://easylist.to/easylist/easylist.txt &&
      curl -sfL --max-time 60 -o "$SRC/easyprivacy.txt" https://easylist.to/easylist/easyprivacy.txt; then
     (cd "$ROOT/core" &&
-      cargo run -q --release -p corn-block --bin corn-compile -- "$OUT/starter/ads.dat" "$SRC/easylist.txt" &&
-      cargo run -q --release -p corn-block --bin corn-compile -- "$OUT/starter/trackers.dat" "$SRC/easyprivacy.txt") ||
+      cargo run -q --release -p flush-block --bin flush-compile -- "$OUT/starter/ads.dat" "$SRC/easylist.txt" &&
+      cargo run -q --release -p flush-block --bin flush-compile -- "$OUT/starter/trackers.dat" "$SRC/easyprivacy.txt") ||
       echo "warning: starter lists not compiled" >&2
   else
     echo "warning: could not download filter lists; building without a starter list" >&2

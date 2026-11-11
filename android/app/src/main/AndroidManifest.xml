@@ -23,7 +23,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Corn"
+        android:theme="@style/Theme.Flush"
         android:usesCleartextTraffic="true">
         <!-- Don't let WebView send usage metrics to Google, even if the phone's diagnostics setting is on. -->
         <meta-data android:name="android.webkit.WebView.MetricsOptOut" android:value="true" />
