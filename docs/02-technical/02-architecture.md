@@ -2,11 +2,11 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 02:23 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-11, 23:02 IST
 
 ## Shape of the system
 
-Corn is **three thin native shells plus one shared Rust core.**
+Flush is **three thin native shells plus one shared Rust core.**
 
 - Each shell is written in its platform's native language and uses that platform's web engine.
 - The Rust core holds the logic that must behave the same everywhere: blocking, filter lists, URL cleaning, flush rules and the Vault.
@@ -16,7 +16,7 @@ Mozilla shares code across its apps this way (application-services), and so does
 
 ```
                   ┌────────────────────────────────────────┐
-                  │   SHARED CORN CORE (Rust)              │
+                  │   SHARED FLUSH CORE (Rust)             │
                   │   • adblock-rust (blocking)            │
                   │   • filter list updates                │
                   │   • URL cleaning                       │
@@ -40,7 +40,7 @@ Mozilla shares code across its apps this way (application-services), and so does
 
 ## What each device uses
 
-| | **Brave** (reference) | **DuckDuckGo** (closest to Corn) | **Corn** |
+| | **Brave** (reference) | **DuckDuckGo** (closest to Flush) | **Flush** |
 |---|---|---|---|
 | Android | Chromium fork: C++ core, UI mostly **Java** with some Kotlin | **Kotlin** + System WebView | **Kotlin** + System WebView |
 | iPhone | **Swift** + WKWebView | **Swift** + WKWebView | **Swift** + WKWebView |
@@ -59,7 +59,7 @@ Brave writes Java on Android only because it inherited Chromium's Android code. 
                                        │ taps / types
                                        ▼
 ┌──────────────────────────────────────────────────────────────────┐
-│                CORN APP  (Kotlin + Jetpack Compose)              │
+│                FLUSH APP  (Kotlin + Jetpack Compose)             │
 │                                                                  │
 │   Toolbar & URL bar   Tab switcher (grid, swipe, search)   Vault │
 │          │                    │                              │   │
@@ -74,13 +74,13 @@ Brave writes Java on Android only because it inherited Chromium's Android code. 
            ▼                                              ▼
 ┌──────────────────────────────────────┐   ┌───────────────────────┐
 │ androidx.webkit                      │   │  RUST CORE (UniFFI)   │
-│ profiles · page-start scripts        │   │  corn-vault           │
-│ Normal profile │ Private profile     │   │  corn-flush           │
+│ profiles · page-start scripts        │   │  flush-store          │
+│ Normal profile │ Private profile     │   │  flush-policy         │
 └──────────────────┬───────────────────┘   └───────────────────────┘
                    │ every page request
                    ▼
 ┌──────────────────────────────────────────────────────────────────┐
-│     CORN BLOCKER  (Kotlin hooks → UniFFI → Rust corn-block)      │
+│     FLUSH BLOCKER  (Kotlin hooks → UniFFI → Rust flush-block)    │
 │   two engines: ads (EasyList) + trackers (EasyPrivacy), per site │
 │   ads / trackers ......... shouldInterceptRequest  → BLOCK       │
 │   pop-up windows ......... onCreateWindow          → DENY        │
@@ -106,7 +106,7 @@ Page asks for a resource
 Platform hook catches it  (shouldInterceptRequest / WKContentRuleList / Electron webRequest)
         │
         ▼
-Rust corn-block: "block, allow, or redirect to a stub?"   ~5 µs per check
+Rust flush-block: "block, allow, or redirect to a stub?"   ~5 µs per check
         │
    ┌────┴─────┐
    ▼          ▼
@@ -115,25 +115,25 @@ Rust corn-block: "block, allow, or redirect to a stub?"   ~5 µs per check
  response)
 ```
 
-Corn servers are never in this path. The only network calls Corn itself makes are filter-list downloads and an update check, and neither carries browsing data.
+Flush servers are never in this path. The only network calls Flush itself makes are filter-list downloads and an update check, and neither carries browsing data.
 
 ## Ownership boundaries
 
-| Layer | Owner | Corn's rule |
+| Layer | Owner | Flush's rule |
 |---|---|---|
 | Web engine (Blink/V8, WebKit) | Google / Apple / Electron | Never patched. Updated by the OS (mobile) or an Electron bump (desktop). |
-| Platform shell | Corn (Kotlin / Swift / TypeScript) | UI, tabs, WebView wiring, platform security APIs. |
-| Rust core | Corn | Shared logic that must behave identically everywhere. |
+| Platform shell | Flush (Kotlin / Swift / TypeScript) | UI, tabs, WebView wiring, platform security APIs. |
+| Rust core | Flush | Shared logic that must behave identically everywhere. |
 | Filter lists | EasyList, EasyPrivacy, uBlock filters, etc. | Downloaded on device; respect each list's licence. |
 
 ## Local data
 
 ```
-Corn on device
+Flush on device
 ├── Browsing session      # cookies, cache, site data — wiped on Flush
 ├── Tab state + previews  # session only — wiped on Flush
 ├── Keep list             # sites allowed to stay logged in (optional)
-├── Corn settings         # preferences
+├── App settings           # preferences
 └── Vault                 # PIN-locked, survives every Flush
 ```
 

@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 01:12 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-11, 23:02 IST
 
 - **Status:** Draft v2, being shaped through Q&A rounds ([02-decision-log.md](02-decision-log.md))
 - **Last updated:** 2026-11-01 (after Round 1)
@@ -17,19 +17,19 @@ Every requirement below is tagged:
 
 ## 1. What we're building
 
-**Corn is a free, private, mobile-first browser for adults that keeps you organised.** It blocks ads, trackers, pop-ups and redirect abuse by default. Tab Groups with previews let you browse, swipe and switch instantly. A locked Vault keeps the links you want to keep, organised into Collections. One tap on the Flush Button wipes everything else. Nothing about your browsing leaves the device.
+**Flush is a free, private, mobile-first browser for adults that keeps you organised.** It blocks ads, trackers, pop-ups and redirect abuse by default. Tab Groups with previews let you browse, swipe and switch instantly. A locked Vault keeps the links you want to keep, organised into Collections. One tap on the Flush Button wipes everything else. Nothing about your browsing leaves the device.
 
-**Personality:** cool, funny, modern. DuckDuckGo is all right; Corn is the fun one that helps you not get lost.
+**Personality:** cool, funny, modern. DuckDuckGo is all right; Flush is the fun one that helps you not get lost.
 
-Corn is a browser. It does not host, index, recommend or bypass access controls for any content.
+Flush is a browser. It does not host, index, recommend or bypass access controls for any content.
 
 ## 2. Who it's for
 
 Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mobile first: **Android and iPhone** are both target platforms.
 
-## 3. Why someone switches to Corn
+## 3. Why someone switches to Flush
 
-| Corn has | DuckDuckGo / Brave private mode |
+| Flush has | DuckDuckGo / Brave private mode |
 |---|---|
 | **Tab Groups** with previews: open a link into a new group, swipe around, switch instantly | Flat tab lists, no grouping |
 | **Vault + Collections**: save and organise links privately so nothing gets lost | No locked, organised library |
@@ -93,9 +93,9 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | Address bar **at the top** by default | ✅ |
 | Setting: move the address bar to the bottom | ✅ v1 |
 | Address bar, left to right: **Search Switcher** · address · **blocking shield** · then the **Vault save icon** (no star) | ✅ |
-| Bottom toolbar: **Back** (hold for Forward) · **Vault** · **Tabs** · **Flush** · **Menu** | ✅ |
+| Bottom toolbar: **Back** (hold for Forward) · **Vault** · **Flush** (centre, raised round button) · **Tabs** · **Menu** (Round 22) | ✅ |
 | Forward, New tab, Settings live in the Menu | ✅ |
-| Look and feel (colours, type, icon style) | 🟡 decide from prototype |
+| Look and feel: the Flush brand (Vortex logo, navy/electric-blue palette in dark and light, Fredoka display + Figtree UI), see [04-brand](04-brand.md) (Round 22) | ✅ |
 
 ### 6.3 Search
 
@@ -113,15 +113,15 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 |---|---|
 | **Flush Button**: one tap wipes the Session (tabs, Tab Groups, cookies, cache, history, previews) | ✅ |
 | Setting: **Flush confirmation** toggle (off by default) | ✅ |
-| Flush Button is a **flush** button (not a power button). Glyph: a water swirl going down a drain (three arms + drain dot) on the corn-yellow pill, replacing the toilet; same glyph in the confirmation, Tabs screen and onboarding | ✅ |
-| Flush Button sits in the **bottom toolbar, at the far right or second from the right** | ✅ |
+| Flush Button is a **flush** button (not a power button). Its face in the nav bar is the "Riding the swirl" drop (Round 22), replacing the earlier water-swirl glyph and, before that, the toilet | ✅ |
+| Flush Button sits in the **centre of the bottom toolbar** as a raised round button (Round 22; was second from the right) | ✅ |
 | Default: **Kept Session**: the Session survives until the user flushes | ✅ |
-| Setting: **Auto-Flush after leaving Corn**, user chooses the delay or never | ✅ |
-| Delay presets: **when I leave Corn**, **5 min after**, **30 min after** (plus Never) | ✅ |
+| Setting: **Auto-Flush after leaving the app**, user chooses the delay or never | ✅ |
+| Delay presets: **when I leave the app**, **5 min after**, **30 min after** (plus Never) | ✅ |
 | Setting: **Auto-Flush after inactivity**: 10, 30 or 60 minutes | ✅ |
 | Flush feedback: quick swirl animation, vibration, funny one-liner on the empty page; sound is a setting, off by default | ✅ |
 | **A playing video counts as activity** | ✅ |
-| "Leaving Corn" = switching apps, going home or locking the phone | ✅ |
+| "Leaving the app" = switching apps, going home or locking the phone | ✅ |
 | **Keep List**: sites that stay logged in after a Flush: their cookies and IndexedDB are kept; their local storage, history and everything else is deleted. Not history, not passwords. Add from the shield ("Stay logged in after Flush") or Settings. See [11-keep-list](../02-technical/11-keep-list.md) | ✅ v1 |
 | **History**: pages visited, on the phone only, cleared by Flush; "Keep history" switch (on by default); History screen with search, grouped by day, delete one entry, delete a site from history, clear all | ✅ |
 | **Delete browsing data** (Settings): history, cookies and site data (Keep List cookies stay), cache, open tabs; everything in each ticked category, **no time ranges** | ✅ |
@@ -131,20 +131,20 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | **Appearance**: Dark (default), Light, or match the phone; pages follow it (light: white pages; dark: pages without a dark style are darkened) | ✅ |
 | Menu: "New tab group" groups the current tab with a new tab beside it; inside a group, "New tab in this group" | ✅ |
 | Tabs opened in the background start loading at once; an unloaded tab shows its saved picture while it reloads | ✅ |
-| Corn's own error page when a site can't load; typed addresses fall back to http when a site has no https | ✅ |
+| Flush's own error page when a site can't load; typed addresses fall back to http when a site has no https | ✅ |
 | File uploads (Android file picker) and downloads (confirm, then the phone's Downloads folder; files survive Flush) | ✅ |
 | Sites' camera, microphone and location: Allow / Block per site, remembered for the session only | ✅ |
 | Address-bar suggestions from History and the unlocked Vault, on the phone only | ✅ |
 | Find in page; Text size (S/M/L/XL) in Settings → Appearance | ✅ |
 | Picture-in-picture video; print / save as PDF | ⏭️ Later |
-| **Corn's own password store** (inside the Vault), survives a Flush: save/update/never prompts, fill on tap with PIN when the Vault is locked (switchable), Passwords screen | ✅ v1 (built) |
-| **Split screen** inside Corn: two tabs, top/bottom (side by side in landscape), draggable divider | ✅ (built) |
+| **Flush's own password store** (inside the Vault), survives a Flush: save/update/never prompts, fill on tap with PIN when the Vault is locked (switchable), Passwords screen | ✅ v1 (built) |
+| **Split screen** inside Flush: two tabs, top/bottom (side by side in landscape), draggable divider | ✅ (built) |
 
 ### 6.5 Vault
 
 | Requirement | Status |
 |---|---|
-| **The Vault replaces bookmarks.** Corn has no separate bookmarks or favourites | ✅ |
+| **The Vault replaces bookmarks.** Flush has no separate bookmarks or favourites | ✅ |
 | Save the current page from the Vault icon in the address bar → sheet to pick a Collection + optional tags | ✅ |
 | Save links with their titles | ✅ |
 | Optional tags | ✅ |
@@ -162,9 +162,9 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | Requirement | Status |
 |---|---|
 | **Black screen in the recent-apps view** | ✅ default on |
-| **App Lock** (PIN to open Corn): optional, off by default | ✅ |
-| **No notifications while Corn is closed**; media controls (if background playback is on) show only "Corn — playing" | ✅ |
-| **No backups of any kind**: Corn turns off Android's automatic Google Drive backup | ✅ |
+| **App Lock** (PIN to open Flush): optional, off by default | ✅ |
+| **No notifications while Flush is closed**; media controls (if background playback is on) show only "Flush — playing" | ✅ |
+| **No backups of any kind**: Flush turns off Android's automatic Google Drive backup | ✅ |
 | Kept Session data stored in app-private SQLite (not separately encrypted) | ✅ |
 | One-time, lightweight 18+ confirmation on first launch | ✅ |
 | Disguised app icon | ⏭️ |
@@ -190,7 +190,7 @@ What a new user gets before changing anything.
 | Setting | Default | Status |
 |---|---|---|
 | Session | Keep my session until I flush (Kept Session) | ✅ |
-| Auto-Flush after Leaving Corn | Off (options: when I leave / 5 min / 30 min) | ✅ |
+| Auto-Flush after Leaving the app | Off (options: when I leave / 5 min / 30 min) | ✅ |
 | Flush after inactivity | Off (10 / 30 / 60 min; a playing video counts as activity) | ✅ |
 | Flush sound | Off | ✅ |
 | Flush confirmation | Off (one tap); a Settings toggle turns on an "Are you sure?" step | ✅ |
@@ -222,4 +222,4 @@ What a new user gets before changing anything.
 - Switching between tabs and groups feels instant on a mid-range Android phone.
 - Most tested sites work with blocking on.
 - After a Flush, a test site sees a brand-new visitor, except Keep List sites.
-- Corn's own network traffic never contains browsing data.
+- Flush's own network traffic never contains browsing data.

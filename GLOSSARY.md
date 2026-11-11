@@ -1,10 +1,20 @@
-# Corn
+# Flush
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 01:12 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-11, 23:02 IST
 
-Corn is a free, private, "use whenever you want" browser for adults. This glossary fixes the words we use for its product concepts so docs, UI copy and code all mean the same thing.
+Flush is a free, private, "use whenever you want" browser for adults. This glossary fixes the words we use for its product concepts so docs, UI copy and code all mean the same thing.
+
+## The app
+
+**Flush (the app)**:
+The browser's name; "Flush Browser" in full where context is needed (store title, press). The app is named after its main action, so write "the Flush Button", never "Flush's Flush Button". When "Flush" could mean either the app or the action, say "the app".
+_Avoid_: FlushBrowser, Flush app (in UI copy)
+
+**Corn**:
+The browser's name until 2026-11-11 (decision log Round 22). Historical records keep it.
+_Avoid_: Corn in new docs, UI copy or code
 
 ## Session and Flush
 
@@ -21,19 +31,19 @@ The one-tap control that triggers a Flush immediately.
 _Avoid_: Fire button, panic button, power button
 
 **Auto-Flush**:
-A Flush that Corn triggers on the user's behalf, according to their chosen setting (on app close or after inactivity).
+A Flush that the app triggers on the user's behalf, according to their chosen setting (on app close or after inactivity).
 _Avoid_: Auto-clear, timer flush
 
 **Kept Session**:
 The default setting, under which the Session survives until the user presses the Flush Button.
 _Avoid_: Persistent mode, normal mode
 
-**Leaving Corn**:
-The user switching to another app, going to the home screen or locking the phone while Corn is open.
-_Avoid_: Closing, exiting, backgrounding
+**Leaving the app**:
+The user switching to another app, going to the home screen or locking the phone while Flush is open. (Called "Leaving Corn" before the rename.)
+_Avoid_: Closing, exiting, backgrounding, "leaving Flush" (reads like the action)
 
 **Keep List**:
-Sites the user has chosen to stay logged in to across Flushes. Corn keeps their cookies and IndexedDB; everything else about them is still deleted.
+Sites the user has chosen to stay logged in to across Flushes. Flush keeps their cookies and IndexedDB; everything else about them is still deleted.
 _Avoid_: Fireproof, whitelist, allowlist
 
 ## Tabs
@@ -50,11 +60,11 @@ A tab other than the open one whose page stays loaded, so it reopens instantly w
 _Avoid_: Paused, sleeping
 
 **Unloaded**:
-A tab whose page has been closed to save memory. Corn keeps its preview, back/forward history and scroll position; opening it reloads the page.
+A tab whose page has been closed to save memory. Flush keeps its preview, back/forward history and scroll position; opening it reloads the page.
 _Avoid_: Frozen, discarded, suspended
 
 **Split screen**:
-Two tabs shown at once inside Corn, top/bottom (side by side in landscape), with a draggable divider. The pane you last touched is the one the toolbar acts on.
+Two tabs shown at once inside Flush, top/bottom (side by side in landscape), with a draggable divider. The pane you last touched is the one the toolbar acts on.
 _Avoid_: Dual view, multi-window
 
 **Tab Group Strip**:
@@ -64,7 +74,7 @@ _Avoid_: Tab bar, group bar, bubbles
 ## Vault
 
 **Vault**:
-The user's private, local, PIN-locked collection of things they explicitly chose to save; Corn's replacement for bookmarks. It survives every Flush.
+The user's private, local, PIN-locked collection of things they explicitly chose to save; Flush's replacement for bookmarks. It survives every Flush.
 _Avoid_: Walls, bookmarks, favourites, library
 
 **Vault Item**:
@@ -82,7 +92,7 @@ _Avoid_: Unsorted, Inbox, default folder
 ## History
 
 **History**:
-Corn's list of pages visited, stored only on the phone, cleared by every Flush. "Keep history" switches recording off.
+Flush's list of pages visited, stored only on the phone, cleared by every Flush. "Keep history" switches recording off.
 _Avoid_: Browsing log, activity
 
 **Delete browsing data**:
@@ -92,15 +102,15 @@ _Avoid_: Clear data, wipe
 ## Privacy
 
 **Privacy Screen**:
-The black screen Corn shows in the operating system's recent-apps view instead of page content.
+The black screen Flush shows in the operating system's recent-apps view instead of page content.
 _Avoid_: Blur, recents cover
 
 **App Lock**:
-The optional PIN or biometric check required to open Corn.
+The optional PIN or biometric check required to open Flush.
 _Avoid_: Passcode, app PIN
 
 **Blocking**:
-Corn stopping ads, trackers, pop-ups and redirect abuse before they load.
+Flush stopping ads, trackers, pop-ups and redirect abuse before they load.
 _Avoid_: Shields, ad block (as a product name)
 
 ## Search

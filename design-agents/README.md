@@ -2,6 +2,8 @@
 
 The exact AI agents used to explore Corn's logo and a possible rename to "Flush", saved so the work can be repeated or extended.
 
+Corn was renamed Flush on 2026-11-11 (decision log Round 22); this record keeps the old name. The chosen brand is in `docs/01-product/04-brand.md`.
+
 | Folder | What |
 |---|---|
 | `corn-design/` | The three Corn logo agents: Flush Kernel, Corny, Tab Cob. Each file has the brief word for word and what came out. |

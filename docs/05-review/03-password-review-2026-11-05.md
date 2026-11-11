@@ -2,7 +2,9 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-05 · **Last updated:** 2026-11-05, 02:30 IST
+> **Created:** 2026-11-05 · **Last updated:** 2026-11-11, 23:02 IST
+
+Corn was renamed Flush on 2026-11-11 (decision log Round 22); this record keeps the old name.
 
 A read-through of every file of the password store by Claude (the main session), after it was built by an agent and tested on the emulator. Files read: `passwords/LoginCipher.kt`, `LoginKeys.kt`, `LoginMatching.kt`, `LoginScript.kt`, `Passwords.kt`, `ui/PasswordsUi.kt`, and the `logins` table in `core/crates/corn-vault`. How the encryption works: [12-security](../02-technical/12-security.md).
 

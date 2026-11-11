@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 01:12 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-11, 23:02 IST
 
 ## Summary
 
@@ -15,15 +15,15 @@
 | Layer | Tool | What it does |
 |---|---|---|
 | Language | **Kotlin** | Google's main language for Android apps |
-| UI | **Jetpack Compose** | Corn's interface: toolbar, tab switcher, Vault screens, black-and-yellow theme |
+| UI | **Jetpack Compose** | Flush's interface: toolbar, tab switcher, Vault screens, the Flush theme (dark and light, see [04-brand](../01-product/04-brand.md)) |
 | Browser engine | **Android System WebView** + **androidx.webkit** (≥ 1.9) | Blink and V8 render pages and play video. Google keeps it updated. |
-| Ad blocking | **adblock-rust** (Brave's engine, MPL-2.0), wrapped in Corn's Rust core | Decides which requests and page elements to block |
+| Ad blocking | **adblock-rust** (Brave's engine, MPL-2.0), wrapped in Flush's Rust core | Decides which requests and page elements to block |
 | Rust ↔ Kotlin bridge | **cargo-ndk + UniFFI** | Builds Rust for Android and generates the Kotlin bindings automatically |
 | Filter lists | EasyList, EasyPrivacy, uBlock filters, Peter Lowe's list | The block rules. They update on device; the download sends no browsing data. |
 | Vault storage | **Rust core: rusqlite (plain SQLite)** (see [04](04-rust-core.md), [10](10-storage.md)) | Local database for saved items, tags, Keep List and session. One format on every platform. |
 | Vault files | ⏭️ Later (downloads aren't in v1) | |
 | Lock | **4-digit PIN** (salted PBKDF2 hash in app settings) | Gates the Vault and App Lock. Fingerprint unlock is in the backlog. |
-| Settings | **DataStore** | Corn preferences |
+| Settings | **DataStore** | Flush preferences |
 | Downloads | **OkHttp + WorkManager** | Saves files into private app storage, not the public Downloads folder |
 | Video extras | Built into WebView + Android **Picture-in-Picture** | Fullscreen, PiP, background playback |
 | Privacy screen | `setRecentsScreenshotEnabled(false)` (Android 13+), `FLAG_SECURE` on older versions | App looks blank in recent apps |
@@ -35,24 +35,24 @@
 
 ## The blocker hooks
 
-| Threat | WebView hook | Corn's action |
+| Threat | WebView hook | Flush's action |
 |---|---|---|
 | Ads and trackers | `shouldInterceptRequest` | Ask the trackers engine, then the ads engine (each only if switched on for this site); return an empty response if blocked |
 | Pop-up windows | `onCreateWindow` (every pop-up, tapped or scripted, reaches it) | Deny and count by default; if the site allows pop-ups, open it as a new tab |
 | Redirect hijacks | `shouldOverrideUrlLoading` + user-gesture check | Stop top-level navigations the user didn't trigger |
 | Hidden ads, anti-adblock walls | `addDocumentStartJavaScript` (androidx.webkit 1.9+) | Inject cosmetic CSS and scriptlets before page scripts run |
-| Tracking parameters | `shouldOverrideUrlLoading` + `load()` | ✅ Rust `corn-url` strips `utm_*`, `fbclid`, `gclid` and other click IDs (redirect unwrapping not built) |
+| Tracking parameters | `shouldOverrideUrlLoading` + `load()` | ✅ Rust `flush-url` strips `utm_*`, `fbclid`, `gclid` and other click IDs (redirect unwrapping not built) |
 | http pages | `shouldOverrideUrlLoading` + `load()`; `onReceivedError` / `onReceivedSslError` | ✅ HTTPS upgrade; falls back to http for the session if the secure version fails; local addresses exempt |
 | Cookie banners | `addDocumentStartJavaScript` (all frames) | ✅ DuckDuckGo autoconsent 17.2.0, unmodified, clicks "Reject"; Settings switch, on by default |
 | Page console messages | `onConsoleMessage` returns true | ✅ Not copied into Android's system log (they can contain URLs) |
 | Page process crash | `onRenderProcessGone` | Drop the dead WebView and show a "This page stopped · Reload" card instead of crashing the app |
 
-## What Corn builds itself
+## What Flush builds itself
 
 1. **Tab manager.** Keep a few tabs live and freeze the rest to save memory. This is the hardest part.
 2. **Blocker glue.** Connect the Rust core to WebView's hooks.
 3. **Vault.** UI and PIN lock in Kotlin; storage in Rust.
-4. **Corn UI.** Tab switcher, onboarding, flush controls and theme.
+4. **Flush UI.** Tab switcher, onboarding, flush controls and theme.
 
 ## Tab manager memory policy
 
@@ -78,12 +78,12 @@ User opens an unloaded tab                 ──► new WebView, restore state,
 ```
 
 What "kept in memory" really means (Android's documentation and our measurements):
-- Corn pauses every video/audio element and stops the page restarting them, then calls `WebView.onPause()`.
+- Flush pauses every video/audio element and stops the page restarting them, then calls `WebView.onPause()`.
 - `onPause()` "does not pause JavaScript" (Android docs). Measured: a hidden tab's timers slow about 5× but keep running.
-- `pauseTimers()` would stop scripts but is global ("for all WebViews"), so it would stop the open tab too. Corn never calls it.
+- `pauseTimers()` would stop scripts but is global ("for all WebViews"), so it would stop the open tab too. Flush never calls it.
 - All tabs share one page process (measured): one page crashing reloads every tab.
 - **Split screen:** two tabs on screen (top/bottom, side by side in landscape); both always stay live and never count against "kept in memory"; the focused pane's tab is the current tab, so the address bar and toolbar act on it. Each pane has its own pull-to-refresh container. Rules in `TabManager.kt` and `browser/SplitState.kt`.
-- `pauseTimers()` is used where its global effect is right: while Corn is in the background (measured: page timers 20/20 s → 0/20 s).
+- `pauseTimers()` is used where its global effect is right: while Flush is in the background (measured: page timers 20/20 s → 0/20 s).
 - Tabs opened in the background start loading at once and take a memory slot; an unloaded tab shows its saved picture until the page draws (`onPageCommitVisible`).
 
 The tab limit and the freeze policy make the biggest memory difference in the whole app. This is Kotlin's job, not Rust's.
@@ -91,7 +91,7 @@ The tab limit and the freeze policy make the biggest memory difference in the wh
 ## Why not Tauri, Flutter or React Native
 
 - Tauri is designed for apps whose interface is one web page. A browser is the reverse: a native shell managing many web pages.
-- All the important hooks are Android APIs. With Tauri, Corn would write Kotlin plugins anyway and juggle Rust, JavaScript and Kotlin instead of Kotlin plus a small Rust core.
+- All the important hooks are Android APIs. With Tauri, Flush would write Kotlin plugins anyway and juggle Rust, JavaScript and Kotlin instead of Kotlin plus a small Rust core.
 - Tauri's desktop code sharing doesn't help a browser, because it uses a different engine on each OS.
 - Flutter and React Native WebView plugins hide the hooks a browser needs.
 

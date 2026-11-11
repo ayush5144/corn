@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 02:23 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-11, 23:02 IST
 
 ## Recommendation: Electron
 
@@ -27,7 +27,7 @@ One codebase covers Windows, Mac and Linux, and video plays the same everywhere.
 | Shell | **Electron** (main process in TypeScript) |
 | UI | **React + TypeScript** |
 | Tabs | One `WebContentsView` per live tab; same freeze policy as mobile |
-| Blocking | Rust `corn-block` via **napi-rs**, hooked into `session.webRequest` |
+| Blocking | Rust `flush-block` via **napi-rs**, hooked into `session.webRequest` |
 | Flush | Session partition **without** `persist:` → memory only |
 | Keys | OS keychain (macOS Keychain, Windows Credential Manager / DPAPI, libsecret) |
 | Updates | `electron-updater`, signed builds, a security-first cadence |
@@ -35,7 +35,7 @@ One codebase covers Windows, Mac and Linux, and video plays the same everywhere.
 
 ## Update obligation
 
-Unlike mobile, desktop Corn **ships its own Chromium inside Electron**, so security updates are Corn's job:
+Unlike mobile, desktop Flush **ships its own Chromium inside Electron**, so security updates are Flush's job:
 
 ```
 Electron stable release

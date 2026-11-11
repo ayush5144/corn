@@ -1,5 +1,7 @@
 # Agent: Corn logo concept 3, "Tab Cob"
 
+Corn was renamed Flush on 2026-11-11 (decision log Round 22); this record keeps the old name.
+
 - **Run on:** 2026-11-05, as a Claude Code subagent (`general-purpose`), in the background, in parallel with concepts 1 and 2.
 - **Tools it used:** Bash (Codex CLI image generation, `sips` crop/scale), Read (to look at each PNG), Write.
 - **Output:** `mockups/logos/tab-cob.html` and `mockups/logos/tab-cob/*.png` (chosen: `tabcob-v4.png`, cropped as `tabcob-v4-tight.png`). Full-size originals: `~/Documents/corn-logo-originals/logos/tab-cob/`.
