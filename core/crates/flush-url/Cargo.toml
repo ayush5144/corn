@@ -1,6 +1,6 @@
 [package]
 name = "flush-url"
-description = "Corn's URL hygiene: remove tracking parameters, upgrade http to https"
+description = "Flush's URL hygiene: remove tracking parameters, upgrade http to https"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

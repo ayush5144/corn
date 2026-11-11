@@ -36,7 +36,7 @@ object LoginMatching {
     val LOCAL_TEST_HOSTS = setOf("localhost", "127.0.0.1", "10.0.2.2")
 
     /**
-     * The origin Corn saves logins under: `https://host` or `https://host:port` (port only when not 443).
+     * The origin Flush saves logins under: `https://host` or `https://host:port` (port only when not 443).
      * Null for anything else: http pages (except [LOCAL_TEST_HOSTS] when [allowLocalHttp]), files, data: URLs.
      */
     fun originOf(url: String?, allowLocalHttp: Boolean = false): String? {

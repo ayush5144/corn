@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! flush-ffi: the only crate the apps link against. Exposes Corn's Rust core
+//! flush-ffi: the only crate the apps link against. Exposes Flush's Rust core
 //! to Kotlin (Android) and Swift (iOS) through UniFFI.
 //!
 //! Hot-path rule: `CoreBlocker::check` is called for every sub-request, so it

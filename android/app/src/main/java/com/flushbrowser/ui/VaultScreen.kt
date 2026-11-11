@@ -113,6 +113,7 @@ fun VaultScreen(c: AppController) {
                         }
                     }
                 }
+                if (total == 0L) T("Your Vault's empty. Save something worth keeping.", 15.sp, C.Muted, modifier = Modifier.padding(top = 16.dp))
                 T("Everything in here stays on this phone and survives every Flush.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 16.dp))
             }
         }
@@ -163,7 +164,7 @@ private fun CollectionView(c: AppController, id: Long, onBack: () -> Unit) {
             T(name, 24.sp, weight = FontWeight.ExtraBold, display = true, maxLines = 1, modifier = Modifier.weight(1f))
         }
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
-            if (items.isEmpty()) Empty("Nothing here yet. Tap the Vault icon in the address bar on any page to save it here.")
+            if (items.isEmpty()) Empty(if (isAll) "Your Vault's empty. Save something worth keeping: tap the Vault icon in the address bar on any page." else "Nothing here yet. Tap the Vault icon in the address bar on any page to save it here.")
             else {
                 items.forEach { ItemRow(c, it) }
                 T("Long-press a link to delete it.", 12.5.sp, C.Muted, modifier = Modifier.padding(vertical = 14.dp))

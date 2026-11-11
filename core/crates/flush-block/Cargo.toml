@@ -1,6 +1,6 @@
 [package]
 name = "flush-block"
-description = "Corn's wrapper around Brave's adblock-rust engine"
+description = "Flush's wrapper around Brave's adblock-rust engine"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

@@ -1,7 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
-"""Corn's emulator QA checks. Run through scripts/qa-run.sh, which starts the test server.
+"""Flush's emulator QA checks. Run through scripts/qa-run.sh, which starts the test server.
 
     python3 -I scripts/qa/run.py [--list] [CHECK_OR_PREFIX ...]
 
@@ -63,9 +63,9 @@ def page_nodes_visible(nodes):
 
 
 def open_page(path, r):
-    """Show BASE/path?r=r in Corn and wait until it has loaded (server log + DevTools).
+    """Show BASE/path?r=r in Flush and wait until it has loaded (server log + DevTools).
 
-    The first page opens through Android (VIEW intent → a new Corn tab). Later pages reuse the
+    The first page opens through Android (VIEW intent → a new Flush tab). Later pages reuse the
     tab already showing a QA page (navigated over DevTools), so a run doesn't pile up tabs.
     QA_NEW_TABS=1 opens every page through Android instead."""
     sep = "&" if "?" in path else "?"
@@ -84,7 +84,7 @@ def open_page(path, r):
         raise Fail(f"page didn't load: {url}")
     if not requests_for(key):
         raise Fail(f"server log has no request for {key}")
-    time.sleep(0.5)  # let Corn's bars settle before tapping (load is already proven above)
+    time.sleep(0.5)  # let Flush's bars settle before tapping (load is already proven above)
     return key
 
 
@@ -118,7 +118,7 @@ BAR_TEXTS = {"DuckDuckGo"}
 
 
 def sheet_texts(nodes):
-    """Text in a Corn sheet/menu: app text that isn't the address bar, counters or page."""
+    """Text in a Flush sheet/menu: app text that isn't the address bar, counters or page."""
     out = []
     for n in nodes:
         lab = n.label()
@@ -140,8 +140,8 @@ def dismiss_sheet_if_any():
 
 
 def menu_button(nodes):
-    """Corn's menu: the right-most button of the bottom bar. (The Flush button is next to it,
-    so this checks the menu really opened before anything else is tapped.)"""
+    """Flush's menu: the right-most button of the bottom bar. (Tabs is next to it, and the
+    Flush Button next to that, so this checks the menu really opened before anything else is tapped.)"""
     bar = [n for n in nodes if n.clickable and not n.in_web and n.bounds[1] > nodes[0].bounds[3] * 0.85]
     return max(bar, key=lambda n: n.bounds[0]) if bar else None
 
@@ -168,7 +168,7 @@ def tap_menu_item(label):
 
 
 def ensure_ready():
-    """Start each check from Corn in front, no fullscreen, no sheet."""
+    """Start each check from Flush in front, no fullscreen, no sheet."""
     if d.foreground_package() != d.APP:
         d.bring_app_back()
         d.wait_for(lambda: d.foreground_package() == d.APP, 5)
@@ -263,7 +263,7 @@ def scheme_check(r, link_id, uri):
         return ("sheet", ns, n) if n else None
     s = d.wait_for(sheet, 4)
     if not s:
-        return False, f"tap did nothing: no sheet, still in Corn (Android would open {want})"
+        return False, f"tap did nothing: no sheet, still in Flush (Android would open {want})"
     if s[0] == "left":
         fg = d.foreground_package()
         d.bring_app_back()
@@ -315,7 +315,7 @@ def scheme_no_tap(r):
 
 @check("intent-fallback-loads")
 def intent_fallback(r):
-    # Corn asks before any link leaves the web (Android 11+ hides most installed apps, so Corn
+    # Flush asks before any link leaves the web (Android 11+ hides most installed apps, so Flush
     # can't tell "not installed" from "hidden"). Tapping Open for an app that isn't installed
     # must fall back to the link's web version.
     key = open_page("schemes.html", r)
@@ -337,7 +337,9 @@ def intent_fallback(r):
 
 # ---------------- theme ----------------
 
-def sample_page(key, fracs=((0.25, 0.85), (0.5, 0.85), (0.75, 0.85), (0.5, 0.95))):
+# The bottom sample sits left of centre: the raised Flush Button covers the middle of the page's
+# bottom edge (it rises half its height above the toolbar).
+def sample_page(key, fracs=((0.25, 0.85), (0.5, 0.85), (0.75, 0.85), (0.2, 0.95))):
     p = cdp.page(key)
     info = p["info"]
     s = d.Screen()
@@ -361,7 +363,7 @@ def theme_toggle(r):
     time.sleep(0.6)
     px = sample_page(key)
     ok = all(d.close_to(p, (255, 255, 255)) for p in px)
-    note = "" if dark else " (Corn's pages aren't dark right now, so forced darkening isn't exercised)"
+    note = "" if dark else " (Flush's pages aren't dark right now, so forced darkening isn't exercised)"
     return ok, f"prefers dark: {dark}; page says {state[0]} / {state[1]}; screen pixels {px} (want ~(255,255,255)){note}"
 
 
@@ -372,7 +374,7 @@ def theme_light_only(r):
     bg = cdp.evaluate(key, "getComputedStyle(document.body).backgroundColor")
     px = sample_page(key)
     ok = all(d.close_to(p, (246, 246, 239)) for p in px)
-    note = "" if dark else " (Corn's pages aren't dark right now, so forced darkening isn't exercised)"
+    note = "" if dark else " (Flush's pages aren't dark right now, so forced darkening isn't exercised)"
     return ok, f"prefers dark: {dark}; page declares {bg}; screen pixels {px} (want ~(246,246,239)){note}"
 
 

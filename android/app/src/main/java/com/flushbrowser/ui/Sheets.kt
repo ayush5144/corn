@@ -162,7 +162,7 @@ private fun ImageSheet(c: AppController, s: Sheet.Image) {
     Row50(Glyphs.Copy, if (s.linkUrl != null) "Copy link" else "Copy image link", { c.copyLink(s.linkUrl ?: s.imageUrl) }, enabled = s.linkUrl != null || web)
 }
 
-/** A tapped link to another app (phone, email, SMS, map, an app): Corn asks before leaving. */
+/** A tapped link to another app (phone, email, SMS, map, an app): Flush asks before leaving. */
 @Composable
 private fun ExternalAppSheet(c: AppController, s: Sheet.ExternalApp) {
     SheetTitle(s.title, s.detail)
@@ -173,7 +173,7 @@ private fun ExternalAppSheet(c: AppController, s: Sheet.ExternalApp) {
         Spacer(Modifier.height(10.dp))
     }
     BigButton("Cancel", { c.sheet = null }, ghost = true)
-    T("The other app sees this link. Nothing else from Corn is shared.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 10.dp))
+    T("The other app sees this link. Nothing else from Flush is shared.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 10.dp))
 }
 
 /** Menu → Split screen: the open tab stays in the first pane; pick what goes in the second. */
@@ -423,7 +423,7 @@ private fun DeleteDataSheet(c: AppController) {
     val any = history || cookies || cache || tabs
     BigButton("Delete", { if (any) c.deleteBrowsingData(ClearChoice(history, cookies, cache, tabs)) }, icon = Glyphs.Trash)
     if (cookies) {
-        T("Corn restarts for a moment after deleting cookies, so nothing is left in memory.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 10.dp))
+        T("Flush restarts for a moment after deleting cookies, so nothing is left in memory.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 10.dp))
     }
 }
 
@@ -440,7 +440,7 @@ private fun ConfirmKeepAllTabsSheet(c: AppController) {
     SheetTitle("Keep all tabs in memory?", "Not recommended. Every open tab keeps running in the background:")
     T(
         "• More battery drain and heat.\n" +
-            "• Android may close Corn to free memory, and you'd lose what wasn't saved.\n" +
+            "• Android may close Flush to free memory, and you'd lose what wasn't saved.\n" +
             "• All tabs share one page process: if one page crashes, every tab reloads.",
         14.sp, C.Text, modifier = Modifier.padding(bottom = 18.dp),
     )
@@ -452,7 +452,7 @@ private fun ConfirmKeepAllTabsSheet(c: AppController) {
 @Composable
 private fun SitePermissionSheet(c: AppController, s: Sheet.SitePermissionAsk) {
     val what = s.kinds.map { it.label }.let { if (it.size > 1) it.dropLast(1).joinToString(", ") + " and " + it.last() else it.first() }
-    SheetTitle("${s.site} wants to use your $what", "Corn remembers your answer only until the next Flush.")
+    SheetTitle("${s.site} wants to use your $what", "Your answer is remembered only until the next Flush.")
     BigButton("Allow", { c.answerSitePermission(s.site, s.kinds, true) })
     Spacer(Modifier.height(10.dp))
     BigButton("Block", { c.answerSitePermission(s.site, s.kinds, false) }, ghost = true)

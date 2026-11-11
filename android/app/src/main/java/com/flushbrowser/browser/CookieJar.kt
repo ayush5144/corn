@@ -15,7 +15,7 @@ import java.io.File
  * DuckDuckGo's Android browser uses (`SQLCookieRemover`).
  *
  * Why: Android's official CookieManager can only delete *every* cookie
- * (`removeAllCookies`); it cannot skip Keep List sites. Corn uses this file edit for one
+ * (`removeAllCookies`); it cannot skip Keep List sites. Flush uses this file edit for one
  * job only: deleting every cookie **except Keep List sites'**, exactly (with all their
  * attributes intact). Per-site or time-range deletion is deliberately not offered.
  *

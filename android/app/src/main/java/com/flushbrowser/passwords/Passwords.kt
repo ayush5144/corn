@@ -41,11 +41,11 @@ sealed interface PasswordSheet {
 data class FillOffer(val origin: String, val logins: List<SavedLogin>)
 
 /**
- * Corn's password store: saving, filling and managing logins.
+ * Flush's password store: saving, filling and managing logins.
  *
- * - Storage: corn.db `logins` table via the Rust core; usernames and passwords encrypted with
+ * - Storage: flush.db `logins` table via the Rust core; usernames and passwords encrypted with
  *   [LoginCipher] (AES-256-GCM), whose key is protected by the Android Keystore ([LoginKeys]).
- * - Pages talk to Corn through [LoginScript]. Corn only listens to https pages, to the main frame or
+ * - Pages talk to Flush through [LoginScript]. Flush only listens to https pages, to the main frame or
  *   frames of the same origin, matches logins by exact origin, and sends a saved password to a page
  *   only after the user taps Fill.
  * - Viewing, copying or editing a password needs the PIN (Passwords screen). Filling needs it too
@@ -115,7 +115,7 @@ class Passwords(private val context: Context, private val c: AppController) {
 
     fun save(s: PasswordSheet.Save) {
         c.sheet = null
-        val ci = cipher() ?: run { c.showToast("Corn couldn't save this password"); return }
+        val ci = cipher() ?: run { c.showToast("Flush couldn't save this password"); return }
         val u = ci.encrypt(s.username, s.origin, LoginCipher.Field.USERNAME)
         val p = ci.encrypt(s.password, s.origin, LoginCipher.Field.PASSWORD)
         val ok = runCatching {
@@ -124,7 +124,7 @@ class Passwords(private val context: Context, private val c: AppController) {
         changed()
         c.showToast(
             when {
-                !ok -> "Corn couldn't save this password"
+                !ok -> "Flush couldn't save this password"
                 s.updateId != null -> "Password updated. Safe in your Vault."
                 else -> "Password saved. Safe in your Vault."
             },
@@ -134,7 +134,7 @@ class Passwords(private val context: Context, private val c: AppController) {
     /**
      * Passwords → Add: the user types a site, username and password themselves.
      * Returns null when saved, or a short reason to show under the form. The same site + username
-     * updates that login instead of adding a duplicate. Sites are always https (Corn never fills on http).
+     * updates that login instead of adding a duplicate. Sites are always https (Flush never fills on http).
      */
     fun addManual(site: String, username: String, password: String): String? {
         val raw = site.trim()
@@ -142,7 +142,7 @@ class Passwords(private val context: Context, private val c: AppController) {
         if (password.isEmpty()) return "Enter the password"
         val withScheme = if (raw.contains("://")) raw else "https://$raw"
         val origin = LoginMatching.originOf(withScheme) ?: return "That doesn't look like a website. Try example.com"
-        val ci = cipher() ?: return "Corn can't open saved passwords on this phone right now"
+        val ci = cipher() ?: return "Flush can't open saved passwords on this phone right now"
         val existing = forOrigin(origin)
         val user = username.trim()
         val decision = LoginMatching.decideSave(existing, user, password) { id -> existing.firstOrNull { it.id == id }?.let(::passwordOf) }
@@ -156,7 +156,7 @@ class Passwords(private val context: Context, private val c: AppController) {
         val ok = runCatching { if (updateId != null) c.data.updateLogin(updateId, u, p) else c.data.addLogin(origin, u, p) }
             .onFailure { Log.w(TAG, "manual save failed: ${it.javaClass.simpleName}") }.isSuccess
         changed()
-        if (!ok) return "Corn couldn't save this password"
+        if (!ok) return "Flush couldn't save this password"
         c.showToast(if (updateId != null) "Password updated. Safe in your Vault." else "Password saved. Safe in your Vault.")
         return null
     }
@@ -195,7 +195,7 @@ class Passwords(private val context: Context, private val c: AppController) {
     fun neverSave(origin: String) {
         c.sheet = null
         c.data.addNeverSave(origin)
-        c.showToast("Got it. Corn won't ask on ${LoginMatching.displaySite(origin)} again.")
+        c.showToast("Got it. Flush won't ask on ${LoginMatching.displaySite(origin)} again.")
     }
 
     private fun changed() {
@@ -303,7 +303,7 @@ class Passwords(private val context: Context, private val c: AppController) {
             c.showToast("The login form is gone. Reload the page and try again.")
             return
         }
-        val password = passwordOf(login) ?: run { c.showToast("Corn couldn't read this password"); return }
+        val password = passwordOf(login) ?: run { c.showToast("Flush couldn't read this password"); return }
         val msg = JSONObject().put("t", "fill").put("u", login.username).put("p", password).toString()
         runCatching { frame.reply.postMessage(msg) }.onFailure { c.showToast("The login form is gone. Reload the page and try again.") }
         runCatching { c.data.touchLogin(login.id) }
@@ -313,13 +313,13 @@ class Passwords(private val context: Context, private val c: AppController) {
 
     // ---------------- clipboard ----------------
 
-    /** Set while a copied username/password may still be on the clipboard; survives Corn being closed. */
+    /** Set while a copied username/password may still be on the clipboard; survives Flush being closed. */
     private val clipPrefs = context.getSharedPreferences("logins", Context.MODE_PRIVATE)
 
     private val clearClipboard = Runnable { clearIfOwnCopy() }
 
     /**
-     * Clear the clipboard if it still holds Corn's copy. When Android doesn't let Corn see what's
+     * Clear the clipboard if it still holds Flush's copy. When Android doesn't let Flush see what's
      * on the clipboard, it clears anyway, to be safe. Then forget that a copy is pending.
      */
     private fun clearIfOwnCopy() {
@@ -334,13 +334,13 @@ class Passwords(private val context: Context, private val c: AppController) {
         clipPrefs.edit().putBoolean(PREF_CLIP_PENDING, false).commit()
     }
 
-    /** Corn is leaving the screen: clear a copied password now instead of waiting for the 45 s timer. */
+    /** Flush is leaving the screen: clear a copied password now instead of waiting for the 45 s timer. */
     fun clearCopiedPassword() {
         main.removeCallbacks(clearClipboard)
         clearIfOwnCopy()
     }
 
-    /** Corn is back: if it was closed before the copy could be cleared, clear it now. */
+    /** Flush is back: if it was closed before the copy could be cleared, clear it now. */
     fun clearCopyLeftOver() = clearIfOwnCopy()
 
     /**
@@ -358,12 +358,12 @@ class Passwords(private val context: Context, private val c: AppController) {
         main.removeCallbacks(clearClipboard)
         main.postDelayed(clearClipboard, 45_000L)
         // Android 13+ shows its own "Copied" confirmation.
-        if (Build.VERSION.SDK_INT < 33) c.showToast("$what copied. Corn clears it in 45 seconds, or when you leave Corn.") else c.showToast("Corn clears the clipboard in 45 seconds, or when you leave Corn")
+        if (Build.VERSION.SDK_INT < 33) c.showToast("$what copied. Flush clears it in 45 seconds, or when you leave the app.") else c.showToast("Flush clears the clipboard in 45 seconds, or when you leave the app")
     }
 
     private companion object {
         const val TAG = "Passwords"
-        const val CLIP_LABEL = "Corn password"
+        const val CLIP_LABEL = "Flush password"
         const val PREF_CLIP_PENDING = "clip_pending"
     }
 }

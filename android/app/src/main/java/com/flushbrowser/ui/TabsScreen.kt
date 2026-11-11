@@ -41,7 +41,7 @@ fun TabsScreen(c: AppController) {
         Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             T(c.tabs.tabs.size.let { if (it == 1) "1 tab" else "$it tabs" }, 24.sp, weight = FontWeight.ExtraBold, display = true, modifier = Modifier.weight(1f))
             Pill("New", { c.newTab() }, Glyphs.Plus)
-            Pill("Done", { c.screen = com.flushbrowser.Screen.Browser }, corn = true)
+            Pill("Done", { c.screen = com.flushbrowser.Screen.Browser }, filled = true)
         }
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 24.dp)) {
             c.tabs.groups.forEach { g ->
@@ -61,6 +61,9 @@ fun TabsScreen(c: AppController) {
                     }
                 }
             }
+            if (c.tabs.tabs.isEmpty()) {
+                T("No tabs. Just calm water.", 15.sp, C.Muted, modifier = Modifier.padding(vertical = 40.dp, horizontal = 10.dp))
+            }
             if (loose.isNotEmpty()) {
                 Label(if (c.tabs.groups.isEmpty()) "Tabs" else "Other tabs")
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -73,8 +76,7 @@ fun TabsScreen(c: AppController) {
                 }
             }
         }
-        // Pinned at the bottom: the Flush button sits where it does in the browser toolbar (bottom right),
-        // so it's always reachable however many tabs there are.
+        // Pinned at the bottom: a Flush button, always reachable however many tabs there are.
         Box(Modifier.fillMaxWidth().height(1.dp).background(C.Line))
         Row(
             Modifier.fillMaxWidth().background(C.Bg).padding(start = 16.dp, end = 12.dp, top = 8.dp, bottom = 10.dp),

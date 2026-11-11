@@ -53,7 +53,7 @@ import com.flushbrowser.passwords.SavedLogin
 
 // ---------------- browser: the "Fill as …" chip ----------------
 
-/** Above the toolbar when the page has a login form and Corn has logins for its exact site. */
+/** Above the toolbar when the page has a login form and Flush has logins for its exact site. */
 @Composable
 fun BoxScope.PasswordFillChip(c: AppController) {
     val tabId = c.tabs.currentId
@@ -62,7 +62,7 @@ fun BoxScope.PasswordFillChip(c: AppController) {
     val text = offer.logins.singleOrNull()?.let { "Fill as ${it.username.ifBlank { "your saved login" }}" }
         ?: "Fill password · ${offer.logins.size} accounts"
     Row(
-        Modifier.align(Alignment.BottomCenter).padding(bottom = 12.dp, start = 16.dp, end = 16.dp)
+        Modifier.align(Alignment.BottomCenter).padding(bottom = 12.dp + flushButtonLift(c), start = 16.dp, end = 16.dp)
             .shadow(8.dp, RoundedCornerShape(21.dp))
             .clip(RoundedCornerShape(21.dp)).background(C.Surface2).border(1.dp, C.Line, RoundedCornerShape(21.dp)),
         verticalAlignment = Alignment.CenterVertically,
@@ -90,7 +90,7 @@ fun PasswordSheetContent(c: AppController, kind: PasswordSheet) {
             val update = kind.updateId != null
             SheetTitle(
                 if (update) "Update password for $site?" else "Save password for $site?",
-                if (update) "You logged in with a new password. Want Corn to remember it?" else "Locked in your Vault with your PIN. Never leaves this phone.",
+                if (update) "You logged in with a new password. Want Flush to remember it?" else "Locked in your Vault with your PIN. Never leaves this phone.",
             )
             SettingRow(
                 kind.username.ifBlank { "No username" },
@@ -118,7 +118,7 @@ fun PasswordSheetContent(c: AppController, kind: PasswordSheet) {
                     leading = { Glyph(Glyphs.Key, tint = C.Accent) },
                 )
             }
-            if (p.fillNeedsPin) T("Your Vault is locked, so Corn asks for your PIN first.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 10.dp))
+            if (p.fillNeedsPin) T("Your Vault is locked, so Flush asks for your PIN first.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 10.dp))
         }
         is PasswordSheet.PinToFill -> {
             Box(Modifier.fillMaxWidth().height(500.dp)) {
@@ -247,12 +247,12 @@ private fun PasswordList(c: AppController, logins: List<SavedLogin>, unreadable:
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 24.dp)) {
             if (unreadable) {
                 Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(C.Surface).padding(16.dp)) {
-                    T("Corn can't open your saved passwords", 17.sp, weight = FontWeight.Bold, display = true)
+                    T("Flush can't open your saved passwords", 17.sp, weight = FontWeight.Bold, display = true)
                     Spacer(Modifier.height(6.dp))
                     T(
                         "They're locked with a key that lives in this phone's security chip, and that key is gone. " +
-                            "This happens when Corn's data moves to a new phone or the phone's security was reset. " +
-                            "Nobody can read them, Corn included. Reset to start saving passwords again.",
+                            "This happens when Flush's data moves to a new phone or the phone's security was reset. " +
+                            "Nobody can read them, Flush included. Reset to start saving passwords again.",
                         14.sp, C.Muted,
                     )
                     Spacer(Modifier.height(14.dp))
@@ -264,7 +264,7 @@ private fun PasswordList(c: AppController, logins: List<SavedLogin>, unreadable:
             Spacer(Modifier.height(8.dp))
             val shown = logins.filter { LoginMatching.matchesSearch(it, query) }
             if (logins.isEmpty()) {
-                T("No passwords yet. Log in to a site and Corn offers to save it here, locked with your PIN.", 15.sp, C.Muted,
+                T("No passwords yet. Log in to a site and Flush offers to save it here, locked with your PIN.", 15.sp, C.Muted,
                     modifier = Modifier.fillMaxWidth().padding(vertical = 40.dp, horizontal = 10.dp))
             } else if (shown.isEmpty()) {
                 T("No saved logins match “$query”.", 15.sp, C.Muted, modifier = Modifier.fillMaxWidth().padding(vertical = 40.dp, horizontal = 10.dp))
@@ -337,7 +337,7 @@ private fun AddPassword(c: AppController, onDone: () -> Unit) {
                 error = c.passwords.addManual(site, user, pass)
                 if (error == null) onDone()
             }, icon = Glyphs.Lock)
-            T("Encrypted and locked in your Vault with your PIN. Corn fills it on this site's login page when you tap. Never leaves this phone.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 10.dp))
+            T("Encrypted and locked in your Vault with your PIN. Flush fills it on this site's login page when you tap. Never leaves this phone.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 10.dp))
         }
     }
 }
@@ -370,7 +370,7 @@ private fun PasswordDetail(c: AppController, login: SavedLogin, onBack: () -> Un
                         revealed = null
                         c.showToast("Saved")
                     } else {
-                        c.showToast("Corn couldn't save the changes")
+                        c.showToast("Flush couldn't save the changes")
                     }
                 }, icon = Glyphs.Check)
                 Spacer(Modifier.height(10.dp))
@@ -389,10 +389,10 @@ private fun PasswordDetail(c: AppController, login: SavedLogin, onBack: () -> Un
                         Row {
                             IconBtn(if (revealed == null) Glyphs.Eye else Glyphs.EyeOff, if (revealed == null) "Show password" else "Hide password", {
                                 if (revealed != null) revealed = null
-                                else withPin { revealed = p.passwordOf(login) ?: run { c.showToast("Corn couldn't read this password"); null } }
+                                else withPin { revealed = p.passwordOf(login) ?: run { c.showToast("Flush couldn't read this password"); null } }
                             }, size = 38.dp, iconSize = 18.dp)
                             IconBtn(Glyphs.Copy, "Copy password", {
-                                withPin { p.passwordOf(login)?.let { p.copy(it, "Password") } ?: c.showToast("Corn couldn't read this password") }
+                                withPin { p.passwordOf(login)?.let { p.copy(it, "Password") } ?: c.showToast("Flush couldn't read this password") }
                             }, size = 38.dp, iconSize = 18.dp)
                         }
                     },
@@ -403,7 +403,7 @@ private fun PasswordDetail(c: AppController, login: SavedLogin, onBack: () -> Un
             BigButton("Edit", {
                 withPin {
                     val pw = p.passwordOf(login)
-                    if (pw == null) { c.showToast("Corn couldn't read this password"); return@withPin }
+                    if (pw == null) { c.showToast("Flush couldn't read this password"); return@withPin }
                     editUser = login.username
                     editPass = pw
                     editing = true
@@ -441,7 +441,7 @@ private tailrec fun Context.findActivity(): Activity? = when (this) {
 @Composable
 fun PasswordSettings(c: AppController) {
     val s = c.settings
-    SettingRow("Offer to save passwords", "After you log in, Corn asks. Saved in your Vault, on this phone only.",
+    SettingRow("Offer to save passwords", "After you log in, Flush asks. Saved in your Vault, on this phone only.",
         onClick = { s.offerSavePasswords = !s.offerSavePasswords }, trailing = { ToggleSwitch(s.offerSavePasswords) })
     SettingRow("Ask for PIN before filling", "Only when the Vault is locked.",
         onClick = { s.askPinBeforeFill = !s.askPinBeforeFill }, trailing = { ToggleSwitch(s.askPinBeforeFill) })

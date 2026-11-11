@@ -1,8 +1,8 @@
 <resources>
     <style name="Theme.Flush" parent="android:Theme.Material.NoActionBar">
-        <item name="android:windowBackground">#0F0E0B</item>
-        <item name="android:statusBarColor">#0F0E0B</item>
-        <item name="android:navigationBarColor">#0F0E0B</item>
+        <item name="android:windowBackground">#071226</item>
+        <item name="android:statusBarColor">#071226</item>
+        <item name="android:navigationBarColor">#071226</item>
     </style>
     <!-- Used only as the context theme for WebViews in light mode, so pages see prefers-color-scheme: light. -->
     <style name="Theme.Flush.LightPages" parent="android:Theme.Material.Light.NoActionBar" />

@@ -1,9 +1,9 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
-"""Read page state from Corn's WebViews over Chrome DevTools (debug builds only).
+"""Read page state from Flush's WebViews over Chrome DevTools (debug builds only).
 
-Forwards a local port to Corn's `webview_devtools_remote_<pid>` socket and runs
+Forwards a local port to Flush's `webview_devtools_remote_<pid>` socket and runs
 Runtime.evaluate in the page whose URL contains a given string. Evaluation never sets
 `userGesture`, so it can't fake a tap: checks tap with adb and only *read* through here.
 
@@ -29,14 +29,14 @@ def _forward():
     global _forwarded_pid
     pid = device.app_pid()
     if not pid:
-        raise RuntimeError("Corn isn't running")
+        raise RuntimeError("Flush isn't running")
     if pid != _forwarded_pid:
         device.adb("forward", f"tcp:{PORT}", f"localabstract:webview_devtools_remote_{pid}", check=True)
         _forwarded_pid = pid
 
 
 def pages():
-    """Every page Corn's WebViews hold: url, attached/visible and its place on screen (device px)."""
+    """Every page Flush's WebViews hold: url, attached/visible and its place on screen (device px)."""
     _forward()
     try:
         raw = json.load(urllib.request.urlopen(f"http://127.0.0.1:{PORT}/json", timeout=10))

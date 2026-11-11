@@ -46,7 +46,7 @@ sealed interface Sheet {
     data object NewCollection : Sheet
     /** Long-press on an image; [linkUrl] is set when the image is also a link. */
     data class Image(val imageUrl: String, val linkUrl: String?, val title: String?) : Sheet
-    /** A tapped link to another app: ask before leaving Corn. [intent] is already made safe. */
+    /** A tapped link to another app: ask before leaving Flush. [intent] is already made safe. */
     data class ExternalApp(val title: String, val detail: String, val appName: String?, val intent: Intent, val fallbackUrl: String?) : Sheet
     data object Menu : Sheet
     data object Engine : Sheet
@@ -76,7 +76,7 @@ sealed interface Sheet {
 data class Suggestion(val title: String, val url: String, val fromVault: Boolean)
 
 /**
- * Corn's app state and actions. Screens read its Compose state and call its methods.
+ * Flush's app state and actions. Screens read its Compose state and call its methods.
  * Owns the tabs, the Flush flow, Auto-Flush, Kept Session, locks and toasts.
  */
 class AppController(private val context: Context) : TabHost {
@@ -159,7 +159,7 @@ class AppController(private val context: Context) : TabHost {
     fun start(openUrl: String?, restartQuip: String? = null, restartToast: String? = null) {
         isStarting = true
         if (shouldAutoFlushOnReturn()) {
-            // Corn was away long enough for Auto-Flush: wipe, then restart clean (opening nothing).
+            // Flush was away long enough for Auto-Flush: wipe, then restart clean (opening nothing).
             clearData(ClearChoice.EVERYTHING, quipAfter = Flusher.QUIPS.random()) {}
         } else {
             data.loadSession()?.let { tabs.restore(it) }
@@ -168,7 +168,7 @@ class AppController(private val context: Context) : TabHost {
         restartQuip?.let { quip = it }
         restartToast?.let { showToast(it) }
         when {
-            tabs.tabs.isEmpty() -> tabs.open(openUrl ?: NEW_TAB) // a link opened Corn: no extra empty tab
+            tabs.tabs.isEmpty() -> tabs.open(openUrl ?: NEW_TAB) // a link opened Flush: no extra empty tab
             openUrl != null -> openInNewTab(openUrl)
         }
         settings.leftAt = 0L
@@ -177,7 +177,7 @@ class AppController(private val context: Context) : TabHost {
 
     fun onAppForeground() {
         inForeground = true
-        passwords.clearCopyLeftOver() // in case Corn was closed before it could clear a copied password
+        passwords.clearCopyLeftOver() // in case Flush was closed before it could clear a copied password
         tabs.resumeAllTimers()
         com.flushbrowser.browser.BlockEngine.refreshIfStale(context)
         if (shouldAutoFlushOnReturn()) flushNow(animate = false)
@@ -189,7 +189,7 @@ class AppController(private val context: Context) : TabHost {
 
     fun onAppBackground() {
         inForeground = false
-        passwords.clearCopiedPassword() // a copied password never stays on the clipboard after Corn leaves the screen
+        passwords.clearCopiedPassword() // a copied password never stays on the clipboard after Flush leaves the screen
         tabs.pauseAllTimers()
         main.removeCallbacks(inactivityTick)
         val now = System.currentTimeMillis()
@@ -203,7 +203,7 @@ class AppController(private val context: Context) : TabHost {
 
     private var inForeground = false
 
-    /** Auto-Flush timer after leaving Corn. Runs in the background, so it can't relaunch Corn. */
+    /** Auto-Flush timer after leaving Flush. Runs in the background, so it can't relaunch the app. */
     private val leaveFlush = Runnable { flushNow(animate = false) }
 
     /** Android says memory is running low (only acted on in "Automatic by phone memory"). */
@@ -441,9 +441,9 @@ class AppController(private val context: Context) : TabHost {
     }
 
     /**
-     * Run [DataClearing]. When cookies were deleted from WebView's cookie file, Corn must restart
+     * Run [DataClearing]. When cookies were deleted from WebView's cookie file, Flush must restart
      * its process so WebView forgets the cookies it holds in memory:
-     * - in the foreground, Corn relaunches itself and shows [quipAfter] / [toastAfter];
+     * - in the foreground, Flush relaunches itself and shows [quipAfter] / [toastAfter];
      * - in the background (Auto-Flush after leaving), Android doesn't allow a relaunch, so the
      *   process just ends and the next launch starts clean.
      * Without a restart (cookie file not editable, or cookies not chosen), [done] runs instead.
@@ -638,7 +638,7 @@ class AppController(private val context: Context) : TabHost {
         val ask = androidPermissionRequester ?: run { done(false); return }
         ask(needed.toTypedArray()) { results ->
             val ok = satisfied { p -> results[p] == true || granted(p) }
-            if (!ok) showToast("Android didn't allow it. You can change this in the phone's Settings → Apps → Corn.")
+            if (!ok) showToast("Android didn't allow it. You can change this in the phone's Settings → Apps → Flush.")
             done(ok)
         }
     }
@@ -650,7 +650,7 @@ class AppController(private val context: Context) : TabHost {
     override fun onDownload(request: DownloadRequest) {
         main.post {
             if (!request.url.startsWith("https://") && !request.url.startsWith("http://")) {
-                showToast("Corn can't download this kind of file yet")
+                showToast("Flush can't download this kind of file yet")
                 return@post
             }
             val name = android.webkit.URLUtil.guessFileName(request.url, request.contentDisposition, request.mimeType)
@@ -658,7 +658,7 @@ class AppController(private val context: Context) : TabHost {
         }
     }
 
-    /** Hand the file to Android's download manager (it downloads even if Corn is closed). */
+    /** Hand the file to Android's download manager (it downloads even if Flush is closed). */
     fun startDownload(request: DownloadRequest, name: String) {
         sheet = null
         val dm = context.getSystemService(android.app.DownloadManager::class.java)
@@ -678,7 +678,7 @@ class AppController(private val context: Context) : TabHost {
         showToast("Downloading $name…")
     }
 
-    /** Android says a download finished (MainActivity listens while Corn is open). */
+    /** Android says a download finished (MainActivity listens while Flush is open). */
     fun onDownloadComplete(id: Long) {
         val name = downloads.remove(id) ?: return
         val dm = context.getSystemService(android.app.DownloadManager::class.java)
@@ -742,7 +742,7 @@ class AppController(private val context: Context) : TabHost {
 
     // ---------------- per-site blocking ----------------
 
-    /** corn.db holds per-site choices; cache them so WebView's network threads never touch the database. */
+    /** flush.db holds per-site choices; cache them so WebView's network threads never touch the database. */
     private fun refreshShields() {
         siteShields = data.allSiteShields()
     }
@@ -795,7 +795,7 @@ class AppController(private val context: Context) : TabHost {
     fun saveImage(imageUrl: String) {
         if (!imageUrl.startsWith("https://") && !imageUrl.startsWith("http://")) {
             sheet = null
-            showToast("Corn can't save this image")
+            showToast("Flush can't save this image")
             return
         }
         val ext = android.webkit.MimeTypeMap.getFileExtensionFromUrl(imageUrl)
@@ -808,7 +808,7 @@ class AppController(private val context: Context) : TabHost {
 
     /**
      * A tapped link to another app. Builds a safe intent (browsable only, no component or selector,
-     * no permission grants, never Corn itself), the way Chrome and DuckDuckGo do, then asks.
+     * no permission grants, never Flush itself), the way Chrome and DuckDuckGo do, then asks.
      */
     override fun onExternalLink(entry: TabEntry, url: String) {
         main.post {
@@ -821,14 +821,14 @@ class AppController(private val context: Context) : TabHost {
                     else -> Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url))
                 }
             }.getOrNull()
-            if (intent == null) { showToast("Corn can't open this link"); return@post }
+            if (intent == null) { showToast("Flush can't open this link"); return@post }
             val fallback = com.flushbrowser.browser.ExternalLinks.fallback(intent.getStringExtra("browser_fallback_url"))
             intent.addCategory(Intent.CATEGORY_BROWSABLE)
             intent.component = null
             intent.selector = null
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK // drops any URI permission grants the page asked for
             if (intent.`package` == context.packageName) return@post
-            // The app's name, when Android lets Corn see it. Since Android 11 most installed apps are
+            // The app's name, when Android lets Flush see it. Since Android 11 most installed apps are
             // hidden from other apps, so "unknown" doesn't mean "not installed": Open still tries, and
             // falls back to the link's web version (if it has one) only when no app takes it.
             val pm = context.packageManager
@@ -870,7 +870,7 @@ class AppController(private val context: Context) : TabHost {
         exitFullscreen = exit
     }
 
-    /** Leave fullscreen: tell the page, and clear Corn's state even if the page never answers. */
+    /** Leave fullscreen: tell the page, and clear Flush's state even if the page never answers. */
     fun exitFullscreen() {
         val exit = exitFullscreen
         onExitFullscreen()
@@ -879,7 +879,7 @@ class AppController(private val context: Context) : TabHost {
 
     override val darkenWebsites: Boolean get() = settings.darkenWebsites
 
-    /** Pages use the same theme as Corn (Settings → Appearance). */
+    /** Pages use the same theme as Flush (Settings → Appearance). */
     override val lightPages: Boolean get() = com.flushbrowser.ui.C.light
 
     /** Appearance changed: rebuild open pages so sites see the new light/dark preference. */

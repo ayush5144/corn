@@ -17,7 +17,7 @@ import uniffi.flush_ffi.HistoryVisit
 import uniffi.flush_ffi.Login
 import uniffi.flush_ffi.VaultItem
 
-/** What Corn blocks on a site. Default: everything on. */
+/** What Flush blocks on a site. Default: everything on. */
 data class Shields(val ads: Boolean = true, val trackers: Boolean = true, val popups: Boolean = true) {
     val allOn: Boolean get() = ads && trackers && popups
     val allOff: Boolean get() = !ads && !trackers && !popups
@@ -29,7 +29,7 @@ data class Shields(val ads: Boolean = true, val trackers: Boolean = true, val po
 }
 
 /**
- * Corn's local store (corn.db, plain SQLite in app-private storage, via the Rust core).
+ * Flush's local store (flush.db, plain SQLite in app-private storage, via the Rust core).
  * Holds the Vault, history, the Keep List, per-site blocking choices and the Kept Session.
  * See docs/02-technical/10-storage.md.
  */
@@ -150,7 +150,7 @@ class AppData(context: Context) {
     fun loginCount(): Long = store.loginCount()
     fun touchLogin(id: Long) = store.touchLogin(id)
 
-    /** Sites (origins) where Corn never offers to save a password. */
+    /** Sites (origins) where Flush never offers to save a password. */
     fun neverSaveList(): List<String> = readList(NEVER_SAVE)
     fun addNeverSave(origin: String) = writeList(NEVER_SAVE, (neverSaveList() + origin).distinct())
     fun removeNeverSave(origin: String) = writeList(NEVER_SAVE, neverSaveList() - origin)

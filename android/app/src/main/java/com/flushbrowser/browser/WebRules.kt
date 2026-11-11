@@ -5,7 +5,7 @@
 package com.flushbrowser.browser
 
 /**
- * Corn's rules for new windows, links that leave the web, and long-press titles.
+ * Flush's rules for new windows, links that leave the web, and long-press titles.
  * Plain Kotlin (no Android types) so every rule is unit-tested (`WebRulesTest`).
  * Generic on purpose: no site names here; what's blocked where comes from the filter lists.
  */
@@ -37,7 +37,7 @@ object WindowPolicy {
 object ExternalLinks {
     enum class Kind { WEB, IGNORE, CALL, EMAIL, TEXT, MAP, APP }
 
-    /** Schemes that never leave Corn: internal, script or local-file addresses. */
+    /** Schemes that never leave Flush: internal, script or local-file addresses. */
     private val IGNORED = setOf("about", "javascript", "data", "blob", "file", "content", "filesystem", "chrome", "ws", "wss")
 
     fun kind(url: String): Kind {
@@ -71,7 +71,7 @@ object ExternalLinks {
         val decoded = runCatching { java.net.URLDecoder.decode(rest.replace("+", "%2B"), "UTF-8") }.getOrDefault(rest)
         return when (kind) {
             Kind.CALL, Kind.EMAIL, Kind.TEXT, Kind.MAP -> decoded.take(80)
-            else -> "Corn will hand this link to the app."
+            else -> "Flush will hand this link to the app."
         }
     }
 

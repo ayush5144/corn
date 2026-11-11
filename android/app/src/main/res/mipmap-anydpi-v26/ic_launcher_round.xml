@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Flush's app icon: the Vortex (four arms of water and two bubbles) on the logo's navy, as an
+     adaptive icon so every launcher shape (circle, squircle, square) crops it cleanly. The art sits
+     inside the 66 dp safe zone of the 108 dp canvas. Master art: brand/flush-logo-*.png -->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/ic_launcher_background" />
+    <foreground android:drawable="@mipmap/ic_launcher_foreground" />
+</adaptive-icon>

@@ -77,12 +77,12 @@ fun HistoryScreen(c: AppController) {
             Glyph(Glyphs.ChevRight, 18.dp, C.Muted)
         }
         if (!c.settings.keepHistory) {
-            T("History is off, so Corn isn't recording new pages. Turn it on in Settings → History and data.", 13.sp, C.Muted,
+            T("History is off, so Flush isn't recording new pages. Turn it on in Settings → History and data.", 13.sp, C.Muted,
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp))
         }
         if (visits.isEmpty()) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                T(if (query.isBlank()) "Nothing here. Fresh as a new cob. 🌽" else "No matches", 15.sp, C.Muted)
+                T(if (query.isBlank()) "Nothing here. Freshly flushed. 🌀" else "No matches", 15.sp, C.Muted)
             }
             return
         }

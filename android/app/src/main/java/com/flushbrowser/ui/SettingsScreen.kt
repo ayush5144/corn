@@ -8,6 +8,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -51,14 +53,14 @@ fun SettingsScreen(c: AppController, onNeedPin: () -> Unit) {
             T("Settings", 24.sp, weight = FontWeight.ExtraBold, display = true)
         }
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, bottom = 24.dp)) {
-            Label("When should Corn flush?")
+            Label("When to flush")
             SettingsGroup {
-                FlushRadio(c, FlushMode.KEEP, "Keep my session until I flush", "Default. Nothing goes until you hit the toilet.")
-                FlushRadio(c, FlushMode.LEAVE_NOW, "Flush when I leave Corn")
+                FlushRadio(c, FlushMode.KEEP, "Keep my session until I flush", "Default. Nothing goes until you pull the handle.")
+                FlushRadio(c, FlushMode.LEAVE_NOW, "Flush when I leave the app")
                 FlushRadio(c, FlushMode.LEAVE_5, "Flush 5 minutes after I leave")
                 FlushRadio(c, FlushMode.LEAVE_30, "Flush 30 minutes after I leave")
             }
-            Caption("Leaving Corn means switching apps, going home or locking your phone.")
+            Caption("Leaving the app means switching apps, going home or locking your phone.")
             SettingsGroup {
                 ToggleRow("Flush after inactivity", "A playing video counts as activity.", s.inactivity) { s.inactivity = it; c.onInactivitySettingChanged() }
                 if (s.inactivity) {
@@ -68,7 +70,7 @@ fun SettingsScreen(c: AppController, onNeedPin: () -> Unit) {
                     })
                 }
                 ToggleRow("Flush sound", "Off by default, so it never goes off in public.", s.flushSound) { s.flushSound = it }
-                ToggleRow("Ask before flushing", "Off by default. When on, Corn asks before wiping.", s.flushConfirm) { s.flushConfirm = it }
+                ToggleRow("Ask before flushing", "Off by default. When on, Flush asks before wiping.", s.flushConfirm) { s.flushConfirm = it }
             }
 
             Label("Keep List")
@@ -86,11 +88,11 @@ fun SettingsScreen(c: AppController, onNeedPin: () -> Unit) {
                     })
                 }
             }
-            Caption("These sites stay logged in after a Flush: Corn keeps their cookies and saved site databases (IndexedDB). Not history or passwords. Tip: add the site you're on from its shield.")
+            Caption("These sites stay logged in after a Flush: Flush keeps their cookies and saved site databases (IndexedDB). Not history or passwords. Tip: add the site you're on from its shield.")
 
             Label("Privacy")
             SettingsGroup {
-                ToggleRow("App Lock", "Ask for your PIN to open Corn.", s.appLock) { on ->
+                ToggleRow("App Lock", "Ask for your PIN to open Flush.", s.appLock) { on ->
                     if (on && !s.hasPin) onNeedPin() else s.appLock = on
                 }
                 ToggleRow("Lock the Vault", "Your PIN to see saved links.", s.vaultLock) { s.vaultLock = it }
@@ -98,9 +100,9 @@ fun SettingsScreen(c: AppController, onNeedPin: () -> Unit) {
                     s.safeBrowsing = it
                     c.applySafeBrowsing()
                 }
-                ToggleRow("Close cookie banners", "Off by default. When on, Corn clicks \"Reject\" for you; it can sometimes close other pop-ups, like a login box. Applies to new tabs.", s.cookieBanners) { s.cookieBanners = it }
+                ToggleRow("Close cookie banners", "Off by default. When on, Flush clicks \"Reject\" for you; it can sometimes close other pop-ups, like a login box. Applies to new tabs.", s.cookieBanners) { s.cookieBanners = it }
                 ToggleRow("Black screen in recent apps", "Hides what's on screen in the app switcher.", s.blackRecents) { s.blackRecents = it }
-                SettingRow("Notifications", "Corn never notifies you while it's closed.", leading = { Glyph(Glyphs.BellOff, tint = C.Muted) })
+                SettingRow("Notifications", "Flush never notifies you while it's closed.", leading = { Glyph(Glyphs.BellOff, tint = C.Muted) })
                 PasswordSettings(c)
             }
 
@@ -184,7 +186,16 @@ fun SettingsScreen(c: AppController, onNeedPin: () -> Unit) {
 
             Label("About")
             SettingsGroup {
-                SettingRow("Donate", "Corn is free. Donations keep it that way.", onClick = { c.showToast("Donations open at launch. Thank you! 🌽") },
+                // The board's lockup, small: logo + wordmark, then the tagline.
+                Row(Modifier.fillMaxWidth().padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                    BrandMark(40.dp)
+                    Spacer(Modifier.width(12.dp))
+                    Column {
+                        Wordmark(26.sp)
+                        T(TAGLINE, 13.sp, C.Muted)
+                    }
+                }
+                SettingRow("Donate", "Flush is free. Donations keep it that way.", onClick = { c.showToast("Donations open at launch. Thank you! 💙") },
                     leading = { Glyph(Glyphs.Heart, tint = C.Accent) }, trailing = { Glyph(Glyphs.ChevRight, 18.dp, C.Muted) })
                 SettingRow("Version", trailing = { T(BuildConfig.VERSION_NAME, 12.sp, C.Muted) })
             }
@@ -201,7 +212,7 @@ private fun CountDropdown(count: Int, active: Boolean, onPick: (Int) -> Unit) {
     var open by remember { mutableStateOf(false) }
     Box(Modifier.alpha(if (active) 1f else 0.45f)) {
         Pill("$count ${if (count == 1) "tab" else "tabs"}", { open = true }, Glyphs.ChevDown)
-        // Corn's dark menu colour: Material's default is light, which made the light item text invisible.
+        // The app's own menu colour: Material's default is light, which made the light item text invisible.
         DropdownMenu(open, { open = false }, containerColor = C.Surface2) {
             listOf(0, 1, 2, 3, 5).forEach { n ->
                 DropdownMenuItem(text = { T(if (n == 1) "1 tab" else "$n tabs", 15.sp) }, onClick = { onPick(n); open = false })

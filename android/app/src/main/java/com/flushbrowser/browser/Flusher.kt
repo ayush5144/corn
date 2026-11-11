@@ -60,11 +60,17 @@ object Flusher {
         }.start()
     }
 
+    /** The brand board's after-Flush one-liners. */
     val QUIPS = listOf(
-        "All gone. Fresh as a new cob. 🌽",
+        "Swirl, swirl, gone. 🌀",
         "Flushed. Nobody saw nothing.",
         "Squeaky clean. Like it never happened.",
         "Session down the drain. Your Vault's safe.",
-        "Poof. Clean slate, same great corn.",
+        "Whoosh. Clean slate.",
+        "Gone with the swirl.",
+        "All gone. Even we don't know what it was.",
+        "Done. Feel free to wash your hands of it.",
+        "That's the sound of zero tabs.",
+        "Poof. Sparkling. ✨",
     )
 }

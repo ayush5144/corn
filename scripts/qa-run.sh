@@ -3,7 +3,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 #
-# Run Corn's emulator QA checks against the installed debug build. See qa/README.md.
+# Run Flush's emulator QA checks against the installed debug build. See qa/README.md.
 #
 #   scripts/qa-run.sh                 run every check
 #   scripts/qa-run.sh NAME [NAME…]    run the named checks (a prefix like "popups-" works too)
@@ -48,14 +48,14 @@ for _ in $(seq 1 20); do
 done
 
 if ! "$ADB" shell pm path com.flushbrowser.android >/dev/null 2>&1; then
-  echo "Corn (com.flushbrowser.android) isn't installed. Install a debug build first: scripts/dev-start.sh --install" >&2
+  echo "Flush (com.flushbrowser.android) isn't installed. Install a debug build first: scripts/dev-start.sh --install" >&2
   exit 2
 fi
 
 export QA_BASE="http://10.0.2.2:$PORT"
 export QA_SERVER_LOG="$STATE/server-$PORT.log"
 export QA_RUN="$(date +%H%M%S)"
-echo "Corn QA run $QA_RUN on $("$ADB" shell getprop ro.product.model | tr -d '\r'), Android $("$ADB" shell getprop ro.build.version.release | tr -d '\r'), Corn $("$ADB" shell dumpsys package com.flushbrowser.android | sed -n 's/.*versionName=//p' | head -1 | tr -d '\r')"
+echo "Flush QA run $QA_RUN on $("$ADB" shell getprop ro.product.model | tr -d '\r'), Android $("$ADB" shell getprop ro.build.version.release | tr -d '\r'), Flush $("$ADB" shell dumpsys package com.flushbrowser.android | sed -n 's/.*versionName=//p' | head -1 | tr -d '\r')"
 echo
 
 set +e
@@ -63,6 +63,6 @@ python3 -I "$ROOT/scripts/qa/run.py" "$@"
 status=$?
 set -e
 
-# Leave Corn in front (the app-link checks visit other apps).
+# Leave Flush in front (the app-link checks visit other apps).
 "$ADB" shell am start -n com.flushbrowser.android/com.flushbrowser.MainActivity >/dev/null 2>&1 || true
 exit $status

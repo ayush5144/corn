@@ -62,7 +62,7 @@ fun AppRoot(
             }
             if (c.appLocked) {
                 Box(Modifier.fillMaxSize().background(C.Bg)) {
-                    PinGate(c.settings, "Corn is locked", "Enter your PIN", "") { c.appLocked = false }
+                    PinGate(c.settings, "Flush is locked", "Enter your PIN", "") { c.appLocked = false }
                 }
             }
         }

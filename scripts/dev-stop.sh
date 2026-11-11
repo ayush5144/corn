@@ -3,7 +3,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 #
-# Stop everything Corn's development uses on this Mac, to free memory:
+# Stop everything Flush's development uses on this Mac, to free memory:
 #   - the Android emulator(s)
 #   - test servers started by scripts/dev-start.sh
 #   - Gradle and Kotlin build daemons (they stay in memory after a build)
@@ -48,4 +48,4 @@ pkill -f KotlinCompileDaemon 2>/dev/null && echo "Kotlin daemon stopped." || tru
 
 # What's left (should be nothing)
 left="$(ps axo pid,command | grep -E "qemu-system|GradleDaemon|KotlinCompileDaemon|adb .*fork-server" | grep -v grep)"
-if [ -n "$left" ]; then echo "Still running:"; echo "$left"; else echo "All Corn development processes are stopped."; fi
+if [ -n "$left" ]; then echo "Still running:"; echo "$left"; else echo "All Flush development processes are stopped."; fi
