@@ -292,20 +292,30 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
                 return true
             }
             WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE -> {
+                // An image inside a link. Search results put a small site icon inside every result's
+                // link, so WebView reports most long-presses on them this way. Only a real picture
+                // adds image actions; an icon gets the plain link menu (QA 2026-11-12, Google).
                 val image = hit.extra
                 requestLinkHref { url, title ->
                     when {
-                        url == null && image != null -> host.onImageLongPress(entry, image, null, null)
+                        url == null && image != null -> pictureSize(image) { px -> if (ImageRules.isPicture(image, px)) host.onImageLongPress(entry, image, null, null) }
                         url == null -> Unit
-                        image != null -> linkTitle(url, title) { best -> host.onImageLongPress(entry, image, url, best) }
-                        else -> linkTitle(url, title) { best -> host.onLinkLongPress(entry, url, best ?: url) }
+                        image == null -> linkTitle(url, title) { best -> host.onLinkLongPress(entry, url, best ?: url) }
+                        else -> pictureSize(image) { px ->
+                            linkTitle(url, title) { best ->
+                                if (ImageRules.isPicture(image, px)) host.onImageLongPress(entry, image, url, best)
+                                else host.onLinkLongPress(entry, url, best ?: url)
+                            }
+                        }
                     }
                 }
                 return true
             }
             WebView.HitTestResult.IMAGE_TYPE -> {
+                // A plain image: offer its menu only when it's a picture that can be saved or opened.
                 val image = hit.extra ?: return false
-                host.onImageLongPress(entry, image, null, null)
+                if (!ImageRules.isPicture(image, -1)) return false
+                pictureSize(image) { px -> if (ImageRules.isPicture(image, px)) host.onImageLongPress(entry, image, null, null) }
                 return true
             }
         }
@@ -318,9 +328,12 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
      * (labels first, then text) and let [LinkTitles.pick] skip durations and counters.
      */
     private fun linkTitle(url: String, fallback: String?, done: (String?) -> Unit) {
+        // Per link: its labels, then its heading (search results put the title in an h3 next to the
+        // site name and follower counts), then an image's alt text, then all its text.
         val js = "(function(u){var out=[];var as=document.querySelectorAll('a[href]');" +
             "for(var i=0;i<as.length&&out.length<40;i++){var a=as[i];if(a.href!==u)continue;" +
             "out.push(a.getAttribute('aria-label'),a.getAttribute('title'));" +
+            "var hd=a.querySelector('h1,h2,h3,h4,h5,h6,[role=heading]');if(hd)out.push((hd.innerText||'').slice(0,300));" +
             "var im=a.querySelector('img[alt]');if(im)out.push(im.getAttribute('alt'));" +
             "out.push((a.innerText||'').slice(0,300));}return out;})(" + JSONObject.quote(url) + ")"
         webView.evaluateJavascript(js) { result ->
@@ -330,6 +343,14 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
             }.getOrDefault(emptyList())
             done(LinkTitles.pick(fromPage + fallback))
         }
+    }
+
+    /** The larger side, in CSS px, at which the page shows the image [src] (-1 if not found). */
+    private fun pictureSize(src: String, done: (Int) -> Unit) {
+        val js = "(function(u){var m=-1;var ims=document.images;for(var i=0;i<ims.length;i++){var im=ims[i];" +
+            "if(im.currentSrc===u||im.src===u){var r=im.getBoundingClientRect();m=Math.max(m,Math.round(Math.max(r.width,r.height)));}}" +
+            "return m;})(" + JSONObject.quote(src) + ")"
+        webView.evaluateJavascript(js) { result -> done(result?.toIntOrNull() ?: -1) }
     }
 
     private fun requestLinkHref(done: (url: String?, title: String?) -> Unit) {

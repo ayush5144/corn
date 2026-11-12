@@ -95,3 +95,18 @@ object LinkTitles {
         .firstOrNull { it.isNotEmpty() && !NOT_A_TITLE.matches(it) }
         ?.take(200)
 }
+
+/** Long-press on an image: whether it's a real picture worth image actions (save, open, share). */
+object ImageRules {
+    /** Smaller than this (CSS px, shown size) is an icon: site icons in search results, badges. */
+    const val MIN_PICTURE_PX = 48
+
+    /**
+     * @param shownPx the larger side of the image as shown on the page, or -1 if the page couldn't tell.
+     * Pictures must be web addresses: images embedded in the page (`data:`) can't be saved or opened.
+     */
+    fun isPicture(url: String, shownPx: Int): Boolean {
+        val web = url.startsWith("https://", ignoreCase = true) || url.startsWith("http://", ignoreCase = true)
+        return web && (shownPx < 0 || shownPx >= MIN_PICTURE_PX)
+    }
+}

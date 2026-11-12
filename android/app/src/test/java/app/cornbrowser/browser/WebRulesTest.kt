@@ -63,4 +63,12 @@ class WebRulesTest {
         assertNull(LinkTitles.pick(listOf("12", "3/5", " ")))
         assertEquals(200, LinkTitles.pick(listOf("x".repeat(500)))!!.length)
     }
+
+    @Test fun pictureRules() {
+        assertEquals(true, ImageRules.isPicture("https://example.com/photo.jpg", 300))
+        assertEquals(true, ImageRules.isPicture("https://example.com/photo.jpg", -1)) // size unknown
+        assertEquals(false, ImageRules.isPicture("https://example.com/icon.png", 27)) // a site icon
+        assertEquals(false, ImageRules.isPicture("data:image/png;base64,AAAA", 300)) // embedded
+        assertEquals(true, ImageRules.isPicture("https://example.com/p.png", ImageRules.MIN_PICTURE_PX))
+    }
 }

@@ -95,15 +95,22 @@ private fun OtherSheet(c: CornController, shown: Sheet?) {
 
 @Composable
 private fun LinkSheet(c: CornController, s: Sheet.Link) {
-    val group = c.tabs.group(c.tabs.current?.groupId)
     SheetTitle(s.title, s.url)
-    Row50(CornIcons.ChevRight, "Open", { c.sheet = null; c.tabs.load(s.url) })
-    Row50(CornIcons.TabNew, "Open in new tab", { c.openLinkInNewTab(s.url) })
+    LinkRows(c, s.url, s.title)
+}
+
+/** Every link action, the same in the link menu and in the menu of a picture that is a link. */
+@Composable
+private fun LinkRows(c: CornController, url: String, title: String) {
+    val group = c.tabs.group(c.tabs.current?.groupId)
+    Row50(CornIcons.ChevRight, "Open", { c.sheet = null; c.tabs.load(url) })
+    Row50(CornIcons.TabNew, "Open in new tab", { c.openLinkInNewTab(url) })
     // Not in a group yet: this starts one. In a group: adds to it (its name shown on the right).
-    if (group == null) Row50(CornIcons.GroupAdd, "Open in new tab group", { c.openLinkInGroup(s.url) })
-    else Row50(CornIcons.GroupAdd, "Open in new tab in group", { c.openLinkInGroup(s.url) }, hint = group.name)
-    Row50(CornIcons.VaultAdd, "Save link to Vault", { c.sheet = Sheet.Save(s.url, s.title) })
-    Row50(CornIcons.Copy, "Copy link", { c.copyLink(s.url) })
+    if (group == null) Row50(CornIcons.GroupAdd, "Open in new tab group", { c.openLinkInGroup(url) })
+    else Row50(CornIcons.GroupAdd, "Open in new tab in group", { c.openLinkInGroup(url) }, hint = group.name)
+    Row50(CornIcons.VaultAdd, "Save link to Vault", { c.sheet = Sheet.Save(url, title) })
+    Row50(CornIcons.Copy, "Copy link", { c.copyLink(url) })
+    Row50(CornIcons.Share, "Share link", { c.share(url) })
 }
 
 @Composable
@@ -150,16 +157,13 @@ private fun NewCollectionSheet(c: CornController) {
 /** Long-press on an image: image actions, plus the link's when the image is a link. */
 @Composable
 private fun ImageSheet(c: CornController, s: Sheet.Image) {
-    val web = s.imageUrl.startsWith("https://") || s.imageUrl.startsWith("http://")
-    SheetTitle(s.title ?: "Image", s.linkUrl ?: s.imageUrl.takeIf { web } ?: "")
-    if (s.linkUrl != null) {
-        Row50(CornIcons.ChevRight, "Open link", { c.sheet = null; c.tabs.load(s.linkUrl) })
-        Row50(CornIcons.TabNew, "Open link in new tab", { c.openLinkInNewTab(s.linkUrl) })
-    }
-    Row50(CornIcons.Download, "Save image", { c.saveImage(s.imageUrl) }, enabled = web)
-    Row50(CornIcons.TabNew, "Open image in new tab", { c.openLinkInNewTab(s.imageUrl) }, enabled = web)
-    Row50(CornIcons.Share, "Share image link", { c.share(s.imageUrl) }, enabled = web)
-    Row50(CornIcons.Copy, if (s.linkUrl != null) "Copy link" else "Copy image link", { c.copyLink(s.linkUrl ?: s.imageUrl) }, enabled = s.linkUrl != null || web)
+    // Only real pictures reach this sheet (ImageRules.isPicture): every image action works.
+    SheetTitle(s.title ?: "Image", s.linkUrl ?: s.imageUrl)
+    if (s.linkUrl != null) LinkRows(c, s.linkUrl, s.title ?: s.linkUrl)
+    Row50(CornIcons.Download, "Save image", { c.saveImage(s.imageUrl) })
+    Row50(CornIcons.TabNew, "Open image in new tab", { c.openLinkInNewTab(s.imageUrl) })
+    Row50(CornIcons.Share, "Share image link", { c.share(s.imageUrl) })
+    if (s.linkUrl == null) Row50(CornIcons.Copy, "Copy image link", { c.copyLink(s.imageUrl) })
 }
 
 /** A tapped link to another app (phone, email, SMS, map, an app): Corn asks before leaving. */

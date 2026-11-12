@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 11:15 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-12, 12:44 IST
 
 Every feature in the Android app today, what it does for the user, and the evidence behind it. Nothing here is planned-only; planned work lives in the [checklist](../03-planning/02-checklist.md).
 
@@ -34,7 +34,7 @@ Every feature in the Android app today, what it does for the user, and the evide
   - *What:* phone, email, SMS, map and "open in app" links: after a tap, Corn asks ("Call this number?", "Open in <app>?"): Open, Open web version (when the link has one), Cancel. Never without a tap; `intent://` links are made safe like Chrome and DuckDuckGo do.
   - *Evidence:* tel/mailto/sms/geo opened Phone, Gmail, Messages and Maps after Open; a no-tap `tel:` did nothing; an app that isn't installed fell back to the web version.
 
-- **Image long-press menu** ✅: Save image (through the download sheet), Open image in new tab, Share image link, Copy. Linked images also get the link's actions. Link titles come from the page's labels, so YouTube shows the video title instead of its duration.
+- **Long-press menus** ✅: every link gets the same menu (Open, Open in new tab, Open in new tab group, Save link to Vault, Copy link, Share link). A real picture (a web image at least 48 px) adds Save image, Open image in new tab and Share image link; a tiny or embedded icon inside a link (search results) gets the plain link menu. Titles come from the link's labels, then its heading, so YouTube shows the video title instead of its duration and Google shows the result's heading. Verified on Google and by `scripts/qa-run.sh` (`search-result-link-menu`, `image-long-press-menu`, `link-title-not-duration`).
 
 - **Element hiding** 🔨
   - *What:* leftover empty ad boxes are hidden using EasyList's hiding rules.

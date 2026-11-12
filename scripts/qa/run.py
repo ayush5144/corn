@@ -393,8 +393,10 @@ def image_menu(r):
     key = open_page("image.html", r)
     plain = long_press_sheet(key, "#plain")
     linked = long_press_sheet(key, "#linkedimg")
-    ok = any("Save image" in t for t in plain) and any("Save image" in t for t in linked)
-    return ok, f"plain image menu: {plain or 'nothing'}; linked image menu: {linked or 'nothing'} (want 'Save image' in both)"
+    # A picture that is a link gets every link action too (QA 2026-11-12).
+    ok = any("Save image" in t for t in plain) and any("Save image" in t for t in linked) \
+        and "Open in new tab group" in linked
+    return ok, f"plain image menu: {plain or 'nothing'}; linked image menu: {linked or 'nothing'} (want 'Save image' in both, and 'Open in new tab group' for the linked one)"
 
 
 @check("link-title-not-duration")
@@ -403,6 +405,18 @@ def link_title(r):
     texts = long_press_sheet(key, "#thumb img")
     ok = bool(texts) and "Sunrise over a quiet lake" in texts and "4:02" not in texts
     return ok, f"long-pressed the video thumbnail link; sheet: {texts[:2] or 'nothing'} (want the title 'Sunrise over a quiet lake', not '4:02')"
+
+
+@check("search-result-link-menu")
+def search_result_menu(r):
+    # Search results put a tiny embedded site icon inside each result's link; WebView then reports
+    # "image inside a link". Corn must show the full link menu, titled by the heading (QA 2026-11-12).
+    key = open_page("links.html", r)
+    on_title = long_press_sheet(key, "#result h3")
+    on_icon = long_press_sheet(key, "#resulticon")
+    want = "Twelve quiet weeknight recipes"
+    ok = all(t and t[0] == want and "Open in new tab group" in t and "Save image" not in t for t in (on_title, on_icon))
+    return ok, f"on the heading: {on_title[:4] or 'nothing'}; on the icon: {on_icon[:4] or 'nothing'} (want title {want!r}, 'Open in new tab group', no image actions)"
 
 
 # ---------------- fullscreen ----------------

@@ -215,3 +215,9 @@
 
 - Added `ui/Copy.kt` (`oneSentencePerLine`) + `CopyTest` (6 tests); used by the toast (`ui/Components.kt`) and the after-Flush line (`ui/BrowserScreen.kt`, each line centred).
 - Updated `docs/01-product/02-decision-log.md` (Round 22: Flush rename tried on `main`, parked; Corn continues on `corn`).
+
+## 2026-11-12 — Long-press menus on search results; launch checklist
+
+- Code: `browser/WebRules.kt` (`ImageRules.isPicture`, tested), `browser/CornTab.kt` (picture check by shown size, heading in link titles), `ui/Sheets.kt` (`LinkRows` shared by link and image menus; Share link added; image actions only for real pictures).
+- QA: `qa/pages/links.html` search-result block; check `search-result-link-menu`; `image-long-press-menu` also wants the group action.
+- Updated `docs/03-planning/02-checklist.md` (new "Before launch" section) and `docs/01-product/03-features.md` (Long-press menus).

@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 11:15 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-12, 12:44 IST
 
 The single list of what's done, what's next and who owns it. Product decisions live in the [decision log](../01-product/02-decision-log.md); this file tracks **work**.
 
@@ -138,6 +138,30 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [x] | Verified 2026-11-05 on the emulator: `scripts/qa-run.sh` **17/17** (old build 3/17); ayushpatil.com's Vishlyst link opens a new tab; two YouTube videos in split screen, fullscreen in the bottom pane only (top kept playing, ~0.6 s, one Back exits); YouTube `adPlacements`/`playerAds` gone on 4 videos (were present on 3 before), back with Ads off, gone again with Ads on; video plays; long-press title "Billie Jean…" instead of "4:56"; New collection sheet (Create, duplicate name note) | Claude | Done |
 | [ ] | Delete a collection (there's no way to today; found while testing the New collection sheet) | Claude | A collection can be removed; its links stay in All |
 | [ ] | **Downloads screen** (list of Corn's downloads: open, share, delete; Flush clears the list, files stay). Recommended, not started | Founder | Founder decides |
+
+## Before launch (production) — added 2026-11-12
+
+The founder has been testing on a real phone and reports it working well. These are what's still needed before a public release; "Must" blocks launch.
+
+| ✓ | Task | Owner | Done when |
+|---|---|---|---|
+| [ ] | **Must · Real-phone checks that need data:** passwords with the phone's StrongBox chip; 20+ tabs, background tabs and memory; a Keep List site still logged in after Flush (real login); cookie-banner closer on a real banner | Both | Each verified on the founder's phone and noted here |
+| [ ] | **Must · Independent security review** of the password store, PIN and data clearing | Founder | Review notes committed; findings fixed or accepted |
+| [ ] | **Must · Limit wrong PIN attempts** (password review #1; was "later" in the backlog): growing wait after a few wrong tries, PIN checked with a Keystore key | Claude | Brute-forcing the PIN on the phone is slowed; unit-tested |
+| [ ] | **Must · Signed release:** real upload key, Play App Signing, version code/name scheme (today's "test" APK is signed with the debug key) | Both | A release build signed with the real key installs |
+| [ ] | **Must · Play Store requirements:** privacy policy page, Data Safety form, content rating questionnaire, store listing (text, screenshots, icon) | Founder | Play Console shows no blocking items |
+| [ ] | **Must · Licences screen in the app:** credits for uBlock Origin lists and scriptlets (GPL-3.0), Brave's adblock-rust (MPL-2.0), DuckDuckGo autoconsent, UniFFI, fonts (SIL OFL) and Corn's own MPL-2.0 | Claude | Settings → About → Licences lists every component with its licence |
+| [ ] | **Must · Name and trademark:** trademark search for the launch name; domain registered | Founder | Search done; domain owned |
+| [ ] | **Must · Delete a collection** (no way today) | Claude | A collection can be removed; its links stay in All |
+| [ ] | **Must · QA suite first-check flake** (setup sometimes fails on the first check after a restart) | Claude | 3 full runs in a row with no setup failures |
+| [ ] | Should · Accessibility pass: TalkBack labels, large font sizes, contrast | Claude | TalkBack reads every control; XL font size doesn't break layouts |
+| [ ] | Should · Privacy-respecting crash reports (local only or opt-in) | Both | A crash on the phone can be seen and shared by the user |
+| [ ] | Should · Downloads screen (recommended: list of Corn's downloads, cleared by Flush, files stay) | Founder | Founder decides |
+| [ ] | Should · In-app update check (needed if distributed outside the Play Store) | Claude | An older build sees the new version |
+| [ ] | Should · Vector redraw of the Corny logo (today an AI draft) | Founder | SVG master in `brand/` |
+| [ ] | Should · Founder's check of History and onboarding (marked "awaiting founder" above) | Founder | Approved or changes listed |
+| [x] | Long-press on search results: full link menu (with Open in new tab group, Save link to Vault, Share link) even when the link contains a site icon; image actions only for real pictures; titles from the link's heading. Verified on Google (3 results × title and icon) and by the QA check `search-result-link-menu` | Claude | Done |
+| [ ] | Search-engine redirect links (Google's `google.com/goto?url=…`) are saved and copied as Google's link, not the site's: the real address is encrypted in the link, so it can only be learned by asking Google. Founder decision needed | Founder | Decided (keep as is / resolve by asking Google when saving or copying) |
 
 ## Phase 4 — Beta
 
