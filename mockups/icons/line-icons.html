@@ -89,6 +89,34 @@
       <g id="pop-cob-b" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><g transform="translate(-2.2 1.2) scale(.92)"><use href="#p-cob"/><use href="#p-grid" stroke-width="1.4"/><use href="#p-leaves"/></g><g transform="translate(18.4 5.6) scale(.42) translate(-12 -12.6)"><use href="#p-popcorn" stroke-width="4.2"/><use href="#p-hull" stroke-width="4.2"/></g><path d="M14.6 9.6l1.4-1.2" stroke-width="1.6"/></g>
       <!-- Cob c: tilted cob, popcorn bursting off its tip -->
       <g id="pop-cob-c" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><g transform="rotate(30 12 13) translate(-.6 1.4) scale(.9)"><use href="#p-cob"/><use href="#p-grid" stroke-width="1.4"/><use href="#p-leaves"/></g><g transform="translate(18 4.8) scale(.4) translate(-12 -12.6)"><use href="#p-popcorn" stroke-width="4.4"/><use href="#p-hull" stroke-width="4.4"/></g></g>
+      <!-- Round 2 (founder, 2026-11-12): the exact AI "Kernel Safe" (mockups/icons/vault-safe.png) traced in lines:
+           rounded-square door, two hinges on the left, a big corn kernel, a classic keyhole inside the kernel. -->
+      <path id="k2-door" d="M7 3.5h10a3.5 3.5 0 0 1 3.5 3.5v10a3.5 3.5 0 0 1-3.5 3.5H7a3.5 3.5 0 0 1-3.5-3.5V7A3.5 3.5 0 0 1 7 3.5z"/>
+      <path id="k2-hinges" d="M3.5 7.4H2.3V10.2H3.5M3.5 13.8H2.3V16.6H3.5"/>
+      <path id="k2-kernel" d="M12 6.4C15.1 6.4 16.3 8.6 16 11.1C15.7 13.8 13.9 16.8 12 17.4C10.1 16.8 8.3 13.8 8 11.1C7.7 8.6 8.9 6.4 12 6.4Z"/>
+      <g id="k2-keyhole"><circle cx="12" cy="10.7" r="1.15"/><path d="M12 11.8V14"/></g>
+      <g id="ks2-a" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#k2-door"/><use href="#k2-hinges" stroke-width="1.6"/><use href="#k2-kernel"/><use href="#k2-keyhole" stroke-width="1.6"/></g>
+      <!-- b: like the drawn version: feet and a handle bar, kernel moved left -->
+      <g id="ks2-b" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3.5h11a3 3 0 0 1 3 3v9.5a3 3 0 0 1-3 3h-11a3 3 0 0 1-3-3V6.5a3 3 0 0 1 3-3z"/><path d="M3.5 6.8H2.3V9.4H3.5M3.5 12.4H2.3V15H3.5" stroke-width="1.6"/><g transform="translate(-1.6 -.9) scale(.94)" transform-origin="12 12"><use href="#k2-kernel"/><use href="#k2-keyhole" stroke-width="1.7"/></g><path d="M17.4 8.6v4.6"/><path d="M6.5 19v1.8M17.5 19v1.8"/></g>
+      <!-- c: no hinges, kernel larger: the calmest at 24 px -->
+      <g id="ks2-c" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#k2-door"/><g transform="translate(12 12) scale(1.12) translate(-12 -11.9)"><use href="#k2-kernel"/><use href="#k2-keyhole" stroke-width="1.5"/></g></g>
+      <!-- Save / Saved: the kernel stays; the + or ✓ replaces the keyhole -->
+      <g id="ks2-a-save" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#k2-door"/><use href="#k2-hinges" stroke-width="1.6"/><use href="#k2-kernel"/><path d="M12 9.4v4.6M9.7 11.7h4.6" stroke-width="1.7"/></g>
+      <g id="ks2-a-saved" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#k2-door"/><use href="#k2-hinges" stroke-width="1.6"/><use href="#k2-kernel"/><path d="M9.9 11.8l1.5 1.5 2.8-3" stroke-width="1.7"/></g>
+      <g id="ks2-b-save" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3.5h11a3 3 0 0 1 3 3v9.5a3 3 0 0 1-3 3h-11a3 3 0 0 1-3-3V6.5a3 3 0 0 1 3-3z"/><path d="M3.5 6.8H2.3V9.4H3.5M3.5 12.4H2.3V15H3.5" stroke-width="1.6"/><g transform="translate(-1.6 -.9) scale(.94)" transform-origin="12 12"><use href="#k2-kernel"/><path d="M12 9.4v4.6M9.7 11.7h4.6" stroke-width="1.8"/></g><path d="M17.4 8.6v4.6"/><path d="M6.5 19v1.8M17.5 19v1.8"/></g>
+      <g id="ks2-b-saved" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3.5h11a3 3 0 0 1 3 3v9.5a3 3 0 0 1-3 3h-11a3 3 0 0 1-3-3V6.5a3 3 0 0 1 3-3z"/><path d="M3.5 6.8H2.3V9.4H3.5M3.5 12.4H2.3V15H3.5" stroke-width="1.6"/><g transform="translate(-1.6 -.9) scale(.94)" transform-origin="12 12"><use href="#k2-kernel"/><path d="M9.9 11.8l1.5 1.5 2.8-3" stroke-width="1.8"/></g><path d="M17.4 8.6v4.6"/><path d="M6.5 19v1.8M17.5 19v1.8"/></g>
+      <g id="ks2-c-save" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#k2-door"/><g transform="translate(12 12) scale(1.12) translate(-12 -11.9)"><use href="#k2-kernel"/><path d="M12 9.4v4.6M9.7 11.7h4.6" stroke-width="1.6"/></g></g>
+      <g id="ks2-c-saved" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#k2-door"/><g transform="translate(12 12) scale(1.12) translate(-12 -11.9)"><use href="#k2-kernel"/><path d="M9.9 11.8l1.5 1.5 2.8-3" stroke-width="1.6"/></g></g>
+
+      <!-- Pop alternatives -->
+      <!-- Kernel burst: the same kernel, with burst lines around its crown -->
+      <g id="pp-kernel-burst" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><g transform="translate(0 2.2)"><use href="#k2-kernel"/><path d="M10 8.6c1.3-.6 2.7-.6 4 0" stroke-width="1.4"/></g><path d="M12 2.2v2.2M5.4 4.8l1.6 1.6M18.6 4.8L17 6.4M3.2 11h2.2M20.8 11h-2.2"/></g>
+      <!-- Starburst: the comic "POP!" burst, no text -->
+      <g id="pp-star" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12.00 2.80 L13.98 5.91 L17.41 4.56 L17.18 8.24 L20.75 9.16 L18.40 12.00 L20.75 14.84 L17.18 15.76 L17.41 19.44 L13.98 18.09 L12.00 21.20 L10.02 18.09 L6.59 19.44 L6.82 15.76 L3.25 14.84 L5.60 12.00 L3.25 9.16 L6.82 8.24 L6.59 4.56 L10.02 5.91Z"/></g>
+      <!-- Starburst with a kernel in it: corn + pop -->
+      <g id="pp-star-kernel" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12.00 2.80 L13.98 5.91 L17.41 4.56 L17.18 8.24 L20.75 9.16 L18.40 12.00 L20.75 14.84 L17.18 15.76 L17.41 19.44 L13.98 18.09 L12.00 21.20 L10.02 18.09 L6.59 19.44 L6.82 15.76 L3.25 14.84 L5.60 12.00 L3.25 9.16 L6.82 8.24 L6.59 4.56 L10.02 5.91Z"/><g transform="translate(12 12) scale(.5) translate(-12 -11.9)"><use href="#k2-kernel" stroke-width="3"/></g></g>
+      <!-- Popping bubble: an open circle breaking with a few pieces flying -->
+      <g id="pp-bubble" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M16.6 7.6A6.4 6.4 0 1 1 9.5 6.1"/><path d="M13.6 4.6l.9-1.8M17.4 4l1.6-1.2M19.6 6.8l1.9-.4"/></g>
       <!-- From open-source icon sets, unchanged. Lucide (ISC licence): https://lucide.dev ; Phosphor (MIT): https://phosphoricons.com -->
       <g id="lu-popcorn" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a2 2 0 0 0 0-4 2 2 0 0 0-4 0 2 2 0 0 0-4 0 2 2 0 0 0-4 0 2 2 0 0 0 0 4"/><path d="M10 22 9 8"/><path d="m14 22 1-14"/><path d="M20 8c.5 0 .9.4.8 1l-2.6 12c-.1.5-.7 1-1.2 1H7c-.6 0-1.1-.4-1.2-1L3.2 9c-.1-.6.3-1 .8-1Z"/></g>
       <g id="lu-vault" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/><path d="m7.9 7.9 2.7 2.7"/><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/><path d="m13.4 10.6 2.7-2.7"/><circle cx="7.5" cy="16.5" r=".5" fill="currentColor"/><path d="m7.9 16.1 2.7-2.7"/><circle cx="16.5" cy="16.5" r=".5" fill="currentColor"/><path d="m13.4 13.4 2.7 2.7"/><circle cx="12" cy="12" r="2"/></g>
@@ -98,6 +126,14 @@
       <g id="pop-now" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><g id="arm"><path d="M12 3.6a8.4 8.4 0 0 1 7.3 12.6"/><path d="M12 7.8a4.2 4.2 0 0 1 3.6 6.3"/></g><use href="#arm" transform="rotate(120 12 12)"/><use href="#arm" transform="rotate(240 12 12)"/></g>
     </defs>
   </svg>
+
+  <h2>Round 2 · Kernel Safe, exactly</h2>
+  <p class="muted">The AI concept's Kernel Safe (<a href="vault-safe.png">vault-safe.png</a>) traced in lines: rounded door, two hinges, a big corn kernel with a classic keyhole inside it. The keyhole is what makes the kernel read as a lock. Save and Saved keep the kernel; the + or ✓ replaces the keyhole.</p>
+  <div class="card" id="ks2-cards"></div>
+
+  <h2>Round 2 · Other Pop ideas</h2>
+  <p class="muted">Kernel burst (corn + pop), a comic "POP!" starburst (no text), the starburst with a kernel, and a popping bubble.</p>
+  <div class="card" id="pp-cards"></div>
 
   <h2>Vault: Kernel Safe</h2>
   <p class="muted">A safe whose keyhole is a corn kernel. Vault / Save to Vault / Saved keep the same body.</p>
@@ -170,6 +206,21 @@
       <div class="big"><div style="background:${kind==='pop'?'#FFC83D':'#0F0E0B'};color:${kind==='pop'?'#2A1E00':'#F5F0E1'}">${icon(id, 120)}</div><div style="background:#FBF8F1;color:#1E1B14">${icon(id, 120)}</div></div>
       <div class="label">In the toolbar</div>${kind==='pop' ? bar('dark','v-safe-a',id)+bar('light','v-safe-a',id) : bar('dark',id,'pop-cob-a')+bar('light',id,'pop-cob-a')}
       <div class="label">48 and 24 px</div><div class="sizes dark">${kind==='pop'?'<div class="pop">'+icon(id)+'</div>':''}${icon(id, 48)}${icon(id, 24)}</div></div>`).join('');
+  const ks2 = [['ks2-a','Kernel Safe · exact','The AI design in lines: hinges, kernel, keyhole.'],['ks2-b','Kernel Safe · with handle','Like the drawn version: handle bar and feet.'],['ks2-c','Kernel Safe · calm','No hinges, a bigger kernel: the cleanest at 24 px.']];
+  document.getElementById('ks2-cards').outerHTML = ks2.map(([id,name,note]) => `
+    <div class="card"><h3>${name}</h3><div class="muted">${note}</div>
+      <div class="big"><div style="background:#0F0E0B;color:#F5F0E1">${icon(id,120)}</div><div style="background:#FBF8F1;color:#1E1B14">${icon(id,120)}</div></div>
+      <div class="label">Vault · Save to Vault · Saved</div>
+      <div class="trio"><div><div class="t">${icon(id,30)}</div>Vault</div><div><div class="t">${icon(id+'-save',30)}</div>Save</div><div><div class="t">${icon(id+'-saved',30)}</div>Saved</div></div>
+      <div class="trio" style="margin-top:6px"><div><div class="t l">${icon(id,30)}</div></div><div><div class="t l">${icon(id+'-save',30)}</div></div><div><div class="t l">${icon(id+'-saved',30)}</div></div></div>
+      <div class="label">In the toolbar</div>${bar('dark',id,'pop-cob-a')}${bar('light',id,'pop-cob-a')}
+      <div class="label">48 and 24 px</div><div class="sizes dark">${icon(id,48)}${icon(id,24)}</div></div>`).join('');
+  const pp = [['pp-kernel-burst','Kernel burst','A kernel with burst lines around its crown: corn and pop.'],['pp-star','POP! starburst','The comic-book burst: the clearest "pop" at 24 px, but not corn.'],['pp-star-kernel','Starburst + kernel','The burst with a kernel in it.'],['pp-bubble','Popping bubble','A bubble breaking: universal "pop", not corn.']];
+  document.getElementById('pp-cards').outerHTML = pp.map(([id,name,note]) => `
+    <div class="card"><h3>${name}</h3><div class="muted">${note}</div>
+      <div class="big"><div style="background:#FFC83D;color:#2A1E00">${icon(id,120)}</div><div style="background:#0F0E0B;color:#F5F0E1">${icon(id,120)}</div></div>
+      <div class="label">In the toolbar (Vault: Kernel Safe exact)</div>${bar('dark','ks2-a',id)}${bar('light','ks2-a',id)}
+      <div class="label">Pop button at real size, and 48 / 24 px</div><div class="sizes dark"><div class="pop">${icon(id)}</div>${icon(id,48)}${icon(id,24)}</div></div>`).join('');
 </script>
 </body>
 </html>
