@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-12, 11:28 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-12, 11:47 IST
 
 - **Status:** Draft v2, being shaped through Q&A rounds ([02-decision-log.md](02-decision-log.md))
 - **Last updated:** 2026-11-01 (after Round 1)
@@ -113,7 +113,7 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 |---|---|
 | **Flush Button**: one tap wipes the Session (tabs, Tab Groups, cookies, cache, history, previews) | ✅ |
 | Setting: **Flush confirmation** toggle (off by default) | ✅ |
-| Flush Button is a **flush** button (not a power button): a filled blue button with the water-swirl glyph (Round 23; the "Riding the swirl" face from Round 22 is parked) | ✅ |
+| Flush Button is a **flush** button (not a power button): its face is the "Riding the swirl" drop on navy (Round 23); the raised centre button from Round 22 is parked | ✅ |
 | Flush Button sits **second from the right** in the bottom toolbar (Round 23; the raised centre button from Round 22 is parked) | ✅ |
 | Default: **Kept Session**: the Session survives until the user flushes | ✅ |
 | Setting: **Auto-Flush after leaving the app**, user chooses the delay or never | ✅ |

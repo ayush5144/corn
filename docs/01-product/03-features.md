@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-12, 11:28 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-12, 11:47 IST
 
 Every feature in the Android app today, what it does for the user, and the evidence behind it. Nothing here is planned-only; planned work lives in the [checklist](../03-planning/02-checklist.md).
 
@@ -199,7 +199,7 @@ Every feature in the Android app today, what it does for the user, and the evide
 
 ## Brand
 
-- **Flush brand** ✅: the Vortex logo as the app icon (adaptive, inside the 66 dp safe zone) and on the new-tab page and onboarding, the navy/electric-blue palette in dark and light, Fredoka for display text, and the Flush Button in Fill blue (second from the right; the raised centre button was parked on 2026-11-12). Details: [04-brand](04-brand.md). Verified on the emulator 2026-11-11: screenshots of launcher, onboarding, new-tab page, nav bar, a Flush toast, Settings, Vault, History, sheets in dark and light; every text pair ≥ 4.5:1 (light-mode green on surfaces uses #0E7647 because the board's #11804E measured 4.36:1); QA suite 17/17.
+- **Flush brand** ✅: the Vortex logo as the app icon (adaptive, inside the 66 dp safe zone) and on the new-tab page and onboarding, the navy/electric-blue palette in dark and light, Fredoka for display text, and the Flush Button with the "Riding the swirl" drop as its face (second from the right; the raised centre button was parked on 2026-11-12). Details: [04-brand](04-brand.md). Verified on the emulator 2026-11-11: screenshots of launcher, onboarding, new-tab page, nav bar, a Flush toast, Settings, Vault, History, sheets in dark and light; every text pair ≥ 4.5:1 (light-mode green on surfaces uses #0E7647 because the board's #11804E measured 4.36:1); QA suite 17/17.
 
 ## Home page
 

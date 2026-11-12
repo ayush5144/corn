@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-11 · **Last updated:** 2026-11-12, 11:28 IST
+> **Created:** 2026-11-11 · **Last updated:** 2026-11-12, 11:47 IST
 
 The browser's name, logo, colours, fonts, voice and copy. Source: the brand board [`mockups/flush/index.html`](../../mockups/flush/index.html) and [decision log](02-decision-log.md) Round 22. Words for product concepts (Flush, Flush Button, Vault…) are in the [glossary](../../GLOSSARY.md).
 
@@ -36,8 +36,8 @@ Left to right (founder, 2026-11-12: back to the layout from before the rename, f
 
 **Back** · **Vault** · **Tabs** · **Flush** · **Menu**
 
-- The Flush Button is a filled **Fill-blue** button, second from the right, with the swirl glyph in Ink (`Glyphs.Flush`).
-- **Parked:** the raised centre button with the "Riding the swirl" drop (Round 22, built 2026-11-11 in commit 1cb9f0b). The master stays in `brand/flush-button-wink-1024.png`; the app file was removed.
+- The Flush Button sits second from the right. Its face is the **"Riding the swirl"** drop (founder, 2026-11-12) on its own navy (`LogoBg`), because the blue art would vanish on the blue Fill: app file `android/app/src/main/res/drawable-nodpi/flush_button.png`, master `brand/flush-button-wink-1024.png`. The art's navy matches the bar, so the button has no visible edge.
+- **Parked:** the raised centre button (Round 22, built 2026-11-11 in commit 1cb9f0b).
 
 ## Colours
 

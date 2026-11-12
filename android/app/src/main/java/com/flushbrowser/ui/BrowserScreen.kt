@@ -631,8 +631,10 @@ private fun Toolbar(c: AppController, cur: TabEntry) {
                 .clickable { c.requestFlush() },
             contentAlignment = Alignment.Center,
         ) {
-            Box(Modifier.width(46.dp).height(40.dp).clip(RoundedCornerShape(14.dp)).background(C.Fill), contentAlignment = Alignment.Center) {
-                Glyph(Glyphs.Flush, TOOLBAR_ICON, C.Ink)
+            // Face: the "Riding the swirl" drop (founder, 2026-11-12) on its own navy, since the blue
+            // art would vanish on the blue Fill.
+            Box(Modifier.width(46.dp).height(40.dp).clip(RoundedCornerShape(14.dp)).background(C.LogoBg), contentAlignment = Alignment.Center) {
+                Image(painterResource(R.drawable.flush_button), null, Modifier.fillMaxSize(), contentScale = androidx.compose.ui.layout.ContentScale.Crop)
             }
         }
         ToolbarButton({ c.sheet = Sheet.Menu }) { Glyph(Glyphs.Dots, TOOLBAR_ICON) }

@@ -240,3 +240,4 @@
 - `ui/BrowserScreen.kt`: Toolbar back to Back · Vault · Tabs · Flush · Menu (Flush a Fill-blue button, second from the right); raised-button code and its toast/chip offsets removed (`PasswordsUi.kt` too); `res/drawable-nodpi/flush_button.png` removed (master kept in `brand/`).
 - After-Flush line: one sentence per line, each centred, ✓ before the first.
 - Updated decision log (Round 23), PRD (toolbar rows), features (Flush brand), brand page (nav bar section, copy rule), docs index row.
+- Follow-up: the Flush Button's face is the "Riding the swirl" drop on navy (`flush_button.png` restored); brand page, PRD, features and Round 23 updated.

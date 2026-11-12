@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-12, 11:28 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-12, 11:47 IST
 
 Corn was renamed Flush on 2026-11-11 (decision log Round 22); this record keeps the old name.
 
@@ -442,7 +442,7 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Also answered:** Titanium Browser (jqssun) is a full Chromium fork (Vanadium-based, GPL-2.0), not WebView; its time-range "Delete browsing data" is Chrome's own. Using the Corny mascot in the app proposed.
 
 ### Round 23 — Nav bar back to before; centred after-Flush lines (2026-11-12)
-- **Answer (for now):** the nav bar goes back to the pre-rename layout, Back · Vault · Tabs · Flush · Menu, with Flush as a filled Fill-blue button second from the right. The raised centre button with the "Riding the swirl" face (Round 22) is parked, not deleted from history (commit 1cb9f0b; master in `brand/`).
+- **Answer (for now):** the nav bar goes back to the pre-rename layout, Back · Vault · Tabs · Flush · Menu, with Flush second from the right. Its face is the "Riding the swirl" drop on navy (the founder kept the drop; the blue art would vanish on the blue Fill). The raised centre button with the "Riding the swirl" face (Round 22) is parked, not deleted from history (commit 1cb9f0b; master in `brand/`).
 - **After-Flush line:** two sentences show on two lines, each centred; the ✓ goes before the first.
 - **Open, not concluded:** the founder feels Corn's theme and name fit better than Flush. Nothing changed for that; both are kept (`corn` branch / `corn-final` tag, and `main`). Suggested test: both APKs on a real phone for a few days.
 
