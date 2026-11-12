@@ -4,6 +4,7 @@ import { PopAnim } from "./PopAnim";
 import { Pop, PopGlyph, PopConcept } from "./Pop";
 import { P } from "./palette";
 import { Vault, VaultConcept } from "./Vault";
+import { Pop8Stills } from "./pop8";
 
 // One <Still> per rendered PNG. IDs are the output file names (out/<id>.png).
 const S = 1024;
@@ -38,6 +39,7 @@ export const Root: React.FC = () => (
         )),
       ),
     )}
+    <Pop8Stills />
     <Composition id="pop-anim" component={PopAnim} durationInFrames={72} fps={60} width={512} height={512} />
   </>
 );

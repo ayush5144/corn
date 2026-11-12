@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pop Button</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#0F0E0B; --surface:#1A1813; --surface2:#25221B; --line:#36312A; --text:#F5F0E1; --muted:#A8A08C;
+          --corn:#FFC83D; --deep:#F2A900; --ink:#2A1E00; --leaf:#86C64A; --light:#FBF8F1; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:15px/1.5 Figtree, system-ui, sans-serif; }
+  main { max-width:420px; margin:0 auto; padding:24px 16px 64px; }
+  a { color:var(--corn); }
+  h1 { font:800 34px/1.05 "Bricolage Grotesque", sans-serif; color:var(--corn); margin:10px 0 6px; }
+  h2 { font:800 24px/1.15 "Bricolage Grotesque", sans-serif; color:var(--corn); margin:40px 0 4px; }
+  h3 { font:800 21px/1.15 "Bricolage Grotesque", sans-serif; margin:0; }
+  .num { color:var(--corn); margin-right:6px; }
+  .muted { color:var(--muted); font-size:13.5px; }
+  .pitch { color:var(--muted); font-size:14px; margin:4px 0 0; }
+  .card { background:var(--surface2); border-radius:22px; padding:18px 16px 18px; margin:18px 0; }
+  .label { font:700 11px/1 Figtree; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin:18px 0 8px; }
+  .label b { color:var(--text); font-weight:700; letter-spacing:.04em; text-transform:none; font-size:12px; margin-left:4px; }
+
+  /* rich PNGs */
+  .rich { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .rich figure { margin:0; background:radial-gradient(circle at 40% 35%, #23201A, var(--bg) 72%); border-radius:16px; padding:2px; text-align:center; }
+  .rich img { width:100%; aspect-ratio:1; display:block; }
+  .rich figcaption { font-size:11.5px; color:var(--muted); padding:0 0 8px; }
+  .btnrow { display:flex; align-items:center; justify-content:space-around; border-radius:14px; padding:8px; margin-top:8px; font-size:11.5px; }
+  .btnrow.dark { background:var(--bg); color:var(--muted); } .btnrow.light { background:var(--light); color:#6E6754; }
+  .btnrow img.btn { width:46px; height:40px; display:block; }
+  .btnrow img.s48 { width:48px; height:48px; } .btnrow img.s24 { width:24px; height:24px; }
+  .btnrow figure { margin:0; display:grid; place-items:center; gap:3px; }
+
+  /* line icons */
+  .lines { display:flex; gap:8px; }
+  .lines figure { flex:1; margin:0; text-align:center; font-size:11.5px; color:var(--muted); }
+  .lines .tile { aspect-ratio:1; border-radius:14px; background:var(--corn); color:var(--ink); display:grid; place-items:center; margin-bottom:4px; }
+  .lines .tile svg { width:74%; height:74%; }
+  .lines .tile.d { background:var(--bg); color:var(--text); }
+  .sizes { display:flex; align-items:center; gap:14px; padding:10px 12px; border-radius:12px; margin-top:8px; }
+  .sizes.dark { background:var(--bg); color:var(--text); } .sizes.light { background:var(--light); color:#1E1B14; }
+  .sizes .sep { flex:1; }
+  .sizes .cap { font-size:11px; color:var(--muted); }
+
+  /* toolbars */
+  .bar { display:flex; justify-content:space-around; align-items:center; height:58px; padding:0 6px; position:relative; }
+  .bar.static { border-radius:16px; margin:6px 0; }
+  .dark .bar, .bar.dark { background:#0F0E0B; color:var(--text); }
+  .bar.static.dark { border:1px solid var(--line); }
+  .light .bar, .bar.light { background:#FBF8F1; color:#1E1B14; }
+  .bar .b { width:56px; height:48px; display:grid; place-items:center; position:relative; }
+  .bar .b > svg, .bar .b .tabs svg { width:24px; height:24px; }
+  .tabs { position:relative; display:grid; place-items:center; }
+  .tabs i { position:absolute; inset:0; display:grid; place-items:center; font:800 10px Figtree; font-style:normal; }
+  .pop { width:46px; height:40px; border-radius:14px; background:var(--corn); color:var(--ink); display:grid; place-items:center;
+         position:relative; border:0; padding:0; cursor:pointer; -webkit-tap-highlight-color:transparent; touch-action:none; }
+  .pop svg { width:24px; height:24px; overflow:visible; position:relative; }
+  .pop:focus-visible { outline:2px solid var(--leaf); outline-offset:3px; }
+  .heatwrap { position:absolute; inset:0; border-radius:14px; overflow:hidden; pointer-events:none; }
+  .heat { position:absolute; left:0; right:0; bottom:0; height:0%;
+          background:linear-gradient(to top, #E23A0E 0%, #FF6A1F 55%, rgba(255,150,60,0) 100%); }
+  .ring { position:absolute; inset:-5px; border-radius:18px; pointer-events:none; opacity:0; }
+
+  /* playable phone */
+  .phone { border-radius:24px; overflow:hidden; position:relative; border:1px solid var(--line); user-select:none; -webkit-user-select:none; }
+  .phone.light { border-color:#E5DFD0; }
+  .screen { height:250px; position:relative; overflow:hidden; }
+  .dark .screen { background:#14130F; color:var(--text); } .light .screen { background:#FFFFFF; color:#1E1B14; }
+  .addr { margin:10px 12px 0; height:36px; border-radius:18px; display:flex; align-items:center; gap:8px; padding:0 14px; font-size:12.5px; }
+  .dark .addr { background:#25221B; color:#A8A08C; } .light .addr { background:#EFE9DC; color:#6D6553; }
+  .addr svg { width:14px; height:14px; flex:none; }
+  .page, .newtab { position:absolute; left:0; right:0; top:46px; bottom:0; padding:14px 18px; }
+  .page h4 { font:800 20px/1.1 "Bricolage Grotesque", sans-serif; margin:4px 0 8px; }
+  .page .hero { height:66px; border-radius:12px; margin-bottom:10px; background:linear-gradient(135deg, #E9B36B, #C7783B); position:relative; overflow:hidden; }
+  .page .hero::after { content:""; position:absolute; left:18px; bottom:-18px; width:90px; height:56px; border-radius:50%; background:#F5F0E1; opacity:.8; }
+  .page p { margin:0 0 7px; height:8px; border-radius:4px; }
+  .dark .page p { background:#2E2A21; } .light .page p { background:#EDE7D9; }
+  .newtab { display:grid; place-items:center; text-align:center; opacity:0; pointer-events:none; }
+  .newtab .lines-out { font:800 19px/1.3 "Bricolage Grotesque", sans-serif; }
+  .newtab .lines-out span { display:block; }
+  .newtab .lines-out span + span { font:600 14.5px/1.5 Figtree; color:var(--muted); }
+  .light .newtab .lines-out span + span { color:#6D6553; }
+  .newtab .kern { width:34px; height:34px; margin:0 auto 8px; color:var(--corn); }
+  .light .newtab .kern { color:#C98A00; }
+  .fx { position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:7; }
+  .fx > * { position:absolute; left:0; top:0; will-change:transform, opacity; }
+  .bubble { font:800 12px/1 Figtree; background:var(--cream, #F5F0E1); color:var(--ink); border:1.5px solid var(--ink); border-radius:10px; padding:6px 8px;
+            white-space:nowrap; box-shadow:0 2px 0 var(--ink); }
+  .phone .bar { border-top:1px solid #2A261E; z-index:6; }
+  .phone.light .bar { border-top-color:#EAE3D3; }
+  .ctl { display:flex; gap:8px; align-items:center; margin:8px 0 0; font-size:12.5px; color:var(--muted); }
+  .ctl button { font:700 12px Figtree; border-radius:999px; border:1px solid var(--line); background:transparent; color:var(--muted); padding:5px 11px; cursor:pointer; }
+  .ctl button.on { background:var(--corn); color:var(--ink); border-color:var(--corn); }
+  .ctl .hint { margin-left:auto; }
+  .crit { margin:14px 0 0; padding:10px 12px; border-left:3px solid var(--corn); background:#1D1A14; border-radius:0 10px 10px 0; font-size:13.5px; }
+  .crit b { color:var(--corn); }
+  .rmnote { display:none; }
+  .rm .rmnote { display:block; }
+
+  table { width:100%; border-collapse:collapse; font-size:12.5px; margin-top:8px; }
+  td, th { text-align:left; padding:7px 5px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; }
+  td:first-child { font-weight:700; white-space:nowrap; }
+  .dots { letter-spacing:1px; color:var(--corn); white-space:nowrap; }
+  .top3 { counter-reset:t; padding:0; list-style:none; }
+  .top3 li { background:var(--surface2); border-radius:16px; padding:12px 14px 12px 50px; margin:10px 0; position:relative; font-size:14px; }
+  .top3 li::before { counter-increment:t; content:counter(t); position:absolute; left:14px; top:12px; width:26px; height:26px; border-radius:50%;
+                     background:var(--corn); color:var(--ink); font:800 15px/26px "Bricolage Grotesque"; text-align:center; }
+  .top3 b { font-family:"Bricolage Grotesque"; font-size:16px; }
+  .solo .card:not(.show), .solo .hide-solo { display:none; }
+</style>
+</head>
+<body>
+<main>
+  <div class="hide-solo">
+    <a href="line-icons.html">Line icons</a> · <a href="remotion.html">Drawn icons</a> · <a href="../brand-compare.html">Brand compare</a>
+    <h1>Pop! Eight ways to wipe a session</h1>
+    <p class="muted">Flush is becoming <b>Pop</b>. Eight concepts for the button, each in three forms: a rich drawing (rendered in code with Remotion), a line icon for the nav bar (24-unit grid, 1.9 stroke, ink on the corn-yellow button), and a toolbar you can play with. <b>Tap the yellow button</b> in each phone (concept 2: press and hold). Every phone has a dark and a light theme.</p>
+    <p class="muted rmnote">Your system asks for reduced motion, so the phones skip the animations and cut straight to the result.</p>
+  </div>
+  <div id="cards"></div>
+
+  <div class="hide-solo">
+    <h2>Side by side</h2>
+    <p class="muted">The rest-state line icons in the real toolbar. Back · Vault (Kernel Safe) · Tabs · <b>Pop</b> · Menu.</p>
+    <div id="allbars"></div>
+
+    <h2>Comparison</h2>
+    <table>
+      <tr><th>Concept</th><th>Reads at 24 px?</th><th>Quirk</th><th>Accidental-Pop safety</th><th>App effort</th></tr>
+      <tbody id="cmp"></tbody>
+    </table>
+
+    <h2>My top 3</h2>
+    <ol class="top3">
+      <li><b>Hold to Heat</b><br>The only concept that fixes a real problem: a hold makes an accidental Pop nearly impossible with no dialog, and the button heating up under your thumb is the most satisfying thing on this page.</li>
+      <li><b>Kernel Pop</b><br>The most honest picture of the word "Pop", it reads at 24 px, and the wobble then burst is a cheap animation in Compose; pair it with Hold to Heat's hold and you have the button.</li>
+      <li><b>Nibbled Cob</b><br>The funniest idea here (the old cartoon typewriter-corn gag, "ding!" and all) and a genuinely new icon nobody else has; it's slower, so it suits the long-press or the menu's "Pop everything".</li>
+    </ol>
+    <p class="muted">Honourable mention: <b>Corny Shh</b> is the most on-brand, since it <i>is</i> the logo, but a face at 24 px is a gamble. Source: <code>mockups/remotion/src/pop8/</code> (one file per concept, kit in <code>shared.tsx</code>); re-render with <code>node render.mjs pop8</code> from <code>mockups/remotion</code>. The line icons and animations are the <code>ICON</code> and <code>PLAY</code> tables at the bottom of this file.</p>
+  </div>
+</main>
+
+<script>
+/* ------------------------------------------------------------------ *
+ * Line icons. 24-unit grid, 1.9 stroke, round caps and joins; details
+ * 1.6 or thinner. Filled bits are marked F. These are the paths that
+ * would go into ui/Icons.kt.
+ * ------------------------------------------------------------------ */
+const ST = 'fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"';
+const F = 'fill="currentColor" stroke="none"';
+const P = {
+  // a plump kernel: wide crown with a soft dent, tapering to a round tip
+  kernel: 'M6.7 6.9Q9.2 4.4 12 5.4Q14.8 4.4 17.3 6.9C18.7 8.8 18.1 12.6 15.5 16.3Q12 20.6 8.5 16.3C5.9 12.6 5.3 8.8 6.7 6.9Z',
+  // popcorn: lumpy all round with the kernel's hull at the bottom (from line-icons.html, Puff b)
+  popcorn: 'M8.62 16.50A2.6 2.6 0 0 1 5.05 12.75A2.9 2.9 0 0 1 5.47 8.66A2.9 2.9 0 0 1 9.30 5.64A2.9 2.9 0 0 1 14.70 5.64A2.9 2.9 0 0 1 18.53 8.66A2.9 2.9 0 0 1 18.95 12.75A2.6 2.6 0 0 1 15.38 16.50',
+  hull: 'M15.38 16.50L13.1 18.6Q12 19.5 10.9 18.6L8.62 16.50',
+  // Corny's head (an egg) and his top row of kernels
+  head: 'M12 3.4C16.3 3.4 18.2 7 18.2 11.6C18.2 16.8 15.6 20.6 12 20.6S5.8 16.8 5.8 11.6C5.8 7 7.7 3.4 12 3.4Z',
+  scallop: 'M6.3 8.4q1.425 1.4 2.85 0t2.85 0t2.85 0t2.85 0',
+  bucket: 'M4.8 10H19.2L17.4 20.6H6.6Z',
+  bucketTop: 'M5.4 10A2.5 2.5 0 0 1 8.5 6.3A3.5 3.5 0 0 1 15.5 6.3A2.5 2.5 0 0 1 18.6 10',
+  cob: 'M12 3.4C14.2 3.4 15.2 5.6 15.2 8.6V14.6C15.2 16.6 13.8 17.8 12 17.8S8.8 16.6 8.8 14.6V8.6C8.8 5.6 9.8 3.4 12 3.4Z',
+  cobGrid: 'M12 4V17.2M9 8.2H15M9 11.4H15M9 14.6H15',
+  leafL: 'M12 21C7.6 20.6 4.4 17 3.6 10.6C6.6 12 8.6 14.4 9.4 17.4',
+  leafR: 'M12 21C16.4 20.6 19.6 17 20.4 10.6C17.4 12 15.4 14.4 14.6 17.4',
+  husk: 'M12 21C7.4 19.8 5.4 16 5.4 12C5.4 7.8 7.2 4.6 9.4 2.9C9.8 5.2 10.7 7 12 8.3C13.3 7 14.2 5.2 14.6 2.9C16.8 4.6 18.6 7.8 18.6 12C18.6 16 16.6 19.8 12 21Z',
+  rocket: 'M12 2.8C14.9 4.4 16.8 8.8 16.8 12.6C16.8 14.4 16.5 15.8 15.9 16.8Q13.9 16.1 12 17.1Q10.1 16.1 8.1 16.8C7.5 15.8 7.2 14.4 7.2 12.6C7.2 8.8 9.1 4.4 12 2.8Z',
+  fins: 'M7.5 12.3L4.6 15.1V19.2L8.3 17.2M16.5 12.3L19.4 15.1V19.2L15.7 17.2',
+  machine: 'M5 8.6H16.6V18.6Q16.6 19.6 15.6 19.6H6Q5 19.6 5 18.6Z',
+  roof: 'M3.8 8.6Q10.8 2.4 17.8 8.6Z',
+  cobH: 'M9.2 7.4H17.2A4.3 4.3 0 0 1 17.2 16H9.2A4.3 4.3 0 0 1 9.2 7.4Z',
+};
+const eyes = (x1, y1, x2, y2, r = 1.05) => `<circle cx="${x1}" cy="${y1}" r="${r}" ${F}/><circle cx="${x2}" cy="${y2}" r="${r}" ${F}/>`;
+const shades = (y = 10) => `<path d="M7.4 ${y}H16.6" stroke-width="1.4"/><path d="M7.9 ${y}H11.3Q11.3 ${y + 2.7} 9.6 ${y + 2.7}T7.9 ${y}ZM12.7 ${y}H16.1Q16.1 ${y + 2.7} 14.4 ${y + 2.7}T12.7 ${y}Z" ${F}/>`;
+// Parts shared by the static icons and the animated buttons
+const GERM = 'M12 11.2c1.4 0 1.9 1.3 1.5 2.6c-.3 1-.9 1.7-1.5 2.1c-.6-.4-1.2-1.1-1.5-2.1c-.4-1.3.1-2.6 1.5-2.6z';
+const KERNEL_TILT = `<g transform="rotate(-16 12 12)"><path d="${P.kernel}"/><path d="${GERM}" stroke-width="1.4"/></g>`;
+const WOBBLE = `<path d="M3.6 8.6q-1.3 2.7 0 5.4M20.4 11q1.3 2.7 0 5.4" stroke-width="1.6"/>`;
+const POPCORN = `<g transform="translate(0 .6)"><path d="${P.popcorn}"/><path d="${P.hull}"/></g>`;
+const BUCKET = `<path d="${P.bucket}"/><path d="M9.6 10L10.3 20.6M14.4 10L13.7 20.6" stroke-width="1.5"/>`;
+const CART = (heap = 'M7.2 14.4q.8-1.5 1.6 0t1.6 0t1.6 0t1.6 0') => `<path d="M3.8 7.4Q10.8 1.8 17.8 7.4Z"/><rect x="4.8" y="7.4" width="12" height="10.2" rx="1.2"/><path d="M7.2 9.8h7.2" stroke-width="1.3"/><path class="heap" d="${heap}" stroke-width="1.4"/><circle cx="7.6" cy="20" r="1.3"/><circle cx="14" cy="20" r="1.3"/>`;
+const LEVER_UP = `<path d="M16.8 12.2L20 8.2" stroke-width="1.7"/><circle cx="20.5" cy="7.4" r="1.4" ${F}/>`;
+const LEVER_DOWN = `<path d="M16.8 12.2L20.5 15.7" stroke-width="1.7"/><circle cx="21.2" cy="16.4" r="1.4" ${F}/>`;
+// the diagonal cob: two rows of four kernels; gone(r, c) hides a kernel
+const NIB = (gone = () => false) => `<g transform="rotate(-40 12 12)"><g class="carriage"><path d="M7.8 8.2H16.6A3.8 3.8 0 0 1 16.6 15.8H7.8A3.8 3.8 0 0 1 7.8 8.2Z"/>${
+  [10.2, 13.0].map((y, r) => [8.4, 11.2, 14, 16.8].map((x, c) =>
+    `<rect class="nk${r}${c}" x="${x - 1}" y="${y - 1.05}" width="2" height="2.1" rx=".7" ${F}${gone(r, c) ? ' opacity="0"' : ''} style="transform-origin:${x}px ${y}px"/>`).join('')).join('')
+}</g></g><path d="M6.6 13.6C4.4 14.6 3.4 16.8 3.4 20.6C6.8 20.4 9 19.4 10.4 17.4" stroke-width="1.6"/>`;
+const ZIPPED = `<path d="${P.husk}"/><path class="seam" d="M12 19V10.6" stroke-width="1.1"/><path class="teeth" d="M10.7 12.2h2.6M10.7 14.2h2.6M10.7 16.2h2.6" stroke-width="1.1"/><rect class="tab" x="10.9" y="8.6" width="2.2" height="3" rx=".7" ${F}/>`;
+
+const ICON = {
+  // 1 Kernel Pop
+  'kp-rest': KERNEL_TILT + WOBBLE,
+  'kp-pop':  POPCORN,
+  // 2 Hold to Heat
+  'hh-rest': `<path d="${P.kernel}"/>${shades(10)}<path d="M10.3 14.6q1.6 1 3.3-.5" stroke-width="1.5"/>`,
+  'hh-hot':  `<path d="${P.kernel}"/>${shades(11.2)}${eyes(10, 8.6, 14, 8.6, .9)}<path d="M2.8 7.6q-1 1.3 0 2.6t0 2.6t0 2.6M21.2 7.6q1 1.3 0 2.6t0 2.6t0 2.6" stroke-width="1.5"/>`,
+  'hh-pop':  POPCORN + shades(9.6),
+  // 3 Corny Shh
+  'sh-rest': `<path d="${P.head}"/><path d="${P.scallop}" stroke-width="1.5"/>${eyes(9.6, 12.2, 14.4, 12.2)}<path d="M9.8 15.4q2.2 1.6 4.4 0" stroke-width="1.6"/>`,
+  'sh-shh':  `<path d="${P.head}"/><path d="${P.scallop}" stroke-width="1.5"/><path d="M8.3 12.7q1.25-1.6 2.5 0" stroke-width="1.6"/><circle cx="14.4" cy="12.3" r="1.05" ${F}/><path d="M9.6 15.9h1.1M13.3 15.9h1.1" stroke-width="1.6"/><path d="M12 13.9V19" stroke-width="2.3"/>`,
+  // 4 Bucket Tip
+  'bk-rest': `<path d="${P.bucketTop}"/>${BUCKET}`,
+  'bk-tip':  `<g transform="rotate(-24 6.6 20.6) translate(1.8 0)">${BUCKET}</g><g transform="translate(-2.6 -2.4) rotate(-28 12 8)"><path d="${P.bucketTop}"/></g><path d="M2.6 13.4l1.4.6M3.4 16.6l1.4-.2" stroke-width="1.5"/>`,
+  // 5 Husk Zip
+  'hz-rest': `<path d="${P.cob}"/><path d="${P.cobGrid}" stroke-width="1.3"/><path d="${P.leafL}"/><path d="${P.leafR}"/>`,
+  'hz-zip':  ZIPPED,
+  // 6 Kernel Rocket
+  'kr-rest': `<path d="${P.rocket}"/><circle cx="12" cy="9.8" r="2"/><path d="${P.fins}"/><path d="M10.5 19.6h3" stroke-width="1.6"/>`,
+  'kr-fly':  `<g transform="translate(0 -1.6)"><path d="${P.rocket}"/><circle cx="12" cy="9.8" r="2"/><path d="${P.fins}"/></g><path d="M10.6 18.4Q12 22.6 13.4 18.4" stroke-width="1.6"/><path d="M5.6 21.4h1.6M16.8 21.4h1.6" stroke-width="1.6"/>`,
+  // 7 Popcorn Cart Lever
+  'cl-rest': CART() + LEVER_UP,
+  'cl-pull': CART('M7.2 14.4q.8-1.5 1.6 0t1.6 0t1.6 0t1.6 0M8 12.4q.8-1.5 1.6 0t1.6 0t1.6 0') + LEVER_DOWN + `<path d="M8 1.6l.6 1.2M10.8 .8v1.4M13.6 1.6l-.6 1.2" stroke-width="1.5"/>`,
+  // 8 Nibbled Cob
+  'nc-rest': NIB(),
+  'nc-half': NIB((r) => r === 0) + `<path d="M19.2 3.6l1.3-1.3M20.4 6.2h1.8" stroke-width="1.5"/>`,
+  // toolbar
+  'g-back': `<path d="M9.5 13.8L5 9.3l4.5-4.5"/><path d="M5 9.3h9a4.75 4.75 0 0 1 0 9.5h-3.5"/>`,
+  'g-tabs': `<rect x="3.5" y="3.5" width="17" height="17" rx="4"/>`,
+  'g-dots': `<circle cx="12" cy="5" r="1.9" ${F}/><circle cx="12" cy="12" r="1.9" ${F}/><circle cx="12" cy="19" r="1.9" ${F}/>`,
+  'g-vault': `<path d="M7 3.5h10a3.5 3.5 0 0 1 3.5 3.5v10a3.5 3.5 0 0 1-3.5 3.5H7a3.5 3.5 0 0 1-3.5-3.5V7A3.5 3.5 0 0 1 7 3.5z"/><path d="M3.5 7.4H2.3V10.2H3.5M3.5 13.8H2.3V16.6H3.5" stroke-width="1.6"/><path d="M12 6.4C15.1 6.4 16.3 8.6 16 11.1C15.7 13.8 13.9 16.8 12 17.4C10.1 16.8 8.3 13.8 8 11.1C7.7 8.6 8.9 6.4 12 6.4Z"/><g stroke-width="1.6"><circle cx="12" cy="10.7" r="1.15"/><path d="M12 11.8V14"/></g>`,
+  'g-lock': `<rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/>`,
+};
+const svg = (id, size = 24, cls = '') => `<svg class="${cls}" viewBox="0 0 24 24" width="${size}" height="${size}" ${ST}>${ICON[id]}</svg>`;
+
+/* ------------------------------------------------------------------ *
+ * The concepts
+ * ------------------------------------------------------------------ */
+const C = [
+  { id: 'kernel', name: 'Kernel Pop', rest: 'kp-rest', poses: [['kp-pop', 'Popped']],
+    pitch: 'A plump kernel with a nervous face, wobbling on the button. Tap: it wobbles harder and bursts into popcorn that winks at you.',
+    out: ['Popped.', 'Nobody saw nothing.'], hint: 'Tap Pop',
+    crit: 'The clearest "pop" story. The line icon is a tilted kernel with wobble marks (a version with eyes read as a mask, so the face lives only in the drawing); on its own a kernel can still pass for a seed or an egg.' },
+  { id: 'heat', name: 'Hold to Heat', rest: 'hh-rest', poses: [['hh-hot', 'Heating'], ['hh-pop', 'Popped']], hold: true,
+    pitch: 'A kernel chilling in shades. Press and hold: the button heats up from the bottom, the kernel sweats and jiggles, its shades slide down... POP. A quick tap just says "Hold to pop".',
+    out: ['Too hot to handle.', 'Popped.'], hint: 'Press and hold Pop',
+    crit: 'Solves accidental Pops without a dialog, and the heat is pure delight; the cost is one more thing to learn (the hint bubble does the teaching). The shades are tiny at 24 px.' },
+  { id: 'shh', name: 'Corny Shh', rest: 'sh-rest', poses: [['sh-shh', 'Shh']],
+    pitch: 'A tiny Corny is the button, looking innocent. Tap: he winks, raises a "shh" finger to his lips, and the popcorn goes off behind him.',
+    out: ['Shh.', 'It never happened.'], hint: 'Tap Pop',
+    crit: 'The most on-brand (it is the logo, doing the logo\'s gesture), but a face in the nav bar is a lot of personality, and the finger is only two pixels wide at 24 px.' },
+  { id: 'bucket', name: 'Bucket Tip', rest: 'bk-rest', poses: [['bk-tip', 'Tipped']],
+    pitch: 'A striped popcorn bucket, heaped full. Tap: it tips over, the popcorn tumbles out across the screen and is gone. The bucket rights itself, empty.',
+    out: ["Bucket's empty.", "Your Vault's still full."], hint: 'Tap Pop',
+    crit: 'Everyone reads a bucket as "popcorn", and "empty the bucket" is exactly what Pop does; but it\'s the stock popcorn icon, so it\'s the least ownable of the eight.' },
+  { id: 'zip', name: 'Husk Zip', rest: 'hz-rest', poses: [['hz-zip', 'Zipped']],
+    pitch: 'A cob standing in its open husk. Tap: the leaves fold up around it and a zipper runs up the seam. Two eyes peek out of the top. Tucked away.',
+    out: ['Zipped up.', 'Nobody saw nothing.'], hint: 'Tap Pop',
+    crit: 'The cheekiest animation, but it says "hide" more than "wipe", which is closer to the Vault\'s job; the zipped icon alone can read as a leaf or a bag.' },
+  { id: 'rocket', name: 'Kernel Rocket', rest: 'kr-rest', poses: [['kr-fly', 'Lift-off']],
+    pitch: 'A kernel turned rocket: leaf fins, a porthole, someone peeking out. Tap: it rumbles and blasts off up through the page, leaving a trail of popcorn puffs. Gone.',
+    out: ['Blasted off.', 'Houston, what history?'], hint: 'Tap Pop',
+    crit: 'The biggest moment on the page and a crowd-pleaser; at 24 px it\'s simply a rocket (the kernel only shows in the drawing), and "launch" can suggest "open" rather than "clear".' },
+  { id: 'lever', name: 'Popcorn Cart Lever', rest: 'cl-rest', poses: [['cl-pull', 'Pulled']],
+    pitch: 'A little retro popcorn machine with a big lever. Tap it, or drag the lever down: it clunks, the kettle tips, and the whole batch fountains out the top.',
+    out: ['Fresh batch.', "The old one's gone."], hint: 'Tap Pop, or drag it down',
+    crit: 'The drag-the-lever gesture is a great safety catch and the drawing has the most charm; the line icon is the weakest here (a box with a stick reads as a kiosk or an arcade machine).' },
+  { id: 'nibble', name: 'Nibbled Cob', rest: 'nc-rest', poses: [['nc-half', 'Half-eaten']],
+    pitch: 'A full cob, a typewriter carriage in the drawing (bell and return lever included). Tap: the kernels vanish row by row, left to right, the carriage slides along, "ding!" at the end of each row. A clean cob.',
+    out: ['Ding!', 'Clean cob.', 'Clean slate.'], hint: 'Tap Pop',
+    crit: 'The funniest and most original. The icon is a plain diagonal cob (a sideways one read as a fish), so at rest it says "corn" but not "nibbled" until you tap; and it takes about a second longer than the others.' },
+];
+
+const CMP = {
+  kernel: ['Yes, as a wobbling seed', 3, 'Low (tap)', 'Low: two-step crossfade + particles'],
+  heat:   ['Yes; shades are tiny', 5, 'High (hold 0.6 s)', 'Medium: press tracking, fill, haptic ramp'],
+  shh:    ['Borderline: face', 5, 'Low (tap)', 'Medium: three-step face'],
+  bucket: ['Yes, instantly', 3, 'Low (tap)', 'Low: rotate + particles'],
+  zip:    ['Rest yes, zipped so-so', 4, 'Low (tap)', 'Medium: leaf rotate + path trim'],
+  rocket: ['Yes (as a rocket)', 4, 'Low (tap)', 'Low: translate + trail'],
+  lever:  ['Weakest', 4, 'High if drag-only', 'High: drag gesture + lever'],
+  nibble: ['Yes (a cob)', 5, 'Medium (1 s, cancellable)', 'Medium: per-kernel timing'],
+};
+
+const RICH = '../remotion/out/';
+const params = new URLSearchParams(location.search);
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches || params.has('rm');
+if (RM) document.body.classList.add('rm');
+
+const toolbar = (popInner, cls = '') => `<div class="bar ${cls}">
+  <div class="b">${svg('g-back')}</div><div class="b">${svg('g-vault')}</div>
+  <div class="b"><span class="tabs">${svg('g-tabs')}<i class="count">3</i></span></div>
+  <div class="b">${popInner}</div><div class="b">${svg('g-dots')}</div></div>`;
+
+const card = (c, i) => `
+<section class="card" id="c-${c.id}" data-i="${i + 1}">
+  <h3><span class="num">${i + 1}</span>${c.name}</h3>
+  <p class="pitch">${c.pitch}</p>
+
+  <div class="label">Drawn <b>rest · the ${c.hold ? "hold" : "tap"}</b></div>
+  <div class="rich">
+    <figure><img src="${RICH}pop8-${c.id}.png" alt="${c.name}, at rest"><figcaption>At rest</figcaption></figure>
+    <figure><img src="${RICH}pop8-${c.id}-action.png" alt="${c.name}, the ${c.hold ? "hold" : "tap"}"><figcaption>The ${c.hold ? "hold" : "tap"}</figcaption></figure>
+  </div>
+  <div class="btnrow dark"><figure><img class="btn" src="${RICH}pop8-${c.id}-btn.png" alt="">46×40</figure>
+    <img class="s48" src="${RICH}pop8-${c.id}.png" alt=""><img class="s24" src="${RICH}pop8-${c.id}.png" alt=""></div>
+  <div class="btnrow light"><figure><img class="btn" src="${RICH}pop8-${c.id}-btn.png" alt="">46×40</figure>
+    <img class="s48" src="${RICH}pop8-${c.id}.png" alt=""><img class="s24" src="${RICH}pop8-${c.id}.png" alt=""></div>
+
+  <div class="label">Line icon <b>rest${c.poses.map((p) => ' · ' + p[1].toLowerCase()).join('')}</b></div>
+  <div class="lines">
+    <figure><div class="tile">${svg(c.rest, 100)}</div>Rest</figure>
+    ${c.poses.map(([id, n]) => `<figure><div class="tile">${svg(id, 100)}</div>${n}</figure>`).join('')}
+    ${c.poses.length < 2 ? `<figure><div class="tile d">${svg(c.rest, 100)}</div>On dark</figure>` : ''}
+  </div>
+  <div class="sizes dark"><div class="pop">${svg(c.rest)}</div>${svg(c.rest, 48)}${svg(c.rest, 24)}<span class="sep"></span>
+    ${c.poses.map(([id]) => `<div class="pop">${svg(id)}</div>`).join('')}<span class="cap">48 · 24 px</span></div>
+  <div class="sizes light"><div class="pop">${svg(c.rest)}</div>${svg(c.rest, 48)}${svg(c.rest, 24)}<span class="sep"></span>
+    ${c.poses.map(([id]) => `<div class="pop">${svg(id)}</div>`).join('')}</div>
+
+  <div class="label">Play it <b>${c.hint}</b></div>
+  <div class="phone dark" data-c="${c.id}">
+    <div class="screen">
+      <div class="addr">${svg('g-lock', 14)}<span class="u">example.com/recipes/quiet-pasta</span></div>
+      <div class="page"><h4>Quiet Pasta</h4><div class="hero"></div><p style="width:92%"></p><p style="width:84%"></p><p style="width:88%"></p><p style="width:60%"></p></div>
+      <div class="newtab"><div><svg class="kern" viewBox="0 0 24 24" ${ST}>${ICON['kp-pop']}</svg>
+        <div class="lines-out">${c.out.map((l) => `<span>${l}</span>`).join('')}</div></div></div>
+    </div>
+    ${toolbar(`<button class="pop" aria-label="Pop">${c.hold ? '<span class="heatwrap"><span class="heat"></span></span>' : ''}<span class="icon"></span></button>`)}
+    <div class="fx"></div>
+  </div>
+  <div class="ctl"><button class="on" data-theme="dark">Dark</button><button data-theme="light">Light</button><span class="hint">${c.hint}</span></div>
+
+  <p class="crit"><b>Honest take:</b> ${c.crit}</p>
+</section>`;
+
+document.getElementById('cards').innerHTML = C.map(card).join('');
+document.getElementById('allbars').innerHTML = C.map((c) =>
+  `<div class="muted" style="margin:12px 0 2px">${c.name}</div>${toolbar(`<div class="pop">${svg(c.rest)}</div>`, 'static dark')}${toolbar(`<div class="pop">${svg(c.rest)}</div>`, 'static light')}`).join('');
+document.getElementById('cmp').innerHTML = C.map((c) => {
+  const [r, q, s, e] = CMP[c.id];
+  return `<tr><td>${c.name}</td><td>${r}</td><td class="dots">${'●'.repeat(q)}${'○'.repeat(5 - q)}</td><td>${s}</td><td>${e}</td></tr>`;
+}).join('');
+
+/* ------------------------------------------------------------------ *
+ * Animation kit: Web Animations API, no libraries.
+ * ?play=N&at=MS (solo card N, start on load, freeze at MS) is for screenshots.
+ * ------------------------------------------------------------------ */
+let FROZEN = false;
+const after = (ms, fn) => setTimeout(() => { if (!FROZEN) fn(); }, ms);
+const A = (el, kf, o) => el && el.animate(kf, { fill: 'forwards', easing: 'cubic-bezier(.2,.8,.2,1)', ...(typeof o === 'number' ? { duration: o } : o) });
+const $ = (root, s) => root.querySelector(s);
+const $$ = (root, s) => [...root.querySelectorAll(s)];
+const centre = (phone, el) => { const p = phone.getBoundingClientRect(), r = el.getBoundingClientRect(); return [r.left - p.left + r.width / 2, r.top - p.top + r.height / 2]; };
+
+// a filled popcorn piece (cream, ink outline), a kernel, a puff, for particles
+const LOBES = [[-3, -2, 3.4], [3, -2.4, 3.6], [-3.6, 2, 3], [3.4, 2, 3], [0, 0, 3.8]];
+const pieceSVG = (kind, s) => {
+  if (kind === 'kernel') return `<svg width="${s}" height="${s}" viewBox="0 0 24 24"><path d="${P.kernel}" fill="#FFC83D" stroke="#2A1E00" stroke-width="2.2"/></svg>`;
+  const c = (sw) => LOBES.map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}"${sw}/>`).join('');
+  const hull = kind === 'popcorn' ? `<path d="M-3.4 3 Q0 9.4 3.4 3Z" fill="#F2A900" stroke="#2A1E00" stroke-width="1.6" stroke-linejoin="round"/>` : '';
+  return `<svg width="${s}" height="${s}" viewBox="-8 -8 16 16" style="overflow:visible">${hull}<g fill="#2A1E00" stroke="#2A1E00" stroke-width="2.6">${c('')}</g><g fill="#F5F0E1">${c('')}</g><circle cx="-2" cy="-2.6" r="1.4" fill="#fff"/></svg>`;
+};
+// throw particles from (x, y): physics in a rAF loop; stops when frozen
+function particles(phone, x, y, n, o = {}) {
+  const fx = $(phone, '.fx');
+  const { kind = 'popcorn', size = [16, 26], vx = [-3.2, 3.2], vy = [-9, -4.5], g = 0.22, life = 1100, spin = 12, grow = 0 } = o;
+  const rnd = (a) => a[0] + Math.random() * (a[1] - a[0]);
+  const ps = [];
+  for (let i = 0; i < n; i++) {
+    const s = rnd(size), el = document.createElement('div');
+    el.innerHTML = pieceSVG(kind, s);
+    fx.appendChild(el);
+    const p = { el, x: x - s / 2 + rnd([-4, 4]), y: y - s / 2 + rnd([-3, 3]), vx: rnd(vx), vy: rnd(vy), r: rnd([0, 360]), vr: rnd([-spin, spin]), s };
+    el.style.transform = `translate(${p.x}px,${p.y}px) rotate(${p.r}deg)`;
+    ps.push(p);
+  }
+  const t0 = performance.now();
+  const step = (t) => {
+    if (FROZEN) return;
+    const k = (t - t0) / life;
+    for (const p of ps) {
+      p.vy += g; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+      const sc = 1 + grow * k;
+      p.el.style.transform = `translate(${p.x}px,${p.y}px) rotate(${p.r}deg) scale(${sc})`;
+      p.el.style.opacity = k < 0.65 ? 1 : Math.max(0, 1 - (k - 0.65) / 0.35);
+    }
+    if (k < 1) requestAnimationFrame(step); else ps.forEach((p) => p.el.remove());
+  };
+  requestAnimationFrame(step);
+}
+function bubble(phone, x, y, text, ms = 1100) {
+  const b = document.createElement('div');
+  b.className = 'bubble'; b.textContent = text;
+  $(phone, '.fx').appendChild(b);
+  const w = b.offsetWidth;
+  b.style.transform = `translate(${x - w / 2}px, ${y}px)`;
+  A(b, [{ opacity: 0, transform: `translate(${x - w / 2}px, ${y + 8}px) scale(.6)` }, { opacity: 1, transform: `translate(${x - w / 2}px, ${y}px) scale(1)` }],
+    { duration: 220, easing: 'cubic-bezier(.3,1.6,.5,1)' });
+  after(ms, () => { A(b, [{ opacity: 1 }, { opacity: 0 }], 200); after(220, () => b.remove()); });
+}
+// the screen: wipe to the new-tab page with the after-Pop line, then (later) back
+function wipe(phone) {
+  const page = $(phone, '.page'), nt = $(phone, '.newtab'), u = $(phone, '.addr .u'), count = $(phone, '.count');
+  if (RM) { page.style.opacity = 0; nt.style.opacity = 1; u.textContent = 'Search or type a URL'; count.textContent = '1'; return; }
+  A(page, [{ opacity: 1, transform: 'scale(1)', filter: 'blur(0)' }, { opacity: 0, transform: 'scale(.94)', filter: 'blur(6px)' }], 260);
+  A(nt, [{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: 160 });
+  $$(nt, '.kern, .lines-out span').forEach((s, i) =>
+    A(s, [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], { duration: 360, delay: 220 + i * 140, easing: 'cubic-bezier(.3,1.5,.5,1)' }));
+  after(120, () => { u.textContent = 'Search or type a URL'; count.textContent = '1';
+    A(count.parentNode, [{ transform: 'scale(1)' }, { transform: 'scale(1.35)' }, { transform: 'scale(1)' }], { duration: 300, fill: 'none' }); });
+}
+function restore(phone, c) {
+  const page = $(phone, '.page'), nt = $(phone, '.newtab');
+  phone.getAnimations({ subtree: true }).forEach((a) => a.cancel());
+  page.style.opacity = ''; nt.style.opacity = '';
+  $(phone, '.addr .u').textContent = 'example.com/recipes/quiet-pasta';
+  $(phone, '.count').textContent = '3';
+  setIcon(phone, c);
+  if (!RM) {
+    A(page, [{ opacity: 0 }, { opacity: 1 }], 300);
+    A($(phone, '.pop .icon svg'), [{ transform: 'scale(.3)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }], { duration: 380, easing: 'cubic-bezier(.3,1.6,.5,1)' });
+  }
+  phone.busy = false;
+}
+const squish = (btn, d = 0) => A(btn, [{ transform: 'scale(1)' }, { transform: 'scale(.86,.8)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }],
+  { duration: 380, delay: d, fill: 'none' });
+
+/* ------------------------------------------------------------------ *
+ * The animated button for each concept: the line icon split into parts
+ * (class names), then a PLAY function that moves them.
+ * ------------------------------------------------------------------ */
+const sv = (inner) => `<svg viewBox="0 0 24 24" ${ST}>${inner}</svg>`;
+const ORIG = (x, y) => `style="transform-origin:${x}px ${y}px"`;
+const BTN = {
+  kernel: () => sv(`<g class="rest" ${ORIG(12, 19)}>${ICON['kp-rest']}</g><g class="after" opacity="0" ${ORIG(12, 13)}>${ICON['kp-pop']}</g>`),
+  heat: () => sv(`<g class="rest" ${ORIG(12, 19)}><path d="${P.kernel}"/><g class="glasses">${shades(10)}</g><g class="eyes" opacity="0">${eyes(10, 8.4, 14, 8.4, .9)}</g><path class="smirk" d="M10.3 14.6q1.6 1 3.3-.5" stroke-width="1.5"/></g><g class="waves" opacity="0"><path d="M2.8 7.6q-1 1.3 0 2.6t0 2.6t0 2.6M21.2 7.6q1 1.3 0 2.6t0 2.6t0 2.6" stroke-width="1.5"/></g><g class="after" opacity="0" ${ORIG(12, 13)}>${ICON['kp-pop']}</g>`),
+  shh: () => sv(`<g class="rest" ${ORIG(12, 20)}><path d="${P.head}"/><path d="${P.scallop}" stroke-width="1.5"/><circle class="eyeL" cx="9.6" cy="12.2" r="1.05" ${F}/><path class="wink" opacity="0" d="M8.3 12.7q1.25-1.6 2.5 0" stroke-width="1.6"/><circle cx="14.4" cy="12.2" r="1.05" ${F}/><path class="smile" d="M9.8 15.4q2.2 1.6 4.4 0" stroke-width="1.6"/><path class="lips" opacity="0" d="M9.6 15.9h1.1M13.3 15.9h1.1" stroke-width="1.6"/><path class="finger" opacity="0" d="M12 13.9V19" stroke-width="2.3"/></g>`),
+  bucket: () => sv(`<g class="rest" ${ORIG(6.6, 20.6)}><g class="top" ${ORIG(12, 10)}><path d="${P.bucketTop}"/></g>${BUCKET}</g>`),
+  zip: () => sv(`<g class="rest"><path d="${P.cob}"/><path d="${P.cobGrid}" stroke-width="1.3"/><path class="lf" d="${P.leafL}" ${ORIG(12, 21)}/><path class="rf" d="${P.leafR}" ${ORIG(12, 21)}/></g><g class="after" opacity="0"><path d="${P.husk}"/><path class="seam" d="M12 19V10.6" stroke-width="1.1" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/><path class="teeth" opacity="0" d="M10.7 12.2h2.6M10.7 14.2h2.6M10.7 16.2h2.6" stroke-width="1.1"/><rect class="tab" x="10.9" y="8.6" width="2.2" height="3" rx=".7" ${F}/></g>`),
+  rocket: () => sv(`<g class="rest"><g class="ship"><path d="${P.rocket}"/><circle cx="12" cy="9.8" r="2"/><path d="${P.fins}"/><path class="flame" opacity="0" d="M10.6 18.4Q12 22.6 13.4 18.4" stroke-width="1.6"/></g><path class="pad" d="M10.5 19.6h3" stroke-width="1.6"/></g>`),
+  lever: () => sv(`<g class="rest" ${ORIG(11, 20)}>${CART()}</g><g class="arm" ${ORIG(16.8, 12.2)}>${LEVER_UP}</g>`),
+  nibble: () => sv(`<g class="rest">${NIB()}</g>`),
+};
+function setIcon(phone, c) { $(phone, '.pop .icon').innerHTML = BTN[c.id](); const h = $(phone, '.heat'); if (h) h.style.height = '0%'; }
+
+// popped: the shared finale. The rest group pops out, the after group pops in, particles fly, the screen wipes.
+function finale(phone, c, o = {}) {
+  const btn = $(phone, '.pop'), ic = $(phone, '.pop .icon');
+  const [x, y] = centre(phone, btn);
+  if (o.swap !== false) {
+    A($(ic, '.rest'), [{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(1.3)', opacity: 0 }], 140);
+    A($(ic, '.after'), [{ transform: 'scale(.2)', opacity: 0 }, { transform: 'scale(1.35)', opacity: 1, offset: .6 }, { transform: 'scale(1)', opacity: 1 }],
+      { duration: 380, easing: 'ease-out' });
+  }
+  squish(btn);
+  if (o.n !== 0) particles(phone, x, y - 8, o.n ?? 9, o.p);
+  after(o.wipe ?? 160, () => wipe(phone));
+  after((o.wipe ?? 160) + 2600, () => restore(phone, c));
+}
+
+const PLAY = {
+  kernel(phone, c) {
+    const ic = $(phone, '.pop .icon'), rest = $(ic, '.rest');
+    A(rest, [0, -8, 8, -12, 12, -16, 16, -20, 0].map((r, i) => ({ transform: `rotate(${r}deg) scale(${1 + i * 0.02})` })), { duration: 560, easing: 'ease-in' });
+    after(560, () => finale(phone, c, { n: 10 }));
+  },
+  shh(phone, c) {
+    const ic = $(phone, '.pop .icon');
+    const [x, y] = centre(phone, $(phone, '.pop'));
+    after(60, () => { $(ic, '.eyeL').setAttribute('opacity', 0); $(ic, '.wink').setAttribute('opacity', 1);
+      A($(ic, '.rest'), [{ transform: 'rotate(0)' }, { transform: 'rotate(-8deg)' }], 200); });
+    after(300, () => { $(ic, '.smile').setAttribute('opacity', 0); $(ic, '.lips').setAttribute('opacity', 1);
+      A($(ic, '.finger'), [{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 260, easing: 'cubic-bezier(.3,1.6,.5,1)' });
+      bubble(phone, x + 16, y - 62, 'shh…', 1300); });
+    after(1000, () => {
+      squish($(phone, '.pop'));
+      particles(phone, x - 10, y - 10, 5, { vx: [-3, -0.6] }); particles(phone, x + 10, y - 10, 5, { vx: [0.6, 3] });
+      A($(ic, '.rest'), [{ transform: 'rotate(-8deg)' }, { transform: 'rotate(4deg) scale(1.08)' }, { transform: 'rotate(0)' }], { duration: 400, fill: 'forwards' });
+      after(140, () => wipe(phone)); after(2740, () => restore(phone, c));
+    });
+  },
+  bucket(phone, c) {
+    const ic = $(phone, '.pop .icon'), rest = $(ic, '.rest');
+    const [x, y] = centre(phone, $(phone, '.pop'));
+    A(rest, [{ transform: 'rotate(0)' }, { transform: 'rotate(6deg)', offset: .25 }, { transform: 'rotate(-100deg)' }], { duration: 520, easing: 'cubic-bezier(.5,0,.6,1.3)' });
+    after(330, () => {
+      A($(ic, '.top'), [{ opacity: 1 }, { opacity: 0 }], 160);
+      particles(phone, x - 14, y - 2, 14, { vx: [-5.5, -1.2], vy: [-6, -1.5], g: 0.28, life: 1300 });
+      squish($(phone, '.pop'), 120);
+      after(160, () => wipe(phone));
+    });
+    after(1150, () => A(rest, [{ transform: 'rotate(-100deg)' }, { transform: 'rotate(12deg)', offset: .7 }, { transform: 'rotate(0)' }], { duration: 520, easing: 'ease-out' }));
+    after(2900, () => restore(phone, c));
+  },
+  zip(phone, c) {
+    const ic = $(phone, '.pop .icon');
+    A($(ic, '.lf'), [{ transform: 'rotate(0)' }, { transform: 'rotate(38deg) scaleX(.6)' }], { duration: 240, easing: 'ease-in' });
+    A($(ic, '.rf'), [{ transform: 'rotate(0)' }, { transform: 'rotate(-38deg) scaleX(.6)' }], { duration: 240, easing: 'ease-in' });
+    after(230, () => {
+      $(ic, '.rest').setAttribute('opacity', 0); $(ic, '.after').setAttribute('opacity', 1);
+      squish($(phone, '.pop'));
+      A($(ic, '.seam'), [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 420, easing: 'ease-in-out' });
+      A($(ic, '.teeth'), [{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: 160 });
+      // the pull tab rides up the seam: zzzip
+      A($(ic, '.tab'), [{ transform: 'translateY(8.4px)' }, { transform: 'translateY(-.6px)', offset: .85 }, { transform: 'none' }], { duration: 480, easing: 'ease-in-out' });
+    });
+    after(700, () => {
+      A($(ic, '.after'), [{ transform: 'rotate(0)' }, { transform: 'rotate(-6deg)' }, { transform: 'rotate(5deg)' }, { transform: 'rotate(0)' }], { duration: 400, fill: 'none' });
+      const [x, y] = centre(phone, $(phone, '.pop'));
+      bubble(phone, x, y - 60, 'nobody saw', 1200);
+      wipe(phone);
+    });
+    after(3300, () => restore(phone, c));
+  },
+  rocket(phone, c) {
+    const ic = $(phone, '.pop .icon'), ship = $(ic, '.ship');
+    const [x, y] = centre(phone, $(phone, '.pop'));
+    A(ship, [0, -0.7, 0.7, -0.7, 0.7, -0.9, 0.9, 0].map((d) => ({ transform: `translateX(${d}px)` })), { duration: 420 });
+    particles(phone, x, y + 6, 4, { kind: 'puff', vx: [-1.6, 1.6], vy: [-1.2, -0.2], g: 0, size: [10, 16], life: 800, grow: 0.8 });
+    after(400, () => {
+      // the ship leaves the button (ink on yellow) and a full-colour rocket takes over on screen
+      A(ship, [{ transform: 'translateY(0)', opacity: 1 }, { transform: 'translateY(-10px)', opacity: 0 }], { duration: 90, easing: 'ease-in' });
+      const R = document.createElement('div');
+      R.innerHTML = `<svg width="34" height="34" viewBox="0 0 24 24" style="overflow:visible" stroke="#2A1E00" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M10.4 18.6Q12 25.5 13.6 18.6Z" fill="#FF8A3D"/><path d="M11.2 18.8Q12 22.4 12.8 18.8Z" fill="#FFF6D0" stroke="none"/>
+        <path d="${P.fins}Z" fill="#86C64A"/><path d="${P.rocket}" fill="#FFC83D"/>
+        <circle cx="12" cy="9.8" r="2.2" fill="#F5F0E1"/><circle cx="12.4" cy="10" r=".9" fill="#2A1E00" stroke="none"/></svg>`;
+      R.style.transform = `translate(${x - 17}px, ${y - 17}px)`;
+      $(phone, '.fx').appendChild(R);
+      const t0 = performance.now(), D = 820, H = y + 40;
+      let last = 0;
+      const fly = (t) => {
+        if (FROZEN) return;
+        const k = Math.min(1, (t - t0) / D), e = Math.pow(k, 2.1), ry = y - 17 - H * e, sc = 1 + e * 0.9;
+        R.style.transform = `translate(${x - 17}px, ${ry}px) scale(${sc}) rotate(${Math.sin(k * 30) * 2}deg)`;
+        if (t - last > 45) {
+          last = t;
+          particles(phone, x, ry + 34 * sc, 1, { kind: Math.random() < 0.35 ? 'popcorn' : 'puff', vx: [-1.2, 1.2], vy: [0.2, 1.2], g: 0.03, size: [12, 22], life: 900, grow: 0.7, spin: 4 });
+        }
+        if (k < 1) requestAnimationFrame(fly); else R.remove();
+      };
+      requestAnimationFrame(fly);
+      squish($(phone, '.pop'));
+      after(420, () => wipe(phone));
+    });
+    after(2000, () => A(ship, [{ transform: 'translateY(-40px)', opacity: 0 }, { transform: 'translateY(0)', opacity: 1, offset: .7 }, { transform: 'translateY(-2px)' }, { transform: 'translateY(0)' }],
+      { duration: 500, easing: 'ease-out' }));
+    after(3200, () => restore(phone, c));
+  },
+  lever(phone, c) {
+    const ic = $(phone, '.pop .icon');
+    const [x, y] = centre(phone, $(phone, '.pop'));
+    A($(ic, '.arm'), [{ transform: `rotate(${phone.leverAt || 0}deg)` }, { transform: 'rotate(95deg)', offset: .7 }, { transform: 'rotate(82deg)' }], { duration: 260, easing: 'ease-in' });
+    after(200, () => {
+      A($(ic, '.rest'), [0, -1.2, 1.2, -1, 1, 0].map((d) => ({ transform: `translateX(${d}px)` })), { duration: 300, fill: 'none' });
+      A($(ic, '.heap'), [{ transform: 'translateY(0)' }, { transform: 'translateY(-3px)' }, { transform: 'translateY(0)' }], { duration: 300, fill: 'none' });
+      particles(phone, x - 2, y - 12, 16, { vx: [-2.4, 2.4], vy: [-9, -5], g: 0.3, life: 1300 });
+      squish($(phone, '.pop'));
+      after(200, () => wipe(phone));
+    });
+    after(1400, () => A($(ic, '.arm'), [{ transform: 'rotate(82deg)' }, { transform: 'rotate(-8deg)', offset: .75 }, { transform: 'rotate(0)' }], { duration: 400 }));
+    after(3000, () => { phone.leverAt = 0; restore(phone, c); });
+  },
+  nibble(phone, c) {
+    const ic = $(phone, '.pop .icon'), car = $(ic, '.carriage');
+    const [x, y] = centre(phone, $(phone, '.pop'));
+    const STEP = 85; let t = 0;
+    const row = (r) => {
+      [0, 1, 2, 3].forEach((col) => after(t + col * STEP, () => {
+        A($(ic, `.nk${r}${col}`), [{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(.2)' }], 90);
+        A(car, [{ transform: `translateX(${-col * 0.8}px)` }, { transform: `translateX(${-(col + 1) * 0.8}px)` }], 80);
+        particles(phone, x - 6 + col * 4, y - 6, 1, { kind: 'kernel', size: [6, 9], vx: [-1, 1.4], vy: [-4, -2.5], g: 0.25, life: 700 });
+      }));
+      t += 4 * STEP;
+      after(t + 40, () => {
+        bubble(phone, x + 14, y - 54 - r * 2, 'ding!', 420);
+        A(car, [{ transform: 'translateX(-3.2px)' }, { transform: 'translateX(1px)', offset: .7 }, { transform: 'translateX(0)' }], { duration: 220, easing: 'ease-out' });
+      });
+      t += 300;
+    };
+    row(0); row(1);
+    after(t, () => { squish($(phone, '.pop')); wipe(phone); });
+    after(t + 2700, () => restore(phone, c));
+  },
+};
+
+/* Hold to Heat: pointer down heats the button for HOLD ms; full = pop. Let go early = cool down + a hint. */
+const HOLD = 600;
+function heatStart(phone, c) {
+  if (phone.busy) return;
+  const ic = $(phone, '.pop .icon'), heat = $(phone, '.heat'), btn = $(phone, '.pop');
+  phone.heating = true;
+  const t0 = performance.now() - (phone.heatK || 0) * HOLD;
+  const rest = $(ic, '.rest');
+  const tick = (t) => {
+    if (FROZEN || !phone.heating) return;
+    const k = Math.min(1, (t - t0) / HOLD);
+    phone.heatK = k;
+    heat.style.height = `${Math.round(k * 112)}%`;
+    btn.style.boxShadow = `0 0 ${k * 22}px ${k * 4}px rgba(255,106,31,${k * 0.55})`;
+    if (!RM) {
+      const a = 0.25 + k * 1.3;
+      rest.style.transform = `translate(${(Math.random() - .5) * a}px, ${(Math.random() - .5) * a * .6}px) rotate(${(Math.random() - .5) * k * 14}deg)`;
+      $(ic, '.glasses').style.transform = `translateY(${k * 1.3}px)`;
+      $(ic, '.eyes').setAttribute('opacity', k > 0.35 ? 1 : 0);
+      $(ic, '.smirk').setAttribute('opacity', k > 0.35 ? 0 : 1);
+      $(ic, '.waves').setAttribute('opacity', Math.min(1, k * 1.6));
+    }
+    if (k >= 1) { phone.heating = false; heatPop(phone, c); return; }
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+function heatPop(phone, c) {
+  phone.busy = true; phone.heatK = 0;
+  const btn = $(phone, '.pop'), ic = $(phone, '.pop .icon');
+  A($(ic, '.glasses'), [{ transform: 'translate(0,1.3px)', opacity: 1 }, { transform: 'translate(6px,-14px) rotate(40deg)', opacity: 0 }], { duration: 600, easing: 'ease-out' });
+  A($(ic, '.waves'), [{ opacity: 1 }, { opacity: 0 }], 200);
+  A($(phone, '.heat'), [{ height: '112%' }, { height: '0%' }], { duration: 480, delay: 120, easing: 'cubic-bezier(.3,0,.2,1)' });
+  A(btn, [{ boxShadow: '0 0 30px 8px rgba(255,106,31,.7)' }, { boxShadow: '0 0 0 0 rgba(255,106,31,0)' }], { duration: 700 });
+  btn.style.boxShadow = '';
+  finale(phone, c, { n: 12 });
+}
+function heatStop(phone) {
+  if (!phone.heating) return;
+  phone.heating = false;
+  const k = phone.heatK || 0, heat = $(phone, '.heat'), btn = $(phone, '.pop');
+  const [x, y] = centre(phone, btn);
+  A(heat, [{ height: heat.style.height }, { height: '0%' }], { duration: 300, easing: 'ease-out' });
+  btn.style.boxShadow = '';
+  phone.heatK = 0;
+  $(phone, '.pop .icon .rest').style.transform = '';
+  setTimeout(() => { if (!phone.heating && !phone.busy) setIcon(phone, C[1]); heat.style.height = '0%'; }, 310);
+  if (k < 1) bubble(phone, x, y - 60, k < 0.3 ? 'Hold to pop 🔥' : 'Keep holding…', 1100);
+}
+
+/* ------------------------------------------------------------------ */
+$$(document, '.phone').forEach((phone) => {
+  const c = C.find((x) => x.id === phone.dataset.c);
+  setIcon(phone, c);
+  const btn = $(phone, '.pop');
+  const tap = () => {
+    if (phone.busy) return;
+    phone.busy = true;
+    if (RM) {
+      $(phone, '.pop .icon').innerHTML = sv(ICON[c.poses[c.poses.length - 1][0]]);
+      wipe(phone); setTimeout(() => restore(phone, c), 2600); return;
+    }
+    PLAY[c.id](phone, c);
+  };
+  if (c.hold) {
+    btn.addEventListener('pointerdown', (e) => { e.preventDefault(); btn.setPointerCapture(e.pointerId); heatStart(phone, c); });
+    ['pointerup', 'pointercancel'].forEach((ev) => btn.addEventListener(ev, () => heatStop(phone)));
+    btn.addEventListener('keydown', (e) => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) heatStart(phone, c); });
+    btn.addEventListener('keyup', () => heatStop(phone));
+  } else if (c.id === 'lever') {
+    // tap, or drag the lever down: it follows your finger; past 30 px it pulls
+    let y0 = null;
+    btn.addEventListener('pointerdown', (e) => { if (phone.busy) return; y0 = e.clientY; btn.setPointerCapture(e.pointerId); });
+    btn.addEventListener('pointermove', (e) => {
+      if (y0 === null || phone.busy) return;
+      const d = Math.max(0, e.clientY - y0), a = Math.min(95, d * 3);
+      phone.leverAt = a;
+      $(phone, '.pop .arm').style.transform = `rotate(${a}deg)`;
+      if (d > 30) { y0 = null; tap(); }
+    });
+    btn.addEventListener('pointerup', () => { if (y0 !== null) { y0 = null; tap(); } });
+    btn.addEventListener('keydown', (e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); tap(); } });
+  } else {
+    btn.addEventListener('click', tap);
+  }
+});
+$$(document, '.ctl button').forEach((b) => b.addEventListener('click', () => {
+  const card = b.closest('.card');
+  $$(card, '.ctl button').forEach((x) => x.classList.toggle('on', x === b));
+  const ph = $(card, '.phone');
+  ph.classList.remove('dark', 'light'); ph.classList.add(b.dataset.theme);
+}));
+
+if (params.has('tail')) document.getElementById('cards').style.display = 'none'; // screenshot hook: the closing sections only
+
+/* ?review: every line icon large and at real size in the button, for checking legibility. */
+if (params.has('review')) {
+  document.querySelector('main').innerHTML = `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">${(params.get('review') ? params.get('review').split(',') : C.flatMap((c) => [c.rest, ...c.poses.map((p) => p[0])])).map((id) =>
+    `<div style="text-align:center;font-size:10px;color:#A8A08C"><div class="pop" style="width:auto;height:auto;aspect-ratio:1;margin-bottom:6px">${svg(id, 64)}</div>
+     <div style="display:flex;gap:6px;justify-content:center;align-items:center;background:#0F0E0B;padding:6px;border-radius:10px"><div class="pop">${svg(id)}</div><span style="color:#F5F0E1">${svg(id, 24)}</span></div>${id}</div>`).join('')}</div>`;
+}
+
+/* Screenshot hooks: ?play=N[&at=ms][&theme=light] solos card N, starts it on load, freezes at `at`.
+   ?solo=N just shows card N. Concept 2 is held down programmatically. */
+const solo = params.get('play') || params.get('solo');
+if (solo) {
+  document.body.classList.add('solo');
+  const card = document.querySelector(`.card[data-i="${solo}"]`);
+  card.classList.add('show');
+  if (params.get('theme') === 'light') $(card, '.ctl button[data-theme=light]').click();
+  if (params.has('phone')) { card.querySelectorAll(':scope > :not(.phone):not(h3)').forEach((e) => e.style.display = 'none'); }
+  if (params.get('play')) {
+    const phone = $(card, '.phone'), c = C[solo - 1];
+    window.startPlay = () => {
+      if (c.hold) { heatStart(phone, c); if (params.get('release')) setTimeout(() => heatStop(phone), +params.get('release')); }
+      else if (c.id === 'lever') { phone.busy = true; PLAY.lever(phone, c); }
+      else $(phone, '.pop').click();
+      if (params.get('at')) setTimeout(() => { FROZEN = true; document.getAnimations().forEach((a) => a.pause()); }, +params.get('at'));
+    };
+    if (!params.has('manual')) setTimeout(window.startPlay, +(params.get('delay') || 300));
+  }
+}
+</script>
+</body>
+</html>
