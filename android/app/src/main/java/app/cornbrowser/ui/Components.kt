@@ -394,7 +394,7 @@ fun BoxScope.ToastHost(msg: ToastMsg?, bottomPadding: Dp, onAction: () -> Unit) 
             Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(C.Text).padding(horizontal = 14.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            T(m.text, 14.sp, C.Bg, FontWeight.SemiBold, modifier = Modifier.weight(1f))
+            T(Copy.oneSentencePerLine(m.text), 14.sp, C.Bg, FontWeight.SemiBold, modifier = Modifier.weight(1f))
             if (m.action != null) T(m.action, 14.sp, if (C.light) C.Corn else Color(0xFF8A5B00), FontWeight.ExtraBold, modifier = Modifier.clickable(onClick = onAction).padding(start = 12.dp))
         }
     }

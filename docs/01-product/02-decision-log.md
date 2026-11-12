@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 11:15 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-12, 12:05 IST
 
 Every product question asked and the founder's answer, in order. Settled answers flow into [01-prd.md](01-prd.md). New rounds are appended at the bottom.
 
@@ -438,6 +438,11 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Question:** a better Flush Button icon while the app is still Corn (not renamed to Flush).
 - **Answer:** option A, a **water swirl**: three arms of water spiralling into a drain, on the yellow pill. It says "flush" without a toilet and works under either name. Replaces the toilet icon everywhere (toolbar, Flush confirmation, Tabs screen, onboarding). A single-line spiral was tried first and read as a snail/hypnosis swirl, so the three-arm vortex was used.
 - **Also answered:** Titanium Browser (jqssun) is a full Chromium fork (Vanadium-based, GPL-2.0), not WebView; its time-range "Delete browsing data" is Chrome's own. Using the Corny mascot in the app proposed.
+
+### Round 22 — Rename to Flush tried, parked; Corn continues (2026-11-12)
+- **What happened:** on 2026-11-11 the browser was fully renamed and rebranded as **Flush** (app ID, code names, Vortex logo, navy/blue palette, Fredoka, copy) on branch `main` (latest `ad2891d`). The last Corn version was saved as branch `corn` and tag `corn-final`.
+- **Answer (for now):** the founder feels Corn's name and theme fit better, so development continues on the **`corn` branch** as Corn. The Flush work stays on `main`, unchanged, in case it's picked up again.
+- **Carried over from Flush:** a line with two sentences shows one sentence per line (toasts and the line after a Flush), and after a Flush each line is centred (`ui/Copy.kt`, unit-tested).
 
 ### Round 21 — QA fixes: how Corn should behave like a real browser (2026-11-05)
 - **Source:** emulator QA, [04-qa-where-corn-fails](../05-review/04-qa-where-corn-fails-2026-11-05.md), and the founder's screenshots (YouTube played two ads; long-press showed "4:02").

@@ -210,3 +210,8 @@
 - Updated `docs/03-planning/02-checklist.md` (QA fixes ticked with evidence; delete a collection added).
 - Updated `docs/05-review/04-qa-where-corn-fails-2026-11-05.md` (Status section); `AGENTS.md` (QA suite row).
 - Scriptlet agent updated `docs/02-technical/09-filter-lists.md`, `10-storage.md`, `docs/04-reference/02-open-source.md`.
+
+## 2026-11-12 — Back on Corn (branch `corn`); one sentence per line
+
+- Added `ui/Copy.kt` (`oneSentencePerLine`) + `CopyTest` (6 tests); used by the toast (`ui/Components.kt`) and the after-Flush line (`ui/BrowserScreen.kt`, each line centred).
+- Updated `docs/01-product/02-decision-log.md` (Round 22: Flush rename tried on `main`, parked; Corn continues on `corn`).

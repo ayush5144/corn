@@ -467,7 +467,13 @@ private fun NewTabPage(c: CornController) {
             Spacer(Modifier.height(8.dp))
             T("corn", 44.sp, C.Accent, FontWeight.ExtraBold, display = true)
             Spacer(Modifier.height(4.dp))
-            T(c.quip ?: "Browse. Save what matters. Flush the rest.", 19.sp, if (c.quip != null) C.Accent else C.Text, FontWeight.SemiBold, display = true)
+            val quip = c.quip
+            if (quip != null) {
+                // After a Flush: one sentence per line, each line centred (founder, 2026-11-12).
+                Copy.oneSentencePerLine(quip).split("\n").forEach { line -> T(line, 19.sp, C.Accent, FontWeight.SemiBold, display = true) }
+            } else {
+                T("Browse. Save what matters. Flush the rest.", 19.sp, C.Text, FontWeight.SemiBold, display = true)
+            }
         }
         Row(
             Modifier.fillMaxWidth().height(52.dp).clip(RoundedCornerShape(16.dp)).background(C.Surface2).padding(horizontal = 14.dp),
