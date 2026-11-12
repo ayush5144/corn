@@ -1,0 +1,15 @@
+{
+  "name": "corn-remotion-icons",
+  "private": true,
+  "description": "Corn icon concepts drawn in code and rendered to PNG with Remotion (stills). Explorations only.",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render": "remotion still src/index.ts"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.539",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.539"
+  }
+}
