@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Corn icon concepts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0F0E0B; --surface: #25221B; --corn: #FFC83D; --deep: #F2A900;
+    --leaf: #86C64A; --cream: #F5F0E1; --light: #FBF8F1; --muted: #A79F8A;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ink); color: var(--cream); font-family: Figtree, system-ui, sans-serif; font-size: 15px; line-height: 1.5; }
+  main { max-width: 420px; margin: 0 auto; padding: 28px 16px 56px; }
+  h1, h2, h3 { font-family: "Bricolage Grotesque", sans-serif; line-height: 1.15; }
+  h1 { font-size: 30px; margin: 0 0 6px; color: var(--corn); }
+  h2 { font-size: 24px; margin: 40px 0 4px; color: var(--corn); }
+  h3 { font-size: 20px; margin: 0 0 2px; }
+  a { color: var(--corn); }
+  .lede { color: var(--muted); margin: 0 0 14px; }
+  .note { font-size: 13px; color: var(--muted); }
+  .concept { background: var(--surface); border-radius: 22px; padding: 18px 16px 20px; margin-top: 18px; }
+  .idea { margin: 0 0 12px; color: var(--muted); font-size: 14px; }
+  .hero { width: 100%; aspect-ratio: 1; border-radius: 22%; display: block; }
+  .alt { display: flex; gap: 10px; align-items: center; margin-top: 10px; font-size: 13px; color: var(--muted); }
+  .alt img { width: 72px; height: 72px; border-radius: 22%; }
+  .label { font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 16px 0 6px; font-weight: 700; }
+
+  /* Mock bottom toolbar, real dp sizes */
+  .bar { height: 56px; border-radius: 14px; display: flex; align-items: center; justify-content: space-around; padding: 0 8px; }
+  .bar.dark { background: var(--ink); border: 1px solid #2E2A21; color: var(--cream); }
+  .bar.light { background: var(--light); border: 1px solid #E5DFD0; color: #1E1B14; }
+  .bar + .bar { margin-top: 8px; }
+  .slot { width: 48px; height: 48px; display: grid; place-items: center; }
+  .slot svg { width: 24px; height: 24px; }
+  .slot img.ic { width: 24px; height: 24px; }
+  .pop { width: 46px; height: 40px; border-radius: 12px; display: grid; place-items: center; }
+  .pop img { width: 30px; height: 30px; }
+  .pop.art { background: var(--surface); box-shadow: inset 0 0 0 1.5px var(--corn); }
+  .bar.light .pop.art { background: var(--ink); }
+  .pop.today { background: var(--corn); }
+  .pop.today img { filter: brightness(0); opacity: .85; }
+
+  /* Size strip */
+  .sizes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .tile { border-radius: 14px; padding: 12px; display: flex; gap: 14px; align-items: center; justify-content: center; }
+  .tile.dark { background: var(--ink); }
+  .tile.light { background: var(--light); }
+  .tile img.s48 { width: 48px; height: 48px; }
+  .tile img.s24 { width: 24px; height: 24px; }
+
+  /* Vault three uses */
+  .uses { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .use { border-radius: 14px; padding: 12px 6px 8px; text-align: center; font-size: 12px; }
+  .use.dark { background: var(--ink); color: var(--cream); }
+  .use.light { background: var(--light); color: #1E1B14; }
+  .badge-wrap { position: relative; display: inline-block; }
+  .badge-wrap.b48 { width: 48px; height: 48px; }
+  .badge-wrap.b24 { width: 24px; height: 24px; margin-left: 8px; }
+  .badge-wrap img { width: 100%; height: 100%; display: block; }
+  .badge { position: absolute; right: -4px; bottom: -3px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; color: var(--ink); font-family: Figtree, sans-serif; line-height: 1; }
+  .b48 .badge { width: 20px; height: 20px; font-size: 15px; box-shadow: 0 0 0 2.5px var(--ink); }
+  .b24 .badge { width: 11px; height: 11px; font-size: 9px; right: -3px; bottom: -2px; box-shadow: 0 0 0 1.5px var(--ink); }
+  .light .b48 .badge { box-shadow: 0 0 0 2.5px var(--light); }
+  .light .b24 .badge { box-shadow: 0 0 0 1.5px var(--light); }
+  .badge.plus { background: var(--corn); }
+  .badge.tick { background: var(--leaf); }
+  .use .row { display: flex; align-items: center; justify-content: center; height: 52px; }
+  .use .cap { margin-top: 4px; opacity: .8; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; background: var(--surface); border-radius: 16px; overflow: hidden; margin-top: 12px; }
+  th, td { text-align: left; padding: 9px 8px; border-bottom: 1px solid #36312A; vertical-align: top; }
+  th { background: #2E2A21; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  td b { color: var(--corn); }
+  .rec { background: var(--corn); color: var(--ink); border-radius: 16px; padding: 14px 16px; margin-top: 14px; font-size: 14.5px; }
+  .rec b { font-family: "Bricolage Grotesque", sans-serif; }
+</style>
+</head>
+<body>
+<main>
+  <p class="note"><a href="../brand-compare.html">&larr; Corn vs Flush</a></p>
+  <h1>Pop &amp; Vault icons</h1>
+  <p class="lede">Concepts for the renamed <b>Pop</b> button and a Corn-style <b>Vault</b>, made locally with FLUX.2 klein 4B (mflux). Each one is shown large, then at real size in the bottom toolbar (Back · Vault · Tabs · Pop · Menu: 24 dp icons, 46×40 dp Pop button) and at 48/24 px. Chosen ones get redrawn as clean vectors.</p>
+  <p class="note">Pop button, two ways: on dark, the colour art on a dark button with a yellow ring; on light, the art as a one-colour silhouette on today's yellow fill (how a vector glyph would ship). Colour art on the yellow fill doesn't work: yellow on yellow.</p>
+
+  <h2>The Pop button</h2>
+  <div id="pop"></div>
+
+  <h2>The Vault</h2>
+  <p class="note">Each Vault concept with its three uses: Vault, Save to Vault (+) and Saved (&#10003;). The badges are HTML, not part of the art.</p>
+  <div id="vault"></div>
+
+  <h2>Side by side</h2>
+  <table>
+    <tr><th>Concept</th><th>24 px</th><th>Corn?</th><th>Critique</th></tr>
+    <tr><td><b>Burst</b></td><td>Good</td><td>High</td><td>Clearest "pop" read; as a one-colour silhouette on the yellow fill it turns into a blob, so it needs the dark button or a two-tone redraw.</td></tr>
+    <tr><td><b>Pop Button</b></td><td>Fair</td><td>Medium</td><td>Fun "press me" idea, but at 24 px the button reads as a yellow ball with a cloud.</td></tr>
+    <tr><td><b>Cob Pop</b></td><td>Fair</td><td>High</td><td>Ties to Tab Cob and the logo; small kernels blur into a yellow stick and the puff gets tiny.</td></tr>
+    <tr><td><b>Popped Kernel</b></td><td>Good</td><td>Medium</td><td>Simplest silhouette; out of context it can read as a cloud or a clover.</td></tr>
+    <tr><td><b>Corn Crib</b></td><td>Good on dark, weak on light</td><td>High</td><td>Crib, bank and "kept safe" in one shape; the cream slats vanish on the light theme, leaving only the roof.</td></tr>
+    <tr><td><b>Tucked Cob</b></td><td>Good</td><td>High</td><td>Lovely and on brand, but it reads "corn", not "locked": too close to the logo.</td></tr>
+    <tr><td><b>Kernel Jar</b></td><td>Fair</td><td>Medium</td><td>Clear "stash" idea; pale glass disappears on the light theme, kernels turn to noise.</td></tr>
+    <tr><td><b>Kernel Safe</b></td><td>Good</td><td>Medium</td><td>Reads "locked" instantly and the badges sit well; the kernel lock is the only corn note.</td></tr>
+  </table>
+
+  <div class="rec"><b>Pop:</b> go with <b>Burst</b>. It says "pop" in one glance and keeps a bold shape at 24 px. Ship it as colour art on a dark button with a yellow ring (the one-colour silhouette on today's yellow fill loses the kernel), or redraw it two-tone: dark puff, kernel cut out.</div>
+  <div class="rec"><b>Vault:</b> go with <b>Corn Crib</b>. It's the one idea that's both clearly "storage" and clearly Corn, and its roof-and-slats glyph survives at 24 px and with + / &#10003; badges. The vector redraw needs deep-corn slats instead of cream so it holds up on the light theme. <b>Kernel Safe</b> is the safe fallback if "locked" must read louder.</div>
+  <p class="note" style="margin-top:18px">Full-size originals and generation times: <code>~/Documents/corn-logo-originals/icons/</code> (times.log). About 50–60 s per 768 px image at 4 steps (klein's default), up to ~3 min when memory was busy.</p>
+</main>
+
+<template id="icons">
+  <svg viewBox="0 0 24 24" data-k="back" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+  <svg viewBox="0 0 24 24" data-k="tabs" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="4"/><text x="12" y="16" font-size="9" font-family="Figtree" font-weight="700" text-anchor="middle" fill="currentColor" stroke="none">3</text></svg>
+  <svg viewBox="0 0 24 24" data-k="menu" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+  <svg viewBox="0 0 24 24" data-k="safe" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="12" cy="12" r="3.5"/><path d="M6 20v1.5M18 20v1.5"/></svg>
+</template>
+
+<script>
+  const svg = k => document.querySelector(`#icons`).content.querySelector(`[data-k="${k}"]`).outerHTML;
+
+  const pops = [
+    { id: 'pop-burst', name: 'Burst', idea: 'A kernel caught mid-pop: the puff bursts out behind it, with little burst lines.' },
+    { id: 'pop-button', name: 'Pop Button', idea: 'A chunky arcade button with popcorn puffing off the top. Press it, it pops.' },
+    { id: 'pop-cob', name: 'Cob Pop', idea: 'The cob from Tab Cob, with its top kernel popping off as popcorn.', alt: 'pop-cob-chunky', altNote: 'Chunkier seed: bigger kernels and puff, holds up better at 24 px but looks a bit like a flower.' },
+    { id: 'pop-kernel', name: 'Popped Kernel', idea: 'One finished piece of popcorn, hull at the bottom, with a sparkle: clean slate.' },
+  ];
+  const vaults = [
+    { id: 'vault-crib', name: 'Corn Crib', idea: 'The slatted barn farmers keep corn in. Kernels peek between the slats; doubles as a little bank.' },
+    { id: 'vault-husk', name: 'Tucked Cob', idea: 'The cob wrapped back up in its husk: tucked away, safe.' },
+    { id: 'vault-jar', name: 'Kernel Jar', idea: 'A stash jar of kernels with a green lid.' },
+    { id: 'vault-safe', name: 'Kernel Safe', idea: 'A vault door whose lock is a single corn kernel with a keyhole.' },
+  ];
+
+  const toolbar = (theme, vaultHtml, popHtml) => `
+    <div class="bar ${theme}">
+      <div class="slot">${svg('back')}</div>
+      <div class="slot">${vaultHtml}</div>
+      <div class="slot">${svg('tabs')}</div>
+      <div class="slot">${popHtml}</div>
+      <div class="slot">${svg('menu')}</div>
+    </div>`;
+  const sizes = id => `
+    <div class="sizes">
+      <div class="tile dark"><img class="s48" src="${id}-cut.png" alt=""><img class="s24" src="${id}-cut.png" alt=""></div>
+      <div class="tile light"><img class="s48" src="${id}-cut.png" alt=""><img class="s24" src="${id}-cut.png" alt=""></div>
+    </div>`;
+
+  document.getElementById('pop').innerHTML = pops.map(c => `
+    <section class="concept">
+      <h3>${c.name}</h3>
+      <p class="idea">${c.idea}</p>
+      <img class="hero" src="${c.id}.png" alt="${c.name} concept">
+      ${c.alt ? `<div class="alt"><img src="${c.alt}.png" alt=""><span>${c.altNote}</span></div>` : ''}
+      <div class="label">In the toolbar</div>
+      ${toolbar('dark', svg('safe'), `<div class="pop art"><img src="${c.id}-cut.png" alt=""></div>`)}
+      ${toolbar('light', svg('safe'), `<div class="pop today"><img src="${c.id}-cut.png" alt=""></div>`)}
+      <div class="label">48 and 24 px</div>
+      ${sizes(c.id)}
+    </section>`).join('');
+
+  const use = (theme, id, badge, cap) => {
+    const b = badge ? `<span class="badge ${badge}">${badge === 'plus' ? '+' : '&#10003;'}</span>` : '';
+    return `<div class="use ${theme}"><div class="row">
+      <span class="badge-wrap b48"><img src="${id}-cut.png" alt="">${b}</span>
+      <span class="badge-wrap b24"><img src="${id}-cut.png" alt="">${b}</span>
+    </div><div class="cap">${cap}</div></div>`;
+  };
+  const uses = (theme, id) => `<div class="uses" style="margin-top:8px">
+      ${use(theme, id, '', 'Vault')}${use(theme, id, 'plus', 'Save to Vault')}${use(theme, id, 'tick', 'Saved')}
+    </div>`;
+
+  document.getElementById('vault').innerHTML = vaults.map(c => `
+    <section class="concept">
+      <h3>${c.name}</h3>
+      <p class="idea">${c.idea}</p>
+      <img class="hero" src="${c.id}.png" alt="${c.name} concept">
+      <div class="label">In the toolbar</div>
+      ${toolbar('dark', `<img class="ic" src="${c.id}-cut.png" alt="">`, `<div class="pop art"><img src="pop-burst-cut.png" alt=""></div>`)}
+      ${toolbar('light', `<img class="ic" src="${c.id}-cut.png" alt="">`, `<div class="pop today"><img src="pop-burst-cut.png" alt=""></div>`)}
+      <div class="label">Three uses</div>
+      ${uses('dark', c.id)}
+      ${uses('light', c.id)}
+    </section>`).join('');
+</script>
+</body>
+</html>
