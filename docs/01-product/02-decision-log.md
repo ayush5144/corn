@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-12, 12:05 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-12, 18:01 IST
 
 Every product question asked and the founder's answer, in order. Settled answers flow into [01-prd.md](01-prd.md). New rounds are appended at the bottom.
 
@@ -438,6 +438,9 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Question:** a better Flush Button icon while the app is still Corn (not renamed to Flush).
 - **Answer:** option A, a **water swirl**: three arms of water spiralling into a drain, on the yellow pill. It says "flush" without a toilet and works under either name. Replaces the toilet icon everywhere (toolbar, Flush confirmation, Tabs screen, onboarding). A single-line spiral was tried first and read as a snail/hypnosis swirl, so the three-arm vortex was used.
 - **Also answered:** Titanium Browser (jqssun) is a full Chromium fork (Vanadium-based, GPL-2.0), not WebView; its time-range "Delete browsing data" is Chrome's own. Using the Corny mascot in the app proposed.
+
+### Round 23 — Kernel Safe is the Vault icon (2026-11-12)
+- **Answer:** the Vault icon is the **Kernel Safe** in line style (safe door, two hinges, a corn kernel holding a keyhole), traced from the AI concept. **Save to Vault** adds a small + tucked into the door's corner (the outline leaves a gap around it); **Saved** turns the + into a ✓ (shown in corn yellow in the address bar). Chosen from `mockups/icons/line-icons.html` (round 3). The Pop button's icon is still open.
 
 ### Round 22 — Rename to Flush tried, parked; Corn continues (2026-11-12)
 - **What happened:** on 2026-11-11 the browser was fully renamed and rebranded as **Flush** (app ID, code names, Vortex logo, navy/blue palette, Fredoka, copy) on branch `main` (latest `ad2891d`). The last Corn version was saved as branch `corn` and tag `corn-final`.

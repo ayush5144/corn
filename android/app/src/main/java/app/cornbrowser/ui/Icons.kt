@@ -19,8 +19,13 @@ import androidx.compose.ui.unit.dp
  */
 object CornIcons {
     // Vault body y 3…19 plus feet to y 21 → 18 units tall.
-    private val RECT_VAULT = "M5 3h14a2.5 2.5 0 0 1 2.5 2.5v11a2.5 2.5 0 0 1-2.5 2.5H5a2.5 2.5 0 0 1-2.5-2.5v-11A2.5 2.5 0 0 1 5 3z"
-    private val FEET = "M6.5 19v2M17.5 19v2"
+    // Kernel Safe parts (24-unit grid). A "w|" prefix sets that path's stroke width.
+    private const val SAFE_DOOR = "M7 3.5h10a3.5 3.5 0 0 1 3.5 3.5v10a3.5 3.5 0 0 1-3.5 3.5H7a3.5 3.5 0 0 1-3.5-3.5V7A3.5 3.5 0 0 1 7 3.5z"
+    /** The door with its top-right corner left open where the badge sits (stops 5.2 units from the badge's centre). */
+    private const val SAFE_DOOR_OPEN_CORNER = "M14.24 3.5H7A3.5 3.5 0 0 0 3.5 7V17A3.5 3.5 0 0 0 7 20.5H17A3.5 3.5 0 0 0 20.5 17V9.76"
+    private const val SAFE_HINGES = "1.6|M3.5 7.4H2.3V10.2H3.5M3.5 13.8H2.3V16.6H3.5"
+    private const val SAFE_KERNEL = "M12 6.4C15.1 6.4 16.3 8.6 16 11.1C15.7 13.8 13.9 16.8 12 17.4C10.1 16.8 8.3 13.8 8 11.1C7.7 8.6 8.9 6.4 12 6.4Z"
+    private const val SAFE_KEYHOLE = "1.6|M13.15 10.7a1.15 1.15 0 1 1-2.3 0 1.15 1.15 0 0 1 2.3 0zM12 11.8V14"
     private val SHIELD = "M12 3l7.5 3v5.5c0 4.6-3.2 8.4-7.5 9.5-4.3-1.1-7.5-4.9-7.5-9.5V6z"
 
     // Arrows are open shapes, so they look bigger than boxes of the same height:
@@ -29,9 +34,12 @@ object CornIcons {
     val Forward = line("M4.8 12h14", "M12 5.2l6.8 6.8-6.8 6.8")
     /** The bottom nav bar's Back button only: a curved "↩" arrow (founder's choice, 2026-11-05). */
     val NavBack = line("M9.5 13.8L5 9.3l4.5-4.5", "M5 9.3h9a4.75 4.75 0 0 1 0 9.5h-3.5")
-    val Vault = toolbar(RECT_VAULT, "M15.5 11a3.5 3.5 0 1 1-7 0a3.5 3.5 0 1 1 7 0z", "M12 7.5v1M12 13.5v1M8.5 11h1M14.5 11h1", FEET)
-    val VaultAdd = toolbar(RECT_VAULT, "M12 7.4v7.2M8.4 11h7.2", FEET)
-    val VaultSaved = toolbar(RECT_VAULT, "M8.3 11.2l2.6 2.6 4.8-5", FEET)
+    // The Vault is the "Kernel Safe" (founder, 2026-11-12; mockups/icons/line-icons.html): a safe door
+    // with two hinges and a corn kernel holding a classic keyhole. Save adds a small + in the door's
+    // corner, Saved turns it into a check; the door's outline stops short of the badge (a gap, not a line).
+    val Vault = toolbar(SAFE_DOOR, SAFE_HINGES, SAFE_KERNEL, SAFE_KEYHOLE)
+    val VaultAdd = toolbar(SAFE_DOOR_OPEN_CORNER, SAFE_HINGES, SAFE_KERNEL, SAFE_KEYHOLE, "1.8|M19.3 2.4v4.6M17 4.7h4.6")
+    val VaultSaved = toolbar(SAFE_DOOR_OPEN_CORNER, SAFE_HINGES, SAFE_KERNEL, SAFE_KEYHOLE, "1.8|M17.2 4.8l1.4 1.4 2.8-3")
     // The Flush Button's glyph: three arms of water swirling into a drain (founder's choice, option A).
     // Spans y = 3.95…20.05, so with the 1.9 stroke it's 18 units tall like the other toolbar icons.
     val Flush: ImageVector = run {
@@ -117,7 +125,10 @@ object CornIcons {
     private fun build(paths: Array<out String>, filled: Boolean, scale: Float): ImageVector {
         val b = ImageVector.Builder(defaultWidth = 24.dp, defaultHeight = 24.dp, viewportWidth = 24f, viewportHeight = 24f)
         if (scale != 1f) b.addGroup(scaleX = scale, scaleY = scale, pivotX = 12f, pivotY = 12f)
-        for (d in paths) {
+        for (spec in paths) {
+            // Optional "1.6|M…": this path's own stroke width (thinner details like hinges and keyholes).
+            val width = spec.substringBefore('|', "").toFloatOrNull() ?: STROKE
+            val d = spec.substringAfter('|')
             val nodes = PathParser().parsePathString(d).toNodes()
             if (filled) {
                 b.addPath(nodes, fill = SolidColor(Color.Black))
@@ -126,7 +137,7 @@ object CornIcons {
                     nodes,
                     fill = null,
                     stroke = SolidColor(Color.Black),
-                    strokeLineWidth = STROKE / scale,
+                    strokeLineWidth = width / scale,
                     strokeLineCap = StrokeCap.Round,
                     strokeLineJoin = StrokeJoin.Round,
                 )
