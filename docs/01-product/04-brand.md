@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-11 · **Last updated:** 2026-11-11, 23:38 IST
+> **Created:** 2026-11-11 · **Last updated:** 2026-11-12, 11:28 IST
 
 The browser's name, logo, colours, fonts, voice and copy. Source: the brand board [`mockups/flush/index.html`](../../mockups/flush/index.html) and [decision log](02-decision-log.md) Round 22. Words for product concepts (Flush, Flush Button, Vault…) are in the [glossary](../../GLOSSARY.md).
 
@@ -32,14 +32,12 @@ The art is an AI draft (Codex image generation); a clean vector redraw is on the
 
 ## Nav bar and the Flush Button
 
-Founder's layout (2026-11-11), left to right:
+Left to right (founder, 2026-11-12: back to the layout from before the rename, for now):
 
-**Back** · **Vault** · **Flush** · **Tabs** · **Menu**
+**Back** · **Vault** · **Tabs** · **Flush** · **Menu**
 
-- The Flush Button sits in the **centre** as a **raised round button**.
-- Its face is the **"Riding the swirl"** drop from the Wink page ([`mockups/flush/wink.html`](../../mockups/flush/wink.html), `wink/wink-swirl.png`): a winking water drop riding a whirlpool. Not the swirl glyph.
-- App file: `android/app/src/main/res/drawable-nodpi/flush_button.png`; master `brand/flush-button-wink-1024.png`.
-- Risk: a big button where thumbs rest makes accidental Flushes more likely, and "Ask before Flush" is off by default. If it misfires in daily use, turn the confirmation on by default or add an Undo window (separate decision).
+- The Flush Button is a filled **Fill-blue** button, second from the right, with the swirl glyph in Ink (`Glyphs.Flush`).
+- **Parked:** the raised centre button with the "Riding the swirl" drop (Round 22, built 2026-11-11 in commit 1cb9f0b). The master stays in `brand/flush-button-wink-1024.png`; the app file was removed.
 
 ## Colours
 
@@ -98,7 +96,7 @@ Both are bundled in the app with their licence texts in `assets/licenses/` and l
 
 **After a Flush** (toast one-liners; the app's list is in `browser/Flusher.kt`)
 
-A line with two sentences shows **one sentence per line** ("All gone." / "Even we don't know what it was."), in toasts and after a Flush: `ui/Copy.kt` (`Copy.oneSentencePerLine`, unit-tested). A sentence ending before an emoji stays on one line ("Swirl, swirl, gone. 🌀").
+A line with two sentences shows **one sentence per line**, each line centred on the new-tab page with the ✓ before the first, ("All gone." / "Even we don't know what it was."), in toasts and after a Flush: `ui/Copy.kt` (`Copy.oneSentencePerLine`, unit-tested). A sentence ending before an emoji stays on one line ("Swirl, swirl, gone. 🌀").
 - Swirl, swirl, gone. 🌀
 - Flushed. Nobody saw nothing.
 - Squeaky clean. Like it never happened.

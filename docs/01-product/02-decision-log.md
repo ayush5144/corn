@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-11, 23:02 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-12, 11:28 IST
 
 Corn was renamed Flush on 2026-11-11 (decision log Round 22); this record keeps the old name.
 
@@ -440,6 +440,11 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Question:** a better Flush Button icon while the app is still Corn (not renamed to Flush).
 - **Answer:** option A, a **water swirl**: three arms of water spiralling into a drain, on the yellow pill. It says "flush" without a toilet and works under either name. Replaces the toilet icon everywhere (toolbar, Flush confirmation, Tabs screen, onboarding). A single-line spiral was tried first and read as a snail/hypnosis swirl, so the three-arm vortex was used.
 - **Also answered:** Titanium Browser (jqssun) is a full Chromium fork (Vanadium-based, GPL-2.0), not WebView; its time-range "Delete browsing data" is Chrome's own. Using the Corny mascot in the app proposed.
+
+### Round 23 — Nav bar back to before; centred after-Flush lines (2026-11-12)
+- **Answer (for now):** the nav bar goes back to the pre-rename layout, Back · Vault · Tabs · Flush · Menu, with Flush as a filled Fill-blue button second from the right. The raised centre button with the "Riding the swirl" face (Round 22) is parked, not deleted from history (commit 1cb9f0b; master in `brand/`).
+- **After-Flush line:** two sentences show on two lines, each centred; the ✓ goes before the first.
+- **Open, not concluded:** the founder feels Corn's theme and name fit better than Flush. Nothing changed for that; both are kept (`corn` branch / `corn-final` tag, and `main`). Suggested test: both APKs on a real phone for a few days.
 
 ### Round 22 — Corn is renamed Flush (2026-11-11)
 - **Answer:** the browser is renamed **Flush** ("Flush Browser" in full) before its first release. Reasons the founder accepted: the name is the main action and explains itself in public (Product Hunt, press); it frames Flush as private browsing for anything, not only adult sites; it lasts as long as the Flush Button does; flushbrowser.com was free on 2026-11-11. Store search (Flush toilet-finder apps) doesn't matter to the founder.

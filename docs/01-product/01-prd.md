@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-11, 23:02 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-12, 11:28 IST
 
 - **Status:** Draft v2, being shaped through Q&A rounds ([02-decision-log.md](02-decision-log.md))
 - **Last updated:** 2026-11-01 (after Round 1)
@@ -93,7 +93,7 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | Address bar **at the top** by default | ✅ |
 | Setting: move the address bar to the bottom | ✅ v1 |
 | Address bar, left to right: **Search Switcher** · address · **blocking shield** · then the **Vault save icon** (no star) | ✅ |
-| Bottom toolbar: **Back** (hold for Forward) · **Vault** · **Flush** (centre, raised round button) · **Tabs** · **Menu** (Round 22) | ✅ |
+| Bottom toolbar: **Back** (hold for Forward) · **Vault** · **Tabs** · **Flush** · **Menu** (Round 23: back to the pre-rename layout; the raised centre button is parked) | ✅ |
 | Forward, New tab, Settings live in the Menu | ✅ |
 | Look and feel: the Flush brand (Vortex logo, navy/electric-blue palette in dark and light, Fredoka display + Figtree UI), see [04-brand](04-brand.md) (Round 22) | ✅ |
 
@@ -113,8 +113,8 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 |---|---|
 | **Flush Button**: one tap wipes the Session (tabs, Tab Groups, cookies, cache, history, previews) | ✅ |
 | Setting: **Flush confirmation** toggle (off by default) | ✅ |
-| Flush Button is a **flush** button (not a power button). Its face in the nav bar is the "Riding the swirl" drop (Round 22), replacing the earlier water-swirl glyph and, before that, the toilet | ✅ |
-| Flush Button sits in the **centre of the bottom toolbar** as a raised round button (Round 22; was second from the right) | ✅ |
+| Flush Button is a **flush** button (not a power button): a filled blue button with the water-swirl glyph (Round 23; the "Riding the swirl" face from Round 22 is parked) | ✅ |
+| Flush Button sits **second from the right** in the bottom toolbar (Round 23; the raised centre button from Round 22 is parked) | ✅ |
 | Default: **Kept Session**: the Session survives until the user flushes | ✅ |
 | Setting: **Auto-Flush after leaving the app**, user chooses the delay or never | ✅ |
 | Delay presets: **when I leave the app**, **5 min after**, **30 min after** (plus Never) | ✅ |

@@ -97,9 +97,7 @@ fun BrowserScreen(c: AppController) {
             }
             PasswordFillChip(c) // "Fill as …" when the page has a login form with saved logins
         }
-        // The raised Flush Button reaches above this column: count it, so toasts sit above it.
-        val liftPx = with(androidx.compose.ui.platform.LocalDensity.current) { flushButtonLift(c).roundToPx() }
-        Column(Modifier.fillMaxWidth().background(C.Bg).onSizeChanged { c.bottomBarHeightPx = it.height + liftPx }) {
+        Column(Modifier.fillMaxWidth().background(C.Bg).onSizeChanged { c.bottomBarHeightPx = it.height }) {
             Box(Modifier.fillMaxWidth().height(1.dp).background(C.Line))
             GroupStrip(c, cur)
             if (c.settings.addressBarBottom) { if (c.findQuery != null) FindBar(c) else AddressBar(c, cur) }
@@ -481,11 +479,15 @@ private fun NewTabPage(c: AppController) {
             // After a Flush: its one-liner, with the board's ✓ in Success.
             val quip = c.quip
             if (quip != null) {
-                Row(verticalAlignment = Alignment.Top) { // ✓ beside the first line when the text wraps
+                // One sentence per line, every line centred (founder, 2026-11-12): the ✓ goes
+                // with the first line, the next sentences sit centred below it.
+                val lines = Copy.oneSentencePerLine(quip).split("\n")
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     T("✓", 19.sp, C.Success, FontWeight.Bold)
                     Spacer(Modifier.width(8.dp))
-                    T(Copy.oneSentencePerLine(quip), 19.sp, C.Accent, FontWeight.SemiBold, display = true)
+                    T(lines.first(), 19.sp, C.Accent, FontWeight.SemiBold, display = true)
                 }
+                lines.drop(1).forEach { line -> T(line, 19.sp, C.Accent, FontWeight.SemiBold, display = true) }
             } else {
                 T(TAGLINE, 19.sp, C.Text, FontWeight.SemiBold, display = true)
             }
@@ -592,36 +594,14 @@ private fun GroupStrip(c: AppController, cur: TabEntry) {
 
 // ---------------- toolbar ----------------
 
-/** Toolbar row height. */
-private val TOOLBAR_HEIGHT = 58.dp
-
-/** The Flush Button's face (the brand board's .flushbtn is 68 px). */
-private val FLUSH_BUTTON = 68.dp
-
-/** The ring of Bg around the Flush Button (the board's 6 px box-shadow ring). */
-private val FLUSH_RING = 6.dp
-
-/** Smaller face when the button can't rise (see [flushButtonLift]), so it fits inside the bar. */
-private val FLUSH_BUTTON_FLAT = 50.dp
-
-/**
- * How far the Flush Button reaches above the toolbar: half its face (the brand board's raised
- * centre button) when the page is right above the bar. 0 when the bottom address bar, find bar or
- * a Tab Group strip sits right above it: rising would cover them and turn taps on them into Flushes.
- */
-internal fun flushButtonLift(c: AppController): androidx.compose.ui.unit.Dp {
-    val cur = c.tabs.current ?: return 0.dp
-    val stacked = c.settings.addressBarBottom || (cur.groupId != null && c.tabs.group(cur.groupId) != null)
-    return if (stacked) 0.dp else FLUSH_BUTTON / 2
-}
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun Toolbar(c: AppController, cur: TabEntry) {
-    // Founder's layout (2026-11-11): Back · Vault · Flush (centre, raised) · Tabs · Menu.
-    Row(Modifier.fillMaxWidth().height(TOOLBAR_HEIGHT).background(C.Surface).padding(horizontal = 6.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
-        // Back (hold for Forward). On a tab's first page opened from Flush's home page, Back shows
-        // a curved ↩ and returns to the home page.
+    // Back · Vault · Tabs · Flush · Menu, Flush as a filled button second from the right (the layout
+    // before the rename; the raised centre button was parked by the founder on 2026-11-12).
+    Row(Modifier.fillMaxWidth().height(58.dp).padding(horizontal = 6.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
+        // Back (hold for Forward). On a tab's first page opened from Flush's home page, Back
+        // returns to the home page.
         val home = !cur.isNewTab && !cur.canGoBack && cur.openedFromHome
         Box(
             Modifier.width(56.dp).height(48.dp).clip(RoundedCornerShape(14.dp))
@@ -638,44 +618,24 @@ private fun Toolbar(c: AppController, cur: TabEntry) {
             )
         }
         ToolbarButton({ c.openVault() }) { Glyph(Glyphs.Vault, TOOLBAR_ICON) }
-        FlushButton(c)
         ToolbarButton({ c.openTabsScreen() }) {
             // 18 dp: the same visible height as the other toolbar icons.
             Box(Modifier.size(18.dp).border(1.9.dp, C.Text, RoundedCornerShape(5.dp)), contentAlignment = Alignment.Center) {
                 T(c.tabs.tabs.size.toString(), 11.sp, weight = FontWeight.ExtraBold)
             }
         }
-        ToolbarButton({ c.sheet = Sheet.Menu }) { Glyph(Glyphs.Dots, TOOLBAR_ICON) }
-    }
-}
-
-/**
- * The Flush Button in the middle of the toolbar: a round button raised half above the bar, with a
- * ring of Bg around it and the board's blue glow. Its face is the "Riding the swirl" drop
- * (brand/flush-button-wink-1024.png) on the logo's navy; the art is blue, so it never sits on Fill.
- */
-@Composable
-private fun FlushButton(c: AppController) {
-    val lift = flushButtonLift(c)
-    val face = if (lift > 0.dp) FLUSH_BUTTON else FLUSH_BUTTON_FLAT
-    val ring = face + FLUSH_RING * 2
-    // Centred in the bar, then moved up so the face's top edge is [lift] above the bar.
-    val dy = if (lift > 0.dp) -(lift - (face - TOOLBAR_HEIGHT) / 2) else 0.dp
-    Box(Modifier.width(ring).height(TOOLBAR_HEIGHT), contentAlignment = Alignment.Center) {
+        // Flush (second from the right)
         Box(
-            Modifier.offset(y = dy).requiredSize(ring)
-                .shadow(10.dp, CircleShape, ambientColor = C.Fill, spotColor = C.Fill)
-                .clip(CircleShape).background(C.Bg),
+            Modifier.width(56.dp).height(48.dp).clip(RoundedCornerShape(14.dp))
+                .semantics { contentDescription = "Flush"; role = Role.Button }
+                .clickable { c.requestFlush() },
             contentAlignment = Alignment.Center,
         ) {
-            Box(
-                Modifier.requiredSize(face).clip(CircleShape).background(C.LogoBg)
-                    .semantics { contentDescription = "Flush"; role = Role.Button }
-                    .clickable { c.requestFlush() },
-            ) {
-                Image(painterResource(R.drawable.flush_button), null, Modifier.fillMaxSize())
+            Box(Modifier.width(46.dp).height(40.dp).clip(RoundedCornerShape(14.dp)).background(C.Fill), contentAlignment = Alignment.Center) {
+                Glyph(Glyphs.Flush, TOOLBAR_ICON, C.Ink)
             }
         }
+        ToolbarButton({ c.sheet = Sheet.Menu }) { Glyph(Glyphs.Dots, TOOLBAR_ICON) }
     }
 }
 

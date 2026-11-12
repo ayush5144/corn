@@ -62,7 +62,7 @@ fun BoxScope.PasswordFillChip(c: AppController) {
     val text = offer.logins.singleOrNull()?.let { "Fill as ${it.username.ifBlank { "your saved login" }}" }
         ?: "Fill password · ${offer.logins.size} accounts"
     Row(
-        Modifier.align(Alignment.BottomCenter).padding(bottom = 12.dp + flushButtonLift(c), start = 16.dp, end = 16.dp)
+        Modifier.align(Alignment.BottomCenter).padding(bottom = 12.dp, start = 16.dp, end = 16.dp)
             .shadow(8.dp, RoundedCornerShape(21.dp))
             .clip(RoundedCornerShape(21.dp)).background(C.Surface2).border(1.dp, C.Line, RoundedCornerShape(21.dp)),
         verticalAlignment = Alignment.CenterVertically,

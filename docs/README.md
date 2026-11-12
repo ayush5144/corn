@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-11, 23:02 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-12, 11:28 IST
 
 Read in folder order. Start with the product, then the technical plan.
 
@@ -15,7 +15,7 @@ Read in folder order. Start with the product, then the technical plan.
 | 01 | [PRD](01-product/01-prd.md) | What Flush is, who it's for, every feature with ✅ settled / 🟡 open status |
 | 02 | [Decision log](01-product/02-decision-log.md) | Every question asked and the founder's answer, round by round |
 | 03 | [Features](01-product/03-features.md) | Every built feature, its user benefit, and the evidence (verified / tested / built) |
-| 04 | [Brand](01-product/04-brand.md) | Name and why, Vortex logo, dark/light palette with contrast, Fredoka + Figtree, voice, copy kit, nav bar with the centre Flush Button |
+| 04 | [Brand](01-product/04-brand.md) | Name and why, Vortex logo, dark/light palette with contrast, Fredoka + Figtree, voice, copy kit, nav bar |
 
 ## 02 — Technical: *how* we build it
 

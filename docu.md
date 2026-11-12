@@ -234,3 +234,9 @@
 
 - Added `ui/Copy.kt` (`oneSentencePerLine`) + `CopyTest` (6 tests); used by `ToastHost` (`ui/Components.kt`) and the after-Flush line (`ui/BrowserScreen.kt`, ✓ aligned to the first line).
 - Updated `docs/01-product/04-brand.md` (Copy kit: the rule).
+
+## 2026-11-12 — Nav bar back to the pre-rename layout; centred after-Flush lines
+
+- `ui/BrowserScreen.kt`: Toolbar back to Back · Vault · Tabs · Flush · Menu (Flush a Fill-blue button, second from the right); raised-button code and its toast/chip offsets removed (`PasswordsUi.kt` too); `res/drawable-nodpi/flush_button.png` removed (master kept in `brand/`).
+- After-Flush line: one sentence per line, each centred, ✓ before the first.
+- Updated decision log (Round 23), PRD (toolbar rows), features (Flush brand), brand page (nav bar section, copy rule), docs index row.
