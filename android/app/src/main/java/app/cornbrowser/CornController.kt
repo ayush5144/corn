@@ -70,6 +70,10 @@ sealed interface Sheet {
     data object SplitPick : Sheet
     /** Passwords: save / update, pick an account, PIN before filling, confirmations. */
     data class Password(val kind: app.cornbrowser.passwords.PasswordSheet) : Sheet
+    /** Vault → ⋮: Vault actions (Export links). */
+    data object VaultMenu : Sheet
+    /** Vault → ⋮ → Export links: HTML (recommended) or CSV. */
+    data object ExportLinks : Sheet
 }
 
 /** An address-bar suggestion, from the Vault or History (computed on the phone, never sent anywhere). */
@@ -578,6 +582,45 @@ class CornController(private val context: Context) : TabHost {
         val uris = data?.clipData?.let { clip -> Array(clip.itemCount) { clip.getItemAt(it).uri } }
             ?: android.webkit.WebChromeClient.FileChooserParams.parseResult(resultCode, data)
         callback.onReceiveValue(if (ok) uris else null)
+    }
+
+    // ---------------- Vault export (docs/02-technical/13-vault-export.md) ----------------
+
+    /** Set by MainActivity: opens Android's "Save to…" dialog, then reports the chosen place (null = cancelled). */
+    var documentCreator: ((Intent, (android.net.Uri?) -> Unit) -> Unit)? = null
+
+    /**
+     * Ask the user where to save a file (Storage Access Framework). [then] runs only when a place was
+     * chosen. Corn never picks a place itself and never writes a temporary copy.
+     */
+    fun chooseExportPlace(fileName: String, mime: String, then: (android.net.Uri) -> Unit) {
+        val launch = documentCreator ?: return
+        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+            .addCategory(Intent.CATEGORY_OPENABLE)
+            .setType(mime)
+            .putExtra(Intent.EXTRA_TITLE, fileName)
+        runCatching { launch(intent) { uri -> if (uri != null) then(uri) } }
+            .onFailure { showToast("No app on this phone can save files") }
+    }
+
+    /** Write a finished export to the place the user chose. Throws when it can't. */
+    fun writeExport(uri: android.net.Uri, bytes: ByteArray) {
+        val out = context.contentResolver.openOutputStream(uri, "w") ?: error("no output stream")
+        out.use { it.write(bytes) }
+    }
+
+    /** Vault → ⋮ → Export links → HTML or CSV: choose the place, then the Rust core formats every link. */
+    fun exportLinks(format: app.cornbrowser.data.VaultExport.LinksFormat) {
+        sheet = null
+        chooseExportPlace(app.cornbrowser.data.VaultExport.linksFileName(format), format.mime) { uri ->
+            Thread({
+                val ok = runCatching {
+                    val text = if (format == app.cornbrowser.data.VaultExport.LinksFormat.HTML) data.exportLinksHtml() else data.exportLinksCsv()
+                    writeExport(uri, text.toByteArray(Charsets.UTF_8))
+                }.onFailure { android.util.Log.w("CornExport", "links export failed: ${it.javaClass.simpleName}") }.isSuccess
+                main.post { showToast(if (ok) "Links saved" else "Corn couldn't save the file") }
+            }, "corn-export-links").start()
+        }
     }
 
     // ---------------- site permissions (camera, microphone, location) ----------------

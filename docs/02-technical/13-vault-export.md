@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-13 · **Last updated:** 2026-11-13, 11:47 IST
+> **Created:** 2026-11-13 · **Last updated:** 2026-11-13, 12:17 IST
 
 Your Vault is yours: Corn lets you take every saved link and password out, in formats other browsers and password managers import. Decided in the decision log (Round 25). Import and a full Corn backup come later.
 
@@ -13,7 +13,8 @@ Your Vault is yours: Corn lets you take every saved link and password out, in fo
 | Export formats (HTML bookmarks, links CSV, passwords CSV), CSV escaping, dates | `core/crates/corn-vault/src/export.rs` |
 | Database version 4 (`password_changed_at`) and its upgrade | `core/crates/corn-vault/src/lib.rs` (`SCHEMA`, `migrate`) |
 | What the Kotlin app can call | `core/crates/corn-ffi/src/lib.rs` |
-| Export buttons, the warning sheet, the "Save to…" dialog | `android/app/src/main/java/app/cornbrowser/ui/VaultScreen.kt`, `ui/PasswordsUi.kt`, `ui/Sheets.kt`, `CornController.kt` |
+| Export buttons, the warning sheet, the "Save to…" dialog | `android/app/src/main/java/app/cornbrowser/ui/VaultScreen.kt`, `ui/PasswordsUi.kt`, `ui/Sheets.kt`, `CornController.kt` (`chooseExportPlace`, `exportLinks`), `MainActivity.kt` (the launcher) |
+| File names and types | `android/app/src/main/java/app/cornbrowser/data/VaultExport.kt` |
 | Decrypting passwords for the export | `android/app/src/main/java/app/cornbrowser/passwords/Passwords.kt` |
 
 ## What you can export
@@ -21,7 +22,7 @@ Your Vault is yours: Corn lets you take every saved link and password out, in fo
 | What | Formats | Where in the app |
 |---|---|---|
 | **Saved links** (titles, addresses, Collections, tags, dates) | **HTML bookmarks file** (recommended) or **CSV** | Vault → ⋮ → Export links |
-| **Saved passwords** (site, username, password) | **CSV** (Chrome's format) | Vault → Passwords → Export passwords (PIN + warning) |
+| **Saved passwords** (site, username, password) | **CSV** (Chrome's format) | Vault → Passwords → Export passwords, at the bottom of the list (PIN + warning) |
 
 ### Why HTML for links, and why CSV too
 
@@ -54,7 +55,8 @@ Every password manager imports a CSV, and Chrome's columns are the most widely a
 ```
 
 - Everything sits in one **Corn Vault** folder, so an import doesn't mix with existing bookmarks.
-- `ADD_DATE` is in seconds (Corn stores milliseconds). Titles, addresses and tags are HTML-escaped (`& < > "`).
+- `ADD_DATE` is in seconds (Corn stores milliseconds); the Corn Vault folder's is the export time. Titles, addresses and tags are HTML-escaped (`& < > "`); a line break in a title becomes a space; a link with no title shows its address.
+- Every Collection becomes a folder, even an empty one; links keep the Vault's order (newest first). The file starts with the same "DO NOT EDIT" comment browsers write.
 - File name: `corn-links-YYYY-MM-DD.html`.
 
 ### Links: CSV
@@ -63,14 +65,14 @@ Every password manager imports a CSV, and Chrome's columns are the most widely a
 
 ### Passwords: CSV (Chrome's format)
 
-`name,url,username,password,note`: `name` is the site's host (`example.com`), `url` its origin (`https://example.com`), `note` empty for now. File name: `corn-passwords-UNENCRYPTED-YYYY-MM-DD.csv`.
+`name,url,username,password,note`: `name` is the site's host (`example.com`, no port), `url` its origin (`https://example.com`), `note` empty for now. Sorted by site, then username. A login that can't be decrypted is left out, and the toast says how many. File name: `corn-passwords-UNENCRYPTED-YYYY-MM-DD.csv`.
 
 ### CSV rules (both CSVs)
 
 - UTF-8; Windows-style line ends (`\r\n`), which every spreadsheet and importer reads.
 - A value with a comma, a quote, a line break, or space at either end is wrapped in quotes; quotes inside are doubled (RFC 4180).
 - **Links CSV only:** a value starting with `=`, `+`, `-`, `@`, a tab or a carriage return gets a leading `'` so a spreadsheet can't run it as a formula ("CSV injection").
-- **Passwords CSV: no formula guard.** It would change any password that starts with `=` or `-` and break the import into a password manager, which is what the file is for. Chrome's own export does the same. The warning tells people not to open it in a spreadsheet.
+- **Passwords CSV: no formula guard.** It would change any password that starts with `=` or `-` and break the import into a password manager, which is what the file is for. Chrome's own export does the same. The warning says the file is for moving passwords into another password manager.
 
 ## Exporting passwords safely
 
@@ -86,6 +88,7 @@ The password CSV is **plain text**: anyone who gets the file can read every pass
 4. **Decrypted only after you've chosen the place**, written straight to it, and dropped from memory; never logged, never cached, never sent anywhere.
 5. **After saving:** "Saved. Import it, then delete this file."
 6. The Passwords screens keep blocking screenshots (`FLAG_SECURE`).
+7. Leaving Corn for the "Save to…" dialog locks the Vault as any other leaving does; the export still finishes, and you come back to the Vault's PIN screen.
 
 Links aren't secret in the same way, so link export has no PIN beyond the Vault's own lock.
 

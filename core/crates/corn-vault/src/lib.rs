@@ -23,12 +23,15 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 use rusqlite::{params, Connection, OptionalExtension};
 
+pub mod export;
+
 /// Schema version written to `PRAGMA user_version`.
 ///
 /// - 0: first release (every Vault Item in a Collection, "Unsorted" catch-all).
 /// - 2: optional Collection ("All"), history.
 /// - 3: `logins` (saved passwords).
-const SCHEMA_VERSION: i64 = 3;
+/// - 4: `logins.password_changed_at` (for exports and "password last changed").
+const SCHEMA_VERSION: i64 = 4;
 
 #[derive(Debug, thiserror::Error)]
 pub enum VaultError {
@@ -81,6 +84,8 @@ pub struct Login {
     pub created_at: i64,
     pub last_used_at: i64,
     pub times_used: i64,
+    /// When the password was last saved or changed (milliseconds). Not touched when only the username changes.
+    pub password_changed_at: i64,
 }
 
 pub struct Store {
@@ -131,12 +136,13 @@ CREATE TABLE IF NOT EXISTS logins (
     password_enc BLOB NOT NULL,
     created_at   INTEGER NOT NULL,
     last_used_at INTEGER NOT NULL,
-    times_used   INTEGER NOT NULL DEFAULT 0
+    times_used   INTEGER NOT NULL DEFAULT 0,
+    password_changed_at INTEGER NOT NULL DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS logins_by_origin ON logins(origin);
 ";
 
-const LOGIN_COLUMNS: &str = "id, origin, username_enc, password_enc, created_at, last_used_at, times_used";
+const LOGIN_COLUMNS: &str = "id, origin, username_enc, password_enc, created_at, last_used_at, times_used, password_changed_at";
 /// Most recently used first, then most used.
 const LOGIN_ORDER: &str = "ORDER BY last_used_at DESC, times_used DESC, id DESC";
 
@@ -149,6 +155,7 @@ fn login_row(r: &rusqlite::Row) -> rusqlite::Result<Login> {
         created_at: r.get(4)?,
         last_used_at: r.get(5)?,
         times_used: r.get(6)?,
+        password_changed_at: r.get(7)?,
     })
 }
 
@@ -381,8 +388,8 @@ impl Store {
         let conn = self.conn();
         let at = now();
         conn.execute(
-            "INSERT INTO logins (origin, username_enc, password_enc, created_at, last_used_at, times_used)
-             VALUES (?1, ?2, ?3, ?4, ?4, 0)",
+            "INSERT INTO logins (origin, username_enc, password_enc, created_at, last_used_at, times_used, password_changed_at)
+             VALUES (?1, ?2, ?3, ?4, ?4, 0, ?4)",
             params![origin, username_enc, password_enc, at],
         )?;
         Ok(Login {
@@ -393,15 +400,19 @@ impl Store {
             created_at: at,
             last_used_at: at,
             times_used: 0,
+            password_changed_at: at,
         })
     }
 
-    /// Replace a login's username and password (the site stays the same).
-    pub fn update_login(&self, id: i64, username_enc: &[u8], password_enc: &[u8]) -> Result<()> {
+    /// Replace a login's username and password (the site stays the same). `password_changed`: the
+    /// password text itself changed (the app knows; the blobs always differ), so note when.
+    pub fn update_login(&self, id: i64, username_enc: &[u8], password_enc: &[u8], password_changed: bool) -> Result<()> {
         let conn = self.conn();
         conn.execute(
-            "UPDATE logins SET username_enc = ?2, password_enc = ?3 WHERE id = ?1",
-            params![id, username_enc, password_enc],
+            "UPDATE logins SET username_enc = ?2, password_enc = ?3,
+                password_changed_at = CASE WHEN ?4 THEN ?5 ELSE password_changed_at END
+             WHERE id = ?1",
+            params![id, username_enc, password_enc, password_changed, now()],
         )?;
         // The old encrypted values are overwritten (secure_delete); empty the log too.
         checkpoint(&conn)
@@ -447,6 +458,30 @@ impl Store {
             params![id, now()],
         )?;
         Ok(())
+    }
+
+    // ---------- Export (see export.rs) ----------
+
+    /// Every Collection with when it was made, oldest first, for the export.
+    fn export_folders(&self) -> Result<Vec<export::Folder>> {
+        let conn = self.conn();
+        let mut stmt = conn.prepare("SELECT id, name, created_at FROM collections ORDER BY created_at, id")?;
+        let rows = stmt.query_map([], |r| Ok(export::Folder { id: r.get(0)?, name: r.get(1)?, created_at: r.get(2)? }))?;
+        Ok(rows.collect::<std::result::Result<_, _>>()?)
+    }
+
+    /// Every saved link as an HTML bookmarks file (one "Corn Vault" folder, a folder per Collection).
+    pub fn export_links_html(&self) -> Result<String> {
+        let folders = self.export_folders()?;
+        let items = self.items(None)?;
+        Ok(export::links_html(&folders, &items, now()))
+    }
+
+    /// Every saved link as CSV (`title,url,collection,tags,saved_at`).
+    pub fn export_links_csv(&self) -> Result<String> {
+        let folders = self.export_folders()?;
+        let items = self.items(None)?;
+        Ok(export::links_csv(&folders, &items))
     }
 
     // ---------- key-value area ----------
@@ -526,6 +561,28 @@ fn migrate(conn: &Connection) -> Result<()> {
              COMMIT;
              PRAGMA foreign_keys = ON;",
         )?;
+    }
+    // Version 3 → 4: `logins` gains `password_changed_at`, set to when each login was saved.
+    // (Before version 3 there is no `logins` table; SCHEMA below creates it with the column.)
+    let has_logins: bool = conn.query_row(
+        "SELECT EXISTS(SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'logins')",
+        [],
+        |r| r.get(0),
+    )?;
+    if has_logins {
+        let has_column: bool = conn.query_row(
+            "SELECT EXISTS(SELECT 1 FROM pragma_table_info('logins') WHERE name = 'password_changed_at')",
+            [],
+            |r| r.get(0),
+        )?;
+        if !has_column {
+            conn.execute_batch(
+                "BEGIN;
+                 ALTER TABLE logins ADD COLUMN password_changed_at INTEGER NOT NULL DEFAULT 0;
+                 UPDATE logins SET password_changed_at = created_at;
+                 COMMIT;",
+            )?;
+        }
     }
     // Version 2 → 3 only adds the `logins` table: CREATE TABLE IF NOT EXISTS in SCHEMA does it,
     // leaving everything already stored untouched.
@@ -715,7 +772,7 @@ mod tests {
         assert_eq!(all[0].id, a.id);
         assert_eq!(all[0].times_used, 2);
 
-        s.update_login(b.id, b"u2-enc", b"p2-new").unwrap();
+        s.update_login(b.id, b"u2-enc", b"p2-new", true).unwrap();
         let b2 = s.logins_for_origin("https://example.com").unwrap().into_iter().find(|l| l.id == b.id).unwrap();
         assert_eq!(b2.password_enc, b"p2-new".to_vec());
 
@@ -730,7 +787,7 @@ mod tests {
         let path = temp_path("login-trace");
         let s = Store::open(&path).unwrap();
         let l = s.add_login("https://trace.example", b"USERBLOBMARKER", b"PASSBLOBMARKER").unwrap();
-        s.update_login(l.id, b"USERBLOBMARKER", b"NEWPASSMARKER").unwrap();
+        s.update_login(l.id, b"USERBLOBMARKER", b"NEWPASSMARKER", true).unwrap();
         for f in [path.clone(), format!("{path}-wal")] {
             let text = String::from_utf8_lossy(&std::fs::read(&f).unwrap_or_default()).into_owned();
             assert!(!text.contains("PASSBLOBMARKER"), "old password blob left in {f}");
@@ -740,6 +797,77 @@ mod tests {
             let text = String::from_utf8_lossy(&std::fs::read(&f).unwrap_or_default()).into_owned();
             assert!(!text.contains("NEWPASSMARKER") && !text.contains("USERBLOBMARKER"), "login left in {f}");
         }
+    }
+
+    #[test]
+    fn password_changed_at_moves_only_when_the_password_changes() {
+        let s = Store::open(&temp_path("pw-changed")).unwrap();
+        let l = s.add_login("https://example.com", b"u", b"p").unwrap();
+        assert_eq!(l.password_changed_at, l.created_at);
+        s.conn().execute("UPDATE logins SET password_changed_at = 5 WHERE id = ?1", [l.id]).unwrap();
+        s.update_login(l.id, b"u-new", b"p-reencrypted", false).unwrap();
+        assert_eq!(s.all_logins().unwrap()[0].password_changed_at, 5); // username only
+        s.update_login(l.id, b"u-new", b"p-new", true).unwrap();
+        assert!(s.all_logins().unwrap()[0].password_changed_at > 5);
+    }
+
+    #[test]
+    fn upgrades_v3_database_adding_password_changed_at() {
+        let path = temp_path("migrate-v3");
+        {
+            // A version-3 database exactly as the previous release wrote it.
+            let c = Connection::open(&path).unwrap();
+            c.execute_batch(
+                "CREATE TABLE collections (id INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE COLLATE NOCASE, created_at INTEGER NOT NULL);
+                 CREATE TABLE items (id INTEGER PRIMARY KEY, collection_id INTEGER REFERENCES collections(id) ON DELETE SET NULL,
+                                     title TEXT NOT NULL, url TEXT NOT NULL, created_at INTEGER NOT NULL);
+                 CREATE TABLE item_tags (item_id INTEGER NOT NULL REFERENCES items(id) ON DELETE CASCADE, tag TEXT NOT NULL, PRIMARY KEY (item_id, tag));
+                 CREATE TABLE kv (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+                 CREATE TABLE history_entries (id INTEGER PRIMARY KEY, url TEXT NOT NULL UNIQUE, host TEXT NOT NULL, title TEXT NOT NULL, last_visit INTEGER NOT NULL);
+                 CREATE TABLE history_visits (id INTEGER PRIMARY KEY, entry_id INTEGER NOT NULL REFERENCES history_entries(id) ON DELETE CASCADE, visited_at INTEGER NOT NULL);
+                 CREATE TABLE logins (id INTEGER PRIMARY KEY, origin TEXT NOT NULL, username_enc BLOB NOT NULL, password_enc BLOB NOT NULL,
+                                      created_at INTEGER NOT NULL, last_used_at INTEGER NOT NULL, times_used INTEGER NOT NULL DEFAULT 0);
+                 CREATE INDEX logins_by_origin ON logins(origin);
+                 INSERT INTO collections VALUES (1, 'Recipes', 100);
+                 INSERT INTO items VALUES (10, 1, 'Pasta', 'https://a.example/', 5000);
+                 INSERT INTO item_tags VALUES (10, 'quick');
+                 INSERT INTO logins VALUES (1, 'https://example.com', x'0102', x'0304', 1111, 2222, 3),
+                                           (2, 'https://other.example', x'05', x'06', 4444, 4444, 0);
+                 PRAGMA user_version = 3;",
+            )
+            .unwrap();
+        }
+        let s = Store::open(&path).unwrap();
+        let version: i64 = s.conn().query_row("PRAGMA user_version", [], |r| r.get(0)).unwrap();
+        assert_eq!(version, 4);
+        let mut logins = s.all_logins().unwrap();
+        logins.sort_by_key(|l| l.id);
+        assert_eq!(logins.len(), 2);
+        assert_eq!((logins[0].created_at, logins[0].password_changed_at, logins[0].times_used), (1111, 1111, 3));
+        assert_eq!(logins[0].password_enc, vec![3, 4]);
+        assert_eq!(logins[1].password_changed_at, 4444);
+        assert_eq!(s.items(None).unwrap()[0].tags, vec!["quick".to_string()]);
+        // New logins and opening again both work.
+        s.add_login("https://new.example", b"u", b"p").unwrap();
+        drop(s);
+        let s = Store::open(&path).unwrap();
+        assert_eq!(s.login_count().unwrap(), 3);
+        assert!(s.export_links_csv().unwrap().contains("Pasta,https://a.example/,Recipes,quick,1970-01-01T00:00:05Z\r\n"));
+    }
+
+    #[test]
+    fn store_exports_every_link() {
+        let s = Store::open(&temp_path("export")).unwrap();
+        let r = s.create_collection("Recipes").unwrap();
+        s.add_item(Some(r.id), "Quiet pasta, \"fast\"", "https://a.example/", &["pasta".into()]).unwrap();
+        s.add_item(None, "Loose", "https://b.example/", &[]).unwrap();
+        let html = s.export_links_html().unwrap();
+        assert!(html.contains(">Recipes</H3>"));
+        assert!(html.contains("TAGS=\"pasta\">Quiet pasta, &quot;fast&quot;</A>"));
+        assert!(html.contains(">Loose</A>"));
+        let csv = s.export_links_csv().unwrap();
+        assert_eq!(csv.matches("\r\n").count(), 3);
+        assert!(csv.contains("\"Quiet pasta, \"\"fast\"\"\",https://a.example/,Recipes,pasta,"));
     }
 
     #[test]
@@ -769,7 +897,7 @@ mod tests {
         }
         let s = Store::open(&path).unwrap();
         let version: i64 = s.conn().query_row("PRAGMA user_version", [], |r| r.get(0)).unwrap();
-        assert_eq!(version, 3);
+        assert_eq!(version, SCHEMA_VERSION);
         let names: Vec<String> = s.collections().unwrap().into_iter().map(|c| c.name).collect();
         assert_eq!(names, vec!["Unsorted".to_string(), "Watch later".to_string()]);
         let all = s.items(None).unwrap();

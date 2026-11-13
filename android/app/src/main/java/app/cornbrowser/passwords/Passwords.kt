@@ -35,6 +35,9 @@ sealed interface PasswordSheet {
     data class PinToFill(val tabId: Int, val login: SavedLogin) : PasswordSheet
     data class ConfirmDelete(val login: SavedLogin) : PasswordSheet
     data object ConfirmReset : PasswordSheet
+    /** Export passwords, after the PIN: "Your passwords will be saved as plain text" + checkbox.
+     *  [askedAt] makes each showing a new sheet, so the checkbox always starts unticked. */
+    data class ExportWarning(val askedAt: Long = System.nanoTime()) : PasswordSheet
 }
 
 /** The chip above the toolbar: saved logins for the page's site. */
@@ -119,7 +122,8 @@ class Passwords(private val context: Context, private val c: CornController) {
         val u = ci.encrypt(s.username, s.origin, LoginCipher.Field.USERNAME)
         val p = ci.encrypt(s.password, s.origin, LoginCipher.Field.PASSWORD)
         val ok = runCatching {
-            if (s.updateId != null) c.data.updateLogin(s.updateId, u, p) else c.data.addLogin(s.origin, u, p)
+            // "Update password?" is only offered when the password differs from the saved one.
+            if (s.updateId != null) c.data.updateLogin(s.updateId, u, p, passwordChanged = true) else c.data.addLogin(s.origin, u, p)
         }.onFailure { Log.w(TAG, "save failed: ${it.javaClass.simpleName}") }.isSuccess
         changed()
         c.showToast(
@@ -153,7 +157,8 @@ class Passwords(private val context: Context, private val c: CornController) {
         }
         val u = ci.encrypt(user, origin, LoginCipher.Field.USERNAME)
         val p = ci.encrypt(password, origin, LoginCipher.Field.PASSWORD)
-        val ok = runCatching { if (updateId != null) c.data.updateLogin(updateId, u, p) else c.data.addLogin(origin, u, p) }
+        // An Update decision means the same login with a different password (the same one is AlreadySaved).
+        val ok = runCatching { if (updateId != null) c.data.updateLogin(updateId, u, p, passwordChanged = true) else c.data.addLogin(origin, u, p) }
             .onFailure { Log.w(TAG, "manual save failed: ${it.javaClass.simpleName}") }.isSuccess
         changed()
         if (!ok) return "Corn couldn't save this password"
@@ -164,11 +169,13 @@ class Passwords(private val context: Context, private val c: CornController) {
     /** Edit from the Passwords screen. */
     fun update(login: SavedLogin, username: String, password: String): Boolean {
         val ci = cipher() ?: return false
+        val passwordChanged = passwordOf(login) != password
         val ok = runCatching {
             c.data.updateLogin(
                 login.id,
                 ci.encrypt(username, login.origin, LoginCipher.Field.USERNAME),
                 ci.encrypt(password, login.origin, LoginCipher.Field.PASSWORD),
+                passwordChanged,
             )
         }.isSuccess
         changed()
@@ -190,6 +197,53 @@ class Passwords(private val context: Context, private val c: CornController) {
         offers.clear()
         changed()
         c.showToast("Passwords reset. Fresh start.")
+    }
+
+    // ---------------- export (docs/02-technical/13-vault-export.md) ----------------
+
+    /**
+     * Export passwords, the last step: the PIN and the warning are behind us. Ask where to save,
+     * and only then decrypt every login, write the CSV straight there and drop the plain text.
+     * Nothing is cached, logged or sent anywhere.
+     */
+    fun export() {
+        c.sheet = null
+        c.chooseExportPlace(app.cornbrowser.data.VaultExport.passwordsFileName(), app.cornbrowser.data.VaultExport.PASSWORDS_MIME) { uri ->
+            Thread({ writeExport(uri) }, "corn-export-passwords").start()
+        }
+    }
+
+    private fun writeExport(uri: android.net.Uri) {
+        var skipped = 0
+        var written = 0
+        val ok = runCatching {
+            val ci = cipher() ?: error("no key")
+            val rows = c.data.allLogins().mapNotNull { r ->
+                runCatching {
+                    uniffi.corn_ffi.PasswordExportRow(
+                        r.origin,
+                        ci.decrypt(r.usernameEnc, r.origin, LoginCipher.Field.USERNAME),
+                        ci.decrypt(r.passwordEnc, r.origin, LoginCipher.Field.PASSWORD),
+                    )
+                }.onFailure { skipped++ }.getOrNull()
+            }
+            val bytes = uniffi.corn_ffi.exportPasswordsCsv(rows).toByteArray(Charsets.UTF_8)
+            try {
+                c.writeExport(uri, bytes)
+            } finally {
+                bytes.fill(0) // the plain-text copy Corn controls; the rest is dropped with this call
+            }
+            written = rows.size
+        }.onFailure { Log.w(TAG, "export failed: ${it.javaClass.simpleName}") }.isSuccess // never the contents
+        main.post {
+            c.showToast(
+                when {
+                    !ok -> "Corn couldn't save the file"
+                    skipped > 0 -> "Saved $written. $skipped couldn't be read and were left out. Import it, then delete this file."
+                    else -> "Saved. Import it, then delete this file."
+                },
+            )
+        }
     }
 
     fun neverSave(origin: String) {

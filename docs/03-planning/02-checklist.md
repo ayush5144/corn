@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 11:47 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 12:17 IST
 
 The single list of what's done, what's next and who owns it. Product decisions live in the [decision log](../01-product/02-decision-log.md); this file tracks **work**.
 
@@ -176,8 +176,8 @@ The founder has been testing on a real phone and reports it working well. These 
 | ✓ | Task | Owner | Done when |
 |---|---|---|---|
 | [x] | Export doc written first (formats, safety, mechanism, tests) | Claude | Committed |
-| [ ] | Rust: database version 4 (`password_changed_at`, upgrade from 3), `export.rs` (HTML bookmarks, links CSV, passwords CSV, escaping, formula guard on links only), exposed to Kotlin | Claude | Unit tests pass, including the 3 → 4 upgrade |
-| [ ] | Android: Vault → Export links (HTML / CSV) and Passwords → Export passwords (PIN, warning with checkbox, "Save to…", reminder) | Claude | Emulator: files read back with every item; PIN and checkbox can't be skipped |
+| [x] | Rust: database version 4 (`password_changed_at`, upgrade from 3), `export.rs` (HTML bookmarks, links CSV, passwords CSV, escaping, formula guard on links only), exposed to Kotlin | Claude | Unit tests pass, including the 3 → 4 upgrade |
+| [x] | Android: Vault → Export links (HTML / CSV) and Passwords → Export passwords (PIN, warning with checkbox, "Save to…", reminder) | Claude | Emulator: files read back with every item; PIN and checkbox can't be skipped |
 | [ ] | The HTML file imports into Chrome on the Mac | Claude | Folders, links and titles appear in Chrome |
 | [ ] | Docs (security doc, features, PRD) and release 0.2.2 | Claude | Pushed; signed release published |
 | [ ] | Later: Import (same formats) and a full Corn backup (optionally encrypted) | Claude | Founder decides |
@@ -214,7 +214,7 @@ The founder has been testing on a real phone and reports it working well. These 
 | Vault thumbnails (screenshot / placeholder / none) | Founder decision, Round 2 |
 | Custom search engines | |
 | Disguised app icon | |
-| Vault export / import | Needs a format decision first |
+| Vault import / full backup | Export done (Round 25); import uses the same formats |
 | Laptop app (Electron) | After iPhone |
 | **Time ranges for deleting history** ("last 15 min / hour / 24 h / 7 days") | Exact for history (and possible for cookies via the cookie database), but site storage and the cache can only be deleted all at once (`clearCache` is per-application). To avoid a half-working option, v1 offers "delete everything" only. Founder decision, Round 11 |
 | **Keep List C: keep Keep List sites' local storage** | Android can't delete one site's local storage (`deleteOrigin` doesn't cover it, measured). DuckDuckGo edits WebView's LevelDB files with a LevelDB library to spare Fireproof sites. Until then, Keep List sites keep cookies only, which is what the Keep List promises |

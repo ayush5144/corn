@@ -38,6 +38,13 @@ class MainActivity : ComponentActivity() {
         permissionResult?.invoke(it)
         permissionResult = null
     }
+    // Android's "Save to…" dialog for Vault exports: returns where the user chose to save (or null).
+    private var documentDone: ((android.net.Uri?) -> Unit)? = null
+    private val documentCreator = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()) {
+        val done = documentDone
+        documentDone = null
+        done?.invoke(if (it.resultCode == RESULT_OK) it.data?.data else null)
+    }
     private val downloadDone = object : android.content.BroadcastReceiver() {
         override fun onReceive(context: android.content.Context, intent: Intent) {
             c.onDownloadComplete(intent.getLongExtra(android.app.DownloadManager.EXTRA_DOWNLOAD_ID, -1))
@@ -53,6 +60,7 @@ class MainActivity : ComponentActivity() {
         c = CornController(this)
         c.fileChooserLauncher = { fileChooser.launch(it) }
         c.androidPermissionRequester = { perms, done -> permissionResult = done; permissionAsker.launch(perms) }
+        c.documentCreator = { intent, done -> documentDone = done; documentCreator.launch(intent) }
         androidx.core.content.ContextCompat.registerReceiver(
             this, downloadDone, android.content.IntentFilter(android.app.DownloadManager.ACTION_DOWNLOAD_COMPLETE),
             androidx.core.content.ContextCompat.RECEIVER_EXPORTED, // sent by Android's download manager

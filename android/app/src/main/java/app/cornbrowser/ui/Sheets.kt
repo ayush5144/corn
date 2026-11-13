@@ -43,6 +43,7 @@ import app.cornbrowser.CornController
 import app.cornbrowser.Sheet
 import app.cornbrowser.browser.ClearChoice
 import app.cornbrowser.data.TabMemory
+import app.cornbrowser.data.VaultExport
 import app.cornbrowser.data.SearchEngine
 import app.cornbrowser.data.SearchEngines
 import app.cornbrowser.data.Shields
@@ -89,6 +90,8 @@ private fun OtherSheet(c: CornController, shown: Sheet?) {
             is Sheet.SitePermissionAsk -> SitePermissionSheet(c, shown)
             is Sheet.Download -> DownloadSheet(c, shown)
             is Sheet.Password -> PasswordSheetContent(c, shown.kind)
+            Sheet.VaultMenu -> VaultMenuSheet(c)
+            Sheet.ExportLinks -> ExportLinksSheet(c)
             else -> {}
         }
 }
@@ -379,6 +382,31 @@ private fun ColumnScope.GroupSheet(c: CornController, groupId: Int) {
 private fun ConfirmFlushSheet(c: CornController) {
     SheetTitle("Flush everything?", "All tabs and groups, cookies, cache and history go. Your Vault and Keep List stay.")
     BigButton("Flush", { c.flushNow(animate = true) }, icon = CornIcons.Flush)
+    Spacer(Modifier.height(10.dp))
+    BigButton("Cancel", { c.sheet = null }, ghost = true)
+}
+
+/** Vault → ⋮. */
+@Composable
+private fun VaultMenuSheet(c: CornController) {
+    Row50(CornIcons.Download, "Export links", { c.sheet = Sheet.ExportLinks })
+}
+
+/** Vault → ⋮ → Export links: pick a format, then Android's "Save to…" (docs/02-technical/13-vault-export.md). */
+@Composable
+private fun ExportLinksSheet(c: CornController) {
+    val total = remember { c.data.itemCount() }
+    SheetTitle("Export links", "Every saved link ($total), with its Collection, tags and date. You choose where the file goes.")
+    SettingRow(
+        "Bookmarks file (HTML)", "Recommended. Chrome, Firefox, Safari, Edge and Brave import it. Collections become folders.",
+        onClick = { c.exportLinks(VaultExport.LinksFormat.HTML) },
+        leading = { CornIcon(CornIcons.Vault, tint = C.Accent) },
+    )
+    SettingRow(
+        "Spreadsheet (CSV)", "For spreadsheets and apps that take CSV.",
+        onClick = { c.exportLinks(VaultExport.LinksFormat.CSV) },
+        leading = { CornIcon(CornIcons.Folder, tint = C.Muted) },
+    )
     Spacer(Modifier.height(10.dp))
     BigButton("Cancel", { c.sheet = null }, ghost = true)
 }

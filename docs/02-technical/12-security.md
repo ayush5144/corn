@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-05 · **Last updated:** 2026-11-05, 02:30 IST
+> **Created:** 2026-11-05 · **Last updated:** 2026-11-13, 12:17 IST
 
 ## The code is the source of truth
 
@@ -81,4 +81,8 @@ Full list with severities: [password store code review](../05-review/03-password
 - **Info, by design:** any https page can make Corn ask "Save password?" for **its own site** (never another site's); Corn decrypts a saved password in memory, without the PIN, to decide between Save / Update / already saved (never shown or logged).
 - **4-digit PIN hash:** the salted hash in Corn's settings file could be brute-forced quickly by someone who extracts that file (needs root access). The passwords themselves stay safe because their key is in the Keystore, not derived from the PIN.
 - **Two-step logins** (username and password on separate pages): only the password is saved.
-- No export or import yet.
+- No import yet (export: see below).
+
+## Exporting
+
+Links and passwords can be exported ([13-vault-export](13-vault-export.md)). The passwords file is **plain text** (Chrome's CSV format, what password managers import), so: the PIN is asked every time, even with the Vault open; a warning says the file isn't encrypted and Export stays disabled until "I understand the file isn't encrypted" is ticked; the user picks the place in Android's "Save to…" dialog; passwords are decrypted only after that, written straight there, and never cached, logged or sent; the screen keeps blocking screenshots. Corn can't protect the file once it's saved: the toast says "Saved. Import it, then delete this file."

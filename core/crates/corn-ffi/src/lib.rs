@@ -194,6 +194,8 @@ pub struct Login {
     pub created_at: i64,
     pub last_used_at: i64,
     pub times_used: i64,
+    /// When the password was last saved or changed (milliseconds).
+    pub password_changed_at: i64,
 }
 
 impl From<corn_vault::Login> for Login {
@@ -206,6 +208,7 @@ impl From<corn_vault::Login> for Login {
             created_at: l.created_at,
             last_used_at: l.last_used_at,
             times_used: l.times_used,
+            password_changed_at: l.password_changed_at,
         }
     }
 }
@@ -298,8 +301,9 @@ impl CornStore {
     pub fn add_login(&self, origin: String, username_enc: Vec<u8>, password_enc: Vec<u8>) -> Result<Login, CornError> {
         Ok(self.inner.add_login(&origin, &username_enc, &password_enc)?.into())
     }
-    pub fn update_login(&self, id: i64, username_enc: Vec<u8>, password_enc: Vec<u8>) -> Result<(), CornError> {
-        Ok(self.inner.update_login(id, &username_enc, &password_enc)?)
+    /// `password_changed`: the password text changed (not just the username), so its date moves.
+    pub fn update_login(&self, id: i64, username_enc: Vec<u8>, password_enc: Vec<u8>, password_changed: bool) -> Result<(), CornError> {
+        Ok(self.inner.update_login(id, &username_enc, &password_enc, password_changed)?)
     }
     pub fn delete_login(&self, id: i64) -> Result<(), CornError> {
         Ok(self.inner.delete_login(id)?)
@@ -320,6 +324,16 @@ impl CornStore {
         Ok(self.inner.touch_login(id)?)
     }
 
+    // Export (docs/02-technical/13-vault-export.md)
+    /// Every saved link as an HTML bookmarks file.
+    pub fn export_links_html(&self) -> Result<String, CornError> {
+        Ok(self.inner.export_links_html()?)
+    }
+    /// Every saved link as CSV.
+    pub fn export_links_csv(&self) -> Result<String, CornError> {
+        Ok(self.inner.export_links_csv()?)
+    }
+
     // Key-value
     pub fn kv_get(&self, key: String) -> Result<Option<String>, CornError> {
         Ok(self.inner.kv_get(&key)?)
@@ -330,6 +344,26 @@ impl CornStore {
     pub fn kv_delete(&self, key: String) -> Result<(), CornError> {
         Ok(self.inner.kv_delete(&key)?)
     }
+}
+
+/// One saved login in clear, for the passwords export. Built by the app (which holds the key)
+/// right before writing the file, and dropped right after.
+#[derive(Debug, Clone, uniffi::Record)]
+pub struct PasswordExportRow {
+    pub origin: String,
+    pub username: String,
+    pub password: String,
+}
+
+/// Saved passwords as CSV in Chrome's format (`name,url,username,password,note`). Plain text:
+/// the caller writes it only to the place the user chose.
+#[uniffi::export]
+pub fn export_passwords_csv(rows: Vec<PasswordExportRow>) -> String {
+    let rows: Vec<corn_vault::export::PasswordRow> = rows
+        .into_iter()
+        .map(|r| corn_vault::export::PasswordRow { origin: r.origin, username: r.username, password: r.password })
+        .collect();
+    corn_vault::export::passwords_csv(&rows)
 }
 
 // ---------------- URL hygiene ----------------

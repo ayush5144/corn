@@ -142,7 +142,9 @@ class CornData(context: Context) {
     // Usernames and passwords arrive here already encrypted (passwords/LoginCipher); the site is in clear.
     // Like the Vault, they survive every Flush and "Delete browsing data".
     fun addLogin(origin: String, usernameEnc: ByteArray, passwordEnc: ByteArray): Login = store.addLogin(origin, usernameEnc, passwordEnc)
-    fun updateLogin(id: Long, usernameEnc: ByteArray, passwordEnc: ByteArray) = store.updateLogin(id, usernameEnc, passwordEnc)
+    /** [passwordChanged]: the password text changed (not only the username), so its "last changed" date moves. */
+    fun updateLogin(id: Long, usernameEnc: ByteArray, passwordEnc: ByteArray, passwordChanged: Boolean) =
+        store.updateLogin(id, usernameEnc, passwordEnc, passwordChanged)
     fun deleteLogin(id: Long) = store.deleteLogin(id)
     fun deleteAllLogins() = store.deleteAllLogins()
     fun loginsForOrigin(origin: String): List<Login> = store.loginsForOrigin(origin)
@@ -154,6 +156,12 @@ class CornData(context: Context) {
     fun neverSaveList(): List<String> = readList(NEVER_SAVE)
     fun addNeverSave(origin: String) = writeList(NEVER_SAVE, (neverSaveList() + origin).distinct())
     fun removeNeverSave(origin: String) = writeList(NEVER_SAVE, neverSaveList() - origin)
+
+    // ---------- Export (docs/02-technical/13-vault-export.md) ----------
+    /** Every saved link as an HTML bookmarks file, formatted by the Rust core. */
+    fun exportLinksHtml(): String = store.exportLinksHtml()
+    /** Every saved link as CSV. */
+    fun exportLinksCsv(): String = store.exportLinksCsv()
 
     // ---------- Kept Session ----------
     fun saveSession(json: String) = store.kvSet(SESSION, json)

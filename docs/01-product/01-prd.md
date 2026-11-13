@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 11:00 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 12:17 IST
 
 - **Status:** Draft v2, being shaped through Q&A rounds ([02-decision-log.md](02-decision-log.md))
 - **Last updated:** 2026-11-01 (after Round 1)
@@ -154,7 +154,8 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | **Vault locked by default** with a 4-digit PIN | ✅ |
 | Fingerprint / face unlock | ⏭️ Later |
 | Permanent delete (long-press a saved link) | ✅ |
-| Export, import | 🟡 |
+| Export: links (HTML bookmarks, recommended, or CSV) and passwords (Chrome-format CSV, plain text, behind the PIN and a warning); see [13-vault-export](../02-technical/13-vault-export.md) | ✅ |
+| Import, full Corn backup | ⏭️ |
 | Saving downloaded files into the Vault | ⏭️ |
 
 ### 6.6 Privacy and discretion

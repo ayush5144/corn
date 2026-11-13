@@ -140,6 +140,7 @@ fun PasswordSheetContent(c: CornController, kind: PasswordSheet) {
             Spacer(Modifier.height(10.dp))
             BigButton("Cancel", { c.sheet = null }, ghost = true)
         }
+        is PasswordSheet.ExportWarning -> ExportWarningSheet(c, kind)
         PasswordSheet.ConfirmReset -> {
             SheetTitle("Reset passwords?", "Every saved password is deleted. There's no getting them back.")
             BigButton("Reset passwords", { p.resetAll() }, icon = CornIcons.Trash)
@@ -147,6 +148,35 @@ fun PasswordSheetContent(c: CornController, kind: PasswordSheet) {
             BigButton("Cancel", { c.sheet = null }, ghost = true)
         }
     }
+}
+
+/** Export passwords, step 2 (after the PIN): the plain-text warning. Export stays disabled until ticked. */
+@Composable
+private fun ExportWarningSheet(c: CornController, kind: PasswordSheet.ExportWarning) {
+    var understood by remember(kind) { mutableStateOf(false) }
+    SheetTitle("Your passwords will be saved as plain text")
+    T(
+        "This file isn't encrypted. Anyone who gets it (another app, a cloud backup, someone with your phone) can read every password in it. " +
+            "Use it to move your passwords into another password manager, then delete the file.",
+        14.sp, C.Muted,
+    )
+    Row(
+        Modifier.fillMaxWidth().padding(vertical = 14.dp).clip(RoundedCornerShape(12.dp))
+            .clickable(onClickLabel = "I understand the file isn't encrypted") { understood = !understood }.padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            Modifier.size(24.dp).clip(RoundedCornerShape(7.dp))
+                .background(if (understood) C.Corn else C.Surface2)
+                .border(1.5.dp, if (understood) C.Corn else C.Muted, RoundedCornerShape(7.dp)),
+            contentAlignment = Alignment.Center,
+        ) { if (understood) CornIcon(CornIcons.Check, 16.dp, C.CornInk) }
+        Spacer(Modifier.width(12.dp))
+        T("I understand the file isn't encrypted", 15.sp, weight = FontWeight.SemiBold)
+    }
+    BigButton("Export passwords", { if (understood) c.passwords.export() }, icon = CornIcons.Download, enabled = understood)
+    Spacer(Modifier.height(10.dp))
+    BigButton("Cancel", { c.sheet = null }, ghost = true)
 }
 
 private fun lastUsedText(login: SavedLogin): String =
@@ -195,7 +225,10 @@ fun PasswordsScreen(c: CornController) {
     var adding by remember { mutableStateOf(false) }
     var pinOk by remember { mutableStateOf(false) }
     var pinThen by remember { mutableStateOf<(() -> Unit)?>(null) }
-    fun withPin(action: () -> Unit) { if (pinOk) action() else pinThen = action }
+    var pinSub by remember { mutableStateOf(PIN_SUB_VIEW) }
+    fun withPin(action: () -> Unit) { if (pinOk) action() else { pinSub = PIN_SUB_VIEW; pinThen = action } }
+    // Export always asks for the PIN, even if it was entered a moment ago (docs/02-technical/13-vault-export.md).
+    fun exportWithPin() { pinSub = "To export your passwords"; pinThen = { c.sheet = Sheet.Password(PasswordSheet.ExportWarning()) } }
 
     BackHandler {
         when {
@@ -218,7 +251,7 @@ fun PasswordsScreen(c: CornController) {
         } else if (detail != null) {
             PasswordDetail(c, detail, onBack = { detailId = null }, withPin = ::withPin)
         } else {
-            PasswordList(c, logins, unreadable, onOpen = { detailId = it.id }, onAdd = { adding = true })
+            PasswordList(c, logins, unreadable, onOpen = { detailId = it.id }, onAdd = { adding = true }, onExport = ::exportWithPin)
         }
         pinThen?.let { then ->
             Column(Modifier.fillMaxSize().background(C.Bg).clickable(enabled = false) {}) {
@@ -226,7 +259,7 @@ fun PasswordsScreen(c: CornController) {
                 PinGate(
                     settings = c.settings,
                     lockedTitle = "Enter your PIN",
-                    lockedSub = "To see, copy or edit passwords",
+                    lockedSub = pinSub,
                     createSub = "Choose a 4-digit PIN to protect your passwords",
                     onSuccess = { pinOk = true; pinThen = null; c.vaultUnlocked = true; then() },
                 )
@@ -235,8 +268,10 @@ fun PasswordsScreen(c: CornController) {
     }
 }
 
+private const val PIN_SUB_VIEW = "To see, copy or edit passwords"
+
 @Composable
-private fun PasswordList(c: CornController, logins: List<SavedLogin>, unreadable: Boolean, onOpen: (SavedLogin) -> Unit, onAdd: () -> Unit) {
+private fun PasswordList(c: CornController, logins: List<SavedLogin>, unreadable: Boolean, onOpen: (SavedLogin) -> Unit, onAdd: () -> Unit, onExport: () -> Unit) {
     var query by remember { mutableStateOf("") }
     Column(Modifier.fillMaxSize()) {
         Row(Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -290,6 +325,11 @@ private fun PasswordList(c: CornController, logins: List<SavedLogin>, unreadable
             if (logins.isNotEmpty()) {
                 T("Passwords stay on this phone, encrypted, and survive every Flush. Seeing one needs your PIN.", 12.5.sp, C.Muted,
                     modifier = Modifier.padding(top = 16.dp))
+            }
+            if (query.isBlank()) {
+                Spacer(Modifier.height(12.dp))
+                // Disabled with nothing to export. PIN, then the plain-text warning, then "Save to…".
+                Row50(CornIcons.Download, "Export passwords", onExport, hint = "CSV", enabled = logins.isNotEmpty())
             }
         }
     }

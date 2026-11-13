@@ -249,3 +249,10 @@
 - `scripts/release.sh 0.2.1` (by the founder): versionCode 2, tag `v0.2.1`, GitHub pre-release with the signed APK.
 - Branches: Flush saved as `flush` (ad2891d); `main` now points at Corn (509a18e).
 - Updated `docs/03-planning/02-checklist.md` (first signed release done; phone reinstall open), `docs/03-planning/05-releasing-and-updates.md` (Releases so far, branches), decision log Round 22 (branches).
+
+## 2026-11-13 — Vault export (links and passwords)
+
+- Rust `corn-vault`: database version 4 (`logins.password_changed_at`; upgrading from 3 adds it and sets it to `created_at`); `update_login` takes `password_changed`. New `src/export.rs`: links → HTML bookmarks ("Corn Vault" folder, a folder per Collection, `ADD_DATE` in seconds, `TAGS`, HTML escaping), links → CSV (`title,url,collection,tags,saved_at`, formula guard), passwords → Chrome CSV (`name,url,username,password,note`, no formula guard); RFC 4180 quoting, `\r\n`, own UTC date conversion. `Store::export_links_html/csv`.
+- `corn-ffi`: `export_links_html`, `export_links_csv`, `export_passwords_csv(rows)`, `Login.password_changed_at`, `update_login(…, password_changed)`.
+- Android: Vault → ⋮ → Export links (HTML recommended / CSV); Passwords → Export passwords (PIN every time, plain-text warning with checkbox, then "Save to…"); `ACTION_CREATE_DOCUMENT` launcher in `MainActivity`, `CornController.chooseExportPlace/exportLinks`, `Passwords.export`, `data/VaultExport.kt` (file names) + JVM test. Every `updateLogin` call says whether the password changed.
+- Updated `docs/02-technical/13-vault-export.md` (where the code adds detail), `12-security.md` (Exporting), `10-storage.md` (version 4), `docs/01-product/03-features.md`, `01-prd.md`, checklist.

@@ -87,6 +87,7 @@ fun VaultScreen(c: CornController) {
             IconBtn(CornIcons.Back, "Back to browser", { c.screen = Screen.Browser })
             T("Vault", 24.sp, weight = FontWeight.ExtraBold, display = true, modifier = Modifier.weight(1f))
             if (c.settings.vaultLock) Pill("Lock", { c.vaultUnlocked = false }, CornIcons.Lock)
+            IconBtn(CornIcons.Dots, "More", { c.sheet = Sheet.VaultMenu })
         }
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 24.dp)) {
             Field(query, { query = it }, "Search $total saved links", leading = { CornIcon(CornIcons.Search, 18.dp, C.Muted) })
