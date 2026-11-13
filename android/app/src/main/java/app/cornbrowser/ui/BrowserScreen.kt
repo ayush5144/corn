@@ -64,6 +64,14 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
@@ -78,6 +86,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import app.cornbrowser.CornController
 import app.cornbrowser.R
 import app.cornbrowser.Sheet
+import uniffi.corn_ffi.Favorite
+import uniffi.corn_ffi.siteHost
 import app.cornbrowser.browser.TabEntry
 
 @Composable
@@ -508,9 +518,9 @@ private fun NewTabPage(c: CornController) {
     var q by remember { mutableStateOf("") }
     val appear = remember(c.quip) { Animatable(0.94f) }
     LaunchedEffect(c.quip) { appear.animateTo(1f, tween(450)) }
-    val recent = remember(c.data.vaultVersion.intValue, c.settings.vaultLock) {
-        if (c.settings.vaultLock) emptyList() else c.data.recentItems(3)
-    }
+    // Favourites show even while the Vault is locked (founder, Favourites A+; said when adding).
+    val favorites = remember(c.data.vaultVersion.intValue) { c.data.favorites() }
+    val icons = rememberFavoriteIcons(c)
 
     BoxWithConstraints(Modifier.fillMaxSize()) {
     val viewportHeight = maxHeight
@@ -552,20 +562,25 @@ private fun NewTabPage(c: CornController) {
             }
         }
         if (q.isNotBlank()) SuggestionList(c, q, Modifier.fillMaxWidth())
-        // Quick tiles: the newest Vault links (only when the Vault isn't locked) + the Vault itself.
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            recent.forEach { item ->
-                val host = android.net.Uri.parse(item.url).host?.removePrefix("www.") ?: ""
-                QuickTile(host.substringBefore('.').replaceFirstChar { it.uppercase() }, { c.go(item.url) }) {
-                    Box(Modifier.size(56.dp).clip(RoundedCornerShape(Corners.Large)).background(C.forHost(host)), contentAlignment = Alignment.Center) {
-                        T(host.firstOrNull()?.uppercase() ?: "?", 20.sp, Color.White, FontWeight.ExtraBold)
-                    }
+        // Quick tiles. No favourites: the Vault tile and the "+ Favourite" tile, centred. Otherwise
+        // the Favourites row (layout A+): the Vault fixed at the start, a thin divider, favourites
+        // scrolling sideways with "+ Favourite" last. No header, no Edit: long-press a tile.
+        // "View all" under the row on the right once there are more than fit (5+).
+        Column(Modifier.fillMaxWidth()) {
+            if (favorites.isEmpty()) {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)) {
+                    VaultTile(c)
+                    AddFavoriteTile(c)
                 }
+            } else {
+                FavoritesRow(c, favorites, icons)
             }
-            QuickTile("Vault", { c.openVault() }) {
-                Box(Modifier.size(56.dp).clip(RoundedCornerShape(Corners.Large)).background(C.Surface2), contentAlignment = Alignment.Center) {
-                    CornIcon(CornIcons.Vault, 24.dp, C.Accent)
-                }
+            if (favorites.size >= VIEW_ALL_FROM) {
+                T(
+                    "View all", 13.sp, C.Accent, FontWeight.SemiBold,
+                    modifier = Modifier.align(Alignment.End).padding(top = 2.dp).clip(RoundedCornerShape(Corners.Small))
+                        .clickable { c.openFavorites() }.padding(horizontal = 6.dp, vertical = 6.dp),
+                )
             }
         }
         // All-time totals: real counts of requests Corn blocked, kept across Flushes (numbers only).
@@ -589,12 +604,204 @@ private fun Stat(value: Long, label: String, color: Color, modifier: Modifier) {
     }
 }
 
+/** "View all" shows from this many favourites: up to 4 fit beside the Vault tile on a 360 dp phone. */
+private const val VIEW_ALL_FROM = 5
+
+/** One tile column in the Favourites row and drawer: the 56 dp icon plus a little room for the label. */
+internal const val FAVORITE_TILE_DP = 62f
+
+/** The last tile of the row: "+ Favourite" opens the Add sheet (address and an optional name). */
 @Composable
-private fun QuickTile(label: String, onClick: () -> Unit, icon: @Composable () -> Unit) {
-    Column(Modifier.width(72.dp).clip(RoundedCornerShape(Corners.Medium)).clickable(onClick = onClick), horizontalAlignment = Alignment.CenterHorizontally) {
+private fun AddFavoriteTile(c: CornController, width: androidx.compose.ui.unit.Dp = FAVORITE_TILE_DP.dp) {
+    val line = C.Line
+    QuickTile("Favourite", { c.sheet = Sheet.AddFavorite(fromAll = false) }, width = width) {
+        Box(
+            Modifier.size(56.dp).drawBehind {
+                val stroke = 1.5.dp.toPx()
+                drawRoundRect(
+                    line,
+                    topLeft = androidx.compose.ui.geometry.Offset(stroke / 2, stroke / 2),
+                    size = androidx.compose.ui.geometry.Size(size.width - stroke, size.height - stroke),
+                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(Corners.Large.toPx()),
+                    style = androidx.compose.ui.graphics.drawscope.Stroke(
+                        width = stroke,
+                        pathEffect = androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(5.dp.toPx(), 4.dp.toPx())),
+                    ),
+                )
+            },
+            contentAlignment = Alignment.Center,
+        ) { CornIcon(CornIcons.Plus, 24.dp, C.Muted) }
+    }
+}
+
+@Composable
+private fun VaultTile(c: CornController) {
+    QuickTile("Vault", { c.openVault() }, width = FAVORITE_TILE_DP.dp) {
+        Box(Modifier.size(56.dp).clip(RoundedCornerShape(Corners.Large)).background(C.Surface2), contentAlignment = Alignment.Center) {
+            CornIcon(CornIcons.Vault, 24.dp, C.Accent)
+        }
+    }
+}
+
+/** Each favourite site's saved icon, decoded once per change. */
+@Composable
+private fun rememberFavoriteIcons(c: CornController): Map<String, FavIcon> =
+    remember(c.data.vaultVersion.intValue) {
+        c.data.favoriteIcons().mapNotNull { (host, png) ->
+            runCatching { android.graphics.BitmapFactory.decodeByteArray(png, 0, png.size) }.getOrNull()?.let { host to FavIcon.of(it) }
+        }.toMap()
+    }
+
+/**
+ * A decoded favourite icon plus what's needed to keep it visible: its average brightness and whether
+ * it is see-through (many sites serve a white or black mark on a transparent background).
+ */
+private class FavIcon(val image: ImageBitmap, val luminance: Float, val seeThrough: Boolean) {
+    companion object {
+        fun of(b: android.graphics.Bitmap): FavIcon {
+            val px = IntArray(b.width * b.height).also { b.getPixels(it, 0, b.width, 0, 0, b.width, b.height) }
+            var sum = 0f; var opaque = 0
+            for (p in px) {
+                if (android.graphics.Color.alpha(p) < 128) continue
+                opaque++
+                sum += (0.2126f * android.graphics.Color.red(p) + 0.7152f * android.graphics.Color.green(p) + 0.0722f * android.graphics.Color.blue(p)) / 255f
+            }
+            val lum = if (opaque == 0) 0.5f else sum / opaque
+            return FavIcon(b.asImageBitmap(), lum, opaque < px.size * 3 / 4)
+        }
+    }
+}
+
+/**
+ * The Vault tile, a divider, then the Favourites scrolling sideways, "+ Favourite" last. The Vault
+ * tile and four favourites fit on a 360 dp phone (5 × 62 dp + 7 dp divider). With 5 or more, the
+ * tile width is adjusted (close to 62 dp) so the tile at the right edge is cut about in half; the
+ * edge fades out while there is more to scroll, so it's clear the row scrolls.
+ */
+@Composable
+private fun FavoritesRow(c: CornController, favorites: List<Favorite>, icons: Map<String, FavIcon>) {
+    val scroll = rememberScrollState()
+    val line = C.Line
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
+        VaultTile(c)
+        Box(Modifier.padding(start = 2.dp, end = 4.dp).width(1.dp).height(56.dp).background(line))
+        BoxWithConstraints(Modifier.weight(1f)) {
+        // Up to 4 favourites keep the usual width (they fit; "+ Favourite" may scroll). From 5, the
+        // width is tuned so a tile is cut in half at the edge.
+        val tile = if (favorites.size < VIEW_ALL_FROM) FAVORITE_TILE_DP.dp else favoriteTileWidth(maxWidth, favorites.size + 1)
+        Row(
+            Modifier.fillMaxWidth()
+                .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+                .drawWithContent {
+                    drawContent()
+                    if (scroll.canScrollForward) {
+                        val fade = 36.dp.toPx()
+                        drawRect(
+                            Brush.horizontalGradient(listOf(Color.Black, Color.Transparent), startX = size.width - fade, endX = size.width),
+                            blendMode = BlendMode.DstIn,
+                        )
+                    }
+                }
+                .horizontalScroll(scroll),
+        ) {
+            favorites.forEach { fav -> FavoriteTile(c, fav, icons, fromAll = false, width = tile) }
+            AddFavoriteTile(c, width = tile)
+        }
+        }
+    }
+}
+
+/** [FAVORITE_TILE_DP] when every tile fits; otherwise the width nearest it (at least 60) that leaves half a tile showing at the edge. */
+internal fun favoriteTileWidth(available: androidx.compose.ui.unit.Dp, count: Int): androidx.compose.ui.unit.Dp {
+    val usual = FAVORITE_TILE_DP
+    val w = available.value
+    if (count * usual <= w) return usual.dp
+    val whole = (w / usual - 0.5f).toInt().coerceAtLeast(1)
+    val options = listOf(whole, whole + 1).map { w / (it + 0.5f) }.filter { it >= 60f }
+    return (options.minByOrNull { kotlin.math.abs(it - usual) } ?: (w / (whole + 0.5f))).dp
+}
+
+/**
+ * One Favourite: the site's icon (kept from a page Corn showed) centred on the tile, or its coloured
+ * letter; the name (or host) under it. Tap opens it here; long-press: Remove / Move.
+ */
+@Composable
+private fun FavoriteTile(c: CornController, fav: Favorite, icons: Map<String, FavIcon>, fromAll: Boolean, width: androidx.compose.ui.unit.Dp = FAVORITE_TILE_DP.dp) {
+    val host = android.net.Uri.parse(fav.url).host?.removePrefix("www.") ?: ""
+    val icon = icons[siteHost(fav.url)]
+    QuickTile(fav.title.ifBlank { host }, { c.openFavorite(fav.url) }, onLongClick = { c.sheet = Sheet.FavoriteTile(fav, fromAll) }, width = width) {
+        if (icon != null) {
+            val tile = C.Surface2
+            val tileLight = tile.luminance() > 0.5f
+            // A see-through icon too close to the tile's brightness (GitHub's white mark on a light
+            // tile) gets a small plate of the opposite tone behind it.
+            val plate = icon.seeThrough && kotlin.math.abs(icon.luminance - tile.luminance()) < 0.35f
+            Box(Modifier.size(56.dp).clip(RoundedCornerShape(Corners.Large)).background(tile), contentAlignment = Alignment.Center) {
+                Box(
+                    Modifier.size(38.dp).clip(RoundedCornerShape(Corners.Medium))
+                        .background(if (!plate) Color.Transparent else if (tileLight) Color(0xFF2E2A24) else Color(0xFFF2EEE6)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Image(icon.image, null, Modifier.size(30.dp).clip(RoundedCornerShape(Corners.Small)), filterQuality = FilterQuality.Medium)
+                }
+            }
+        } else {
+            Box(Modifier.size(56.dp).clip(RoundedCornerShape(Corners.Large)).background(C.forHost(host)), contentAlignment = Alignment.Center) {
+                T(host.firstOrNull()?.uppercase() ?: "?", 20.sp, Color.White, FontWeight.ExtraBold)
+            }
+        }
+    }
+}
+
+/**
+ * "View all": every Favourite as tiles, 4 across, in favourite order, under "Favourites (n)" with
+ * "+ Add" on the right. Shown in the bottom drawer (Sheets.kt).
+ */
+@Composable
+fun FavoritesGrid(c: CornController) {
+    val favorites = remember(c.data.vaultVersion.intValue) { c.data.favorites() }
+    val icons = rememberFavoriteIcons(c)
+    Row(Modifier.fillMaxWidth().padding(start = 4.dp, bottom = 14.dp), verticalAlignment = Alignment.CenterVertically) {
+        // The count in brackets in the lighter muted colour, on the title's baseline.
+        val muted = C.Muted
+        Text(
+            androidx.compose.ui.text.buildAnnotatedString {
+                append("Favourites")
+                pushStyle(androidx.compose.ui.text.SpanStyle(color = muted, fontWeight = FontWeight.SemiBold))
+                append(" (${favorites.size})")
+                pop()
+            },
+            Modifier.weight(1f), color = C.Text, fontSize = 20.sp, fontWeight = FontWeight.Bold, fontFamily = Display, maxLines = 1,
+        )
+        T(
+            "+ Add", 15.sp, C.Accent, FontWeight.SemiBold,
+            modifier = Modifier.clip(RoundedCornerShape(Corners.Small)).clickable { c.sheet = Sheet.AddFavorite(fromAll = true) }
+                .padding(horizontal = 8.dp, vertical = 6.dp),
+        )
+    }
+    Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        favorites.chunked(4).forEach { row ->
+            Row(Modifier.fillMaxWidth()) {
+                row.forEach { fav -> Box(Modifier.weight(1f), contentAlignment = Alignment.TopCenter) { FavoriteTile(c, fav, icons, fromAll = true) } }
+                repeat(4 - row.size) { Spacer(Modifier.weight(1f)) }
+            }
+        }
+    }
+    T("Long-press a tile to remove or move it.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 16.dp, start = 4.dp))
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun QuickTile(
+    label: String, onClick: () -> Unit, onLongClick: (() -> Unit)? = null, width: androidx.compose.ui.unit.Dp = 72.dp, icon: @Composable () -> Unit,
+) {
+    Column(
+        Modifier.width(width).clip(RoundedCornerShape(Corners.Medium)).combinedClickable(onClick = onClick, onLongClick = onLongClick),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
         icon()
         Spacer(Modifier.height(6.dp))
-        T(label, 12.sp, C.Muted, maxLines = 1)
+        T(label, 12.sp, C.Muted, maxLines = 1, modifier = Modifier.padding(start = 2.dp, end = 2.dp, bottom = 2.dp))
     }
 }
 

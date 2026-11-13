@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 01:12 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 15:41 IST
 
 Corn is a free, private, "use whenever you want" browser for adults. This glossary fixes the words we use for its product concepts so docs, UI copy and code all mean the same thing.
 
@@ -65,11 +65,15 @@ _Avoid_: Tab bar, group bar, bubbles
 
 **Vault**:
 The user's private, local, PIN-locked collection of things they explicitly chose to save; Corn's replacement for bookmarks. It survives every Flush.
-_Avoid_: Walls, bookmarks, favourites, library
+_Avoid_: Walls, bookmarks, library (and "favourites" for the Vault itself: a Favourite is something else, below)
 
 **Vault Item**:
 One saved thing in the Vault: a link with its title, plus optional tags and thumbnail.
 _Avoid_: Bookmark, save, entry
+
+**Favourite**:
+A link shown as a tile on the new tab, in a short list of its own that the user orders. Not a Vault Item: it can be added from a Vault link (copied) or by typing an address, and removing it doesn't touch the Vault. Shown without the PIN and kept by every Flush. Its site's icon is kept while it is a favourite.
+_Avoid_: Bookmark, speed dial, pinned site, starred link
 
 **Collection**:
 A named, single-level grouping of Vault Items; each Vault Item belongs to at most one Collection (picking one is optional).

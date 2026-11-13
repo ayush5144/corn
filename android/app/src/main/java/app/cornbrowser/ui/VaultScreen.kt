@@ -167,7 +167,7 @@ private fun CollectionView(c: CornController, id: Long, onBack: () -> Unit) {
             if (items.isEmpty()) Empty("Nothing here yet. Tap the Vault icon in the address bar on any page to save it here.")
             else {
                 items.forEach { ItemRow(c, it) }
-                T("Long-press a link to delete it.", 12.5.sp, C.Muted, modifier = Modifier.padding(vertical = 14.dp))
+                T("Long-press a link to add it to favourites or delete it.", 12.5.sp, C.Muted, modifier = Modifier.padding(vertical = 14.dp))
             }
         }
     }
@@ -179,7 +179,7 @@ private fun ItemRow(c: CornController, it: VaultItem) {
     val host = Uri.parse(it.url).host?.removePrefix("www.") ?: it.url
     Row(
         Modifier.fillMaxWidth()
-            .combinedClickable(onClick = { c.openInNewTab(it.url) }, onLongClick = { c.sheet = app.cornbrowser.Sheet.DeleteItem(it.id, it.title) })
+            .combinedClickable(onClick = { c.openInNewTab(it.url) }, onLongClick = { c.sheet = Sheet.VaultItemMenu(it) })
             .padding(vertical = 12.dp, horizontal = 4.dp),
         verticalAlignment = Alignment.Top,
     ) {

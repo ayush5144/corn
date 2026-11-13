@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 12:17 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 15:41 IST
 
 Everything stays in Corn's **private app storage** on the phone. Other apps can't read it (Android sandbox), the phone encrypts it while locked (file-based encryption), and Corn opts out of every backup.
 
@@ -12,6 +12,8 @@ Everything stays in Corn's **private app storage** on the phone. Other apps can'
 |---|---|---|---|
 | **Vault** (Collections, Vault Items, tags) | SQLite database `corn.db`, written by the Rust core (`corn-vault`). Each link saved once; its Collection is optional (All = every link) | ✅ Yes | One format for Android, iPhone and desktop |
 | **Saved passwords** | `corn.db` table `logins`: site in clear (for lookup), username and password **AES-256-GCM encrypted** (site + field bound as associated data). The 256-bit data key is stored only wrapped by a non-exportable **Android Keystore** key (`corn_logins_kek`, StrongBox when available) in the `corn_logins` settings file. "Never save" sites: kv `login_never_save` | ✅ Yes | Like Firefox (`logins`) and DuckDuckGo (Keystore-protected keys); details in [12-security](12-security.md). If the key can't be unwrapped (e.g. data restored to another phone), passwords are unreadable and the Passwords screen offers a reset |
+| **Favourites** (the new tab's tiles: address, name, order) | `corn.db` table `favorites` (`url` unique, `title`, `pos`). Their own list: a favourite doesn't have to be in the Vault, and deleting a Vault link leaves it | ✅ Yes | Shown on the new tab without the PIN (said when adding one) |
+| **Favourite icons** | `corn.db` table `favorite_icons`: one 64×64 PNG per site (host without "www.", a few KB), taken from the icon WebView gives for a page Corn showed. Saved when a favourite is added while a tab on that site has its icon, or when a favourite's site is visited and has no icon yet (or one older than 30 days). Never downloaded on its own; never kept for sites without a favourite (history stays letters); deleted when the site's last favourite is removed | ✅ Yes | Like the favourites themselves |
 | **Keep List** (sites that stay logged in) | `corn.db`, key-value area | ✅ Yes | Reveals sites, so it lives with the Vault, not in plain settings |
 | **Per-site shields** (ads / trackers / pop-ups on or off) | `corn.db`, key-value area | ✅ Yes | Same reason |
 | **Totals** (trackers & ads blocked, pop-ups stopped) | Settings file: two numbers | ✅ Yes | Counts only: no URLs, sites or times |
@@ -31,7 +33,7 @@ Founder decision (decision log, Round 5). SQLCipher would only add protection wh
 
 **Size:** history costs about 160 bytes per visit (1,000 visits ≈ 160 KB, measured with Corn's tables).
 
-**Schema upgrades:** `corn.db` carries a version (`PRAGMA user_version`, now 4; version 4 added `logins.password_changed_at`, set to each login's `created_at` on upgrade, see [13-vault-export](13-vault-export.md); version 3 added the `logins` table). Version 2 made a link's Collection optional and moved "Unsorted" links to no Collection (shown in All). Upgrades run once on open and keep all data (unit-tested).
+**Schema upgrades:** `corn.db` carries a version (`PRAGMA user_version`, now 5; version 5 added the `favorites` and `favorite_icons` tables, nothing else changes; version 4 added `logins.password_changed_at`, set to each login's `created_at` on upgrade, see [13-vault-export](13-vault-export.md); version 3 added the `logins` table). Version 2 made a link's Collection optional and moved "Unsorted" links to no Collection (shown in All). Upgrades run once on open and keep all data (unit-tested).
 
 **Switching back later:** in `core/Cargo.toml` change rusqlite's feature to `bundled-sqlcipher-vendored-openssl`, add `PRAGMA key` in `Store::open`, and keep the key in the Android Keystore. Nothing outside `corn-vault` changes.
 

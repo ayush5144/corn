@@ -71,6 +71,8 @@ interface TabHost {
     fun onVisited(entry: TabEntry, url: String, title: String)
     /** A page's title became known (for history). */
     fun onTitle(url: String, title: String)
+    /** A page's icon arrived from WebView (kept only for favourite sites, see CornController). */
+    fun onIcon(entry: TabEntry, icon: Bitmap) {}
     /** Settings → Appearance → Text size, in percent (100 = the site's own size). */
     val textZoom: Int
     /** A page asked the user to pick files ("Upload photo"). Return false to cancel. */
@@ -456,6 +458,8 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
             entry.showingSnapshot = false
             entry.url = finishedUrl
             view.title?.takeIf { it.isNotBlank() }?.let { entry.title = it }
+            // A cached icon may arrive with onPageStarted only (no onReceivedIcon): offer it too.
+            (view.favicon ?: entry.favicon)?.let { icon -> entry.favicon = icon; host.onIcon(entry, icon) }
             if (pendingScrollY > 0) {
                 val y = pendingScrollY
                 pendingScrollY = 0
@@ -563,7 +567,10 @@ class CornTab(context: Context, private val entry: TabEntry, private val host: T
         }
 
         override fun onReceivedIcon(view: WebView, icon: Bitmap?) {
-            if (icon != null) entry.favicon = icon
+            if (icon != null) {
+                entry.favicon = icon
+                host.onIcon(entry, icon)
+            }
         }
 
         /** Page console messages would otherwise be copied into Android's system log (with URLs). */

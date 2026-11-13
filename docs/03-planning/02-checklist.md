@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 14:25 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 15:41 IST
 
 The single list of what's done, what's next and who owns it. Product decisions live in the [decision log](../01-product/02-decision-log.md); this file tracks **work**.
 
@@ -218,6 +218,18 @@ The founder has been testing on a real phone and reports it working well. These 
 |---|---|---|---|
 | [x] | One set of corner sizes (`Corners` in `ui/Theme.kt`): Small 8, Medium 12, Large 16, Sheet 24, Pill. Was 14 different values (2–22 dp). Mapped: 7/9 → Small, 11/12 → Medium, 14/16/18 → Large, sheet top 22 → 24, 17/19/21 → Pill; hairlines, the sheet handle and the tabs-count icon keep their own. No setting (one well-made look). Before/after screenshots compared on the emulator (new tab, address bar, menu, tabs) | Claude | Done |
 | [x] | Top address bar and Find bar: 16 dp corners like the new-tab search box (was a pill). Seen on the emulator (founder approved) | Claude | Done |
+
+## Favourites (founder, layout A+, 2026-11-13)
+
+| ✓ | Task | Owner | Done when |
+|---|---|---|---|
+| [x] | **Storage:** favourites are their own list (`favorites`: url unique, title, pos) plus one icon per site (`favorite_icons`), database version 5; add (append, same address keeps its place), remove, list in order, move with ends; icons only for favourite sites, removed with the site's last favourite | Claude | `cargo test`: add/duplicate/remove/order/move/ends, icons shared per site and cleaned up, kept by Clear history, the 4 → 5 upgrade of a real version-4 database |
+| [x] | **New-tab row:** Vault tile fixed, divider, favourites scrolling, "+ Favourite" last; the Vault and 4 favourites fit on 360 dp; from 5 the edge tile is cut and "View all" shows under the row on the right; none: Vault + "+ Favourite" centred; replaces the "recent Vault links" tiles | Claude | Emulator: 4 favourites none cut; 5 the 5th cut and View all shown; empty state centred; dark and light |
+| [x] | **View all drawer:** bottom sheet "Favourites (N)" (count muted) with "+ Add", tiles 4 across in order; tap opens, long-press Remove / Move left / Move right | Claude | Emulator: + Add returned to the drawer with the new tile; Remove returned to the drawer; Move right disabled at the end |
+| [x] | **Adding:** Vault link long-press → Add to / Remove from favourites (next to Delete); + Favourite / + Add → address (normalised like the address bar) and optional name; the note "Favourites show on the new tab, even while the Vault is locked." | Claude | Emulator: both paths added a favourite; "wikipedia.org" stored as https://wikipedia.org/ |
+| [x] | **Icons:** from the icon WebView gives for a page Corn shows (never fetched by Corn), 64×64 PNG, refreshed after 30 days; letter until then | Claude | Emulator: typed favourite showed a letter, then its icon after a visit; adding from an open tab showed the icon at once; all 6 test sites got icons (2–8 KB each) |
+| [x] | **Upgrade keeps data:** install over the released build's database | Claude | Emulator: version 4 → 5, 5 Vault links, 2 Collections, 3 logins and tags kept; `items` unchanged |
+| [ ] | Founder: try it on a phone; decide whether "+ Favourite" stays the only add path on the new tab | Founder | Decided |
 
 ## Later: website and desktop (added 2026-11-13)
 

@@ -9,6 +9,10 @@
 //!   "All" is not stored: it is simply every saved link.
 //! - **History**: one entry per page plus a visit log with timestamps (cleared by Flush).
 //!   Deletion is all-or-nothing, per visit, or per site (history only): no time ranges.
+//! - **Favourites**: a short, ordered list of links shown as tiles on the new tab. Its own list,
+//!   not Vault Items: a favourite doesn't have to be saved in the Vault. Survives every Flush and,
+//!   unlike the Vault, is shown without the PIN. Each favourite's site may have one small icon
+//!   (`favorite_icons`, one per site, only while a favourite on that site exists).
 //! - a small key-value area for the Keep List, per-site shields and the Kept Session.
 //! - **Passwords** (`logins`): one row per saved login. The site (origin) is stored in clear so
 //!   Corn can look logins up; the username and password are opaque blobs encrypted by the app
@@ -31,7 +35,8 @@ pub mod export;
 /// - 2: optional Collection ("All"), history.
 /// - 3: `logins` (saved passwords).
 /// - 4: `logins.password_changed_at` (for exports and "password last changed").
-const SCHEMA_VERSION: i64 = 4;
+/// - 5: `favorites` (the new tab's Favourites, their own list) and `favorite_icons` (one per site).
+const SCHEMA_VERSION: i64 = 5;
 
 #[derive(Debug, thiserror::Error)]
 pub enum VaultError {
@@ -71,6 +76,25 @@ pub struct HistoryVisit {
     pub title: String,
     pub host: String,
     pub visited_at: i64,
+}
+
+/// One Favourite: a link shown as a tile on the new tab. `pos`: lower comes first.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Favorite {
+    pub id: i64,
+    pub url: String,
+    pub title: String,
+    pub pos: i64,
+    pub created_at: i64,
+}
+
+/// A favourite site's icon: a 64×64 PNG taken from a page Corn showed (never downloaded on its own).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct FavoriteIcon {
+    /// Lower-case host without "www." (see [site_host]).
+    pub host: String,
+    pub png: Vec<u8>,
+    pub updated_at: i64,
 }
 
 /// One saved login. `username_enc` and `password_enc` are encrypted by the app; Rust never decrypts them.
@@ -140,6 +164,18 @@ CREATE TABLE IF NOT EXISTS logins (
     password_changed_at INTEGER NOT NULL DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS logins_by_origin ON logins(origin);
+CREATE TABLE IF NOT EXISTS favorites (
+    id         INTEGER PRIMARY KEY,
+    url        TEXT NOT NULL UNIQUE,
+    title      TEXT NOT NULL,
+    pos        INTEGER NOT NULL,
+    created_at INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS favorite_icons (
+    host       TEXT PRIMARY KEY,
+    png        BLOB NOT NULL,
+    updated_at INTEGER NOT NULL
+);
 ";
 
 const LOGIN_COLUMNS: &str = "id, origin, username_enc, password_enc, created_at, last_used_at, times_used, password_changed_at";
@@ -157,6 +193,36 @@ fn login_row(r: &rusqlite::Row) -> rusqlite::Result<Login> {
         times_used: r.get(6)?,
         password_changed_at: r.get(7)?,
     })
+}
+
+/// The site a favourite or page belongs to, as icons are keyed: lower-case host without "www."
+/// (`https://WWW.Example.com:8080/a` → `example.com`). A bare host is returned normalised too.
+pub fn site_host(url: &str) -> String {
+    let rest = url.trim().split_once("://").map_or(url.trim(), |(_, r)| r);
+    let authority = rest.split(['/', '?', '#']).next().unwrap_or("");
+    let host_port = authority.rsplit_once('@').map_or(authority, |(_, h)| h);
+    let host = if host_port.starts_with('[') {
+        host_port.split_inclusive(']').next().unwrap_or(host_port)
+    } else {
+        host_port.split(':').next().unwrap_or("")
+    };
+    let host = host.to_ascii_lowercase();
+    host.strip_prefix("www.").map(str::to_owned).unwrap_or(host)
+}
+
+/// The sites that have at least one favourite.
+fn favorite_hosts(conn: &Connection) -> Result<std::collections::HashSet<String>> {
+    let mut stmt = conn.prepare("SELECT url FROM favorites")?;
+    let rows = stmt.query_map([], |r| r.get::<_, String>(0))?;
+    let mut out = std::collections::HashSet::new();
+    for url in rows {
+        out.insert(site_host(&url?));
+    }
+    Ok(out)
+}
+
+fn favorite_row(r: &rusqlite::Row) -> rusqlite::Result<Favorite> {
+    Ok(Favorite { id: r.get(0)?, url: r.get(1)?, title: r.get(2)?, pos: r.get(3)?, created_at: r.get(4)? })
 }
 
 fn now() -> i64 {
@@ -303,6 +369,111 @@ impl Store {
             })
         })?;
         Ok(rows.collect::<std::result::Result<_, _>>()?)
+    }
+
+    // ---------- Favourites ----------
+
+    /// Add a link at the end of the Favourites. Adding one that is already there keeps its place
+    /// and takes the new title (if not blank). Returns the favourite.
+    pub fn add_favorite(&self, url: &str, title: &str) -> Result<Favorite> {
+        let conn = self.conn();
+        conn.execute(
+            "INSERT INTO favorites (url, title, pos, created_at)
+             VALUES (?1, ?2, (SELECT COALESCE(MAX(pos), 0) + 1 FROM favorites), ?3)
+             ON CONFLICT(url) DO UPDATE SET
+               title = CASE WHEN trim(excluded.title) <> '' THEN excluded.title ELSE favorites.title END",
+            params![url, title, now()],
+        )?;
+        Ok(conn.query_row(
+            "SELECT id, url, title, pos, created_at FROM favorites WHERE url = ?1",
+            [url],
+            favorite_row,
+        )?)
+    }
+
+    /// Remove a favourite; its site's icon goes too once no favourite on that site is left.
+    pub fn remove_favorite(&self, id: i64) -> Result<()> {
+        let conn = self.conn();
+        conn.execute("DELETE FROM favorites WHERE id = ?1", [id])?;
+        let in_use = favorite_hosts(&conn)?;
+        let icons: Vec<String> = {
+            let mut stmt = conn.prepare("SELECT host FROM favorite_icons")?;
+            let rows = stmt.query_map([], |r| r.get(0))?;
+            rows.collect::<std::result::Result<_, _>>()?
+        };
+        for host in icons.iter().filter(|h| !in_use.contains(*h)) {
+            conn.execute("DELETE FROM favorite_icons WHERE host = ?1", [host])?;
+        }
+        Ok(())
+    }
+
+    /// Save (or replace) a site's icon, only if a favourite on that site exists: icons are never
+    /// kept for anything else. `host` is normalised with [site_host]. Returns whether it was saved.
+    pub fn set_favorite_icon(&self, host: &str, png: &[u8]) -> Result<bool> {
+        let host = site_host(host);
+        let conn = self.conn();
+        if host.is_empty() || !favorite_hosts(&conn)?.contains(&host) {
+            return Ok(false);
+        }
+        conn.execute(
+            "INSERT INTO favorite_icons (host, png, updated_at) VALUES (?1, ?2, ?3)
+             ON CONFLICT(host) DO UPDATE SET png = excluded.png, updated_at = excluded.updated_at",
+            params![host, png, now()],
+        )?;
+        Ok(true)
+    }
+
+    /// True when a favourite on this site has no icon yet, or one older than `max_age_ms`.
+    pub fn favorite_icon_wanted(&self, host: &str, max_age_ms: i64) -> Result<bool> {
+        let host = site_host(host);
+        let conn = self.conn();
+        if host.is_empty() || !favorite_hosts(&conn)?.contains(&host) {
+            return Ok(false);
+        }
+        let updated: Option<i64> =
+            conn.query_row("SELECT updated_at FROM favorite_icons WHERE host = ?1", [&host], |r| r.get(0)).optional()?;
+        Ok(updated.map_or(true, |at| now() - at > max_age_ms))
+    }
+
+    /// Every stored icon (one per favourite site).
+    pub fn favorite_icons(&self) -> Result<Vec<FavoriteIcon>> {
+        let conn = self.conn();
+        let mut stmt = conn.prepare("SELECT host, png, updated_at FROM favorite_icons")?;
+        let rows = stmt.query_map([], |r| Ok(FavoriteIcon { host: r.get(0)?, png: r.get(1)?, updated_at: r.get(2)? }))?;
+        Ok(rows.collect::<std::result::Result<_, _>>()?)
+    }
+
+    /// Every Favourite in new-tab order (first = leftmost).
+    pub fn favorites(&self) -> Result<Vec<Favorite>> {
+        let conn = self.conn();
+        let mut stmt = conn.prepare("SELECT id, url, title, pos, created_at FROM favorites ORDER BY pos, id")?;
+        let rows = stmt.query_map([], favorite_row)?;
+        Ok(rows.collect::<std::result::Result<_, _>>()?)
+    }
+
+    /// Move a Favourite `delta` places (negative = left/earlier), shifting the ones in between;
+    /// for ±1 that is a swap with the neighbour. Stops at either end; an unknown id does nothing.
+    pub fn move_favorite(&self, id: i64, delta: i64) -> Result<()> {
+        let mut conn = self.conn();
+        let tx = conn.transaction()?;
+        let mut ids: Vec<i64> = {
+            let mut stmt = tx.prepare("SELECT id FROM favorites ORDER BY pos, id")?;
+            let rows = stmt.query_map([], |r| r.get(0))?;
+            rows.collect::<std::result::Result<_, _>>()?
+        };
+        let Some(from) = ids.iter().position(|i| *i == id) else { return Ok(()) };
+        let to = (from as i64).saturating_add(delta).clamp(0, ids.len() as i64 - 1) as usize;
+        if to == from {
+            return Ok(());
+        }
+        let moved = ids.remove(from);
+        ids.insert(to, moved);
+        // Renumber 1..n so positions stay unique and small.
+        for (pos, fav) in ids.iter().enumerate() {
+            tx.execute("UPDATE favorites SET pos = ?2 WHERE id = ?1", params![fav, pos as i64 + 1])?;
+        }
+        tx.commit()?;
+        Ok(())
     }
 
     // ---------- History ----------
@@ -584,8 +755,8 @@ fn migrate(conn: &Connection) -> Result<()> {
             )?;
         }
     }
-    // Version 2 → 3 only adds the `logins` table: CREATE TABLE IF NOT EXISTS in SCHEMA does it,
-    // leaving everything already stored untouched.
+    // Version 2 → 3 only adds the `logins` table, and 4 → 5 only the `favorites` table:
+    // CREATE TABLE IF NOT EXISTS in SCHEMA does it, leaving everything already stored untouched.
     conn.execute_batch(SCHEMA)?;
     conn.execute_batch(&format!("PRAGMA user_version = {SCHEMA_VERSION};"))?;
     Ok(())
@@ -839,7 +1010,7 @@ mod tests {
         }
         let s = Store::open(&path).unwrap();
         let version: i64 = s.conn().query_row("PRAGMA user_version", [], |r| r.get(0)).unwrap();
-        assert_eq!(version, 4);
+        assert_eq!(version, SCHEMA_VERSION);
         let mut logins = s.all_logins().unwrap();
         logins.sort_by_key(|l| l.id);
         assert_eq!(logins.len(), 2);
@@ -853,6 +1024,159 @@ mod tests {
         let s = Store::open(&path).unwrap();
         assert_eq!(s.login_count().unwrap(), 3);
         assert!(s.export_links_csv().unwrap().contains("Pasta,https://a.example/,Recipes,quick,1970-01-01T00:00:05Z\r\n"));
+    }
+
+    #[test]
+    fn favourites_add_dup_remove_order_and_move() {
+        let s = Store::open(&temp_path("favs")).unwrap();
+        assert!(s.favorites().unwrap().is_empty());
+        let a = s.add_favorite("https://a.example/", "A").unwrap();
+        let b = s.add_favorite("https://b.example/", "B").unwrap();
+        let c = s.add_favorite("https://c.example/", "C").unwrap();
+        let order = |s: &Store| s.favorites().unwrap().into_iter().map(|f| f.id).collect::<Vec<_>>();
+        assert_eq!(order(&s), vec![a.id, b.id, c.id]); // appended in the order added
+
+        // Adding the same address again keeps its place; a new title replaces the old, a blank one doesn't.
+        let a2 = s.add_favorite("https://a.example/", "A renamed").unwrap();
+        assert_eq!((a2.id, a2.pos), (a.id, a.pos));
+        s.add_favorite("https://a.example/", "  ").unwrap();
+        assert_eq!(s.favorites().unwrap().len(), 3);
+        assert_eq!(s.favorites().unwrap()[0].title, "A renamed");
+
+        // Move right / left swaps with the neighbour.
+        s.move_favorite(a.id, 1).unwrap();
+        assert_eq!(order(&s), vec![b.id, a.id, c.id]);
+        s.move_favorite(c.id, -1).unwrap();
+        assert_eq!(order(&s), vec![b.id, c.id, a.id]);
+        // At the ends nothing happens; an unknown id is ignored.
+        s.move_favorite(b.id, -1).unwrap();
+        s.move_favorite(a.id, 1).unwrap();
+        s.move_favorite(9999, 1).unwrap();
+        assert_eq!(order(&s), vec![b.id, c.id, a.id]);
+
+        // Remove; adding again puts it at the end.
+        s.remove_favorite(b.id).unwrap();
+        assert_eq!(order(&s), vec![c.id, a.id]);
+        let b3 = s.add_favorite("https://b.example/", "B").unwrap();
+        assert_eq!(order(&s), vec![c.id, a.id, b3.id]);
+    }
+
+    #[test]
+    fn site_host_matches_the_apps_host() {
+        assert_eq!(site_host("https://WWW.Example.com:8080/a?b#c"), "example.com");
+        assert_eq!(site_host("http://user@m.example.com/"), "m.example.com");
+        assert_eq!(site_host("example.com"), "example.com");
+        assert_eq!(site_host("http://10.0.2.2:8765/x"), "10.0.2.2");
+        assert_eq!(site_host("http://[::1]:80/"), "[::1]");
+    }
+
+    #[test]
+    fn favourite_icons_one_per_site_and_cleaned_up() {
+        let s = Store::open(&temp_path("fav-icons")).unwrap();
+        // No favourite on the site: nothing is stored (history and other pages stay letters).
+        assert!(!s.set_favorite_icon("example.com", b"PNG0").unwrap());
+        assert!(!s.favorite_icon_wanted("example.com", 1000).unwrap());
+        assert!(s.favorite_icons().unwrap().is_empty());
+
+        let a = s.add_favorite("https://www.example.com/", "Home").unwrap();
+        let b = s.add_favorite("https://example.com/news", "News").unwrap();
+        s.add_favorite("https://other.example/", "Other").unwrap();
+        assert!(s.favorite_icon_wanted("www.example.com", 1000).unwrap());
+        assert!(s.set_favorite_icon("www.Example.com", b"PNG1").unwrap());
+        // Upsert: one row per site, shared by both favourites on it.
+        assert!(s.set_favorite_icon("example.com", b"PNG2").unwrap());
+        let icons = s.favorite_icons().unwrap();
+        assert_eq!(icons.len(), 1);
+        assert_eq!((icons[0].host.as_str(), icons[0].png.as_slice()), ("example.com", b"PNG2".as_slice()));
+        // Fresh: not wanted again until it is older than the limit.
+        assert!(!s.favorite_icon_wanted("example.com", 60_000).unwrap());
+        s.conn().execute("UPDATE favorite_icons SET updated_at = 0", []).unwrap();
+        assert!(s.favorite_icon_wanted("example.com", 60_000).unwrap());
+        s.set_favorite_icon("other.example", b"PNG3").unwrap();
+
+        // Removing one of two favourites on the site keeps the icon; removing the last drops it.
+        s.remove_favorite(a.id).unwrap();
+        assert_eq!(s.favorite_icons().unwrap().len(), 2);
+        s.remove_favorite(b.id).unwrap();
+        let hosts: Vec<String> = s.favorite_icons().unwrap().into_iter().map(|i| i.host).collect();
+        assert_eq!(hosts, vec!["other.example".to_string()]);
+    }
+
+    #[test]
+    fn favourites_are_their_own_list() {
+        let s = Store::open(&temp_path("favs-own")).unwrap();
+        // A favourite needn't be in the Vault, and deleting a Vault link leaves the favourite alone.
+        let item = s.add_item(None, "Saved", "https://saved.example/", &[]).unwrap();
+        s.add_favorite("https://saved.example/", "Saved").unwrap();
+        s.add_favorite("https://home.example/", "Home page").unwrap();
+        assert_eq!(s.item_count().unwrap(), 1);
+        s.delete_item(item.id).unwrap();
+        assert_eq!(s.favorites().unwrap().len(), 2);
+        // Clearing history (part of every Flush) keeps them.
+        s.record_visit("https://home.example/", "Home page", "home.example", 1).unwrap();
+        s.set_favorite_icon("home.example", b"PNG").unwrap();
+        s.clear_history().unwrap();
+        assert_eq!(s.favorites().unwrap().len(), 2);
+        assert_eq!(s.favorite_icons().unwrap().len(), 1);
+    }
+
+    #[test]
+    fn upgrades_v4_database_adding_favourites_and_keeping_everything() {
+        let path = temp_path("migrate-v4");
+        {
+            // A version-4 database exactly as release 0.2.2 wrote it.
+            let c = Connection::open(&path).unwrap();
+            c.execute_batch(
+                "CREATE TABLE collections (id INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE COLLATE NOCASE, created_at INTEGER NOT NULL);
+                 CREATE TABLE items (id INTEGER PRIMARY KEY, collection_id INTEGER REFERENCES collections(id) ON DELETE SET NULL,
+                                     title TEXT NOT NULL, url TEXT NOT NULL, created_at INTEGER NOT NULL);
+                 CREATE INDEX items_by_collection ON items(collection_id, created_at DESC);
+                 CREATE TABLE item_tags (item_id INTEGER NOT NULL REFERENCES items(id) ON DELETE CASCADE, tag TEXT NOT NULL, PRIMARY KEY (item_id, tag));
+                 CREATE TABLE kv (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+                 CREATE TABLE history_entries (id INTEGER PRIMARY KEY, url TEXT NOT NULL UNIQUE, host TEXT NOT NULL, title TEXT NOT NULL, last_visit INTEGER NOT NULL);
+                 CREATE TABLE history_visits (id INTEGER PRIMARY KEY, entry_id INTEGER NOT NULL REFERENCES history_entries(id) ON DELETE CASCADE, visited_at INTEGER NOT NULL);
+                 CREATE TABLE logins (id INTEGER PRIMARY KEY, origin TEXT NOT NULL, username_enc BLOB NOT NULL, password_enc BLOB NOT NULL,
+                                      created_at INTEGER NOT NULL, last_used_at INTEGER NOT NULL, times_used INTEGER NOT NULL DEFAULT 0,
+                                      password_changed_at INTEGER NOT NULL DEFAULT 0);
+                 CREATE INDEX logins_by_origin ON logins(origin);
+                 INSERT INTO collections VALUES (1, 'Recipes', 100);
+                 INSERT INTO items VALUES (10, 1, 'Pasta', 'https://a.example/', 5000), (11, NULL, 'Loose', 'https://b.example/', 6000);
+                 INSERT INTO item_tags VALUES (10, 'quick');
+                 INSERT INTO kv VALUES ('keep_list', '[\"mail.example.com\"]');
+                 INSERT INTO history_entries VALUES (1, 'https://h.example/', 'h.example', 'H', 7);
+                 INSERT INTO history_visits VALUES (1, 1, 7);
+                 INSERT INTO logins VALUES (1, 'https://example.com', x'0102', x'0304', 1111, 2222, 3, 1500);
+                 PRAGMA user_version = 4;",
+            )
+            .unwrap();
+        }
+        let s = Store::open(&path).unwrap();
+        let version: i64 = s.conn().query_row("PRAGMA user_version", [], |r| r.get(0)).unwrap();
+        assert_eq!(version, 5);
+        // Everything kept, `items` unchanged; no favourites yet.
+        let all = s.items(None).unwrap();
+        assert_eq!(all.len(), 2);
+        let pasta = all.iter().find(|i| i.id == 10).unwrap();
+        assert_eq!((pasta.collection_id, pasta.tags.clone()), (Some(1), vec!["quick".to_string()]));
+        let item_columns: i64 = s.conn().query_row("SELECT count(*) FROM pragma_table_info('items')", [], |r| r.get(0)).unwrap();
+        assert_eq!(item_columns, 5);
+        assert_eq!(s.collections().unwrap()[0].item_count, 1);
+        assert_eq!(s.kv_get("keep_list").unwrap().as_deref(), Some("[\"mail.example.com\"]"));
+        assert_eq!(s.history(None, 10).unwrap().len(), 1);
+        let l = &s.all_logins().unwrap()[0];
+        assert_eq!((l.password_enc.clone(), l.password_changed_at, l.times_used), (vec![3, 4], 1500, 3));
+        assert!(s.favorites().unwrap().is_empty());
+        assert!(s.favorite_icons().unwrap().is_empty());
+        // Favourites work on the upgraded database and survive reopening.
+        s.add_favorite("https://b.example/", "Loose").unwrap();
+        s.add_favorite("https://home.example/", "Home").unwrap();
+        s.set_favorite_icon("home.example", b"PNG").unwrap();
+        drop(s);
+        let s = Store::open(&path).unwrap();
+        let urls: Vec<String> = s.favorites().unwrap().into_iter().map(|f| f.url).collect();
+        assert_eq!(urls, vec!["https://b.example/".to_string(), "https://home.example/".to_string()]);
+        assert_eq!(s.favorite_icons().unwrap().len(), 1);
+        assert_eq!(s.items(None).unwrap().len(), 2);
     }
 
     #[test]
