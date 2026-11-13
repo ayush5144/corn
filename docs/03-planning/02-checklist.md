@@ -192,6 +192,13 @@ The founder has been testing on a real phone and reports it working well. These 
 | [x] | **Group cards review:** several tabs in a group on the emulator; fix anything that reads badly at real size | Claude | Screenshots reviewed; fixes committed |
 | [x] | Done 2026-11-13, seen on the emulator: new-tab page without the big logo and wordmark; the tagline in three centred lines ("Browse." / "Save what matters." / "Flush the rest.") with Corny after the last word, sitting right above the search bar, which is about a third of the way down (a trailing 🌽 in an after-Flush line is replaced by Corny); tab cards without a picture show the site icon or letter, name and title (a background-opened tab showed iana.org this way); the new-tab card and the error/crashed pages use Corny instead of the 🌽 emoji; closing a tab or a Flush drops its picture, icon and saved state (`TabEntry.forget`, no `Bitmap.recycle` because a frame may still draw it); group review found a blank white picture of a page captured while loading, so pictures are no longer taken while a page loads | Claude | Done |
 
+## Address bar and Flush button (founder, 2026-11-13)
+
+| ✓ | Task | Owner | Done when |
+|---|---|---|---|
+| [ ] | **Address bar empty when tapped** (like Brave), with a "current page" row at the top of the suggestions: the page's address, ✏️ Edit (puts it in the box) and ⧉ Copy | Claude | On a page: tap the bar → empty box, current-page row; Edit fills the box; Copy copies |
+| [ ] | **Flush button without the yellow box:** the swirl drawn in corn yellow (the theme's darker yellow in light mode for contrast), same tap area | Claude | Seen in dark and light; Flush still works |
+
 ## Later: website and desktop (added 2026-11-13)
 
 | ✓ | Task | Owner | Done when |
