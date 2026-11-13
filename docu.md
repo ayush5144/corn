@@ -243,3 +243,9 @@
 - The founder created `~/corn-release.jks`; a release build is signed `CN=Corn, O=Corn, C=IN` (SHA-256 e4b31db3…d3930ad). No repo code changed.
 - Updated `docs/03-planning/02-checklist.md` (new done row; backup and first signed update still open) and `docs/03-planning/05-releasing-and-updates.md` (key created, public fingerprint, how to check an APK).
 - Updated `AGENTS.md` (where releasing lives; key never in the repo).
+
+## 2026-11-13 — First signed release 0.2.1; main is Corn again
+
+- `scripts/release.sh 0.2.1` (by the founder): versionCode 2, tag `v0.2.1`, GitHub pre-release with the signed APK.
+- Branches: Flush saved as `flush` (ad2891d); `main` now points at Corn (509a18e).
+- Updated `docs/03-planning/02-checklist.md` (first signed release done; phone reinstall open), `docs/03-planning/05-releasing-and-updates.md` (Releases so far, branches), decision log Round 22 (branches).

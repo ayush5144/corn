@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 11:00 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 11:40 IST
 
 Every product question asked and the founder's answer, in order. Settled answers flow into [01-prd.md](01-prd.md). New rounds are appended at the bottom.
 
@@ -449,6 +449,7 @@ Every product question asked and the founder's answer, in order. Settled answers
 ### Round 22 — Rename to Flush tried, parked; Corn continues (2026-11-12)
 - **What happened:** on 2026-11-11 the browser was fully renamed and rebranded as **Flush** (app ID, code names, Vortex logo, navy/blue palette, Fredoka, copy) on branch `main` (latest `ad2891d`). The last Corn version was saved as branch `corn` and tag `corn-final`.
 - **Answer (for now):** the founder feels Corn's name and theme fit better, so development continues on the **`corn` branch** as Corn. The Flush work stays on `main`, unchanged, in case it's picked up again.
+- **Branches (2026-11-13):** `main` is Corn again; the Flush work moved to the **`flush`** branch (unchanged, last commit ad2891d). The `corn` branch equals `main` and can be deleted later.
 - **Carried over from Flush:** a line with two sentences shows one sentence per line (toasts and the line after a Flush), and after a Flush each line is centred (`ui/Copy.kt`, unit-tested).
 
 ### Round 21 — QA fixes: how Corn should behave like a real browser (2026-11-05)

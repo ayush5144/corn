@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-13 · **Last updated:** 2026-11-13, 11:32 IST
+> **Created:** 2026-11-13 · **Last updated:** 2026-11-13, 11:40 IST
 
 How Corn gets onto people's phones, how updates reach them, and what has to be in place first. Written for the founder in plain language; the decisions are in the decision log (Round 24).
 
@@ -76,6 +76,15 @@ Tasks: [checklist, Before launch](02-checklist.md).
 4. **Each release:** `scripts/release.sh 0.2.1`. It raises `versionCode`, runs the tests, builds, checks the APK is signed with Corn's key (and stops if it's the debug key), copies `Corn-0.2.1.apk` to Downloads, then **asks** before committing the version, tagging, pushing and creating the GitHub pre-release.
 
 How it's wired: `android/app/build.gradle.kts` reads `CORN_RELEASE_STORE_FILE`, `CORN_RELEASE_STORE_PASSWORD`, `CORN_RELEASE_KEY_ALIAS`, `CORN_RELEASE_KEY_PASSWORD` from `~/.gradle/gradle.properties` or from environment variables (for automated builds, e.g. GitHub Actions secrets). Without them, release builds are unsigned, as before. A `.env` file isn't used: Gradle reads its own private file, and a `.env` inside the project could be committed to the public repo by mistake.
+
+## Releases so far
+
+| Version | versionCode | Signed with | Where | Notes |
+|---|---|---|---|---|
+| 0.2.0 (test builds) | 1 | the **debug key** | Founder's phone, emulator | Testing only; can't be updated by signed releases |
+| **0.2.1** | 2 | Corn's release key (SHA-256 e4b31db3…) | [GitHub pre-release v0.2.1](https://github.com/ayush5144/corn/releases/tag/v0.2.1) | First signed release (2026-11-13). Moving from 0.2.0 needs one uninstall (data cleared once) |
+
+Branches: `main` is Corn (releases are tagged from it); the parked Flush rename lives on `flush`.
 
 ## Installing an APK on a phone (for testers)
 
