@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 11:40 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 11:47 IST
 
 The single list of what's done, what's next and who owns it. Product decisions live in the [decision log](../01-product/02-decision-log.md); this file tracks **work**.
 
@@ -170,6 +170,17 @@ The founder has been testing on a real phone and reports it working well. These 
 | [ ] | Should · Founder's check of History and onboarding (marked "awaiting founder" above) | Founder | Approved or changes listed |
 | [x] | Long-press on search results: full link menu (with Open in new tab group, Save link to Vault, Share link) even when the link contains a site icon; image actions only for real pictures; titles from the link's heading. Verified on Google (3 results × title and icon) and by the QA check `search-result-link-menu` | Claude | Done |
 | [ ] | Search-engine redirect links (Google's `google.com/goto?url=…`) are saved and copied as Google's link, not the site's: the real address is encrypted in the link, so it can only be learned by asking Google. Founder decision needed | Founder | Decided (keep as is / resolve by asking Google when saving or copying) |
+
+## Vault export (Round 25, plan: [13-vault-export](../02-technical/13-vault-export.md))
+
+| ✓ | Task | Owner | Done when |
+|---|---|---|---|
+| [x] | Export doc written first (formats, safety, mechanism, tests) | Claude | Committed |
+| [ ] | Rust: database version 4 (`password_changed_at`, upgrade from 3), `export.rs` (HTML bookmarks, links CSV, passwords CSV, escaping, formula guard on links only), exposed to Kotlin | Claude | Unit tests pass, including the 3 → 4 upgrade |
+| [ ] | Android: Vault → Export links (HTML / CSV) and Passwords → Export passwords (PIN, warning with checkbox, "Save to…", reminder) | Claude | Emulator: files read back with every item; PIN and checkbox can't be skipped |
+| [ ] | The HTML file imports into Chrome on the Mac | Claude | Folders, links and titles appear in Chrome |
+| [ ] | Docs (security doc, features, PRD) and release 0.2.2 | Claude | Pushed; signed release published |
+| [ ] | Later: Import (same formats) and a full Corn backup (optionally encrypted) | Claude | Founder decides |
 
 ## Later: website and desktop (added 2026-11-13)
 

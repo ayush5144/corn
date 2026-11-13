@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 11:01 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 11:47 IST
 
 Read in folder order. Start with the product, then the technical plan.
 
@@ -32,6 +32,7 @@ Read in folder order. Start with the product, then the technical plan.
 | 10 | [Storage](02-technical/10-storage.md) | What Corn keeps, where (SQLite, settings, WebView), and what survives a Flush |
 | 11 | [Keep List and data clearing](02-technical/11-keep-list.md) | What Keep List sites keep, how Flush and Delete browsing data delete everything else, built-in vs workaround, limits |
 | 12 | [Security and encryption](02-technical/12-security.md) | How saved passwords are encrypted (data key + Android Keystore), the PIN, filling rules, what's protected where, known gaps |
+| 13 | [Exporting the Vault](02-technical/13-vault-export.md) | Links as HTML bookmarks or CSV, passwords as plain-text CSV (Chrome format) with PIN and warning; database version 4; how it works |
 
 ## 03 — Planning: *when* we build it
 
