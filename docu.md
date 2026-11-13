@@ -292,3 +292,4 @@
 - `AGENTS.md`: engineering agents row lists the export and favourites briefs.
 - Released 0.2.2 (versionCode 4): `docs/03-planning/05-releasing-and-updates.md` Releases table.
 - Flush confirmation on by default with "Don't ask again" (`CornSettings.flushConfirm`, `ConfirmFlushSheet`, shared `CheckRow` in `ui/Components.kt`); PRD, features, decision log updated.
+- Released 0.2.3 (versionCode 5): Releases table in `docs/03-planning/05-releasing-and-updates.md`.
