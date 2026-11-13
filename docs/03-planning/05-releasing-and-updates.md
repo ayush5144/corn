@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-13 · **Last updated:** 2026-11-13, 18:21 IST
+> **Created:** 2026-11-13 · **Last updated:** 2026-11-14, 00:01 IST
 
 How Corn gets onto people's phones, how updates reach them, and what has to be in place first. Written for the founder in plain language; the decisions are in the decision log (Round 24).
 
@@ -85,6 +85,7 @@ How it's wired: `android/app/build.gradle.kts` reads `CORN_RELEASE_STORE_FILE`, 
 | **0.2.1** | 2 | Corn's release key (SHA-256 e4b31db3…) | [GitHub pre-release v0.2.1](https://github.com/ayush5144/corn/releases/tag/v0.2.1) | First signed release (2026-11-13). Moving from 0.2.0 needs one uninstall (data cleared once) |
 | **0.2.2** | 4 | Corn's release key | [GitHub pre-release v0.2.2](https://github.com/ayush5144/corn/releases/tag/v0.2.2) | 2026-11-13: Favourites, Corny above a yellow tagline, new address bar, Vault export, Android share icon, corner sizes. Installs over 0.2.1 keeping data. (versionCode 3 was a local-only build, never published) |
 | **0.2.3** | 5 | Corn's release key | [GitHub pre-release v0.2.3](https://github.com/ayush5144/corn/releases/tag/v0.2.3) | 2026-11-13: Flush asks first by default, with "Don't ask again". Installs over 0.2.1 / 0.2.2 keeping data |
+| **0.2.4** | 6 | Corn's release key | [GitHub pre-release v0.2.4](https://github.com/ayush5144/corn/releases/tag/v0.2.4) | 2026-11-14: split screen as a pair (other tabs open full screen, the pair comes back). Installs over 0.2.1–0.2.3 keeping data |
 
 Branches: `main` is Corn (releases are tagged from it); the parked Flush rename lives on `flush`.
 
