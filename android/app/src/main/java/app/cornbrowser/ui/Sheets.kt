@@ -387,8 +387,14 @@ private fun ColumnScope.GroupSheet(c: CornController, groupId: Int) {
 
 @Composable
 private fun ConfirmFlushSheet(c: CornController) {
+    // "Don't ask again" only counts when the user actually flushes; Cancel never changes the setting.
+    var dontAsk by remember { mutableStateOf(false) }
     SheetTitle("Flush everything?", "All tabs and groups, cookies, cache and history go. Your Vault and Keep List stay.")
-    BigButton("Flush", { c.flushNow(animate = true) }, icon = CornIcons.Flush)
+    CheckRow("Don't ask again", dontAsk, Modifier.padding(bottom = 8.dp)) { dontAsk = !dontAsk }
+    BigButton("Flush", {
+        if (dontAsk) c.settings.flushConfirm = false
+        c.flushNow(animate = true)
+    }, icon = CornIcons.Flush)
     Spacer(Modifier.height(10.dp))
     BigButton("Cancel", { c.sheet = null }, ghost = true)
 }

@@ -160,20 +160,7 @@ private fun ExportWarningSheet(c: CornController, kind: PasswordSheet.ExportWarn
             "Use it to move your passwords into another password manager, then delete the file.",
         14.sp, C.Muted,
     )
-    Row(
-        Modifier.fillMaxWidth().padding(vertical = 14.dp).clip(RoundedCornerShape(Corners.Medium))
-            .clickable(onClickLabel = "I understand the file isn't encrypted") { understood = !understood }.padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(
-            Modifier.size(24.dp).clip(RoundedCornerShape(Corners.Small))
-                .background(if (understood) C.Corn else C.Surface2)
-                .border(1.5.dp, if (understood) C.Corn else C.Muted, RoundedCornerShape(Corners.Small)),
-            contentAlignment = Alignment.Center,
-        ) { if (understood) CornIcon(CornIcons.Check, 16.dp, C.CornInk) }
-        Spacer(Modifier.width(12.dp))
-        T("I understand the file isn't encrypted", 15.sp, weight = FontWeight.SemiBold)
-    }
+    CheckRow("I understand the file isn't encrypted", understood, Modifier.padding(vertical = 14.dp)) { understood = !understood }
     BigButton("Export passwords", { if (understood) c.passwords.export() }, icon = CornIcons.Export, enabled = understood)
     Spacer(Modifier.height(10.dp))
     BigButton("Cancel", { c.sheet = null }, ghost = true)

@@ -68,7 +68,7 @@ fun SettingsScreen(c: CornController, onNeedPin: () -> Unit) {
                     })
                 }
                 ToggleRow("Flush sound", "Off by default, so it never goes off in public.", s.flushSound) { s.flushSound = it }
-                ToggleRow("Ask before flushing", "Off by default. When on, Corn asks before wiping.", s.flushConfirm) { s.flushConfirm = it }
+                ToggleRow("Ask before flushing", "On by default. Turn off for one-tap Flush.", s.flushConfirm) { s.flushConfirm = it }
             }
 
             Label("Keep List")

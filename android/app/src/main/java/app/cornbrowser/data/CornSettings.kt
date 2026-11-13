@@ -51,7 +51,7 @@ class CornSettings(context: Context) {
     var inactivity by pref("inactivity", false)
     var inactivityMinutes by intPref("inactivity_minutes", 30)
     var flushSound by pref("flush_sound", false)
-    var flushConfirm by pref("flush_confirm", false)
+    var flushConfirm by pref("flush_confirm", true) // on by default (founder, 2026-11-13); "Don't ask again" in the sheet turns it off
     var appLock by pref("app_lock", false)
     var vaultLock by pref("vault_lock", true)
     var blackRecents by pref("black_recents", true)

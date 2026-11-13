@@ -413,3 +413,22 @@ fun BoxScope.ToastHost(msg: ToastMsg?, bottomPadding: Dp, onAction: () -> Unit) 
         }
     }
 }
+
+/** A tappable checkbox with a label (the password-export warning, the Flush sheet's "Don't ask again"). */
+@Composable
+fun CheckRow(label: String, checked: Boolean, modifier: Modifier = Modifier, onToggle: () -> Unit) {
+    Row(
+        modifier.fillMaxWidth().clip(RoundedCornerShape(Corners.Medium))
+            .clickable(onClickLabel = label, onClick = onToggle).padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            Modifier.size(24.dp).clip(RoundedCornerShape(Corners.Small))
+                .background(if (checked) C.Corn else C.Surface2)
+                .border(1.5.dp, if (checked) C.Corn else C.Muted, RoundedCornerShape(Corners.Small)),
+            contentAlignment = Alignment.Center,
+        ) { if (checked) CornIcon(CornIcons.Check, 16.dp, C.CornInk) }
+        Spacer(Modifier.width(12.dp))
+        T(label, 15.sp, weight = FontWeight.SemiBold)
+    }
+}

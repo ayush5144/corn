@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 16:01 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 18:19 IST
 
 Every feature in the Android app today, what it does for the user, and the evidence behind it. Nothing here is planned-only; planned work lives in the [checklist](../03-planning/02-checklist.md).
 
@@ -84,6 +84,7 @@ Every feature in the Android app today, what it does for the user, and the evide
 
 - **Flush Button** ✅
   - *What:* one tap closes every tab and group and deletes history, cookies and IndexedDB (except Keep List sites'), all other site storage, cache, form data and the saved session, then Corn restarts itself in about 0.3 s so nothing stays in memory. The Vault, settings and Keep List stay. Drain animation, vibration, a one-liner, optional sound, optional "Ask before flushing". The button's glyph is a water swirl going down a drain (seen in the toolbar on the emulator).
+  - *Confirmation* (2026-11-13): "Ask before flushing" is on by default. The "Flush everything?" sheet has a "Don't ask again" box; it counts only when you tap Flush (Cancel never changes the setting), after which Flush is one tap and the setting shows off in Settings. Verified on the emulator: sheet shown; tick + Cancel asked again; tick + Flush, then no sheet.
   - *Benefit:* a clean slate instantly, with nothing left behind.
   - *Evidence:* on the emulator, two test sites each set a cookie, local storage and IndexedDB. After Flush: the Keep List site still had its cookie; the other site's cookie was gone; local storage and IndexedDB were gone for both; history went from 13 visits to 0. Log: cookies deleted from WebView's cookie database (no fallback needed), process restarted.
 

@@ -291,3 +291,4 @@
 - `docs/01-product/03-features.md` New-tab Layout: Corny above a yellow tagline, Favourites row then Stats.
 - `AGENTS.md`: engineering agents row lists the export and favourites briefs.
 - Released 0.2.2 (versionCode 4): `docs/03-planning/05-releasing-and-updates.md` Releases table.
+- Flush confirmation on by default with "Don't ask again" (`CornSettings.flushConfirm`, `ConfirmFlushSheet`, shared `CheckRow` in `ui/Components.kt`); PRD, features, decision log updated.

@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 15:41 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 18:19 IST
 
 Every product question asked and the founder's answer, in order. Settled answers flow into [01-prd.md](01-prd.md). New rounds are appended at the bottom.
 
@@ -447,6 +447,7 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **New tab:** Corny sits above the tagline (where the wordmark was), not after its last word; the tagline is corn yellow (the darker theme yellow in light mode), like the line after a Flush.
 - **Favourites (founder, A+):** Vault links you star show as a scrolling row on the new tab: the Vault tile fixed at the start, favourites after it, a "View all" link under the row on the right. No header, no Edit: long-press a tile to remove or move it; View all opens the Vault's favourites. Favourites show even while the Vault is locked (said when starring). No separate bookmarks.
   - **Changed while building (founder, same day):** a favourite is **its own list, not a flag on a Vault link** ("someone might want to favourite a home page but not save it to the Vault"): `favorites` table, database version 5. Add from a Vault link's long-press (copies the address and title) or type an address in **+ Favourite** (last tile of the row) or **+ Add** (View all drawer). **View all** shows from 5 favourites (the Vault and 4 favourites fit on a 360 dp phone) and opens a **bottom drawer** over the new tab ("Favourites (N)", tiles 4 across), not the Vault, so no PIN. With none: the Vault tile and "+ Favourite", centred. Favourites survive Flush and show without the PIN. **Icons:** the site's real icon, one per site, saved from pages Corn shows (never fetched on its own), letter until then.
+- **Flush confirmation (changes Round 5):** "Ask before flushing" is **on by default** (a Flush can't be undone and the button sits next to Tabs and Menu). The sheet has "Don't ask again"; it takes effect only when the user taps Flush with it ticked (Cancel changes nothing), then Flush is one tap and the Settings toggle shows off.
 - **Corners:** keep Corn's soft, rounded look but use one set of sizes everywhere (8 / 12 / 16 / 24 / pill); no setting for corner style.
 - **Address bar:** tapping it gives an empty box (like Brave); the current page is offered right under it with Edit and Copy.
 - **Flush button:** no yellow box; the swirl itself in corn yellow (the darker theme yellow in light mode).

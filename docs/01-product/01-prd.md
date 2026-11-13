@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 15:41 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 18:19 IST
 
 - **Status:** Draft v2, being shaped through Q&A rounds ([02-decision-log.md](02-decision-log.md))
 - **Last updated:** 2026-11-01 (after Round 1)
@@ -112,7 +112,7 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | Requirement | Status |
 |---|---|
 | **Flush Button**: one tap wipes the Session (tabs, Tab Groups, cookies, cache, history, previews) | ✅ |
-| Setting: **Flush confirmation** toggle (off by default) | ✅ |
+| Setting: **Flush confirmation** ("Ask before flushing"), **on by default**; the sheet's "Don't ask again" (counts only when you Flush) turns it off | ✅ |
 | Flush Button is a **flush** button (not a power button). Glyph: a water swirl going down a drain (three arms + drain dot) on the corn-yellow pill, replacing the toilet; same glyph in the confirmation, Tabs screen and onboarding | ✅ |
 | Flush Button sits in the **bottom toolbar, at the far right or second from the right** | ✅ |
 | Default: **Kept Session**: the Session survives until the user flushes | ✅ |
@@ -195,7 +195,7 @@ What a new user gets before changing anything.
 | Auto-Flush after Leaving Corn | Off (options: when I leave / 5 min / 30 min) | ✅ |
 | Flush after inactivity | Off (10 / 30 / 60 min; a playing video counts as activity) | ✅ |
 | Flush sound | Off | ✅ |
-| Flush confirmation | Off (one tap); a Settings toggle turns on an "Are you sure?" step | ✅ |
+| Flush confirmation | On: "Flush everything?" with "Don't ask again"; ticking it and flushing makes Flush one tap (switch back in Settings) | ✅ |
 | Keep List | Empty | ✅ |
 | Vault lock | On (4-digit PIN) | ✅ |
 | App Lock | Off | ✅ |
