@@ -293,3 +293,8 @@
 - Released 0.2.2 (versionCode 4): `docs/03-planning/05-releasing-and-updates.md` Releases table.
 - Flush confirmation on by default with "Don't ask again" (`CornSettings.flushConfirm`, `ConfirmFlushSheet`, shared `CheckRow` in `ui/Components.kt`); PRD, features, decision log updated.
 - Released 0.2.3 (versionCode 5): Releases table in `docs/03-planning/05-releasing-and-updates.md`.
+
+## 2026-11-13 — Split screen as a pair
+
+- Code: `SplitState.afterSwitch` (new rule, replaces `show`), `TabManager.parkedSplit`, `CornController.newTabInGroup` (background-add workaround and `TabManager.addToGroupInBackground` removed); `SplitStateTest` updated.
+- Docs: features (Split screen), `docs/02-technical/03-android.md` (Split screen), checklist (old Round 20 row replaced, new row), decision log Round 26.

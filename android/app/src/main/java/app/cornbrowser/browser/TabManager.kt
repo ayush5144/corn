@@ -112,9 +112,11 @@ class TabEntry(val id: Int, url: String, groupId: Int?) {
  * - **Split screen** ([split], [SplitState]): two tabs on screen at once. The current tab is the
  *   focused pane's tab (the pane last touched), so everything that acts on "the open tab" acts on
  *   it. Both panes' tabs are fully running and never unloaded while split (not even by
- *   [trimMemory]); the N kept-in-memory tabs above are counted besides those two. Showing another
- *   tab (Tabs screen, group strip, a new tab) replaces the focused pane's tab. Closing either
- *   tab, closing a pane, or a Flush ([reset]) ends split screen. Not saved across restarts.
+ *   [trimMemory]); the N kept-in-memory tabs above are counted besides those two. The two tabs are
+ *   a pair: showing any other tab (Tabs screen, group strip, a new tab, a pop-up) shows it full
+ *   screen and parks the pair ([parkedSplit]); showing either of its tabs again brings the split
+ *   back ([SplitState.afterSwitch]). Closing either tab, closing a pane, starting another split, or
+ *   a Flush ([reset]) ends it. Not saved across restarts.
  */
 class TabManager(private val context: Context, private val host: TabHost) {
     /** How many recent tabs (besides the open one) stay in memory. Set by the controller from Settings. */
@@ -129,20 +131,11 @@ class TabManager(private val context: Context, private val host: TabHost) {
     /** Split screen (null when off). Its focused tab is always [currentId]. */
     var split by mutableStateOf<SplitState?>(null)
         private set
+    /** A split pair waiting while another tab is shown full screen; switching to either of its tabs restores it. */
+    private var parkedSplit: SplitState? = null
 
     /** True for the open tab, and for both tabs while split. */
     fun isOnScreen(id: Int): Boolean = id == currentId || split?.contains(id) == true
-
-    /**
-     * Add an empty tab at the end of a group without showing it, so the tabs on screen
-     * (e.g. both split-screen panes) stay as they are. Null if the group doesn't exist.
-     */
-    fun addToGroupInBackground(groupId: Int): TabEntry? {
-        val last = groupTabs(groupId).lastOrNull() ?: return null
-        val entry = TabEntry(nextTabId++, NEW_TAB, groupId)
-        tabs.add((tabs.indexOf(last) + 1).coerceIn(0, tabs.size), entry)
-        return entry
-    }
 
     private fun onScreenIds(): Set<Int> = split?.tabIds ?: setOf(currentId)
 
@@ -188,8 +181,13 @@ class TabManager(private val context: Context, private val host: TabHost) {
     fun switchTo(id: Int) {
         val target = tabs.firstOrNull { it.id == id } ?: return
         current?.let { cur -> if (cur.id != id) freshPreview(cur)?.let { cur.preview = it } }
-        split?.let { split = it.show(id) } // in split screen: the tab goes into the focused pane
+        val (active, parked) = SplitState.afterSwitch(split, parkedSplit, id)
+        val restored = split == null && active != null
+        split = active
+        parkedSplit = parked
         currentId = id
+        // Back to a parked pair: its other tab may have been unloaded meanwhile.
+        if (restored) tabs.firstOrNull { it.id == active?.remainingAfterClosing(id) }?.takeIf { !it.isNewTab }?.let { ensureLive(it) }
         recent.remove(id)
         recent.addFirst(id)
         if (!target.isNewTab) ensureLive(target)
@@ -203,6 +201,7 @@ class TabManager(private val context: Context, private val host: TabHost) {
         val cur = current ?: return
         if (tabs.none { it.id == otherId }) return
         split = SplitState.start(cur.id, otherId) ?: return
+        parkedSplit = null // a new split replaces a parked one
         switchTo(otherId)
     }
 
@@ -279,6 +278,7 @@ class TabManager(private val context: Context, private val host: TabHost) {
         // Closing one of the split-screen tabs ends split screen; the other tab stays on screen.
         val stay = split?.remainingAfterClosing(id)
         if (stay != null) split = null
+        if (parkedSplit?.contains(id) == true) parkedSplit = null // a parked pair loses a tab: forget it
         entry.live?.destroy()
         entry.live = null
         entry.forget()
@@ -450,6 +450,7 @@ class TabManager(private val context: Context, private val host: TabHost) {
     /** Destroy every tab and group (used by Flush). Leaves one fresh new-tab page. */
     fun reset() {
         split = null
+        parkedSplit = null
         tabs.forEach { it.live?.destroy(); it.live = null; it.forget(); host.onTabClosed(it) }
         tabs.clear()
         groups.clear()

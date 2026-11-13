@@ -1047,14 +1047,7 @@ class CornController(private val context: Context) : TabHost {
     }
 
     fun newTabInGroup(groupId: Int) {
-        // Split screen: don't touch the panes being viewed; add the tab to the group and offer to open it.
-        if (tabs.split != null) {
-            val added = tabs.addToGroupInBackground(groupId) ?: return
-            sheet = null
-            screen = Screen.Browser
-            showToast("New tab added to “${tabs.group(groupId)?.name ?: "the group"}”", "Open") { switchTab(added.id) }
-            return
-        }
+        // In split screen the new tab opens full screen like any other; the pair is parked (TabManager).
         val first = tabs.groupTabs(groupId).firstOrNull() ?: return
         if (tabs.current?.groupId != groupId) tabs.switchTo(first.id)
         tabs.open(NEW_TAB, inGroup = true)

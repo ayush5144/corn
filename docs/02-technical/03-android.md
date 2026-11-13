@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 01:12 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 23:58 IST
 
 ## Summary
 
@@ -82,7 +82,7 @@ What "kept in memory" really means (Android's documentation and our measurements
 - `onPause()` "does not pause JavaScript" (Android docs). Measured: a hidden tab's timers slow about 5× but keep running.
 - `pauseTimers()` would stop scripts but is global ("for all WebViews"), so it would stop the open tab too. Corn never calls it.
 - All tabs share one page process (measured): one page crashing reloads every tab.
-- **Split screen:** two tabs on screen (top/bottom, side by side in landscape); both always stay live and never count against "kept in memory"; the focused pane's tab is the current tab, so the address bar and toolbar act on it. Each pane has its own pull-to-refresh container. Rules in `TabManager.kt` and `browser/SplitState.kt`.
+- **Split screen:** two tabs on screen (top/bottom, side by side in landscape); both always stay live and never count against "kept in memory"; the focused pane's tab is the current tab, so the address bar and toolbar act on it. The two tabs are a pair: switching to any other tab shows it full screen and parks the pair (`TabManager.parkedSplit`); switching to either of its tabs restores it (`SplitState.afterSwitch`, unit-tested). Closing one of its tabs, starting another split or a Flush forgets it. Each pane has its own pull-to-refresh container. Rules in `TabManager.kt` and `browser/SplitState.kt`.
 - `pauseTimers()` is used where its global effect is right: while Corn is in the background (measured: page timers 20/20 s → 0/20 s).
 - Tabs opened in the background start loading at once and take a memory slot; an unloaded tab shows its saved picture until the page draws (`onPageCommitVisible`).
 

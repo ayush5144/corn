@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 15:41 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 23:58 IST
 
 The single list of what's done, what's next and who owns it. Product decisions live in the [decision log](../01-product/02-decision-log.md); this file tracks **work**.
 
@@ -84,7 +84,8 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [ ] | **Keep List**: chosen sites stay logged in across Flush (cookies + IndexedDB kept, verified with a test site; not yet with a real login) | Claude | Keep List site still logged in after Flush |
 | [x] | **Corn password store** in the Vault, survives Flush: Keystore-wrapped AES-256-GCM, own form script, save/update/never prompts, fill on tap (PIN when Vault locked; switchable), Passwords screen. Verified on the emulator (save, PIN fill, no-PIN fill, kept after Flush) | Claude | Saved password fills a login after Flush |
 | [x] | Password review #4: clear a copied password when Corn leaves the screen (and on next start if it was closed). Verified by pasting | Claude | Nothing pastes after leaving Corn |
-| [x] | Split screen: "New tab in group" adds the tab to the group in the background (both panes stay); toast "Open" puts it in the focused pane. Verified | Claude | Panes unchanged; tab in the group |
+| [x] | ~~Split screen: "New tab in group" adds the tab to the group in the background (both panes stay); toast "Open" puts it in the focused pane.~~ Replaced 2026-11-13 by "split as a pair" (below) | Claude | Panes unchanged; tab in the group |
+| [x] | **Split as a pair** (founder, option B, 2026-11-13): a new tab or any other tab shows full screen and the split is parked; back to either of its tabs restores it. Verified on the emulator (strip +, strip tabs, Menu → New tab, Tabs screen) and `SplitStateTest`; QA `fullscreen-split-pane` passes | Claude | New tabs never land in a pane uninvited; the pair comes back |
 | [x] | Password review #3: closing a tab (or a Flush) forgets its login-form note and fill chip, so nothing useless stays in memory | Claude | No leftovers for closed tabs |
 | [x] | Password review #2: re-check the page's site right before filling (second lock). Normal fill verified afterwards | Claude | Fill refuses if the tab isn't on the login's site |
 | [x] | Main buttons stay visible on long screens: Tabs screen Flush bar pinned at the bottom; group sheet (Save group / New tab in group), Save to Vault (Save) and split picker (New tab) pin their buttons while their content scrolls. Verified with 13 tabs | Claude | Buttons reachable without scrolling |

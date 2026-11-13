@@ -12,6 +12,10 @@ package app.cornbrowser.browser
  *
  * Immutable and free of Android code so the rules can be unit-tested; [TabManager] holds the
  * current value (null when split screen is off). Not saved: a restart shows a single tab.
+ *
+ * **A pair** (founder, 2026-11-13, option B): the two tabs belong together. Opening or switching to
+ * any other tab shows it full screen and parks the pair; switching back to either of its tabs brings
+ * the split back ([afterSwitch]). Like side-by-side tabs in desktop browsers.
  */
 data class SplitState(
     val first: Int,
@@ -32,16 +36,6 @@ data class SplitState(
         first -> copy(focusFirst = true)
         second -> copy(focusFirst = false)
         else -> this
-    }
-
-    /**
-     * Show tab [id] (Tabs screen, Tab Group Strip, a new tab, a pop-up…): if it's already in a
-     * pane, focus that pane; otherwise it replaces the focused pane's tab.
-     */
-    fun show(id: Int): SplitState = when {
-        id in this -> focus(id)
-        focusFirst -> copy(first = id)
-        else -> copy(second = id)
     }
 
     /** Drag the divider: [raw] is where the finger is (0 = top/left edge, 1 = bottom/right edge). */
@@ -72,6 +66,21 @@ data class SplitState(
 
         /** Start split screen: [current] becomes the top/left pane, [other] the focused bottom/right one. */
         fun start(current: Int, other: Int): SplitState? = if (current == other) null else SplitState(current, other)
+
+        /**
+         * Switching to tab [id], given the [active] split (on screen) and the [parked] one (remembered
+         * while another tab is shown):
+         * - a tab of the active pair: focus its pane;
+         * - any other tab while split: shown full screen, the pair is parked;
+         * - a tab of the parked pair: the split comes back, focused on that tab;
+         * - anything else: no split; a parked pair stays parked.
+         */
+        fun afterSwitch(active: SplitState?, parked: SplitState?, id: Int): Pair<SplitState?, SplitState?> = when {
+            active != null && id in active -> active.focus(id) to null
+            active != null -> null to active
+            parked != null && id in parked -> parked.focus(id) to null
+            else -> null to parked
+        }
 
         fun clampRatio(raw: Float): Float = if (raw.isNaN()) 0.5f else raw.coerceIn(MIN_RATIO, MAX_RATIO)
     }

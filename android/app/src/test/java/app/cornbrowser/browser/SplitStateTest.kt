@@ -30,23 +30,33 @@ class SplitStateTest {
         assertEquals(s, s.focus(9))
     }
 
-    @Test fun showingAnotherTabReplacesTheFocusedPane() {
-        val s = SplitState.start(1, 2)!!          // focus on 2 (second pane)
-        val t = s.show(5)
-        assertEquals(1, t.first)
-        assertEquals(5, t.second)
-        assertEquals(5, t.focused)
-        val u = s.focus(1).show(7)                 // focus on 1 (first pane)
-        assertEquals(7, u.first)
-        assertEquals(2, u.second)
-        assertEquals(7, u.focused)
+    @Test fun anotherTabShowsFullScreenAndParksThePair() {
+        val s = SplitState.start(1, 2)!!
+        val (active, parked) = SplitState.afterSwitch(s, null, 5)
+        assertNull(active)
+        assertEquals(s, parked)
     }
 
-    @Test fun showingATabAlreadyOnScreenFocusesIt() {
-        val s = SplitState.start(1, 2)!!.show(1)
-        assertEquals(1, s.first)
-        assertEquals(2, s.second)
-        assertEquals(1, s.focused)
+    @Test fun aTabOfTheActivePairFocusesItsPane() {
+        val s = SplitState.start(1, 2)!!
+        val (active, parked) = SplitState.afterSwitch(s, null, 1)
+        assertEquals(1, active!!.focused)
+        assertNull(parked)
+    }
+
+    @Test fun backToATabOfTheParkedPairRestoresTheSplit() {
+        val s = SplitState.start(1, 2)!!.resized(0.3f)
+        val (active, parked) = SplitState.afterSwitch(null, s, 1)
+        assertEquals(setOf(1, 2), active!!.tabIds)
+        assertEquals(1, active.focused)
+        assertEquals(0.3f, active.ratio)   // the pair comes back as it was
+        assertNull(parked)
+    }
+
+    @Test fun otherTabsKeepThePairParked() {
+        val s = SplitState.start(1, 2)!!
+        assertEquals(null to s, SplitState.afterSwitch(null, s, 7))
+        assertEquals(null to null, SplitState.afterSwitch(null, null, 7))
     }
 
     @Test fun dividerIsClampedTo25To75Percent() {
