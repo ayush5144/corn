@@ -98,6 +98,8 @@ object CornIcons {
     val Heart = line("M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z")
     val Check = line("M5 12.5l4.5 4.5L19 7")
     val Download = line("M12 4v11", "M7 10.5l5 5 5-5", "M5 20h14")
+    /** Suggestion → "use this text": the arrow points up-left into the address box, ↖ (like Brave). */
+    val FillIn = line("M17 17L7 7", "M7 15V7h8")
     /** Leaves Corn for another app (phone, email, maps, "open in app"): the arrow points up and out, ↗. */
     val OpenOutside = line("M7 17L17 7", "M9 7h8v8")
     /** Export: the arrow goes up and out of the tray (Download's mirror). */

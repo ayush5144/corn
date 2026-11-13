@@ -200,6 +200,14 @@ The founder has been testing on a real phone and reports it working well. These 
 | [x] | **Flush button without the yellow box:** the swirl drawn in corn yellow (the theme's darker yellow in light mode for contrast), same tap area | Claude | Seen in dark and light; Flush still works |
 | [x] | Seen on the emulator 2026-11-13: tapping the bar on Wikipedia gave an empty box and the current-page row (title, address, Edit, Copy); the swirl alone in corn yellow in the nav bar. Not yet confirmed on screen: the Edit pencil filling the box (founder was using the emulator) | Claude | Done, Edit to confirm |
 
+## Address bar suggestions (founder, 2026-11-13, from Brave)
+
+| ✓ | Task | Owner | Done when |
+|---|---|---|---|
+| [ ] | Current-page row gets **Share** (order Share · Copy · Edit, like Brave) | Claude | Seen on the emulator; Share opens Android's share sheet |
+| [ ] | Suggestions show the **site's letter icon** instead of the clock / Vault icon ("Vault ·" before the site marks Vault links; Corn keeps no favicons on disk), and a **↖ arrow** that puts the address in the box to refine it | Claude | Seen on the emulator; ↖ fills the box without opening |
+| [ ] | Later, if wanted: a "search for '…'" first row and bold matching text, like Brave | Founder | Decided |
+
 ## Later: website and desktop (added 2026-11-13)
 
 | ✓ | Task | Owner | Done when |

@@ -430,8 +430,10 @@ private fun CurrentPageRow(c: CornController, cur: TabEntry, modifier: Modifier)
             T(cur.title.ifBlank { cur.host }, 14.5.sp, maxLines = 1)
             T(cur.url, 12.sp, C.Muted, maxLines = 1)
         }
-        IconBtn(CornIcons.Edit, "Edit address", { c.addressPrefill = cur.url })
+        // Brave's order: Share, Copy, Edit.
+        IconBtn(CornIcons.Share, "Share page", { c.share(cur.url) })
         IconBtn(CornIcons.Copy, "Copy address", { c.copyLink(cur.url) })
+        IconBtn(CornIcons.Edit, "Edit address", { c.addressPrefill = cur.url })
     }
 }
 
@@ -445,16 +447,21 @@ private fun SuggestionList(c: CornController, query: String, modifier: Modifier)
             .border(1.dp, C.Line, RoundedCornerShape(16.dp)).padding(vertical = 4.dp),
     ) {
         items.forEach { s ->
+            val host = android.net.Uri.parse(s.url).host?.removePrefix("www.") ?: s.url
             Row(
-                Modifier.fillMaxWidth().clickable { focus.clearFocus(); c.openSuggestion(s) }.padding(horizontal = 14.dp, vertical = 10.dp),
+                Modifier.fillMaxWidth().clickable { focus.clearFocus(); c.openSuggestion(s) }.padding(start = 14.dp, end = 4.dp, top = 4.dp, bottom = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                CornIcon(if (s.fromVault) CornIcons.Vault else CornIcons.Clock, 18.dp, C.Muted)
+                // The site's letter (Corn keeps no favicons on disk, so this is what it can show for
+                // History and Vault links); "Vault ·" marks links from the Vault.
+                LetterIcon(host, 24.dp)
                 Spacer(Modifier.width(12.dp))
-                Column(Modifier.weight(1f)) {
+                Column(Modifier.weight(1f).padding(vertical = 6.dp)) {
                     T(s.title, 14.5.sp, maxLines = 1)
-                    T(android.net.Uri.parse(s.url).host?.removePrefix("www.") ?: s.url, 12.sp, C.Muted, maxLines = 1)
+                    T(if (s.fromVault) "Vault · $host" else host, 12.sp, C.Muted, maxLines = 1)
                 }
+                // ↖ puts this address in the box to refine it, without opening it (like Brave).
+                IconBtn(CornIcons.FillIn, "Use this address", { c.addressPrefill = s.url })
             }
         }
     }
