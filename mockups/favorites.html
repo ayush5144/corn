@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Favourites mockups</title>
+<style>
+  :root {
+    --bg:#0F0E0B; --surface:#1A1813; --surface2:#25221B; --line:#36312A;
+    --text:#F5F0E1; --muted:#A8A08C; --accent:#FFC83D; --leaf:#86C64A;
+  }
+  .light {
+    --bg:#FBF8F1; --surface:#F2EDE1; --surface2:#E8E1D0; --line:#D8CFBA;
+    --text:#1E1B14; --muted:#6D6553; --accent:#9A6500; --leaf:#4E8A1E;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:#0A0907; color:#F5F0E1; font:15px/1.45 system-ui, -apple-system, sans-serif; padding:24px 16px 48px; }
+  h1 { color:#FFC83D; margin:0 0 6px; font-size:24px; }
+  .intro { color:#A8A08C; max-width:860px; margin:0 0 28px; }
+  .grid { display:flex; flex-wrap:wrap; gap:28px; }
+  .option { width:340px; }
+  .option h2 { margin:0 0 4px; font-size:17px; }
+  .option .tag { display:inline-block; font-size:12px; font-weight:700; color:#0F0E0B; background:#FFC83D; border-radius:8px; padding:1px 8px; margin-left:6px; vertical-align:2px; }
+  .option p { margin:0 0 10px; color:#A8A08C; font-size:13.5px; }
+  .option ul { margin:10px 0 0; padding-left:18px; font-size:13.5px; color:#CFC7B2; }
+  .option li { margin:3px 0; }
+
+  /* phone */
+  .phone { width:340px; height:700px; background:var(--bg); color:var(--text); border-radius:28px; border:1px solid #2A2620; overflow:hidden; position:relative; display:flex; flex-direction:column; }
+  .status { height:26px; font-size:11px; color:var(--muted); display:flex; justify-content:space-between; padding:6px 18px 0; }
+  .topbar { display:flex; align-items:center; gap:8px; padding:6px 10px; }
+  .addr { flex:1; height:40px; border-radius:16px; background:var(--surface2); display:flex; align-items:center; padding:0 12px; gap:8px; color:var(--muted); font-size:13.5px; }
+  .ddg { width:20px; height:20px; border-radius:50%; background:#DE5833; }
+  .shield { margin-left:auto; color:var(--leaf); font-size:13px; }
+  .vaultbtn { width:28px; height:28px; border:2px solid var(--text); border-radius:7px; }
+  .page { flex:1; padding:0 16px; display:flex; flex-direction:column; overflow:hidden; }
+  .spacer { height:96px; }
+  .tagline { text-align:center; font-weight:700; font-size:16.5px; line-height:1.35; margin-bottom:14px; }
+  .tagline img { width:18px; height:18px; vertical-align:-3px; }
+  .search { height:48px; border-radius:16px; background:var(--surface2); display:flex; align-items:center; gap:10px; padding:0 14px; color:var(--muted); font-size:14px; margin-bottom:16px; }
+  .stats { background:var(--surface); border-radius:16px; padding:14px 16px; margin-top:auto; margin-bottom:14px; }
+  .stats .h { font-size:10.5px; font-weight:700; color:var(--muted); letter-spacing:.04em; }
+  .stats .row { display:flex; margin-top:6px; }
+  .stats .n { font-size:24px; font-weight:800; }
+  .stats .l { font-size:11.5px; }
+  .nav { height:52px; display:flex; justify-content:space-around; align-items:center; border-top:1px solid var(--line); color:var(--muted); font-size:18px; }
+  .nav .flush { color:var(--accent); }
+
+  /* tiles */
+  .tile { width:60px; flex:none; display:flex; flex-direction:column; align-items:center; gap:5px; }
+  .tile .ic { width:52px; height:52px; border-radius:16px; background:var(--surface2); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:18px; color:#fff; }
+  .tile .ic.letter span { width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:15px; }
+  .tile .lb { font-size:11px; color:var(--muted); max-width:62px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:center; }
+  .tile.vault .ic { color:var(--accent); }
+  .tile.add .ic { background:transparent; border:1.5px dashed var(--line); color:var(--muted); font-weight:400; font-size:24px; }
+  .vaultglyph { width:22px; height:22px; border:2.2px solid var(--accent); border-radius:6px; position:relative; }
+  .vaultglyph::after { content:""; position:absolute; left:7px; top:4px; width:4px; height:8px; border-radius:3px; background:var(--accent); }
+
+  .row4 { display:grid; grid-template-columns:repeat(4, 1fr); row-gap:12px; justify-items:center; }
+  .scroller { display:flex; align-items:flex-start; gap:6px; }
+  .scroller .fixed { padding-right:8px; border-right:1px solid var(--line); }
+  .scroller .rest { display:flex; gap:6px; overflow:hidden; mask-image:linear-gradient(90deg,#000 80%,transparent); -webkit-mask-image:linear-gradient(90deg,#000 80%,transparent); }
+  .card { background:var(--surface); border-radius:16px; padding:12px 8px 14px; }
+  .card .head { display:flex; justify-content:space-between; font-size:10.5px; font-weight:700; color:var(--muted); letter-spacing:.04em; padding:0 8px 10px; }
+  .card .head a { color:var(--accent); letter-spacing:0; font-weight:600; }
+  .hint { font-size:12px; color:var(--muted); text-align:center; margin-top:10px; line-height:1.4; }
+  .sheet { position:absolute; left:0; right:0; bottom:0; background:var(--surface); border-radius:24px 24px 0 0; padding:10px 18px 18px; box-shadow:0 -10px 30px rgba(0,0,0,.45); }
+  .sheet .grab { width:36px; height:4px; border-radius:3px; background:var(--line); margin:0 auto 12px; }
+  .sheet .item { display:flex; align-items:center; gap:12px; padding:9px 0; font-size:14.5px; }
+  .sheet .item .i { width:20px; text-align:center; color:var(--muted); }
+  .sheet .item.on .i { color:var(--accent); }
+  .sheet .linkhead { display:flex; gap:12px; align-items:center; padding-bottom:10px; border-bottom:1px solid var(--line); margin-bottom:4px; }
+  .sheet .linkhead .t { font-weight:600; }
+  .sheet .linkhead .u { font-size:12px; color:var(--muted); }
+  .dim { position:absolute; inset:0; background:rgba(0,0,0,.45); }
+  .lockbadge { font-size:10px; color:var(--muted); margin-left:4px; }
+  .viewall .ic { background:transparent; border:1.5px solid var(--line); color:var(--accent); font-size:20px; font-weight:600; }
+  .sechead { display:flex; justify-content:space-between; align-items:baseline; font-size:10.5px; font-weight:700; color:var(--muted); letter-spacing:.04em; margin:0 2px 8px; }
+  .sechead a { color:var(--accent); font-weight:600; letter-spacing:0; font-size:12px; }
+  .hscroll { display:flex; gap:8px; overflow:hidden; mask-image:linear-gradient(90deg,#000 82%,transparent); -webkit-mask-image:linear-gradient(90deg,#000 82%,transparent); }
+</style>
+</head>
+<body>
+<h1>Favourites: where they live on the new tab</h1>
+<p class="intro">
+  Favourites are <b>Vault links you star</b> (Vault ⋮ → "Add to favourites"), with no separate bookmarks list.
+  They show as tiles on the new tab, one tap to open. Fake, neutral sites; Corn's real colours and sizes
+  (16 dp corners, 52 dp tiles). Shown: <b>A</b> your idea (Vault fixed, favourites scroll), <b>B</b> a grid,
+  <b>C</b> a card like Stats, then how starring works, what a new user sees, and Corny above the tagline.
+</p>
+
+<div class="grid">
+
+<!-- A -->
+<div class="option">
+  <h2>A · Vault fixed, favourites scroll</h2>
+  <p>Your idea: Vault stays on the left; favourites slide sideways behind it.</p>
+  <div class="phone">
+    <div class="status"><span>9:41</span><span>▾◢ ▮</span></div>
+    <div class="topbar"><div class="addr"><div class="ddg"></div>Search or type a site<span class="shield">⛉</span></div><div class="vaultbtn"></div></div>
+    <div class="page">
+      <div class="spacer"></div>
+      <div class="tagline">Browse.<br>Save what matters.<br>Flush the rest. <img src="../brand/corny-logo-transparent-1024.png" alt=""></div>
+      <div class="search">⌕ Search or type a site</div>
+      <div class="scroller">
+        <div class="fixed"><div class="tile vault"><div class="ic"><div class="vaultglyph"></div></div><div class="lb">Vault</div></div></div>
+        <div class="rest">
+          <div class="tile"><div class="ic" style="background:#3B6FD8">M</div><div class="lb">Mail</div></div>
+          <div class="tile"><div class="ic" style="background:#C2453B">N</div><div class="lb">News</div></div>
+          <div class="tile"><div class="ic" style="background:#2E8B6A">R</div><div class="lb">Recipes</div></div>
+          <div class="tile"><div class="ic" style="background:#7A55C9">W</div><div class="lb">Weather</div></div>
+          <div class="tile"><div class="ic" style="background:#B07A1C">M</div><div class="lb">Maps</div></div>
+        </div>
+      </div>
+      <div class="stats"><div class="h">STATS</div><div class="row"><div style="flex:1"><div class="n" style="color:var(--accent)">484</div><div class="l">Trackers &amp; ads blocked</div></div><div style="flex:1"><div class="n" style="color:var(--leaf)">17</div><div class="l">Pop-ups &amp; redirects stopped</div></div></div></div>
+    </div>
+    <div class="nav"><span>↶</span><span>▣</span><span>③</span><span class="flush">🌀</span><span>⋮</span></div>
+  </div>
+  <ul>
+    <li>✅ One compact row; any number of favourites</li>
+    <li>❌ Only ~3½ favourites visible; the rest are hidden until you swipe</li>
+    <li>❌ Sideways swiping is easy to miss and fiddly one-handed</li>
+  </ul>
+</div>
+
+<!-- B -->
+<div class="option">
+  <h2>B · Grid, Vault first</h2>
+  <p>Up to 8 tiles in 2 rows of 4. Vault is always the first tile; up to 7 favourites after it.</p>
+  <div class="phone">
+    <div class="status"><span>9:41</span><span>▾◢ ▮</span></div>
+    <div class="topbar"><div class="addr"><div class="ddg"></div>Search or type a site<span class="shield">⛉</span></div><div class="vaultbtn"></div></div>
+    <div class="page">
+      <div class="spacer" style="height:70px"></div>
+      <div class="tagline">Browse.<br>Save what matters.<br>Flush the rest. <img src="../brand/corny-logo-transparent-1024.png" alt=""></div>
+      <div class="search">⌕ Search or type a site</div>
+      <div class="row4">
+        <div class="tile vault"><div class="ic"><div class="vaultglyph"></div></div><div class="lb">Vault</div></div>
+        <div class="tile"><div class="ic" style="background:#3B6FD8">M</div><div class="lb">Mail</div></div>
+        <div class="tile"><div class="ic" style="background:#C2453B">N</div><div class="lb">News</div></div>
+        <div class="tile"><div class="ic" style="background:#2E8B6A">R</div><div class="lb">Recipes</div></div>
+        <div class="tile"><div class="ic" style="background:#7A55C9">W</div><div class="lb">Weather</div></div>
+        <div class="tile"><div class="ic" style="background:#B07A1C">M</div><div class="lb">Maps</div></div>
+        <div class="tile"><div class="ic" style="background:#3D8FB0">B</div><div class="lb">Bank</div></div>
+        <div class="tile"><div class="ic" style="background:#9C4A86">S</div><div class="lb">School</div></div>
+      </div>
+      <div class="stats"><div class="h">STATS</div><div class="row"><div style="flex:1"><div class="n" style="color:var(--accent)">484</div><div class="l">Trackers &amp; ads blocked</div></div><div style="flex:1"><div class="n" style="color:var(--leaf)">17</div><div class="l">Pop-ups &amp; redirects stopped</div></div></div></div>
+    </div>
+    <div class="nav"><span>↶</span><span>▣</span><span>③</span><span class="flush">🌀</span><span>⋮</span></div>
+  </div>
+  <ul>
+    <li>✅ Everything visible at once; nothing to discover by swiping</li>
+    <li>✅ Big thumb-friendly targets; what Chrome and Brave users already know</li>
+    <li>✅ Vault keeps its place (first tile), favourites fill in after it</li>
+    <li>➖ Max 7 favourites on the page (the rest stay in the Vault)</li>
+  </ul>
+</div>
+
+<!-- C -->
+<div class="option">
+  <h2>C · Favourites card, like Stats</h2>
+  <p>Vault stays a single tile; favourites get their own card with a header and "Edit".</p>
+  <div class="phone">
+    <div class="status"><span>9:41</span><span>▾◢ ▮</span></div>
+    <div class="topbar"><div class="addr"><div class="ddg"></div>Search or type a site<span class="shield">⛉</span></div><div class="vaultbtn"></div></div>
+    <div class="page">
+      <div class="spacer" style="height:40px"></div>
+      <div class="tagline">Browse.<br>Save what matters.<br>Flush the rest. <img src="../brand/corny-logo-transparent-1024.png" alt=""></div>
+      <div class="search">⌕ Search or type a site</div>
+      <div style="display:flex;justify-content:center;margin-bottom:14px"><div class="tile vault"><div class="ic"><div class="vaultglyph"></div></div><div class="lb">Vault</div></div></div>
+      <div class="card">
+        <div class="head"><span>FAVOURITES</span><a>Edit</a></div>
+        <div class="row4">
+          <div class="tile"><div class="ic" style="background:#3B6FD8">M</div><div class="lb">Mail</div></div>
+          <div class="tile"><div class="ic" style="background:#C2453B">N</div><div class="lb">News</div></div>
+          <div class="tile"><div class="ic" style="background:#2E8B6A">R</div><div class="lb">Recipes</div></div>
+          <div class="tile"><div class="ic" style="background:#7A55C9">W</div><div class="lb">Weather</div></div>
+        </div>
+      </div>
+      <div class="stats"><div class="h">STATS</div><div class="row"><div style="flex:1"><div class="n" style="color:var(--accent)">484</div><div class="l">Trackers &amp; ads blocked</div></div><div style="flex:1"><div class="n" style="color:var(--leaf)">17</div><div class="l">Pop-ups &amp; redirects stopped</div></div></div></div>
+    </div>
+    <div class="nav"><span>↶</span><span>▣</span><span>③</span><span class="flush">🌀</span><span>⋮</span></div>
+  </div>
+  <ul>
+    <li>✅ Clear "this is a section" with its own Edit</li>
+    <li>❌ Two cards plus the Vault tile: the page gets crowded</li>
+    <li>❌ Pushes the tagline up; less calm than today</li>
+  </ul>
+</div>
+
+
+<!-- A+ -->
+<div class="option">
+  <h2>A+ · Vault fixed, favourites scroll, "View all" below <span class="tag">Recommended</span></h2>
+  <p>Your A: Vault fixed at the start, favourites scroll behind it, "View all favourites" under the row. No header, no Edit (long-press a tile to remove or move it; View all to reorder).</p>
+  <div class="phone">
+    <div class="status"><span>9:41</span><span>▾◢ ▮</span></div>
+    <div class="topbar"><div class="addr"><div class="ddg"></div>Search or type a site<span class="shield">⛉</span></div><div class="vaultbtn"></div></div>
+    <div class="page">
+      <div class="spacer" style="height:22px"></div>
+      <div style="text-align:center;margin-bottom:8px"><img src="../brand/corny-logo-transparent-1024.png" alt="Corny" style="width:52px;height:52px"></div>
+      <div class="tagline">Browse.<br>Save what matters.<br>Flush the rest.</div>
+      <div class="search">⌕ Search or type a site</div>
+      <div class="scroller"><div class="fixed"><div class="tile vault"><div class="ic"><div class="vaultglyph"></div></div><div class="lb">Vault</div></div></div><div class="rest hscroll"><div class="tile"><div class="ic" style="background:#3B6FD8">M</div><div class="lb">Mail</div></div><div class="tile"><div class="ic" style="background:#C2453B">N</div><div class="lb">News</div></div><div class="tile"><div class="ic" style="background:#2E8B6A">R</div><div class="lb">Recipes</div></div><div class="tile"><div class="ic" style="background:#7A55C9">W</div><div class="lb">Weather</div></div><div class="tile"><div class="ic" style="background:#B07A1C">M</div><div class="lb">Maps</div></div></div></div>
+      <div style="text-align:center;margin-top:10px"><a style="color:var(--accent);font-size:13px;font-weight:600">View all favourites</a></div>
+      <div class="stats"><div class="h">STATS</div><div class="row"><div style="flex:1"><div class="n" style="color:var(--accent)">484</div><div class="l">Trackers &amp; ads blocked</div></div><div style="flex:1"><div class="n" style="color:var(--leaf)">17</div><div class="l">Pop-ups &amp; redirects stopped</div></div></div></div>
+    </div>
+    <div class="nav"><span>↶</span><span>▣</span><span>③</span><span class="flush">🌀</span><span>⋮</span></div>
+  </div>
+  <ul>
+    <li>✅ One calm row; any number of favourites</li>
+    <li>✅ The cut-off tile shows it scrolls; View all is reachable without scrolling</li>
+    <li>✅ Vault stays put at the start</li>
+    <li>✅ Editing lives where it's natural: long-press a tile, or View all</li>
+  </ul>
+</div>
+
+<!-- C+ -->
+<div class="option">
+  <h2>C+ · Favourites card that scrolls, Vault below</h2>
+  <p>Your C variant: a Favourites card with a scrolling row and "View all"; the Vault tile sits under it.</p>
+  <div class="phone">
+    <div class="status"><span>9:41</span><span>▾◢ ▮</span></div>
+    <div class="topbar"><div class="addr"><div class="ddg"></div>Search or type a site<span class="shield">⛉</span></div><div class="vaultbtn"></div></div>
+    <div class="page">
+      <div class="spacer" style="height:0px"></div>
+      <div style="text-align:center;margin-bottom:8px"><img src="../brand/corny-logo-transparent-1024.png" alt="Corny" style="width:52px;height:52px"></div>
+      <div class="tagline">Browse.<br>Save what matters.<br>Flush the rest.</div>
+      <div class="search">⌕ Search or type a site</div>
+      <div class="card" style="padding-bottom:10px">
+        <div class="head"><span>FAVOURITES</span><a>View all</a></div>
+        <div class="hscroll" style="padding:0 6px"><div class="tile"><div class="ic" style="background:#3B6FD8">M</div><div class="lb">Mail</div></div><div class="tile"><div class="ic" style="background:#C2453B">N</div><div class="lb">News</div></div><div class="tile"><div class="ic" style="background:#2E8B6A">R</div><div class="lb">Recipes</div></div><div class="tile"><div class="ic" style="background:#7A55C9">W</div><div class="lb">Weather</div></div><div class="tile"><div class="ic" style="background:#B07A1C">M</div><div class="lb">Maps</div></div></div>
+      </div>
+      <div style="display:flex;justify-content:center;margin-top:12px"><div class="tile vault"><div class="ic"><div class="vaultglyph"></div></div><div class="lb">Vault</div></div></div>
+      <div class="stats"><div class="h">STATS</div><div class="row"><div style="flex:1"><div class="n" style="color:var(--accent)">484</div><div class="l">Trackers &amp; ads blocked</div></div><div style="flex:1"><div class="n" style="color:var(--leaf)">17</div><div class="l">Pop-ups &amp; redirects stopped</div></div></div></div>
+    </div>
+    <div class="nav"><span>↶</span><span>▣</span><span>③</span><span class="flush">🌀</span><span>⋮</span></div>
+  </div>
+  <ul>
+    <li>✅ Clear section with its own View all</li>
+    <li>❌ Tallest layout: tagline gets pushed up, page feels busier (two cards + a tile)</li>
+    <li>❌ Vault below the fold-line of attention; it's also already in the bottom bar</li>
+  </ul>
+</div>
+
+<!-- Starring -->
+<div class="option">
+  <h2>How you add one</h2>
+  <p>In the Vault, a link's ⋮ menu gets "Add to favourites" (also: long-press a tile → Remove, Move).</p>
+  <div class="phone">
+    <div class="status"><span>9:41</span><span>▾◢ ▮</span></div>
+    <div class="topbar"><div class="addr" style="color:var(--text)">Vault<span class="shield" style="color:var(--muted)">Lock</span></div></div>
+    <div class="page" style="padding-top:8px">
+      <div style="display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)"><div class="tile" style="width:auto"><div class="ic" style="width:36px;height:36px;border-radius:12px;background:#2E8B6A;font-size:14px">R</div></div><div><div>Quiet pasta, 20 minutes</div><div style="font-size:12px;color:var(--muted)">recipes.example</div></div></div>
+      <div style="display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)"><div class="tile" style="width:auto"><div class="ic" style="width:36px;height:36px;border-radius:12px;background:#3B6FD8;font-size:14px">M</div></div><div><div>Inbox</div><div style="font-size:12px;color:var(--muted)">mail.example</div></div></div>
+    </div>
+    <div class="dim"></div>
+    <div class="sheet">
+      <div class="grab"></div>
+      <div class="linkhead"><div class="tile" style="width:auto"><div class="ic" style="width:36px;height:36px;border-radius:12px;background:#2E8B6A;font-size:14px">R</div></div><div><div class="t">Quiet pasta, 20 minutes</div><div class="u">recipes.example</div></div></div>
+      <div class="item on"><span class="i">☆</span>Add to favourites</div>
+      <div class="item"><span class="i">⧉</span>Copy link</div>
+      <div class="item"><span class="i">✎</span>Edit</div>
+      <div class="item"><span class="i">▤</span>Move to Collection</div>
+      <div class="item"><span class="i">🗑</span>Delete</div>
+      <div class="hint" style="text-align:left">Favourites show on the new tab, <b>even while the Vault is locked</b>.</div>
+    </div>
+  </div>
+  <ul>
+    <li>Favourites are Vault links with one flag: export, Flush and the PIN rules stay the same</li>
+    <li>The note says up front that favourites are visible without the PIN</li>
+  </ul>
+</div>
+
+<!-- Empty -->
+<div class="option">
+  <h2>New user (no favourites yet)</h2>
+  <p>With option B: Vault plus one "Add" tile that explains itself. No empty grid.</p>
+  <div class="phone">
+    <div class="status"><span>9:41</span><span>▾◢ ▮</span></div>
+    <div class="topbar"><div class="addr"><div class="ddg"></div>Search or type a site<span class="shield">⛉</span></div><div class="vaultbtn"></div></div>
+    <div class="page">
+      <div class="spacer"></div>
+      <div class="tagline">Browse.<br>Save what matters.<br>Flush the rest. <img src="../brand/corny-logo-transparent-1024.png" alt=""></div>
+      <div class="search">⌕ Search or type a site</div>
+      <div style="display:flex;justify-content:center;gap:22px">
+        <div class="tile vault"><div class="ic"><div class="vaultglyph"></div></div><div class="lb">Vault</div></div>
+        <div class="tile add"><div class="ic">+</div><div class="lb">Favourite</div></div>
+      </div>
+      <div class="hint">Star links in your Vault to see them here.</div>
+      <div class="stats"><div class="h">STATS</div><div class="row"><div style="flex:1"><div class="n" style="color:var(--accent)">0</div><div class="l">Trackers &amp; ads blocked</div></div><div style="flex:1"><div class="n" style="color:var(--leaf)">0</div><div class="l">Pop-ups &amp; redirects stopped</div></div></div></div>
+    </div>
+    <div class="nav"><span>↶</span><span>▣</span><span>③</span><span class="flush">🌀</span><span>⋮</span></div>
+  </div>
+  <ul>
+    <li>Tapping "+ Favourite" opens the Vault with a short "tap ⋮ → Add to favourites" tip</li>
+    <li>Once one favourite exists, the + tile and hint go away (manage from the Vault)</li>
+  </ul>
+</div>
+
+
+<!-- Corny on top -->
+<div class="option">
+  <h2>Idea · Corny above the tagline</h2>
+  <p>Your idea: Corny takes the old wordmark's place, above the tagline; no Corny at the end. Shown with grid B.</p>
+  <div class="phone">
+    <div class="status"><span>9:41</span><span>▾◢ ▮</span></div>
+    <div class="topbar"><div class="addr"><div class="ddg"></div>Search or type a site<span class="shield">⛉</span></div><div class="vaultbtn"></div></div>
+    <div class="page">
+      <div class="spacer" style="height:34px"></div>
+      <div style="text-align:center;margin-bottom:8px"><img src="../brand/corny-logo-transparent-1024.png" alt="Corny" style="width:56px;height:56px"></div>
+      <div class="tagline">Browse.<br>Save what matters.<br>Flush the rest.</div>
+      <div class="search">⌕ Search or type a site</div>
+      <div class="row4">
+        <div class="tile vault"><div class="ic"><div class="vaultglyph"></div></div><div class="lb">Vault</div></div>
+        <div class="tile"><div class="ic" style="background:#3B6FD8">M</div><div class="lb">Mail</div></div>
+        <div class="tile"><div class="ic" style="background:#C2453B">N</div><div class="lb">News</div></div>
+        <div class="tile"><div class="ic" style="background:#2E8B6A">R</div><div class="lb">Recipes</div></div>
+        <div class="tile"><div class="ic" style="background:#7A55C9">W</div><div class="lb">Weather</div></div>
+        <div class="tile"><div class="ic" style="background:#B07A1C">M</div><div class="lb">Maps</div></div>
+      </div>
+      <div class="stats"><div class="h">STATS</div><div class="row"><div style="flex:1"><div class="n" style="color:var(--accent)">484</div><div class="l">Trackers &amp; ads blocked</div></div><div style="flex:1"><div class="n" style="color:var(--leaf)">17</div><div class="l">Pop-ups &amp; redirects stopped</div></div></div></div>
+    </div>
+    <div class="nav"><span>↶</span><span>▣</span><span>③</span><span class="flush">🌀</span><span>⋮</span></div>
+  </div>
+  <ul>
+    <li>✅ Corny becomes the page's "logo": clear brand moment, like the old wordmark</li>
+    <li>✅ The tagline reads cleaner without an inline image</li>
+    <li>➖ Uses ~60 dp more height (fine with 2 rows of favourites)</li>
+  </ul>
+</div>
+
+<!-- B light -->
+<div class="option light">
+  <h2 style="color:#F5F0E1">B in light mode</h2>
+  <p>The recommended grid with the light theme.</p>
+  <div class="phone">
+    <div class="status"><span>9:41</span><span>▾◢ ▮</span></div>
+    <div class="topbar"><div class="addr"><div class="ddg"></div>Search or type a site<span class="shield">⛉</span></div><div class="vaultbtn"></div></div>
+    <div class="page">
+      <div class="spacer" style="height:70px"></div>
+      <div class="tagline">Browse.<br>Save what matters.<br>Flush the rest. <img src="../brand/corny-logo-transparent-1024.png" alt=""></div>
+      <div class="search">⌕ Search or type a site</div>
+      <div class="row4">
+        <div class="tile vault"><div class="ic"><div class="vaultglyph"></div></div><div class="lb">Vault</div></div>
+        <div class="tile"><div class="ic" style="background:#3B6FD8">M</div><div class="lb">Mail</div></div>
+        <div class="tile"><div class="ic" style="background:#C2453B">N</div><div class="lb">News</div></div>
+        <div class="tile"><div class="ic" style="background:#2E8B6A">R</div><div class="lb">Recipes</div></div>
+        <div class="tile"><div class="ic" style="background:#7A55C9">W</div><div class="lb">Weather</div></div>
+        <div class="tile"><div class="ic" style="background:#B07A1C">M</div><div class="lb">Maps</div></div>
+      </div>
+      <div class="stats"><div class="h">STATS</div><div class="row"><div style="flex:1"><div class="n" style="color:var(--accent)">484</div><div class="l">Trackers &amp; ads blocked</div></div><div style="flex:1"><div class="n" style="color:var(--leaf)">17</div><div class="l">Pop-ups &amp; redirects stopped</div></div></div></div>
+    </div>
+    <div class="nav"><span>↶</span><span>▣</span><span>③</span><span class="flush">🌀</span><span>⋮</span></div>
+  </div>
+  <ul style="color:#CFC7B2">
+    <li>With 5 favourites the second row is simply shorter</li>
+  </ul>
+</div>
+
+</div>
+</body>
+</html>

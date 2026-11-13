@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 14:25 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 14:42 IST
 
 Every product question asked and the founder's answer, in order. Settled answers flow into [01-prd.md](01-prd.md). New rounds are appended at the bottom.
 
@@ -444,6 +444,8 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Arrows:** export uses an up arrow out of the tray; leaving Corn for another app ("Open in…?" sheet) uses ↗; chevrons (›) stay on the right of rows that open another screen.
 - **Site icons in suggestions:** letters for now; if added later, one icon per website (not per page), capped, wiped with history and by Flush.
 - **Address bar shape:** the top address bar (and the Find bar) use the new-tab search box's 16 dp corners instead of a pill, so the same control looks the same and matches the suggestion cards under it.
+- **New tab:** Corny sits above the tagline (where the wordmark was), not after its last word; the tagline stays white (founder can switch to yellow).
+- **Favourites (founder, A+):** Vault links you star show as a scrolling row on the new tab: the Vault tile fixed at the start, favourites after it, a "View all" link under the row on the right. No header, no Edit: long-press a tile to remove or move it; View all opens the Vault's favourites. Favourites show even while the Vault is locked (said when starring). No separate bookmarks.
 - **Corners:** keep Corn's soft, rounded look but use one set of sizes everywhere (8 / 12 / 16 / 24 / pill); no setting for corner style.
 - **Address bar:** tapping it gives an empty box (like Brave); the current page is offered right under it with Edit and Copy.
 - **Flush button:** no yellow box; the swirl itself in corn yellow (the darker theme yellow in light mode).
