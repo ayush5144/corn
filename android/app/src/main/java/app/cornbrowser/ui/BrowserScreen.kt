@@ -135,7 +135,7 @@ private fun AddressBar(c: CornController, cur: TabEntry) {
 
     Row(Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         Row(
-            Modifier.weight(1f).height(42.dp).clip(Corners.Pill).background(C.Surface2).padding(start = 4.dp, end = 6.dp),
+            Modifier.weight(1f).height(42.dp).clip(RoundedCornerShape(Corners.Large)).background(C.Surface2).padding(start = 4.dp, end = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             // Search Switcher (left)
@@ -475,7 +475,7 @@ private fun FindBar(c: CornController) {
     val q = c.findQuery ?: ""
     Row(Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         Row(
-            Modifier.weight(1f).height(42.dp).clip(Corners.Pill).background(C.Surface2).padding(horizontal = 14.dp),
+            Modifier.weight(1f).height(42.dp).clip(RoundedCornerShape(Corners.Large)).background(C.Surface2).padding(horizontal = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             CornIcon(CornIcons.Search, 18.dp, C.Muted)
