@@ -276,3 +276,4 @@
 - Code changed today (main): export sheet and icons, new-tab page, picture-less tab cards and preview clean-up, Vault safe icon, ↗ for other apps, empty address bar with a current-page row, suggestion letters and ↖, Android share icon.
 - Updated `docs/01-product/03-features.md` (Tab previews; Address bar and suggestions) and `docs/01-product/01-prd.md` (Save-to-Vault icon; suggestions row).
 - Cross-references: decision log Round 26 and the checklist were already updated with each change.
+- Corners: `Corners` constants in `ui/Theme.kt` (8/12/16/24/pill) replace 14 ad-hoc radii across `ui/`; checklist row and Round 26 note added.

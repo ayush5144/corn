@@ -63,8 +63,8 @@ fun BoxScope.PasswordFillChip(c: CornController) {
         ?: "Fill password · ${offer.logins.size} accounts"
     Row(
         Modifier.align(Alignment.BottomCenter).padding(bottom = 12.dp, start = 16.dp, end = 16.dp)
-            .shadow(8.dp, RoundedCornerShape(21.dp))
-            .clip(RoundedCornerShape(21.dp)).background(C.Surface2).border(1.dp, C.Line, RoundedCornerShape(21.dp)),
+            .shadow(8.dp, Corners.Pill)
+            .clip(Corners.Pill).background(C.Surface2).border(1.dp, C.Line, Corners.Pill),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
@@ -103,7 +103,7 @@ fun PasswordSheetContent(c: CornController, kind: PasswordSheet) {
             BigButton("Not now", { c.sheet = null }, ghost = true)
             if (!update) {
                 Row(
-                    Modifier.fillMaxWidth().padding(top = 6.dp).clip(RoundedCornerShape(12.dp)).clickable { p.neverSave(kind.origin) }.padding(vertical = 12.dp),
+                    Modifier.fillMaxWidth().padding(top = 6.dp).clip(RoundedCornerShape(Corners.Medium)).clickable { p.neverSave(kind.origin) }.padding(vertical = 12.dp),
                     horizontalArrangement = Arrangement.Center,
                 ) { T("Never for this site", 15.sp, C.Accent, FontWeight.SemiBold) }
             }
@@ -161,14 +161,14 @@ private fun ExportWarningSheet(c: CornController, kind: PasswordSheet.ExportWarn
         14.sp, C.Muted,
     )
     Row(
-        Modifier.fillMaxWidth().padding(vertical = 14.dp).clip(RoundedCornerShape(12.dp))
+        Modifier.fillMaxWidth().padding(vertical = 14.dp).clip(RoundedCornerShape(Corners.Medium))
             .clickable(onClickLabel = "I understand the file isn't encrypted") { understood = !understood }.padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
-            Modifier.size(24.dp).clip(RoundedCornerShape(7.dp))
+            Modifier.size(24.dp).clip(RoundedCornerShape(Corners.Small))
                 .background(if (understood) C.Corn else C.Surface2)
-                .border(1.5.dp, if (understood) C.Corn else C.Muted, RoundedCornerShape(7.dp)),
+                .border(1.5.dp, if (understood) C.Corn else C.Muted, RoundedCornerShape(Corners.Small)),
             contentAlignment = Alignment.Center,
         ) { if (understood) CornIcon(CornIcons.Check, 16.dp, C.CornInk) }
         Spacer(Modifier.width(12.dp))
@@ -192,11 +192,11 @@ private fun relative(at: Long): String =
 fun PasswordsEntry(c: CornController) {
     val count = remember(c.passwords.version.intValue) { runCatching { c.data.loginCount() }.getOrDefault(0L) }
     Row(
-        Modifier.fillMaxWidth().padding(bottom = 12.dp).clip(RoundedCornerShape(16.dp)).background(C.Surface)
+        Modifier.fillMaxWidth().padding(bottom = 12.dp).clip(RoundedCornerShape(Corners.Large)).background(C.Surface)
             .clickable { c.passwords.screenOpen = true }.padding(14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(Modifier.size(36.dp).clip(RoundedCornerShape(11.dp)).background(C.Surface2), contentAlignment = Alignment.Center) {
+        Box(Modifier.size(36.dp).clip(RoundedCornerShape(Corners.Medium)).background(C.Surface2), contentAlignment = Alignment.Center) {
             CornIcon(CornIcons.Key, 20.dp, C.Accent)
         }
         Spacer(Modifier.width(12.dp))
@@ -281,7 +281,7 @@ private fun PasswordList(c: CornController, logins: List<SavedLogin>, unreadable
         }
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 24.dp)) {
             if (unreadable) {
-                Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(C.Surface).padding(16.dp)) {
+                Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(Corners.Large)).background(C.Surface).padding(16.dp)) {
                     T("Corn can't open your saved passwords", 17.sp, weight = FontWeight.Bold, display = true)
                     Spacer(Modifier.height(6.dp))
                     T(
@@ -311,7 +311,7 @@ private fun PasswordList(c: CornController, logins: List<SavedLogin>, unreadable
                     Spacer(Modifier.width(10.dp))
                     T(site, 15.sp, weight = FontWeight.SemiBold, maxLines = 1)
                 }
-                Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(C.Surface).padding(horizontal = 14.dp)) {
+                Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(Corners.Large)).background(C.Surface).padding(horizontal = 14.dp)) {
                     group.forEach { login ->
                         SettingRow(
                             login.username.ifBlank { "No username" },
@@ -355,7 +355,7 @@ private fun AddPassword(c: CornController, onDone: () -> Unit) {
             Field(user, { user = it; error = null }, "you@example.com")
             Label("Password")
             Row(
-                Modifier.fillMaxWidth().height(46.dp).clip(RoundedCornerShape(14.dp)).background(C.Surface2).padding(start = 14.dp, end = 4.dp),
+                Modifier.fillMaxWidth().height(46.dp).clip(RoundedCornerShape(Corners.Large)).background(C.Surface2).padding(start = 14.dp, end = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {

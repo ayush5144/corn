@@ -46,7 +46,7 @@ fun TabsScreen(c: CornController) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 24.dp)) {
             c.tabs.groups.forEach { g ->
                 val members = c.tabs.groupTabs(g.id)
-                Column(Modifier.fillMaxWidth().padding(bottom = 14.dp).clip(RoundedCornerShape(16.dp)).background(C.Surface).padding(12.dp)) {
+                Column(Modifier.fillMaxWidth().padding(bottom = 14.dp).clip(RoundedCornerShape(Corners.Large)).background(C.Surface).padding(12.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 10.dp)) {
                         Box(Modifier.size(16.dp).clip(CircleShape).background(g.color))
                         Spacer(Modifier.width(10.dp))
@@ -86,7 +86,7 @@ fun TabsScreen(c: CornController) {
             }
             Spacer(Modifier.width(12.dp))
             Box(
-                Modifier.width(56.dp).height(44.dp).clip(RoundedCornerShape(14.dp)).background(C.Corn).clickable { c.requestFlush() },
+                Modifier.width(56.dp).height(44.dp).clip(RoundedCornerShape(Corners.Large)).background(C.Corn).clickable { c.requestFlush() },
                 contentAlignment = Alignment.Center,
             ) { CornIcon(CornIcons.Flush, 24.dp, C.CornInk) }
         }

@@ -70,7 +70,7 @@ fun OnboardingScreen(settings: app.cornbrowser.data.CornSettings, onStart: () ->
         }
         Spacer(Modifier.height(28.dp))
         // Two choices people should make up front, shown with their current state.
-        Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(C.Surface).padding(horizontal = 14.dp, vertical = 4.dp)) {
+        Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(Corners.Large)).background(C.Surface).padding(horizontal = 14.dp, vertical = 4.dp)) {
             OnboardingToggle(
                 "Safe Browsing", if (settings.safeBrowsing) "On" else "Off",
                 "Warns you about dangerous sites using Google Safe Browsing.", settings.safeBrowsing,
@@ -115,7 +115,7 @@ private fun OnboardingToggle(title: String, state: String, sub: String, on: Bool
 @Composable
 private fun Bullet(icon: ImageVector, text: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Box(Modifier.size(38.dp).clip(RoundedCornerShape(12.dp)).background(C.Surface2), contentAlignment = Alignment.Center) {
+        Box(Modifier.size(38.dp).clip(RoundedCornerShape(Corners.Medium)).background(C.Surface2), contentAlignment = Alignment.Center) {
             CornIcon(icon, 22.dp, C.Accent)
         }
         Spacer(Modifier.width(12.dp))

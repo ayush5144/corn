@@ -111,7 +111,7 @@ fun IconBtn(icon: ImageVector, label: String, onClick: () -> Unit, tint: Color =
 @Composable
 fun BigButton(text: String, onClick: () -> Unit, icon: ImageVector? = null, ghost: Boolean = false, modifier: Modifier = Modifier, enabled: Boolean = true) {
     Row(
-        modifier.fillMaxWidth().height(50.dp).clip(RoundedCornerShape(14.dp))
+        modifier.fillMaxWidth().height(50.dp).clip(RoundedCornerShape(Corners.Large))
             .alpha(if (enabled) 1f else 0.4f)
             .background(if (ghost) C.Surface2 else C.Corn).clickable(enabled = enabled, onClick = onClick),
         horizontalArrangement = Arrangement.Center,
@@ -126,7 +126,7 @@ fun BigButton(text: String, onClick: () -> Unit, icon: ImageVector? = null, ghos
 @Composable
 fun Pill(text: String, onClick: () -> Unit, icon: ImageVector? = null, corn: Boolean = false) {
     Row(
-        Modifier.height(38.dp).clip(RoundedCornerShape(19.dp)).background(if (corn) C.Corn else C.Surface2)
+        Modifier.height(38.dp).clip(Corners.Pill).background(if (corn) C.Corn else C.Surface2)
             .clickable(onClick = onClick).padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -139,9 +139,9 @@ fun Pill(text: String, onClick: () -> Unit, icon: ImageVector? = null, corn: Boo
 @Composable
 fun Chip(text: String, on: Boolean, onClick: () -> Unit, dashed: Boolean = false, trailing: ImageVector? = null) {
     Row(
-        Modifier.height(34.dp).clip(RoundedCornerShape(17.dp))
+        Modifier.height(34.dp).clip(Corners.Pill)
             .background(if (on) C.Corn else if (dashed) Color.Transparent else C.Surface2)
-            .border(BorderStroke(1.dp, if (on) C.Corn else C.Line), RoundedCornerShape(17.dp))
+            .border(BorderStroke(1.dp, if (on) C.Corn else C.Line), Corners.Pill)
             .clickable(onClick = onClick).padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -155,7 +155,7 @@ fun Chip(text: String, on: Boolean, onClick: () -> Unit, dashed: Boolean = false
 @Composable
 fun Row50(icon: ImageVector?, text: String, onClick: () -> Unit, hint: String? = null, enabled: Boolean = true, trailing: @Composable (() -> Unit)? = null) {
     Row(
-        Modifier.fillMaxWidth().heightIn(min = 50.dp).clip(RoundedCornerShape(12.dp))
+        Modifier.fillMaxWidth().heightIn(min = 50.dp).clip(RoundedCornerShape(Corners.Medium))
             .clickable(enabled = enabled, onClick = onClick).padding(horizontal = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -169,7 +169,7 @@ fun Row50(icon: ImageVector?, text: String, onClick: () -> Unit, hint: String? =
 
 @Composable
 fun CornSwitch(on: Boolean) {
-    Box(Modifier.width(46.dp).height(28.dp).clip(RoundedCornerShape(14.dp)).background(if (on) C.SwitchOn else C.SwitchOff)) {
+    Box(Modifier.width(46.dp).height(28.dp).clip(RoundedCornerShape(Corners.Large)).background(if (on) C.SwitchOn else C.SwitchOff)) {
         Box(Modifier.offset(x = if (on) 21.dp else 3.dp, y = 3.dp).size(22.dp).clip(CircleShape).background(C.SwitchDot))
     }
 }
@@ -184,10 +184,10 @@ fun Radio(on: Boolean) {
 
 @Composable
 fun Segmented(options: List<String>, selected: Int, onSelect: (Int) -> Unit) {
-    Row(Modifier.clip(RoundedCornerShape(12.dp)).background(C.Surface2).padding(3.dp), horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+    Row(Modifier.clip(RoundedCornerShape(Corners.Medium)).background(C.Surface2).padding(3.dp), horizontalArrangement = Arrangement.spacedBy(3.dp)) {
         options.forEachIndexed { i, o ->
             Box(
-                Modifier.height(34.dp).clip(RoundedCornerShape(9.dp)).background(if (i == selected) C.Corn else Color.Transparent)
+                Modifier.height(34.dp).clip(RoundedCornerShape(Corners.Small)).background(if (i == selected) C.Corn else Color.Transparent)
                     .clickable { onSelect(i) }.padding(horizontal = 12.dp),
                 contentAlignment = Alignment.Center,
             ) { T(o, 14.sp, if (i == selected) C.CornInk else C.Muted, FontWeight.SemiBold) }
@@ -198,7 +198,7 @@ fun Segmented(options: List<String>, selected: Int, onSelect: (Int) -> Unit) {
 /** A rounded group of settings rows, like the mockup's .sgroup. */
 @Composable
 fun SettingsGroup(content: @Composable ColumnScope.() -> Unit) {
-    Column(Modifier.fillMaxWidth().padding(bottom = 8.dp).clip(RoundedCornerShape(16.dp)).background(C.Surface).padding(horizontal = 14.dp, vertical = 4.dp), content = content)
+    Column(Modifier.fillMaxWidth().padding(bottom = 8.dp).clip(RoundedCornerShape(Corners.Large)).background(C.Surface).padding(horizontal = 14.dp, vertical = 4.dp), content = content)
 }
 
 @Composable
@@ -224,7 +224,7 @@ fun Caption(text: String) = T(text, 12.5.sp, C.Muted, modifier = Modifier.paddin
 @Composable
 fun Field(value: String, onChange: (String) -> Unit, placeholder: String, modifier: Modifier = Modifier, onDone: (() -> Unit)? = null, height: Dp = 46.dp, leading: @Composable (() -> Unit)? = null, focus: androidx.compose.ui.focus.FocusRequester? = null) {
     Row(
-        modifier.fillMaxWidth().height(height).clip(RoundedCornerShape(12.dp)).background(C.Surface2).padding(horizontal = 14.dp),
+        modifier.fillMaxWidth().height(height).clip(RoundedCornerShape(Corners.Medium)).background(C.Surface2).padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (leading != null) { leading(); Spacer(Modifier.width(10.dp)) }
@@ -256,7 +256,7 @@ fun BoxScope.Sheet(visible: Boolean, onDismiss: () -> Unit, onHeight: (Int) -> U
     ) {
         Column(
             Modifier.fillMaxWidth().heightIn(max = 640.dp).onSizeChanged { onHeight(it.height) }
-                .clip(RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp)).background(C.Surface)
+                .clip(RoundedCornerShape(topStart = Corners.Sheet, topEnd = Corners.Sheet)).background(C.Surface)
                 .clickable(remember { MutableInteractionSource() }, indication = null) {}
                 .navigationBarsPadding()
                 .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 20.dp),
@@ -310,8 +310,8 @@ fun LetterIcon(host: String, size: Dp) {
 fun TabPreview(entry: TabEntry, isCurrent: Boolean, onOpen: () -> Unit, onClose: (() -> Unit)?, modifier: Modifier = Modifier) {
     Box(modifier.aspectRatio(3f / 4f)) {
         Column(
-            Modifier.fillMaxSize().clip(RoundedCornerShape(14.dp)).background(C.Bg)
-                .border(if (isCurrent) 2.dp else 1.dp, if (isCurrent) C.Corn else C.Line, RoundedCornerShape(14.dp))
+            Modifier.fillMaxSize().clip(RoundedCornerShape(Corners.Large)).background(C.Bg)
+                .border(if (isCurrent) 2.dp else 1.dp, if (isCurrent) C.Corn else C.Line, RoundedCornerShape(Corners.Large))
                 .clickable(onClick = onOpen),
         ) {
             // Header: icon, title (cut short with "…" before the ×), and the × centred in the header.
@@ -368,7 +368,7 @@ fun PinPad(entered: Int, onDigit: (Char) -> Unit, onBackspace: () -> Unit, onFin
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     row.forEach { k ->
                         Box(
-                            Modifier.width(72.dp).height(60.dp).clip(RoundedCornerShape(18.dp))
+                            Modifier.width(72.dp).height(60.dp).clip(RoundedCornerShape(Corners.Large))
                                 // Digits sit on a key; erase is just its icon (founder, 2026-11-13), same tap area.
                                 .background(if (k == "del" || (k == "fp" && onFingerprint == null)) Color.Transparent else C.Surface)
                                 .clickable(enabled = !(k == "fp" && onFingerprint == null)) {
@@ -405,7 +405,7 @@ fun BoxScope.ToastHost(msg: ToastMsg?, bottomPadding: Dp, onAction: () -> Unit) 
     ) {
         val m = msg ?: return@AnimatedVisibility
         Row(
-            Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(C.Text).padding(horizontal = 14.dp, vertical = 12.dp),
+            Modifier.fillMaxWidth().clip(RoundedCornerShape(Corners.Large)).background(C.Text).padding(horizontal = 14.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             T(Copy.oneSentencePerLine(m.text), 14.sp, C.Bg, FontWeight.SemiBold, modifier = Modifier.weight(1f))

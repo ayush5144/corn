@@ -126,10 +126,10 @@ private const val ALL = -1L
 @Composable
 private fun CollectionTile(col: Collection, modifier: Modifier, onOpen: () -> Unit) {
     Column(
-        modifier.heightIn(min = 108.dp).clip(RoundedCornerShape(16.dp)).background(C.Surface).clickable(onClick = onOpen).padding(14.dp),
+        modifier.heightIn(min = 108.dp).clip(RoundedCornerShape(Corners.Large)).background(C.Surface).clickable(onClick = onOpen).padding(14.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Box(Modifier.size(36.dp).clip(RoundedCornerShape(11.dp)).background(C.Surface2), contentAlignment = Alignment.Center) {
+        Box(Modifier.size(36.dp).clip(RoundedCornerShape(Corners.Medium)).background(C.Surface2), contentAlignment = Alignment.Center) {
             CornIcon(if (col.id == ALL) CornIcons.Vault else CornIcons.Folder, 20.dp, C.Accent)
         }
         Column {
@@ -142,7 +142,7 @@ private fun CollectionTile(col: Collection, modifier: Modifier, onOpen: () -> Un
 @Composable
 private fun NewCollectionTile(modifier: Modifier, onTap: () -> Unit) {
     Column(
-        modifier.heightIn(min = 108.dp).clip(RoundedCornerShape(16.dp)).border(1.dp, C.Line, RoundedCornerShape(16.dp))
+        modifier.heightIn(min = 108.dp).clip(RoundedCornerShape(Corners.Large)).border(1.dp, C.Line, RoundedCornerShape(Corners.Large))
             .clickable(onClick = onTap).padding(14.dp),
         verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -192,7 +192,7 @@ private fun ItemRow(c: CornController, it: VaultItem) {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     it.tags.forEach { tag ->
                         Row(
-                            Modifier.height(24.dp).clip(RoundedCornerShape(12.dp)).background(C.Surface2).padding(horizontal = 9.dp),
+                            Modifier.height(24.dp).clip(RoundedCornerShape(Corners.Medium)).background(C.Surface2).padding(horizontal = 9.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             CornIcon(CornIcons.Tag, 11.dp, C.Muted)
@@ -250,7 +250,7 @@ fun PinGate(
     }
 
     Column(Modifier.fillMaxSize().padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-        Box(Modifier.size(72.dp).clip(RoundedCornerShape(22.dp)).background(C.Surface2), contentAlignment = Alignment.Center) {
+        Box(Modifier.size(72.dp).clip(RoundedCornerShape(Corners.Large)).background(C.Surface2), contentAlignment = Alignment.Center) {
             CornIcon(CornIcons.Lock, 34.dp, C.Accent)
         }
         Spacer(Modifier.height(18.dp))

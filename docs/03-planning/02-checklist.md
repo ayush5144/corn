@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 14:03 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 14:16 IST
 
 The single list of what's done, what's next and who owns it. Product decisions live in the [decision log](../01-product/02-decision-log.md); this file tracks **work**.
 
@@ -211,6 +211,12 @@ The founder has been testing on a real phone and reports it working well. These 
 | [ ] | **Suggestions: collapse duplicates** (same title and site, e.g. two "wikepedia at DuckDuckGo" rows whose addresses differ only in a parameter) | Claude | One row per page in suggestions |
 | [ ] | **Real site icons in suggestions?** Options: letters (today), icons from open tabs only (nothing stored), or small icons saved with each history entry like Brave (~1–2 KB per site, deleted with history, Clear history and every Flush, none when Keep history is off). Recommended: saved with history | Founder | Decided |
 | [ ] | Later, if wanted: a "search for '…'" first row and bold matching text, like Brave | Founder | Decided |
+
+## Corner sizes (founder, 2026-11-13)
+
+| ✓ | Task | Owner | Done when |
+|---|---|---|---|
+| [x] | One set of corner sizes (`Corners` in `ui/Theme.kt`): Small 8, Medium 12, Large 16, Sheet 24, Pill. Was 14 different values (2–22 dp). Mapped: 7/9 → Small, 11/12 → Medium, 14/16/18 → Large, sheet top 22 → 24, 17/19/21 → Pill; hairlines, the sheet handle and the tabs-count icon keep their own. No setting (one well-made look). Before/after screenshots compared on the emulator (new tab, address bar, menu, tabs) | Claude | Done |
 
 ## Later: website and desktop (added 2026-11-13)
 

@@ -135,12 +135,12 @@ private fun AddressBar(c: CornController, cur: TabEntry) {
 
     Row(Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         Row(
-            Modifier.weight(1f).height(42.dp).clip(RoundedCornerShape(21.dp)).background(C.Surface2).padding(start = 4.dp, end = 6.dp),
+            Modifier.weight(1f).height(42.dp).clip(Corners.Pill).background(C.Surface2).padding(start = 4.dp, end = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             // Search Switcher (left)
             Row(
-                Modifier.height(32.dp).clip(RoundedCornerShape(16.dp)).clickable { c.sheet = Sheet.Engine }.padding(horizontal = 4.dp),
+                Modifier.height(32.dp).clip(RoundedCornerShape(Corners.Large)).clickable { c.sheet = Sheet.Engine }.padding(horizontal = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 EngineBadge(e)
@@ -175,7 +175,7 @@ private fun AddressBar(c: CornController, cur: TabEntry) {
             // Blocking shield (right)
             val off = !cur.isNewTab && remember(c.data.vaultVersion.intValue, cur.host) { c.shields(cur.host).allOff }
             Row(
-                Modifier.height(32.dp).clip(RoundedCornerShape(16.dp))
+                Modifier.height(32.dp).clip(RoundedCornerShape(Corners.Large))
                     .clickable { if (cur.isNewTab) c.showToast("Nothing to block on this page") else c.sheet = Sheet.Shield }
                     .padding(horizontal = 7.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -420,8 +420,8 @@ private fun ErrorPage(host: String, reason: String, onRetry: () -> Unit) {
 @Composable
 private fun CurrentPageRow(c: CornController, cur: TabEntry, modifier: Modifier) {
     Row(
-        modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(C.Surface2)
-            .border(1.dp, C.Line, RoundedCornerShape(16.dp)).padding(start = 14.dp, end = 4.dp, top = 6.dp, bottom = 6.dp),
+        modifier.fillMaxWidth().clip(RoundedCornerShape(Corners.Large)).background(C.Surface2)
+            .border(1.dp, C.Line, RoundedCornerShape(Corners.Large)).padding(start = 14.dp, end = 4.dp, top = 6.dp, bottom = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         SiteIcon(cur, 22.dp)
@@ -443,8 +443,8 @@ private fun SuggestionList(c: CornController, query: String, modifier: Modifier)
     val items = remember(query, c.data.historyVersion.intValue, c.data.vaultVersion.intValue, c.vaultUnlocked) { c.suggestions(query) }
     if (items.isEmpty()) return
     Column(
-        modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(C.Surface2)
-            .border(1.dp, C.Line, RoundedCornerShape(16.dp)).padding(vertical = 4.dp),
+        modifier.fillMaxWidth().clip(RoundedCornerShape(Corners.Large)).background(C.Surface2)
+            .border(1.dp, C.Line, RoundedCornerShape(Corners.Large)).padding(vertical = 4.dp),
     ) {
         items.forEach { s ->
             val host = android.net.Uri.parse(s.url).host?.removePrefix("www.") ?: s.url
@@ -475,7 +475,7 @@ private fun FindBar(c: CornController) {
     val q = c.findQuery ?: ""
     Row(Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         Row(
-            Modifier.weight(1f).height(42.dp).clip(RoundedCornerShape(21.dp)).background(C.Surface2).padding(horizontal = 14.dp),
+            Modifier.weight(1f).height(42.dp).clip(Corners.Pill).background(C.Surface2).padding(horizontal = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             CornIcon(CornIcons.Search, 18.dp, C.Muted)
@@ -548,7 +548,7 @@ private fun NewTabPage(c: CornController) {
             }
         }
         Row(
-            Modifier.fillMaxWidth().height(52.dp).clip(RoundedCornerShape(16.dp)).background(C.Surface2).padding(horizontal = 14.dp),
+            Modifier.fillMaxWidth().height(52.dp).clip(RoundedCornerShape(Corners.Large)).background(C.Surface2).padding(horizontal = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             CornIcon(CornIcons.Search, 20.dp, C.Muted)
@@ -571,19 +571,19 @@ private fun NewTabPage(c: CornController) {
             recent.forEach { item ->
                 val host = android.net.Uri.parse(item.url).host?.removePrefix("www.") ?: ""
                 QuickTile(host.substringBefore('.').replaceFirstChar { it.uppercase() }, { c.go(item.url) }) {
-                    Box(Modifier.size(56.dp).clip(RoundedCornerShape(18.dp)).background(C.forHost(host)), contentAlignment = Alignment.Center) {
+                    Box(Modifier.size(56.dp).clip(RoundedCornerShape(Corners.Large)).background(C.forHost(host)), contentAlignment = Alignment.Center) {
                         T(host.firstOrNull()?.uppercase() ?: "?", 20.sp, Color.White, FontWeight.ExtraBold)
                     }
                 }
             }
             QuickTile("Vault", { c.openVault() }) {
-                Box(Modifier.size(56.dp).clip(RoundedCornerShape(18.dp)).background(C.Surface2), contentAlignment = Alignment.Center) {
+                Box(Modifier.size(56.dp).clip(RoundedCornerShape(Corners.Large)).background(C.Surface2), contentAlignment = Alignment.Center) {
                     CornIcon(CornIcons.Vault, 24.dp, C.Accent)
                 }
             }
         }
         // All-time totals: real counts of requests Corn blocked, kept across Flushes (numbers only).
-        Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(C.Surface).padding(18.dp)) {
+        Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(Corners.Large)).background(C.Surface).padding(18.dp)) {
             T("STATS", 12.sp, C.Muted, FontWeight.Bold)
             Spacer(Modifier.height(12.dp))
             Row(Modifier.fillMaxWidth()) {
@@ -605,7 +605,7 @@ private fun Stat(value: Long, label: String, color: Color, modifier: Modifier) {
 
 @Composable
 private fun QuickTile(label: String, onClick: () -> Unit, icon: @Composable () -> Unit) {
-    Column(Modifier.width(72.dp).clip(RoundedCornerShape(12.dp)).clickable(onClick = onClick), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(Modifier.width(72.dp).clip(RoundedCornerShape(Corners.Medium)).clickable(onClick = onClick), horizontalAlignment = Alignment.CenterHorizontally) {
         icon()
         Spacer(Modifier.height(6.dp))
         T(label, 12.sp, C.Muted, maxLines = 1)
@@ -658,7 +658,7 @@ private fun Toolbar(c: CornController, cur: TabEntry) {
         // a curved ↩ and returns to the home page.
         val home = !cur.isNewTab && !cur.canGoBack && cur.openedFromHome
         Box(
-            Modifier.width(56.dp).height(48.dp).clip(RoundedCornerShape(14.dp))
+            Modifier.width(56.dp).height(48.dp).clip(RoundedCornerShape(Corners.Large))
                 .combinedClickable(
                     enabled = cur.canGoBack || cur.canGoForward || home,
                     onClick = { if (home) c.tabs.goHome() else c.tabs.goBack() },
@@ -693,5 +693,5 @@ private val TOOLBAR_ICON = 24.dp
 
 @Composable
 private fun ToolbarButton(onClick: () -> Unit, content: @Composable () -> Unit) {
-    Box(Modifier.width(56.dp).height(48.dp).clip(RoundedCornerShape(14.dp)).clickable(onClick = onClick), contentAlignment = Alignment.Center) { content() }
+    Box(Modifier.width(56.dp).height(48.dp).clip(RoundedCornerShape(Corners.Large)).clickable(onClick = onClick), contentAlignment = Alignment.Center) { content() }
 }

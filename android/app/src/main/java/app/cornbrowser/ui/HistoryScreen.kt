@@ -64,7 +64,7 @@ fun HistoryScreen(c: CornController) {
         }
         // Same sheet as Settings → Delete browsing data: cookies, cache and tabs live there, not in History.
         Row(
-            Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp).clip(RoundedCornerShape(12.dp))
+            Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp).clip(RoundedCornerShape(Corners.Medium))
                 .combinedClickable(onClick = { c.sheet = Sheet.DeleteData }).padding(vertical = 10.dp, horizontal = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -107,7 +107,7 @@ fun HistoryScreen(c: CornController) {
 @Composable
 private fun HistoryRow(v: HistoryVisit, time: String, onOpen: () -> Unit, onMore: () -> Unit, onDelete: () -> Unit) {
     Row(
-        Modifier.fillMaxWidth().heightIn(min = 56.dp).clip(RoundedCornerShape(12.dp))
+        Modifier.fillMaxWidth().heightIn(min = 56.dp).clip(RoundedCornerShape(Corners.Medium))
             .combinedClickable(onClick = onOpen, onLongClick = onMore).padding(start = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

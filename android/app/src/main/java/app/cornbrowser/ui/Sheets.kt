@@ -247,7 +247,7 @@ private fun ShieldSheet(c: CornController) {
         trailing = { CornSwitch(!sh.allOff) },
     )
     Row(
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable { advanced = !advanced }.padding(vertical = 12.dp),
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(Corners.Medium)).clickable { advanced = !advanced }.padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         T("Advanced", 15.sp, C.Accent, FontWeight.SemiBold, modifier = Modifier.weight(1f))
@@ -422,7 +422,7 @@ private fun ExportLinksSheet(c: CornController) {
 @Composable
 private fun RadioOption(title: String, sub: String, selected: Boolean, onSelect: () -> Unit) {
     Row(
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp))
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(Corners.Medium))
             .selectable(selected = selected, role = Role.RadioButton, onClick = onSelect)
             .padding(vertical = 10.dp, horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,

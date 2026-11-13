@@ -65,3 +65,18 @@ val Display = FontFamily(bricolage(500), bricolage(700), bricolage(800))
 
 /** UI face: everything else. */
 val Ui = FontFamily(figtree(400), figtree(500), figtree(600), figtree(700))
+
+/**
+ * Corner sizes (founder, 2026-11-13): a few sizes used everywhere, so the app looks consistent.
+ * Small: badges, tags, checkbox, segmented pills · Medium: rows, fields, icon tiles · Large: cards,
+ * buttons, tab cards, toasts, keys · Sheet: the top corners of bottom sheets · Pill: fully round ends.
+ * Hairlines, the sheet's grab handle and icon outlines keep their own tiny radii.
+ */
+object Corners {
+    val Small = androidx.compose.ui.unit.Dp(8f)
+    val Medium = androidx.compose.ui.unit.Dp(12f)
+    val Large = androidx.compose.ui.unit.Dp(16f)
+    val Sheet = androidx.compose.ui.unit.Dp(24f)
+    /** Fully rounded ends (address bar, chips, pills), whatever the height. */
+    val Pill = androidx.compose.foundation.shape.RoundedCornerShape(50)
+}
