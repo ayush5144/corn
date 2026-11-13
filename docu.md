@@ -232,3 +232,8 @@
 - `ui/OnboardingScreen.kt`: button "Start browsing" (no 18+ gate). `.gitignore`: signing key files.
 - Added `docs/03-planning/05-releasing-and-updates.md` (signing keys, the debug key, release channels, updates, the plan); indexed in `docs/README.md`.
 - Updated decision log (Round 24), PRD (first-launch row), features (onboarding), roadmap (step 6), checklist (onboarding row; release key, version numbers, GitHub testers + Obtainium, Play App Signing, content rating, in-app update check, F-Droid).
+
+## 2026-11-13 — Release tooling; website and desktop on the checklist
+
+- `android/app/build.gradle.kts`: release signing from `~/.gradle/gradle.properties` or environment variables (unsigned when absent). Added `scripts/create-release-key.sh`, `scripts/release.sh`.
+- Updated `docs/03-planning/05-releasing-and-updates.md` ("Doing a release") and `docs/03-planning/02-checklist.md` (release tooling done; website and desktop version added).

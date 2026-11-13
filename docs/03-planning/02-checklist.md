@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 11:00 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 11:07 IST
 
 The single list of what's done, what's next and who owns it. Product decisions live in the [decision log](../01-product/02-decision-log.md); this file tracks **work**.
 
@@ -149,7 +149,8 @@ The founder has been testing on a real phone and reports it working well. These 
 | [ ] | **Must · Independent security review** of the password store, PIN and data clearing | Founder | Review notes committed; findings fixed or accepted |
 | [ ] | **Must · Limit wrong PIN attempts** (password review #1; was "later" in the backlog): growing wait after a few wrong tries, PIN checked with a Keystore key | Claude | Brute-forcing the PIN on the phone is slowed; unit-tested |
 | [ ] | **Must · Release key:** the founder creates Corn's release key (`keytool`, password kept private, backed up outside this Mac); key files git-ignored; release builds signed with it (password read from `~/.gradle/gradle.properties`). Today's "test" APK is signed with the debug key. See [05-releasing-and-updates](05-releasing-and-updates.md) | Both | A release build signed with the real key installs over the previous one and keeps its data |
-| [ ] | **Must · Version numbers:** raise `versionCode` on every release (today 1) | Claude | Each GitHub/Play release has a higher `versionCode` |
+| [x] | Release tooling ready (2026-11-13): `scripts/create-release-key.sh` (you only type a password), `~/.gradle/gradle.properties` with the four `CORN_RELEASE_*` values as `CHANGE_ME` placeholders, release signing in `android/app/build.gradle.kts` (from that file or environment variables; unsigned when absent), `scripts/release.sh <version>` (raises `versionCode`, tests, builds, refuses a debug-signed APK, copies to Downloads, then asks before commit, tag, push and GitHub pre-release). Signing verified with a throwaway key | Claude | Done |
+| [ ] | **Must · Version numbers:** raise `versionCode` on every release (today 1; `scripts/release.sh` does it) | Claude | Each GitHub/Play release has a higher `versionCode` |
 | [ ] | **Must · Testers via GitHub Releases:** each build as a pre-release with the signed APK and install steps; testers told to use Obtainium for update notices | Both | A tester updates from one release to the next without losing data |
 | [ ] | **Must · Play App Signing with the same key** at launch ("use my existing key"), so GitHub and Play installs share one seal | Founder | Play Console shows the app signing key matches the release key |
 | [ ] | **Must · Play Store requirements:** privacy policy page, Data Safety form, content rating questionnaire (answer honestly: a browser with unrestricted internet access; the listing can say Corn is made for adults; no in-app age gate, Round 24), store listing (text, screenshots, icon) | Founder | Play Console shows no blocking items |
@@ -166,6 +167,13 @@ The founder has been testing on a real phone and reports it working well. These 
 | [ ] | Should · Founder's check of History and onboarding (marked "awaiting founder" above) | Founder | Approved or changes listed |
 | [x] | Long-press on search results: full link menu (with Open in new tab group, Save link to Vault, Share link) even when the link contains a site icon; image actions only for real pictures; titles from the link's heading. Verified on Google (3 results × title and icon) and by the QA check `search-result-link-menu` | Claude | Done |
 | [ ] | Search-engine redirect links (Google's `google.com/goto?url=…`) are saved and copied as Google's link, not the site's: the real address is encrypted in the link, so it can only be learned by asking Google. Founder decision needed | Founder | Decided (keep as is / resolve by asking Google when saving or copying) |
+
+## Later: website and desktop (added 2026-11-13)
+
+| ✓ | Task | Owner | Done when |
+|---|---|---|---|
+| [ ] | **Website** for Corn: what it is, privacy promise, download links (Play Store, GitHub releases), privacy policy page (needed for Play). Founder: later | Founder | Site live; privacy policy URL usable in Play Console |
+| [ ] | **Desktop version of Corn** (Windows, Mac, Linux): Electron + React, reusing the Rust core (blocking, Vault) via napi-rs, Flush as an in-memory session; plan in [07-desktop](../02-technical/07-desktop.md). Start with a small spike (one window, tabs, blocker, Flush) to measure size and effort; decide its order against the iPhone app | Both | Spike runs on the Mac with blocking and Flush; decision recorded |
 
 ## Phase 4 — Beta
 

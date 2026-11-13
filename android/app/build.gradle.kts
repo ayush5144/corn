@@ -3,6 +3,15 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+// Release signing (docs/03-planning/05-releasing-and-updates.md). The key and its password never live in
+// the repo: they're read from ~/.gradle/gradle.properties (or environment variables with the same names,
+// e.g. GitHub Actions secrets). Without them the release APK is built unsigned, as before.
+val releaseSigning: Map<String, String?> = listOf(
+    "CORN_RELEASE_STORE_FILE", "CORN_RELEASE_STORE_PASSWORD", "CORN_RELEASE_KEY_ALIAS", "CORN_RELEASE_KEY_PASSWORD",
+).associateWith { name -> (findProperty(name) as String?)?.takeIf { it.isNotBlank() } ?: System.getenv(name)?.takeIf { it.isNotBlank() } }
+val hasReleaseKey = releaseSigning.values.all { it != null && it != "CHANGE_ME" } &&
+    file(releaseSigning.getValue("CORN_RELEASE_STORE_FILE")!!).exists()
+
 android {
     namespace = "app.cornbrowser"
     compileSdk = 37
@@ -15,12 +24,24 @@ android {
         versionName = "0.2.0"
     }
 
+    signingConfigs {
+        if (hasReleaseKey) {
+            create("release") {
+                storeFile = file(releaseSigning.getValue("CORN_RELEASE_STORE_FILE")!!)
+                storePassword = releaseSigning.getValue("CORN_RELEASE_STORE_PASSWORD")
+                keyAlias = releaseSigning.getValue("CORN_RELEASE_KEY_ALIAS")
+                keyPassword = releaseSigning.getValue("CORN_RELEASE_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         debug {
             ndk { abiFilters += listOf("arm64-v8a", "x86_64") } // phone + Mac emulator
         }
         release {
             ndk { abiFilters += listOf("arm64-v8a") } // phones only; the x86_64 library is ~4.4 MB of emulator-only code
+            if (hasReleaseKey) signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")

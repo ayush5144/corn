@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-13 · **Last updated:** 2026-11-13, 11:00 IST
+> **Created:** 2026-11-13 · **Last updated:** 2026-11-13, 11:07 IST
 
 How Corn gets onto people's phones, how updates reach them, and what has to be in place first. Written for the founder in plain language; the decisions are in the decision log (Round 24).
 
@@ -66,6 +66,15 @@ Two catches for Corn's own update check:
 4. **At launch:** Google Play with Play App Signing using the same key (automatic updates); F-Droid later if wanted.
 
 Tasks: [checklist, Before launch](02-checklist.md).
+
+## Doing a release (only the values are yours)
+
+1. **Create the key, once:** `scripts/create-release-key.sh`. You only choose a password (typed twice); the certificate details are filled in (CN=Corn, O=Corn, C=IN, public). It won't overwrite an existing key or create one inside the repo.
+2. **Fill in the password, once:** open `~/.gradle/gradle.properties` (already there, private to you) and replace both `CHANGE_ME` with that password. Don't paste it anywhere else.
+3. **Back up** `~/corn-release.jks` and the password (password manager + an encrypted copy off this Mac).
+4. **Each release:** `scripts/release.sh 0.2.1`. It raises `versionCode`, runs the tests, builds, checks the APK is signed with Corn's key (and stops if it's the debug key), copies `Corn-0.2.1.apk` to Downloads, then **asks** before committing the version, tagging, pushing and creating the GitHub pre-release.
+
+How it's wired: `android/app/build.gradle.kts` reads `CORN_RELEASE_STORE_FILE`, `CORN_RELEASE_STORE_PASSWORD`, `CORN_RELEASE_KEY_ALIAS`, `CORN_RELEASE_KEY_PASSWORD` from `~/.gradle/gradle.properties` or from environment variables (for automated builds, e.g. GitHub Actions secrets). Without them, release builds are unsigned, as before. A `.env` file isn't used: Gradle reads its own private file, and a `.env` inside the project could be committed to the public repo by mistake.
 
 ## Installing an APK on a phone (for testers)
 
