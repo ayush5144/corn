@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 13:52 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 14:03 IST
 
 The single list of what's done, what's next and who owns it. Product decisions live in the [decision log](../01-product/02-decision-log.md); this file tracks **work**.
 
@@ -196,8 +196,9 @@ The founder has been testing on a real phone and reports it working well. These 
 
 | ✓ | Task | Owner | Done when |
 |---|---|---|---|
-| [ ] | **Address bar empty when tapped** (like Brave), with a "current page" row at the top of the suggestions: the page's address, ✏️ Edit (puts it in the box) and ⧉ Copy | Claude | On a page: tap the bar → empty box, current-page row; Edit fills the box; Copy copies |
-| [ ] | **Flush button without the yellow box:** the swirl drawn in corn yellow (the theme's darker yellow in light mode for contrast), same tap area | Claude | Seen in dark and light; Flush still works |
+| [x] | **Address bar empty when tapped** (like Brave), with a "current page" row at the top of the suggestions: the page's address, ✏️ Edit (puts it in the box) and ⧉ Copy | Claude | On a page: tap the bar → empty box, current-page row; Edit fills the box; Copy copies |
+| [x] | **Flush button without the yellow box:** the swirl drawn in corn yellow (the theme's darker yellow in light mode for contrast), same tap area | Claude | Seen in dark and light; Flush still works |
+| [x] | Seen on the emulator 2026-11-13: tapping the bar on Wikipedia gave an empty box and the current-page row (title, address, Edit, Copy); the swirl alone in corn yellow in the nav bar. Not yet confirmed on screen: the Edit pencil filling the box (founder was using the emulator) | Claude | Done, Edit to confirm |
 
 ## Later: website and desktop (added 2026-11-13)
 

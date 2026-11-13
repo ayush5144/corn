@@ -476,6 +476,8 @@ class CornController(private val context: Context) : TabHost {
 
     /** The address bar's text while it's being edited (null when not editing): drives suggestions. */
     var addressQuery by mutableStateOf<String?>(null)
+    /** Current-page row → Edit: the address bar takes this text (then clears it). */
+    var addressPrefill by mutableStateOf<String?>(null)
 
     /** Up to 6 matches: saved Vault links first, then History. Local only. */
     fun suggestions(query: String): List<Suggestion> {

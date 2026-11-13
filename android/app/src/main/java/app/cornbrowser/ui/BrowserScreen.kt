@@ -95,8 +95,13 @@ fun BrowserScreen(c: CornController) {
             PageArea(c, cur)
             // Suggestions while typing in the address bar (History + unlocked Vault, on the phone only).
             val q = c.addressQuery
+            val listAt = Modifier.align(if (c.settings.addressBarBottom) Alignment.BottomCenter else Alignment.TopCenter).padding(horizontal = 10.dp, vertical = 6.dp)
             if (!q.isNullOrBlank()) {
-                SuggestionList(c, q, Modifier.align(if (c.settings.addressBarBottom) Alignment.BottomCenter else Alignment.TopCenter).padding(horizontal = 10.dp, vertical = 6.dp))
+                SuggestionList(c, q, listAt)
+            } else if (q != null && !cur.isNewTab) {
+                // The bar was just tapped and is empty (founder, 2026-11-13, like Brave): offer the
+                // current page here instead of pre-filling the box with it.
+                CurrentPageRow(c, cur, listAt)
             }
             PasswordFillChip(c) // "Fill as …" when the page has a login form with saved logins
         }
@@ -121,6 +126,12 @@ private fun AddressBar(c: CornController, cur: TabEntry) {
     val value = if (editing) field else TextFieldValue(shown)
     val saved = remember(cur.url, c.data.vaultVersion.intValue) { !cur.isNewTab && c.data.isSaved(cur.url) }
     val e = c.engineNow
+    // Current-page row → Edit: put the address in the box, cursor at the end.
+    LaunchedEffect(c.addressPrefill) {
+        val p = c.addressPrefill ?: return@LaunchedEffect
+        c.addressPrefill = null
+        if (editing) { field = TextFieldValue(p, TextRange(p.length)); c.addressQuery = p }
+    }
 
     Row(Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         Row(
@@ -140,16 +151,23 @@ private fun AddressBar(c: CornController, cur: TabEntry) {
                 if (value.text.isEmpty()) T("Search or type a site", 15.sp, C.Muted, maxLines = 1)
                 BasicTextField(
                     value = value,
-                    onValueChange = { if (editing) { field = it; c.addressQuery = it.text } },
+                    onValueChange = { v ->
+                        // Right after the tap empties the box, the keyboard can echo the old address back
+                        // once (a selection update); ignore that echo so the box stays empty.
+                        val echo = field.text.isEmpty() && shown.isNotEmpty() && v.text == shown
+                        if (editing && !echo) { field = v; c.addressQuery = v.text }
+                    },
                     singleLine = true,
                     textStyle = TextStyle(color = C.Text, fontSize = 15.sp, fontFamily = Ui),
                     cursorBrush = SolidColor(C.Accent),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Go),
                     keyboardActions = KeyboardActions(onGo = { c.go(field.text); c.addressQuery = null; focus.clearFocus() }),
                     modifier = Modifier.fillMaxWidth().onFocusChanged {
-                        if (it.isFocused && !editing) field = TextFieldValue(shown, TextRange(0, shown.length))
+                        // Tapping the bar starts with an empty box (founder, 2026-11-13, like Brave); the
+                        // current page is offered below it (CurrentPageRow: Edit, Copy).
+                        if (it.isFocused && !editing) field = TextFieldValue("")
                         editing = it.isFocused
-                        // Suggestions start once the user types (the selected URL alone shows none).
+                        // Empty but focused: the current-page row shows; suggestions start once the user types.
                         c.addressQuery = if (it.isFocused) "" else null
                     },
                 )
@@ -398,6 +416,25 @@ private fun ErrorPage(host: String, reason: String, onRetry: () -> Unit) {
 }
 
 /** Address-bar suggestions: unlocked Vault links first, then History. Tap to open. */
+/** Shown when the address bar is tapped and still empty: the page you're on, with Edit and Copy. */
+@Composable
+private fun CurrentPageRow(c: CornController, cur: TabEntry, modifier: Modifier) {
+    Row(
+        modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(C.Surface2)
+            .border(1.dp, C.Line, RoundedCornerShape(16.dp)).padding(start = 14.dp, end = 4.dp, top = 6.dp, bottom = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        SiteIcon(cur, 22.dp)
+        Spacer(Modifier.width(12.dp))
+        Column(Modifier.weight(1f)) {
+            T(cur.title.ifBlank { cur.host }, 14.5.sp, maxLines = 1)
+            T(cur.url, 12.sp, C.Muted, maxLines = 1)
+        }
+        IconBtn(CornIcons.Edit, "Edit address", { c.addressPrefill = cur.url })
+        IconBtn(CornIcons.Copy, "Copy address", { c.copyLink(cur.url) })
+    }
+}
+
 @Composable
 private fun SuggestionList(c: CornController, query: String, modifier: Modifier) {
     val focus = LocalFocusManager.current
@@ -636,9 +673,9 @@ private fun Toolbar(c: CornController, cur: TabEntry) {
         }
         // Flush (second from the right)
         ToolbarButton({ c.requestFlush() }) {
-            Box(Modifier.width(46.dp).height(40.dp).clip(RoundedCornerShape(14.dp)).background(C.Corn), contentAlignment = Alignment.Center) {
-                CornIcon(CornIcons.Flush, TOOLBAR_ICON, C.CornInk)
-            }
+            // No yellow box (founder, 2026-11-13: it stood out too much): the swirl itself in corn yellow;
+            // C.Accent is the darker yellow in light mode, so the lines stay visible on cream.
+            CornIcon(CornIcons.Flush, TOOLBAR_ICON, C.Accent)
         }
         ToolbarButton({ c.sheet = Sheet.Menu }) { CornIcon(CornIcons.Dots, TOOLBAR_ICON) }
     }
