@@ -43,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.cornbrowser.CornController
+import app.cornbrowser.FAVORITES_NOTE
 import app.cornbrowser.Sheet
 import app.cornbrowser.browser.ClearChoice
 import app.cornbrowser.data.TabMemory
@@ -85,7 +86,10 @@ private fun OtherSheet(c: CornController, shown: Sheet?) {
             Sheet.Engine -> EngineSheet(c)
             Sheet.Shield -> ShieldSheet(c)
             Sheet.ConfirmFlush -> ConfirmFlushSheet(c)
-            is Sheet.DeleteItem -> DeleteItemSheet(c, shown)
+            is Sheet.VaultItemMenu -> VaultItemSheet(c, shown)
+            Sheet.Favorites -> FavoritesGrid(c)
+            is Sheet.FavoriteTile -> FavoriteTileSheet(c, shown)
+            is Sheet.AddFavorite -> AddFavoriteSheet(c, shown)
             is Sheet.HistoryEntry -> HistoryEntrySheet(c, shown)
             Sheet.DeleteData -> DeleteDataSheet(c)
             Sheet.ConfirmKeepAllTabs -> ConfirmKeepAllTabsSheet(c)
@@ -439,12 +443,57 @@ private fun RadioOption(title: String, sub: String, selected: Boolean, onSelect:
     }
 }
 
+/** Long-press on a link in the Vault: add it to (or remove it from) Favourites, or delete it. */
 @Composable
-private fun DeleteItemSheet(c: CornController, s: Sheet.DeleteItem) {
-    SheetTitle("Delete this link?", "“${s.title}” will be removed from your Vault for good.")
-    BigButton("Delete", { c.deleteVaultItem(s.id) })
+private fun VaultItemSheet(c: CornController, s: Sheet.VaultItemMenu) {
+    val item = s.item
+    // Adding copies the link (address and title) into Favourites, their own list.
+    val favorite = remember(c.data.vaultVersion.intValue) { c.data.favorites().firstOrNull { it.url == item.url } }
+    SheetTitle(item.title.ifBlank { item.url }, item.url)
+    if (favorite != null) BigButton("Remove from favourites", { c.removeFavorite(favorite.id) }, icon = CornIcons.StarOff, ghost = true)
+    else {
+        BigButton("Add to favourites", { c.addFavorite(item.url, item.title) }, icon = CornIcons.Star, ghost = true)
+        T(FAVORITES_NOTE, 12.5.sp, C.Muted, modifier = Modifier.padding(top = 6.dp))
+    }
+    Spacer(Modifier.height(10.dp))
+    BigButton("Delete", { c.deleteVaultItem(item.id) }, icon = CornIcons.Trash)
+    T("Deletes it from your Vault for good.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 6.dp))
     Spacer(Modifier.height(10.dp))
     BigButton("Cancel", { c.sheet = null }, ghost = true)
+}
+
+/** Long-press on a Favourite tile (new-tab row or View all). Stays open so a tile can be moved several places. */
+@Composable
+private fun FavoriteTileSheet(c: CornController, s: Sheet.FavoriteTile) {
+    val fav = s.favorite
+    val favorites = remember(c.data.vaultVersion.intValue) { c.data.favorites() }
+    val index = favorites.indexOfFirst { it.id == fav.id }
+    SheetTitle(fav.title.ifBlank { fav.url }, fav.url)
+    Row50(CornIcons.ChevLeft, "Move left", { c.moveFavorite(fav.id, -1) }, enabled = index > 0)
+    Row50(CornIcons.ChevRight, "Move right", { c.moveFavorite(fav.id, 1) }, enabled = index in 0 until favorites.size - 1)
+    Row50(CornIcons.StarOff, "Remove from favourites", { c.removeFavorite(fav.id) })
+}
+
+/** Add a favourite by typing its address ("example.com" is fine) and, optionally, a name (default: the site). */
+@Composable
+private fun AddFavoriteSheet(c: CornController, s: Sheet.AddFavorite) {
+    var address by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("") }
+    val url = FavoriteInput.address(address)
+    val site = url?.let { FavoriteInput.site(it) } ?: ""
+    val back: Sheet? = if (s.fromAll) Sheet.Favorites else null
+    fun add() { if (url != null) c.addFavoriteTyped(url, name.trim().ifEmpty { site }, back) }
+    val focus = remember { androidx.compose.ui.focus.FocusRequester() }
+    androidx.compose.runtime.LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
+    SheetTitle("Add a favourite", "It shows on the new tab, even while the Vault is locked.")
+    Field(address, { address = it.take(2000) }, "Address, like example.com", focus = focus)
+    Spacer(Modifier.height(10.dp))
+    Field(name, { name = it.take(60) }, if (site.isNotEmpty()) "Name (optional): $site" else "Name (optional)", onDone = { add() })
+    Spacer(Modifier.height(16.dp))
+    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        BigButton("Cancel", { c.sheet = back }, ghost = true, modifier = Modifier.weight(1f))
+        BigButton("Add", { add() }, enabled = url != null, modifier = Modifier.weight(1f))
+    }
 }
 
 @Composable

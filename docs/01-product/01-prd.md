@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 14:14 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 15:41 IST
 
 - **Status:** Draft v2, being shaped through Q&A rounds ([02-decision-log.md](02-decision-log.md))
 - **Last updated:** 2026-11-01 (after Round 1)
@@ -144,7 +144,8 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 
 | Requirement | Status |
 |---|---|
-| **The Vault replaces bookmarks.** Corn has no separate bookmarks or favourites | ✅ |
+| **The Vault replaces bookmarks.** No separate bookmarks folder: the Vault is for saving links; Favourites are quick-access tiles on the new tab | ✅ |
+| **Favourites** (layout A+): a scrolling row under the new tab's search box, the Vault tile fixed at the start and a "+ Favourite" tile last; "View all" under the row (5+ favourites) opens a bottom drawer with every favourite (4 across, "+ Add"). Their own list (not Vault links), added from a Vault link's long-press or by typing an address; long-press a tile to Remove / Move left / Move right. Shown without the PIN, kept by Flush. Site icons (one per site) from pages Corn showed, letters until then | ✅ |
 | Save the current page from the Vault icon in the address bar (a safe with a + in the corner; a ✓ once saved) → sheet to pick a Collection + optional tags | ✅ |
 | Save links with their titles | ✅ |
 | Optional tags | ✅ |

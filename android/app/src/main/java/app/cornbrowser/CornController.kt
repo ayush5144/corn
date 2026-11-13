@@ -8,6 +8,7 @@ import android.app.ActivityManager
 import android.content.ComponentCallbacks2
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Handler
 import android.os.Looper
 import android.view.View
@@ -31,7 +32,11 @@ import app.cornbrowser.data.FlushMode
 import app.cornbrowser.data.SearchEngines
 import app.cornbrowser.data.Shields
 import app.cornbrowser.data.TabMemory
+import app.cornbrowser.data.FavoriteIcons
+import uniffi.corn_ffi.siteHost
 import uniffi.corn_ffi.HistoryVisit
+import uniffi.corn_ffi.Favorite
+import uniffi.corn_ffi.VaultItem
 import app.cornbrowser.ui.C
 import app.cornbrowser.ui.ToastMsg
 import java.util.concurrent.atomic.AtomicBoolean
@@ -54,7 +59,14 @@ sealed interface Sheet {
     data class Save(val url: String, val title: String) : Sheet
     data class Group(val groupId: Int) : Sheet
     data object ConfirmFlush : Sheet
-    data class DeleteItem(val id: Long, val title: String) : Sheet
+    /** Long-press on a Vault link: Add to / Remove from favourites, Delete. */
+    data class VaultItemMenu(val item: VaultItem) : Sheet
+    /** "View all" under the new tab's Favourites row: a bottom drawer with every favourite as tiles (no PIN). */
+    data object Favorites : Sheet
+    /** Long-press on a Favourite tile: Remove, Move left, Move right. [fromAll]: opened from View all (Remove returns there). */
+    data class FavoriteTile(val favorite: Favorite, val fromAll: Boolean = false) : Sheet
+    /** Add a favourite by address (and an optional name). [fromAll]: opened from View all (returns there). */
+    data class AddFavorite(val fromAll: Boolean) : Sheet
     /** Long-press on a history entry. */
     data class HistoryEntry(val visit: HistoryVisit) : Sheet
     /** Settings → Delete browsing data. */
@@ -78,6 +90,12 @@ sealed interface Sheet {
 
 /** An address-bar suggestion, from the Vault or History (computed on the phone, never sent anywhere). */
 data class Suggestion(val title: String, val url: String, val fromVault: Boolean)
+
+/** Said when a favourite is added: favourites skip the Vault lock (founder, Favourites A+). */
+const val FAVORITES_NOTE = "Favourites show on the new tab, even while the Vault is locked."
+
+/** A favourite site's icon is refreshed from a visited page when older than this (30 days). */
+const val FAVORITE_ICON_MAX_AGE_MS = 30L * 24 * 60 * 60 * 1000
 
 /**
  * Corn's app state and actions. Screens read its Compose state and call its methods.
@@ -417,6 +435,63 @@ class CornController(private val context: Context) : TabHost {
     fun openVault() {
         sheet = null
         screen = Screen.Vault
+    }
+
+    // ---------------- Favourites (the new tab's tiles; their own list, not Vault links) ----------------
+
+    /** "View all" under the new tab's row: a bottom drawer with every favourite. Not behind the Vault lock. */
+    fun openFavorites() {
+        sheet = Sheet.Favorites
+    }
+
+    /** Open a Favourite in the current tab, like the old recent-link tiles. */
+    fun openFavorite(url: String) {
+        sheet = null
+        go(url)
+    }
+
+    /**
+     * Add a favourite (from a Vault link or typed in the Add sheet), then show [then] (the drawer, or
+     * nothing). If an open tab already shows that site with an icon, its icon is kept right away.
+     */
+    fun addFavorite(url: String, title: String, then: Sheet? = null) {
+        val fav = data.addFavorite(url, title) ?: run { showToast("Couldn't add it to favourites"); return }
+        val site = siteHost(fav.url)
+        tabs.tabs.firstOrNull { it.favicon != null && siteHost(it.url) == site }?.favicon?.let { saveFavoriteIcon(site, it) }
+        sheet = then
+        showToast("Added to favourites. $FAVORITES_NOTE")
+    }
+
+    /** The Add sheet: [url] from [app.cornbrowser.ui.FavoriteInput.address], cleaned and upgraded to https like the address bar. */
+    fun addFavoriteTyped(url: String, name: String, then: Sheet?) {
+        val clean = uniffi.corn_ffi.cleanUrl(url)
+        addFavorite(uniffi.corn_ffi.httpsUpgrade(clean) ?: clean, name, then)
+    }
+
+    fun removeFavorite(id: Long) {
+        data.removeFavorite(id)
+        // Removing from inside View all goes back to it while favourites remain.
+        val back = (sheet as? Sheet.FavoriteTile)?.fromAll == true && data.favorites().isNotEmpty()
+        sheet = if (back) Sheet.Favorites else null
+        showToast("Removed from favourites")
+    }
+
+    /** Move a Favourite one place left (-1) or right (+1). The sheet stays open for more moves. */
+    fun moveFavorite(id: Long, delta: Long) = data.moveFavorite(id, delta)
+
+    /**
+     * WebView gave a page's icon. Kept only when a favourite is on that site and has no icon yet (or
+     * one older than [FAVORITE_ICON_MAX_AGE_MS]); nothing is ever downloaded for this.
+     */
+    override fun onIcon(entry: TabEntry, icon: Bitmap) {
+        if (entry.isNewTab) return
+        val site = siteHost(entry.url)
+        if (site.isNotEmpty() && data.favoriteIconWanted(site, FAVORITE_ICON_MAX_AGE_MS)) saveFavoriteIcon(site, icon)
+    }
+
+    private fun saveFavoriteIcon(site: String, icon: Bitmap) {
+        val png = runCatching { FavoriteIcons.png(icon) }.getOrNull() ?: return
+        data.setFavoriteIcon(site, png)
     }
 
     // ---------------- Flush ----------------

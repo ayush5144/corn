@@ -13,6 +13,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import uniffi.corn_ffi.Collection
 import uniffi.corn_ffi.CornStore
+import uniffi.corn_ffi.Favorite
 import uniffi.corn_ffi.HistoryVisit
 import uniffi.corn_ffi.Login
 import uniffi.corn_ffi.VaultItem
@@ -50,7 +51,6 @@ class CornData(context: Context) {
     fun itemCount(): Long = store.itemCount()
     /** Links in one Collection, or every saved link ("All") when `collectionId` is null. */
     fun items(collectionId: Long?): List<VaultItem> = store.items(collectionId)
-    fun recentItems(limit: Long): List<VaultItem> = store.recentItems(limit)
     fun search(query: String): List<VaultItem> = store.search(query)
     fun isSaved(url: String): Boolean = url.isNotBlank() && store.containsUrl(url)
 
@@ -88,6 +88,41 @@ class CornData(context: Context) {
     fun deleteItem(id: Long) {
         store.deleteItem(id)
         changed()
+    }
+
+    // ---------- Favourites (the new tab's tiles: their own list, not Vault links) ----------
+    // Shown without the PIN and kept by every Flush. Each favourite site may have one small icon.
+    /** Every Favourite in new-tab order. */
+    fun favorites(): List<Favorite> = runCatching { store.favorites() }.getOrDefault(emptyList())
+
+    /** Add at the end of the row; an address that's already a favourite keeps its place. */
+    fun addFavorite(url: String, title: String): Favorite? = runCatching { store.addFavorite(url, title) }
+        .onSuccess { changed() }
+        .onFailure { Log.w(TAG, "add favourite failed: ${it.javaClass.simpleName}") } // never the address
+        .getOrNull()
+
+    fun removeFavorite(id: Long) {
+        store.removeFavorite(id)
+        changed()
+    }
+
+    /** Move a Favourite one place left (-1) or right (+1); nothing happens at the ends. */
+    fun moveFavorite(id: Long, delta: Long) {
+        store.moveFavorite(id, delta)
+        changed()
+    }
+
+    /** Each favourite site's icon (64×64 PNG), by host (lower case, no "www."). */
+    fun favoriteIcons(): Map<String, ByteArray> =
+        runCatching { store.favoriteIcons().associate { it.host to it.png } }.getOrDefault(emptyMap())
+
+    /** True when a favourite on [host] has no icon yet, or one older than [maxAgeMs]. */
+    fun favoriteIconWanted(host: String, maxAgeMs: Long): Boolean =
+        runCatching { store.favoriteIconWanted(host, maxAgeMs) }.getOrDefault(false)
+
+    /** Keep [png] as [host]'s icon; the Rust core ignores it unless a favourite is on that site. */
+    fun setFavoriteIcon(host: String, png: ByteArray) {
+        if (runCatching { store.setFavoriteIcon(host, png) }.getOrDefault(false)) changed()
     }
 
     // ---------- History (on this phone only; cleared by Flush) ----------

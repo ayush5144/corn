@@ -174,6 +174,44 @@ pub struct VaultItem {
     pub created_at: i64,
 }
 
+/// A Favourite: a link shown as a tile on the new tab (its own list, not a Vault Item).
+#[derive(Debug, Clone, uniffi::Record)]
+pub struct Favorite {
+    pub id: i64,
+    pub url: String,
+    pub title: String,
+    /// Lower comes first.
+    pub pos: i64,
+    pub created_at: i64,
+}
+
+impl From<corn_vault::Favorite> for Favorite {
+    fn from(f: corn_vault::Favorite) -> Self {
+        Self { id: f.id, url: f.url, title: f.title, pos: f.pos, created_at: f.created_at }
+    }
+}
+
+/// A favourite site's icon (64×64 PNG), one per site.
+#[derive(Debug, Clone, uniffi::Record)]
+pub struct FavoriteIcon {
+    /// Lower-case host without "www.".
+    pub host: String,
+    pub png: Vec<u8>,
+    pub updated_at: i64,
+}
+
+impl From<corn_vault::FavoriteIcon> for FavoriteIcon {
+    fn from(i: corn_vault::FavoriteIcon) -> Self {
+        Self { host: i.host, png: i.png, updated_at: i.updated_at }
+    }
+}
+
+/// The site a URL belongs to, as favourite icons are keyed: lower-case host without "www.".
+#[uniffi::export]
+pub fn site_host(url: String) -> String {
+    corn_vault::site_host(&url)
+}
+
 #[derive(Debug, Clone, uniffi::Record)]
 pub struct HistoryVisit {
     pub visit_id: i64,
@@ -275,6 +313,34 @@ impl CornStore {
     }
     pub fn delete_item(&self, id: i64) -> Result<(), CornError> {
         Ok(self.inner.delete_item(id)?)
+    }
+
+    // Favourites (the new tab's tiles; their own list, shown without the PIN, kept by Flush)
+    /// Add at the end; an address already there keeps its place and takes the new title.
+    pub fn add_favorite(&self, url: String, title: String) -> Result<Favorite, CornError> {
+        Ok(self.inner.add_favorite(&url, &title)?.into())
+    }
+    pub fn remove_favorite(&self, id: i64) -> Result<(), CornError> {
+        Ok(self.inner.remove_favorite(id)?)
+    }
+    /// Every Favourite in new-tab order.
+    pub fn favorites(&self) -> Result<Vec<Favorite>, CornError> {
+        Ok(self.inner.favorites()?.into_iter().map(Into::into).collect())
+    }
+    /// Move a Favourite `delta` places (negative = left); no-op at the ends.
+    pub fn move_favorite(&self, id: i64, delta: i64) -> Result<(), CornError> {
+        Ok(self.inner.move_favorite(id, delta)?)
+    }
+    /// Save a favourite site's icon (only if a favourite on that site exists). Returns whether it was saved.
+    pub fn set_favorite_icon(&self, host: String, png: Vec<u8>) -> Result<bool, CornError> {
+        Ok(self.inner.set_favorite_icon(&host, &png)?)
+    }
+    /// A favourite on this site has no icon, or one older than `max_age_ms`.
+    pub fn favorite_icon_wanted(&self, host: String, max_age_ms: i64) -> Result<bool, CornError> {
+        Ok(self.inner.favorite_icon_wanted(&host, max_age_ms)?)
+    }
+    pub fn favorite_icons(&self) -> Result<Vec<FavoriteIcon>, CornError> {
+        Ok(self.inner.favorite_icons()?.into_iter().map(Into::into).collect())
     }
 
     // History
