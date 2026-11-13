@@ -230,6 +230,7 @@ The founder has been testing on a real phone and reports it working well. These 
 | [x] | **Icons:** from the icon WebView gives for a page Corn shows (never fetched by Corn), 64×64 PNG, refreshed after 30 days; letter until then | Claude | Emulator: typed favourite showed a letter, then its icon after a visit; adding from an open tab showed the icon at once; all 6 test sites got icons (2–8 KB each) |
 | [x] | **Upgrade keeps data:** install over the released build's database | Claude | Emulator: version 4 → 5, 5 Vault links, 2 Collections, 3 logins and tags kept; `items` unchanged |
 | [ ] | Founder: try it on a phone; decide whether "+ Favourite" stays the only add path on the new tab | Founder | Decided |
+| [ ] | **Later:** include favourites in the Vault export (a "Favourites" folder in the HTML bookmarks file). Founder: not needed for now | Claude | Decided |
 
 ## Later: website and desktop (added 2026-11-13)
 
