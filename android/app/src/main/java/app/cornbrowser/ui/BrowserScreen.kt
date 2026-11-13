@@ -530,7 +530,7 @@ private fun NewTabPage(c: CornController) {
                 Spacer(Modifier.height(10.dp))
                 val quip = c.quip
                 val lines = Copy.oneSentencePerLine(quip ?: "Browse. Save what matters. Flush the rest.").split("\n")
-                lines.forEach { line -> TaglineText(line, if (quip != null) C.Accent else C.Text) }
+                lines.forEach { line -> TaglineText(line, C.Accent) } // corn yellow (founder, 2026-11-13); the darker theme yellow in light mode
             }
         }
         Row(
