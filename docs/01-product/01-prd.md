@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 12:17 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 14:14 IST
 
 - **Status:** Draft v2, being shaped through Q&A rounds ([02-decision-log.md](02-decision-log.md))
 - **Last updated:** 2026-11-01 (after Round 1)
@@ -134,7 +134,7 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | Corn's own error page when a site can't load; typed addresses fall back to http when a site has no https | ✅ |
 | File uploads (Android file picker) and downloads (confirm, then the phone's Downloads folder; files survive Flush) | ✅ |
 | Sites' camera, microphone and location: Allow / Block per site, remembered for the session only | ✅ |
-| Address-bar suggestions from History and the unlocked Vault, on the phone only | ✅ |
+| Address-bar suggestions from History and the unlocked Vault, on the phone only; tapping the bar shows an empty box with the current page (Share, Copy, Edit) | ✅ |
 | Find in page; Text size (S/M/L/XL) in Settings → Appearance | ✅ |
 | Picture-in-picture video; print / save as PDF | ⏭️ Later |
 | **Corn's own password store** (inside the Vault), survives a Flush: save/update/never prompts, fill on tap with PIN when the Vault is locked (switchable), Passwords screen | ✅ v1 (built) |
@@ -145,7 +145,7 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | Requirement | Status |
 |---|---|
 | **The Vault replaces bookmarks.** Corn has no separate bookmarks or favourites | ✅ |
-| Save the current page from the Vault icon in the address bar → sheet to pick a Collection + optional tags | ✅ |
+| Save the current page from the Vault icon in the address bar (a safe with a + in the corner; a ✓ once saved) → sheet to pick a Collection + optional tags | ✅ |
 | Save links with their titles | ✅ |
 | Optional tags | ✅ |
 | **Collections**: one level, optional: each link is saved once, in one Collection or none; **All** shows every saved link; tags cut across | ✅ |

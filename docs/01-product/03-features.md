@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 13:52 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 14:14 IST
 
 Every feature in the Android app today, what it does for the user, and the evidence behind it. Nothing here is planned-only; planned work lives in the [checklist](../03-planning/02-checklist.md).
 
@@ -116,8 +116,8 @@ Every feature in the Android app today, what it does for the user, and the evide
 - **Main buttons stay visible** ✅: on the Tabs screen, a slim "Done with all of these?" bar with the Flush button (bottom right, as in the toolbar) is pinned at the bottom; the group sheet, Save to Vault and the split-screen picker keep their buttons pinned while their content scrolls. Verified with 13 tabs: the Flush bar, "Save group to Vault"/"New tab in group" and the picker's "New tab" stayed in place while the lists scrolled. Not pinned on purpose: Settings, History, Passwords, Vault (actions already in fixed headers) and short sheets.
 
 - **Tab previews** ✅
-  - *What:* screenshots of tabs in the Tabs screen and group view, kept in memory only (~0.25 MB each).
-  - *Evidence:* seen in the Tabs screen.
+  - *What:* screenshots of tabs in the Tabs screen and group view, kept in memory only (~0.25 MB each), never on disk. Taken when you leave a tab, open the Tabs screen or a tab is unloaded, but not while a page is still loading (a half-drawn page captured as a blank white card). A tab with no picture yet (opened in the background, or restored after Corn restarts) shows a site card instead: its icon or coloured letter, name and title; a new tab shows Corny. Closing a tab or a Flush drops its picture right away (`TabEntry.forget`).
+  - *Evidence:* seen in the Tabs screen; a background-opened tab showed the iana.org site card (2026-11-13).
 
 - **Toasts sit next to what you tapped** ✅: just above the bottom bar (measured, so the Tab Group strip and a bottom address bar count), above an open sheet, or 16 dp above the bottom edge on screens without a bar. Seen in all three cases on the emulator.
 
@@ -181,7 +181,7 @@ Every feature in the Android app today, what it does for the user, and the evide
 - **File uploads** ✅: a site's "Choose file" opens Android's file picker (several files when the site allows it). Verified: a test page received `corn-upload-test.txt (16 B)`, the exact file picked.
 - **Downloads** ✅: tapping a download asks first ("Download this file? name · size · from site"), then Android's download manager saves it to the phone's Downloads folder (so it finishes even if Corn closes; a notification shows only while downloading). "Downloaded … · Open" when done. Files stay after a Flush. Verified: `corn-test.zip` saved at 20,000 bytes, identical to the original. Links that aren't http/https (e.g. `blob:`) say "Corn can't download this kind of file yet".
 - **Camera, microphone and location for sites** ✅: a site asking shows "example.com wants to use your camera" with Allow / Block; Android's own permission is asked only after Allow. Answers last for the session (a Flush or restart forgets them) and show in the shield sheet, where a tap resets them. Browsers only allow these on https pages (seen: an http test page was refused by Chromium itself). Verified on https://example.com: location returned the emulator's GPS position (37.422, −122.084); the camera gave 1 live video track; Block on the microphone returned `NotAllowedError` without asking Android. One early location attempt failed with no Android dialog and didn't happen again in 3 later runs; cause unknown.
-- **Address-bar suggestions** ✅: while typing, up to 6 matches from History and the Vault (Vault links only while the Vault is unlocked or the lock is off), computed on the phone; nothing is sent anywhere. Also under the new-tab page's search box. Verified: typing "feat" showed "Features test · 10.0.2.2"; tapping it opened the page.
+- **Address bar and suggestions** ✅: tapping the bar gives an empty box (like Brave) with the **current page** right under it: title, address, Share (Android's three dots), Copy and Edit (puts the address in the box). While typing, up to 6 matches from History and the Vault (Vault links only while the Vault is unlocked or the lock is off), each with the site's coloured letter ("Vault ·" marks Vault links) and a ↖ that puts the address in the box to refine it; computed on the phone, nothing is sent anywhere. Also under the new-tab page's search box. Verified: typing "feat" showed "Features test · 10.0.2.2" and opened it; on Wikipedia the bar emptied with the current-page row, Edit filled the box, typing "wi" listed Wikipedia and DuckDuckGo with their letters and ↖ (2026-11-13). Real site icons and collapsing duplicate rows are open on the checklist.
 - **Find in page** ✅: Menu → Find in page; the address bar becomes a find bar with a match count and previous/next. Verified: "kernel" found 5 matches; Next moved to 2/5 with the current match highlighted.
 - **Text size** ✅: Settings → Appearance → Text size: S 85%, M 100%, L 115%, XL 130%, for every page, applied immediately. Verified: a heading went from 38.5 px to 49.9 px tall at XL (×1.30).
 - **Opens links from other apps** ✅: tested with links sent to Corn.

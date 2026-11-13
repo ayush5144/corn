@@ -270,3 +270,9 @@
 - Updated decision log (Round 26), checklist (new tab and previews ticked; manage collections widened), features (home page layout).
 - Follow-up: empty address bar on tap with a current-page row (`CurrentPageRow`, Edit/Copy; keyboard echo of the old address ignored); Flush button is the yellow swirl without a box. Checklist and Round 26 updated.
 - Follow-up: Share icon is Android's three connected dots everywhere (`ui/Icons.kt`); checklist notes the iPhone share symbol for later, suggestion de-duplication, and the favicon decision.
+
+## 2026-11-13 — Doc sync for the day's UI work
+
+- Code changed today (main): export sheet and icons, new-tab page, picture-less tab cards and preview clean-up, Vault safe icon, ↗ for other apps, empty address bar with a current-page row, suggestion letters and ↖, Android share icon.
+- Updated `docs/01-product/03-features.md` (Tab previews; Address bar and suggestions) and `docs/01-product/01-prd.md` (Save-to-Vault icon; suggestions row).
+- Cross-references: decision log Round 26 and the checklist were already updated with each change.
