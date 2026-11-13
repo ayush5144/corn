@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 14:16 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 14:21 IST
 
 The single list of what's done, what's next and who owns it. Product decisions live in the [decision log](../01-product/02-decision-log.md); this file tracks **work**.
 
@@ -209,7 +209,7 @@ The founder has been testing on a real phone and reports it working well. These 
 | [x] | **Share icon:** Android's three connected dots everywhere (address-bar row, menu "Share page", link and image menus), replacing the iPhone-style arrow out of a tray, which also looked like Export | Claude | Seen on the emulator |
 | [ ] | **iPhone app, later:** use iPhone's own share symbol (square with an up arrow) there; each platform gets its familiar share icon | Claude | Decided when the iPhone app is built |
 | [ ] | **Suggestions: collapse duplicates** (same title and site, e.g. two "wikepedia at DuckDuckGo" rows whose addresses differ only in a parameter) | Claude | One row per page in suggestions |
-| [ ] | **Real site icons in suggestions?** Options: letters (today), icons from open tabs only (nothing stored), or small icons saved with each history entry like Brave (~1–2 KB per site, deleted with history, Clear history and every Flush, none when Keep history is off). Recommended: saved with history | Founder | Decided |
+| [ ] | **Later: real site icons in suggestions** (founder, 2026-11-13: letters for now). When built: **one icon per website**, never per page (10 Wikipedia pages share one), ~1–2 KB each, capped (e.g. the 500 most recent sites), deleted with history, Clear history and every Flush; nothing saved when Keep history is off | Claude | Icons show in suggestions; storage stays under ~1 MB |
 | [ ] | Later, if wanted: a "search for '…'" first row and bold matching text, like Brave | Founder | Decided |
 
 ## Corner sizes (founder, 2026-11-13)

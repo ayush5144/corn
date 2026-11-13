@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 14:16 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 14:21 IST
 
 Every product question asked and the founder's answer, in order. Settled answers flow into [01-prd.md](01-prd.md). New rounds are appended at the bottom.
 
@@ -442,6 +442,7 @@ Every product question asked and the founder's answer, in order. Settled answers
 ### Round 26 — Icon and new-tab polish (2026-11-13)
 - **Vault icon:** the safe keeps its door and hinges and a clear keyhole; the kernel outline around the keyhole is dropped (cluttered at 24 dp). Save (+) and Saved (✓) the same.
 - **Arrows:** export uses an up arrow out of the tray; leaving Corn for another app ("Open in…?" sheet) uses ↗; chevrons (›) stay on the right of rows that open another screen.
+- **Site icons in suggestions:** letters for now; if added later, one icon per website (not per page), capped, wiped with history and by Flush.
 - **Corners:** keep Corn's soft, rounded look but use one set of sizes everywhere (8 / 12 / 16 / 24 / pill); no setting for corner style.
 - **Address bar:** tapping it gives an empty box (like Brave); the current page is offered right under it with Edit and Copy.
 - **Flush button:** no yellow box; the swirl itself in corn yellow (the darker theme yellow in light mode).
