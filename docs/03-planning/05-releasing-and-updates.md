@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-13 · **Last updated:** 2026-11-13, 11:07 IST
+> **Created:** 2026-11-13 · **Last updated:** 2026-11-13, 11:32 IST
 
 How Corn gets onto people's phones, how updates reach them, and what has to be in place first. Written for the founder in plain language; the decisions are in the decision log (Round 24).
 
@@ -24,7 +24,8 @@ If both are true, installing the new APK replaces the app and **keeps its data**
 
 ### The release key (Corn's real seal)
 
-- Created once by the founder with `keytool` (a `.jks` file + a password), so the password never passes through anyone else.
+- Created once by the founder with `keytool` (a `.jks` file + a password), so the password never passes through anyone else. **Done 2026-11-13:** `~/corn-release.jks`.
+- Its public certificate (safe to share; lets anyone check an APK really comes from Corn): `CN=Corn, O=Corn, C=IN`, SHA-256 fingerprint `e4b31db31542ecbb4d4bd3903b05ae49439816e4ca8dd7cbe5dea2b74d3930ad`. Check an APK with `apksigner verify --print-certs Corn-x.y.z.apk`.
 - **Never** goes into the repo (the repo is public). The build reads its password from `~/.gradle/gradle.properties` on the Mac that builds releases.
 - **Back it up** (password manager + an encrypted copy outside this Mac). If it's lost, nobody who installed Corn outside the Play Store can ever get an update again.
 - At Play Store launch, upload this same key to Google ("use my existing app signing key" in Play App Signing), so GitHub downloads and Play installs share one seal and people can move between them without losing anything.

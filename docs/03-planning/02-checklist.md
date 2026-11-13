@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 11:07 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 11:32 IST
 
 The single list of what's done, what's next and who owns it. Product decisions live in the [decision log](../01-product/02-decision-log.md); this file tracks **work**.
 
@@ -149,6 +149,7 @@ The founder has been testing on a real phone and reports it working well. These 
 | [ ] | **Must · Independent security review** of the password store, PIN and data clearing | Founder | Review notes committed; findings fixed or accepted |
 | [ ] | **Must · Limit wrong PIN attempts** (password review #1; was "later" in the backlog): growing wait after a few wrong tries, PIN checked with a Keystore key | Claude | Brute-forcing the PIN on the phone is slowed; unit-tested |
 | [ ] | **Must · Release key:** the founder creates Corn's release key (`keytool`, password kept private, backed up outside this Mac); key files git-ignored; release builds signed with it (password read from `~/.gradle/gradle.properties`). Today's "test" APK is signed with the debug key. See [05-releasing-and-updates](05-releasing-and-updates.md) | Both | A release build signed with the real key installs over the previous one and keeps its data |
+| [x] | Release key created by the founder (`~/corn-release.jks`, 2026-11-13) and release signing verified: `app-release.apk` signed `CN=Corn, O=Corn, C=IN`, SHA-256 `e4b31db3…d3930ad`. Still open in the row above: the founder's backup, and the first signed release installing over the next one | Both | Done |
 | [x] | Release tooling ready (2026-11-13): `scripts/create-release-key.sh` (you only type a password), `~/.gradle/gradle.properties` with the four `CORN_RELEASE_*` values as `CHANGE_ME` placeholders, release signing in `android/app/build.gradle.kts` (from that file or environment variables; unsigned when absent), `scripts/release.sh <version>` (raises `versionCode`, tests, builds, refuses a debug-signed APK, copies to Downloads, then asks before commit, tag, push and GitHub pre-release). Signing verified with a throwaway key | Claude | Done |
 | [ ] | **Must · Version numbers:** raise `versionCode` on every release (today 1; `scripts/release.sh` does it) | Claude | Each GitHub/Play release has a higher `versionCode` |
 | [ ] | **Must · Testers via GitHub Releases:** each build as a pre-release with the signed APK and install steps; testers told to use Obtainium for update notices | Both | A tester updates from one release to the next without losing data |

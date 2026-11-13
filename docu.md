@@ -237,3 +237,9 @@
 
 - `android/app/build.gradle.kts`: release signing from `~/.gradle/gradle.properties` or environment variables (unsigned when absent). Added `scripts/create-release-key.sh`, `scripts/release.sh`.
 - Updated `docs/03-planning/05-releasing-and-updates.md` ("Doing a release") and `docs/03-planning/02-checklist.md` (release tooling done; website and desktop version added).
+
+## 2026-11-13 — Release key created and signing verified
+
+- The founder created `~/corn-release.jks`; a release build is signed `CN=Corn, O=Corn, C=IN` (SHA-256 e4b31db3…d3930ad). No repo code changed.
+- Updated `docs/03-planning/02-checklist.md` (new done row; backup and first signed update still open) and `docs/03-planning/05-releasing-and-updates.md` (key created, public fingerprint, how to check an APK).
+- Updated `AGENTS.md` (where releasing lives; key never in the repo).
