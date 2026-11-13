@@ -206,6 +206,10 @@ The founder has been testing on a real phone and reports it working well. These 
 |---|---|---|---|
 | [x] | Current-page row gets **Share** (order Share · Copy · Edit, like Brave) | Claude | Seen on the emulator; Share opens Android's share sheet |
 | [x] | Suggestions show the **site's letter icon** instead of the clock / Vault icon ("Vault ·" before the site marks Vault links; Corn keeps no favicons on disk), and a **↖ arrow** that puts the address in the box to refine it | Claude | Seen on the emulator; ↖ fills the box without opening |
+| [x] | **Share icon:** Android's three connected dots everywhere (address-bar row, menu "Share page", link and image menus), replacing the iPhone-style arrow out of a tray, which also looked like Export | Claude | Seen on the emulator |
+| [ ] | **iPhone app, later:** use iPhone's own share symbol (square with an up arrow) there; each platform gets its familiar share icon | Claude | Decided when the iPhone app is built |
+| [ ] | **Suggestions: collapse duplicates** (same title and site, e.g. two "wikepedia at DuckDuckGo" rows whose addresses differ only in a parameter) | Claude | One row per page in suggestions |
+| [ ] | **Real site icons in suggestions?** Options: letters (today), icons from open tabs only (nothing stored), or small icons saved with each history entry like Brave (~1–2 KB per site, deleted with history, Clear history and every Flush, none when Keep history is off). Recommended: saved with history | Founder | Decided |
 | [ ] | Later, if wanted: a "search for '…'" first row and bold matching text, like Brave | Founder | Decided |
 
 ## Later: website and desktop (added 2026-11-13)

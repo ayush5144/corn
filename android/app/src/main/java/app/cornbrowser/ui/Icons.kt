@@ -73,7 +73,16 @@ object CornIcons {
     val Search = line("M18 11a7 7 0 1 1-14 0a7 7 0 1 1 14 0z", "M20 20l-3.5-3.5")
     val Lock = line("M7 11h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2z", "M8 11V8a4 4 0 0 1 8 0v3")
     val Sliders = line("M4 7h9M17 7h3M4 17h3M11 17h9", "M17 7a2 2 0 1 1-4 0a2 2 0 1 1 4 0z", "M11 17a2 2 0 1 1-4 0a2 2 0 1 1 4 0z")
-    val Share = line("M12 15V3M7 8l5-5 5 5", "M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5")
+    /**
+     * Share: Android's three connected dots (founder, 2026-11-13), like Chrome and Brave. The old arrow
+     * out of a tray is iPhone's share symbol and looked almost like Export; an iPhone app can use it there.
+     */
+    val Share = line(
+        "M20.4 5.4a2.6 2.6 0 1 1-5.2 0 2.6 2.6 0 0 1 5.2 0z",
+        "M8.6 12a2.6 2.6 0 1 1-5.2 0 2.6 2.6 0 0 1 5.2 0z",
+        "M20.4 18.6a2.6 2.6 0 1 1-5.2 0 2.6 2.6 0 0 1 5.2 0z",
+        "M8.3 10.7l7.2-4M8.3 13.3l7.2 4",
+    )
     val Fingerprint = line(
         "M7.5 19c1-1.8 1.5-3.9 1.5-6.5a3 3 0 0 1 6 0c0 1.2-.1 2.3-.3 3.4",
         "M5 15.5c.4-1 .5-2 .5-3a6.5 6.5 0 0 1 13 0c0 2.4-.4 4.6-1.1 6.6",

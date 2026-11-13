@@ -269,3 +269,4 @@
 - `ui/BrowserScreen.kt`: new-tab tagline (three centred lines, Corny after the last word, anchored above the search box); Corny on error/crashed pages. `ui/Components.kt`: picture-less tab cards; Corny for the new-tab icon. `browser/TabManager.kt`: `TabEntry.forget()`, no pictures of loading pages. `ui/Icons.kt`: Vault without the kernel outline; `OpenOutside` (↗). `ui/Sheets.kt`: ↗ on the "Open in…?" button.
 - Updated decision log (Round 26), checklist (new tab and previews ticked; manage collections widened), features (home page layout).
 - Follow-up: empty address bar on tap with a current-page row (`CurrentPageRow`, Edit/Copy; keyboard echo of the old address ignored); Flush button is the yellow swirl without a box. Checklist and Round 26 updated.
+- Follow-up: Share icon is Android's three connected dots everywhere (`ui/Icons.kt`); checklist notes the iPhone share symbol for later, suggestion de-duplication, and the favicon decision.
