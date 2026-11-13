@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 13:29 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 13:52 IST
 
 The single list of what's done, what's next and who owns it. Product decisions live in the [decision log](../01-product/02-decision-log.md); this file tracks **work**.
 
@@ -159,7 +159,7 @@ The founder has been testing on a real phone and reports it working well. These 
 | [ ] | **Must · Play Store requirements:** privacy policy page, Data Safety form, content rating questionnaire (answer honestly: a browser with unrestricted internet access; the listing can say Corn is made for adults; no in-app age gate, Round 24), store listing (text, screenshots, icon) | Founder | Play Console shows no blocking items |
 | [ ] | **Must · Licences screen in the app:** credits for uBlock Origin lists and scriptlets (GPL-3.0), Brave's adblock-rust (MPL-2.0), DuckDuckGo autoconsent, UniFFI, fonts (SIL OFL) and Corn's own MPL-2.0 | Claude | Settings → About → Licences lists every component with its licence |
 | [ ] | **Must · Name and trademark:** trademark search for the launch name; domain registered | Founder | Search done; domain owned |
-| [ ] | **Must · Delete a collection** (no way today) | Claude | A collection can be removed; its links stay in All |
+| [ ] | **Must · Manage collections:** delete a collection (its links stay in All, or delete them too), rename it, move links between collections, remove a link from a collection (founder, 2026-11-13: "no way to delete, edit or manage a collection today") | Claude | Each action works on the emulator and survives a restart |
 | [ ] | **Must · QA suite first-check flake** (setup sometimes fails on the first check after a restart) | Claude | 3 full runs in a row with no setup failures |
 | [ ] | Should · Accessibility pass: TalkBack labels, large font sizes, contrast | Claude | TalkBack reads every control; XL font size doesn't break layouts |
 | [ ] | Should · Privacy-respecting crash reports (local only or opt-in) | Both | A crash on the phone can be seen and shared by the user |
@@ -186,10 +186,11 @@ The founder has been testing on a real phone and reports it working well. These 
 
 | ✓ | Task | Owner | Done when |
 |---|---|---|---|
-| [ ] | **New-tab page:** remove the big "corn" wordmark; a small Corny beside the tagline or the after-Flush one-liner; the search box moved up; stats and Vault shortcuts below | Claude | Seen on the emulator in dark and light, before and after a Flush |
-| [ ] | **Tab cards without a picture** (e.g. after Corn restarts): a large site badge (first letter on a colour), the site name and title, instead of blank placeholder lines. Nothing saved to disk, nothing fetched | Claude | Restored tabs are recognisable in the tab switcher and group rows |
-| [ ] | **Clean-up:** closing a tab (or a Flush) drops its picture and icon right away, instead of waiting for the tab list to forget them | Claude | Code path verified; memory not kept for closed tabs |
-| [ ] | **Group cards review:** several tabs in a group on the emulator; fix anything that reads badly at real size | Claude | Screenshots reviewed; fixes committed |
+| [x] | **New-tab page:** remove the big "corn" wordmark; a small Corny beside the tagline or the after-Flush one-liner; the search box moved up; stats and Vault shortcuts below | Claude | Seen on the emulator in dark and light, before and after a Flush |
+| [x] | **Tab cards without a picture** (e.g. after Corn restarts): a large site badge (first letter on a colour), the site name and title, instead of blank placeholder lines. Nothing saved to disk, nothing fetched | Claude | Restored tabs are recognisable in the tab switcher and group rows |
+| [x] | **Clean-up:** closing a tab (or a Flush) drops its picture and icon right away, instead of waiting for the tab list to forget them | Claude | Code path verified; memory not kept for closed tabs |
+| [x] | **Group cards review:** several tabs in a group on the emulator; fix anything that reads badly at real size | Claude | Screenshots reviewed; fixes committed |
+| [x] | Done 2026-11-13, seen on the emulator: new-tab page without the big logo and wordmark; the tagline in three centred lines ("Browse." / "Save what matters." / "Flush the rest.") with Corny after the last word, sitting right above the search bar, which is about a third of the way down (a trailing 🌽 in an after-Flush line is replaced by Corny); tab cards without a picture show the site icon or letter, name and title (a background-opened tab showed iana.org this way); the new-tab card and the error/crashed pages use Corny instead of the 🌽 emoji; closing a tab or a Flush drops its picture, icon and saved state (`TabEntry.forget`, no `Bitmap.recycle` because a frame may still draw it); group review found a blank white picture of a page captured while loading, so pictures are no longer taken while a page loads | Claude | Done |
 
 ## Later: website and desktop (added 2026-11-13)
 

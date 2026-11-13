@@ -176,7 +176,7 @@ private fun ImageSheet(c: CornController, s: Sheet.Image) {
 @Composable
 private fun ExternalAppSheet(c: CornController, s: Sheet.ExternalApp) {
     SheetTitle(s.title, s.detail)
-    BigButton(if (s.appName != null) "Open ${s.appName}" else "Open", { c.openExternalApp(s) }, icon = CornIcons.ChevRight)
+    BigButton(if (s.appName != null) "Open ${s.appName}" else "Open", { c.openExternalApp(s) }, icon = CornIcons.OpenOutside)
     Spacer(Modifier.height(10.dp))
     if (s.fallbackUrl != null) {
         BigButton("Open web version", { c.openExternalFallback(s) }, ghost = true)

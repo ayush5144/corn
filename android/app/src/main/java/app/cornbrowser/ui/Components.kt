@@ -44,6 +44,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.ui.res.painterResource
+import app.cornbrowser.R
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -287,7 +289,8 @@ fun SheetTitle(title: String, sub: String? = null) {
 fun SiteIcon(entry: TabEntry, size: Dp = 22.dp) {
     val fav = entry.favicon
     if (entry.isNewTab) {
-        Box(Modifier.size(size), contentAlignment = Alignment.Center) { T("🌽", (size.value * 0.7f).sp) }
+        // A new tab is Corn itself: Corny, the logo (not the corn emoji).
+        Image(painterResource(R.drawable.corn_logo), "New tab", Modifier.size(size))
     } else if (fav != null) {
         Image(fav.asImageBitmap(), null, Modifier.size(size).clip(RoundedCornerShape(size * 0.3f)), contentScale = ContentScale.Crop)
     } else {
@@ -326,9 +329,19 @@ fun TabPreview(entry: TabEntry, isCurrent: Boolean, onOpen: () -> Unit, onClose:
             if (shot != null && !entry.isNewTab) {
                 Image(shot.asImageBitmap(), null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop, alignment = Alignment.TopCenter)
             } else {
-                Column(Modifier.fillMaxSize().padding(8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    T(entry.title, 11.5.sp, weight = FontWeight.SemiBold, maxLines = 3)
-                    repeat(2) { Box(Modifier.fillMaxWidth(if (it == 1) 0.6f else 1f).height(6.dp).clip(RoundedCornerShape(3.dp)).background(C.Surface2)) }
+                // No picture (a new tab, or a tab restored after Corn restarted: pictures are kept in
+                // memory only, never saved). Show who it is instead: the site's icon or letter, its name, the title.
+                Column(
+                    Modifier.fillMaxSize().padding(10.dp),
+                    verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    SiteIcon(entry, 44.dp)
+                    Spacer(Modifier.height(10.dp))
+                    T(if (entry.isNewTab) "New tab" else entry.host, 12.sp, C.Text, FontWeight.Bold, maxLines = 1)
+                    if (!entry.isNewTab && entry.title.isNotBlank() && entry.title != entry.url) {
+                        Spacer(Modifier.height(4.dp))
+                        T(entry.title, 10.5.sp, C.Muted, maxLines = 3)
+                    }
                 }
             }
         }

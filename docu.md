@@ -263,3 +263,8 @@
 - `ui/Sheets.kt`: Export links is a single choice (radio options, HTML pre-selected) with Cancel and a corn-yellow Export.
 - `ui/Components.kt`: the PIN pad's erase key has no key background.
 - Updated `docs/02-technical/13-vault-export.md` (where-in-the-app row).
+
+## 2026-11-13 — New-tab page, tab cards, Vault icon, ↗ for other apps
+
+- `ui/BrowserScreen.kt`: new-tab tagline (three centred lines, Corny after the last word, anchored above the search box); Corny on error/crashed pages. `ui/Components.kt`: picture-less tab cards; Corny for the new-tab icon. `browser/TabManager.kt`: `TabEntry.forget()`, no pictures of loading pages. `ui/Icons.kt`: Vault without the kernel outline; `OpenOutside` (↗). `ui/Sheets.kt`: ↗ on the "Open in…?" button.
+- Updated decision log (Round 26), checklist (new tab and previews ticked; manage collections widened), features (home page layout).

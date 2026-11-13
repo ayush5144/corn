@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 12:17 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 13:52 IST
 
 Every feature in the Android app today, what it does for the user, and the evidence behind it. Nothing here is planned-only; planned work lives in the [checklist](../03-planning/02-checklist.md).
 
@@ -205,6 +205,8 @@ Every feature in the Android app today, what it does for the user, and the evide
 - **Corny logo** ✅: the app icon (adaptive, works with every launcher shape) and the logo on the new-tab page and onboarding are Corny, the winking "shh" cob. Seen on the emulator's home screen and new-tab page.
 
 ## Home page
+
+- **Layout** ✅ (2026-11-13): no big logo or wordmark. The tagline ("Browse." / "Save what matters." / "Flush the rest.", one sentence per line) or, after a Flush, its one-liner sits right above the search box with a small Corny after the last word; the search box is about a third of the way down. Stats and Vault shortcuts below.
 
 - **Stats card** ✅
   - *What:* two all-time totals: **trackers & ads blocked** and **pop-ups & redirects stopped**. Plain counts with no sites or URLs, kept across Flushes.

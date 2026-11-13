@@ -67,6 +67,17 @@ class TabEntry(val id: Int, url: String, groupId: Int?) {
     internal var savedScrollY: Int = 0
     internal var live: CornTab? = null
     internal var saved: Bundle? = null
+
+    /**
+     * The tab is closed (or Flushed): drop its picture, icon and saved page state right away rather
+     * than whenever the last reference goes. Not Bitmap.recycle(): the screen may still be drawing
+     * the picture for one more frame, and drawing a recycled bitmap crashes; the GC frees it.
+     */
+    internal fun forget() {
+        preview = null
+        favicon = null
+        saved = null
+    }
     /** Set when a page opened this tab as a new window: only such tabs may close themselves. */
     internal var openerId: Int? = null
 }
@@ -176,7 +187,7 @@ class TabManager(private val context: Context, private val host: TabHost) {
 
     fun switchTo(id: Int) {
         val target = tabs.firstOrNull { it.id == id } ?: return
-        current?.let { cur -> if (cur.id != id) cur.live?.capturePreview()?.let { cur.preview = it } }
+        current?.let { cur -> if (cur.id != id) freshPreview(cur)?.let { cur.preview = it } }
         split?.let { split = it.show(id) } // in split screen: the tab goes into the focused pane
         currentId = id
         recent.remove(id)
@@ -270,6 +281,7 @@ class TabManager(private val context: Context, private val host: TabHost) {
         if (stay != null) split = null
         entry.live?.destroy()
         entry.live = null
+        entry.forget()
         host.onTabClosed(entry)
         tabs.remove(entry)
         recent.remove(id)
@@ -357,9 +369,16 @@ class TabManager(private val context: Context, private val host: TabHost) {
     }
     fun reload() = current?.live?.webView?.reload()
 
+    /**
+     * A new picture of [t], or null while its page is still loading: a half-drawn page captures as a
+     * blank white card (seen on the emulator, 2026-11-13). The tab then keeps its last good picture,
+     * or shows its site card (icon, name, title).
+     */
+    private fun freshPreview(t: TabEntry): Bitmap? = if (t.loading) null else t.live?.capturePreview()
+
     /** Grab a fresh preview of the current tab (before showing the tab switcher). */
     fun captureCurrentPreview() {
-        tabs.filter { isOnScreen(it.id) }.forEach { t -> t.live?.capturePreview()?.let { t.preview = it } }
+        tabs.filter { isOnScreen(it.id) }.forEach { t -> freshPreview(t)?.let { t.preview = it } }
     }
 
     private fun ensureLive(entry: TabEntry): CornTab {
@@ -418,7 +437,7 @@ class TabManager(private val context: Context, private val host: TabHost) {
 
     private fun unload(t: TabEntry) {
         val live = t.live ?: return
-        if (t.preview == null) live.capturePreview()?.let { t.preview = it }
+        if (t.preview == null) freshPreview(t)?.let { t.preview = it }
         t.savedScrollY = live.webView.scrollY
         t.saved = live.saveState()
         live.destroy()
@@ -431,7 +450,7 @@ class TabManager(private val context: Context, private val host: TabHost) {
     /** Destroy every tab and group (used by Flush). Leaves one fresh new-tab page. */
     fun reset() {
         split = null
-        tabs.forEach { it.live?.destroy(); it.live = null; host.onTabClosed(it) }
+        tabs.forEach { it.live?.destroy(); it.live = null; it.forget(); host.onTabClosed(it) }
         tabs.clear()
         groups.clear()
         recent.clear()

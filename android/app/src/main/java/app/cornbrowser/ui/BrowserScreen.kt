@@ -37,6 +37,15 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.em
+import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -362,7 +371,7 @@ private fun PageContent(c: CornController, cur: TabEntry, onTouch: (() -> Unit)?
 @Composable
 private fun CrashedPage(host: String, onReload: () -> Unit) {
     Column(Modifier.fillMaxSize().background(C.Bg).padding(32.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-        T("🌽", 44.sp)
+        Image(painterResource(R.drawable.corn_logo), null, Modifier.size(64.dp))
         Spacer(Modifier.height(12.dp))
         T("This page stopped", 22.sp, weight = FontWeight.ExtraBold, display = true)
         Spacer(Modifier.height(6.dp))
@@ -376,7 +385,7 @@ private fun CrashedPage(host: String, onReload: () -> Unit) {
 @Composable
 private fun ErrorPage(host: String, reason: String, onRetry: () -> Unit) {
     Column(Modifier.fillMaxSize().background(C.Bg).padding(32.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-        T("🌽", 44.sp)
+        Image(painterResource(R.drawable.corn_logo), null, Modifier.size(64.dp))
         Spacer(Modifier.height(12.dp))
         T("Can't open this page", 22.sp, weight = FontWeight.ExtraBold, display = true)
         Spacer(Modifier.height(6.dp))
@@ -446,6 +455,25 @@ private fun FindBar(c: CornController) {
     }
 }
 
+/** A centred line of the new-tab tagline; [withCorny] adds a small Corny right after the last word. */
+@Composable
+private fun TaglineText(text: String, color: Color, withCorny: Boolean) {
+    val content = buildAnnotatedString {
+        // A line that already ends with the corn emoji ("Fresh as a new cob. 🌽") gets Corny instead of both.
+        append(if (withCorny) text.removeSuffix("🌽").trimEnd() else text)
+        if (withCorny) { append("\u00A0"); appendInlineContent("corny", "🌽") }
+    }
+    val inline = mapOf(
+        "corny" to InlineTextContent(Placeholder(1.35.em, 1.35.em, PlaceholderVerticalAlign.TextCenter)) {
+            Image(painterResource(R.drawable.corn_logo), "Corn", Modifier.fillMaxSize())
+        },
+    )
+    Text(
+        content, inlineContent = inline, color = color, fontSize = 19.sp, fontWeight = FontWeight.SemiBold,
+        fontFamily = Display, lineHeight = (19 * 1.3).sp, textAlign = TextAlign.Center,
+    )
+}
+
 @Composable
 private fun NewTabPage(c: CornController) {
     val focus = LocalFocusManager.current
@@ -456,23 +484,23 @@ private fun NewTabPage(c: CornController) {
         if (c.settings.vaultLock) emptyList() else c.data.recentItems(3)
     }
 
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+    val viewportHeight = maxHeight
     Column(
         Modifier.fillMaxSize().background(C.Bg).verticalScroll(rememberScrollState())
             .graphicsLayer { scaleX = appear.value; scaleY = appear.value }
-            .padding(horizontal = 20.dp, vertical = 40.dp),
+            .padding(horizontal = 20.dp, vertical = 24.dp),
         verticalArrangement = Arrangement.spacedBy(22.dp),
     ) {
-        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-            Image(painterResource(R.drawable.corn_logo), null, Modifier.size(76.dp))
-            Spacer(Modifier.height(8.dp))
-            T("corn", 44.sp, C.Accent, FontWeight.ExtraBold, display = true)
-            Spacer(Modifier.height(4.dp))
-            val quip = c.quip
-            if (quip != null) {
-                // After a Flush: one sentence per line, each line centred (founder, 2026-11-12).
-                Copy.oneSentencePerLine(quip).split("\n").forEach { line -> T(line, 19.sp, C.Accent, FontWeight.SemiBold, display = true) }
-            } else {
-                T("Browse. Save what matters. Flush the rest.", 19.sp, C.Text, FontWeight.SemiBold, display = true)
+        // The search bar is the anchor (founder, 2026-11-13): it sits about a third of the way down,
+        // like the build with the big logo, and the tagline sits right above it, bottom-aligned, so a
+        // short line still hugs the search bar and the spare room goes above it. One sentence per
+        // line, centred, a small Corny after the last word.
+        Box(Modifier.fillMaxWidth().height((viewportHeight * 0.34f).coerceAtLeast(150.dp)), contentAlignment = Alignment.BottomCenter) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                val quip = c.quip
+                val lines = Copy.oneSentencePerLine(quip ?: "Browse. Save what matters. Flush the rest.").split("\n")
+                lines.forEachIndexed { i, line -> TaglineText(line, if (quip != null) C.Accent else C.Text, withCorny = i == lines.lastIndex) }
             }
         }
         Row(
@@ -519,6 +547,7 @@ private fun NewTabPage(c: CornController) {
                 Stat(c.settings.totalPopups, "Pop-ups & redirects stopped", C.Leaf, Modifier.weight(1f))
             }
         }
+    }
     }
 }
 
