@@ -301,7 +301,7 @@ fun SiteIcon(entry: TabEntry, size: Dp = 22.dp) {
 @Composable
 fun LetterIcon(host: String, size: Dp) {
     Box(Modifier.size(size).clip(RoundedCornerShape(size * 0.3f)).background(C.forHost(host)), contentAlignment = Alignment.Center) {
-        T(host.firstOrNull()?.uppercase() ?: "?", (size.value * 0.55f).sp, Color.White, FontWeight.ExtraBold)
+        T(SiteLetter.of(host), (size.value * 0.55f).sp, Color.White, FontWeight.ExtraBold)
     }
 }
 

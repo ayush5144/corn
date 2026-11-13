@@ -747,7 +747,7 @@ private fun FavoriteTile(c: CornController, fav: Favorite, icons: Map<String, Fa
             }
         } else {
             Box(Modifier.size(56.dp).clip(RoundedCornerShape(Corners.Large)).background(C.forHost(host)), contentAlignment = Alignment.Center) {
-                T(host.firstOrNull()?.uppercase() ?: "?", 20.sp, Color.White, FontWeight.ExtraBold)
+                T(SiteLetter.of(host), 20.sp, Color.White, FontWeight.ExtraBold)
             }
         }
     }

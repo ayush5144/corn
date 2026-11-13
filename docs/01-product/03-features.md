@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-14, 00:25 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-14, 00:43 IST
 
 Every feature in the Android app today, what it does for the user, and the evidence behind it. Nothing here is planned-only; planned work lives in the [checklist](../03-planning/02-checklist.md).
 
@@ -148,7 +148,7 @@ Every feature in the Android app today, what it does for the user, and the evide
 - **Vault with Collections and tags** ✅
   - *What:* save the current page from the address bar (or a link from its long-press menu), optionally into a Collection, with optional tags. **All** shows every saved link; each link is stored once. Browse Collections, search titles, addresses and tags. Tiles in a row share one height.
   - *Upgrade:* links that were in the old "Unsorted" Collection moved to no Collection and show in All (verified: the emulator's database upgraded to version 2 and "Unsorted" was removed; unit-tested with tags kept).
-  - *Evidence:* save flow fixed earlier (a typed new Collection is used when you tap Save). Seen on the emulator 2026-11-14: the address-bar Vault icon opens "Save to Vault" (title, Collection chips, tags, Save); a saved group appeared as its own Collection. Known flaw: Vault rows show the letter of the host, so en.wikipedia.org links show "E" instead of "W" (checklist).
+  - *Evidence:* save flow fixed earlier (a typed new Collection is used when you tap Save). Seen on the emulator 2026-11-14: the address-bar Vault icon opens "Save to Vault" (title, Collection chips, tags, Save); a saved group appeared as its own Collection. Letter icons use the site's main name (en.wikipedia.org → W, m.youtube.com → Y; `ui/SiteLetter.kt`), fixed 2026-11-14.
 
 - **Delete a saved link** ✅
   - *What:* long-press a link in a Collection → a sheet with the link, **Add to favourites** (or Remove from favourites) and **Delete** (removed permanently).

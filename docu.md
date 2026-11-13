@@ -300,3 +300,4 @@
 - Docs: features (Split screen), `docs/02-technical/03-android.md` (Split screen), checklist (old Round 20 row replaced, new row), decision log Round 26.
 - Released 0.2.4 (versionCode 6): Releases table in `docs/03-planning/05-releasing-and-updates.md`.
 - Features: Tab Groups and Vault verified on the emulator (✅ with evidence); checklist: letter-icon "E" for en.wikipedia.org.
+- Letter icons: `ui/SiteLetter.kt` (main-name letter: en.wikipedia.org → W) used by `LetterIcon` and the favourite tile fallback; checklist ticked, features note updated.
