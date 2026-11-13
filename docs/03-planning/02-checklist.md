@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 12:17 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 13:29 IST
 
 The single list of what's done, what's next and who owns it. Product decisions live in the [decision log](../01-product/02-decision-log.md); this file tracks **work**.
 
@@ -181,6 +181,15 @@ The founder has been testing on a real phone and reports it working well. These 
 | [ ] | The HTML file imports into Chrome on the Mac | Claude | Folders, links and titles appear in Chrome |
 | [ ] | Docs (security doc, features, PRD) and release 0.2.2 | Claude | Pushed; signed release published |
 | [ ] | Later: Import (same formats) and a full Corn backup (optionally encrypted) | Claude | Founder decides |
+
+## New tab and tab previews (founder, 2026-11-13)
+
+| ✓ | Task | Owner | Done when |
+|---|---|---|---|
+| [ ] | **New-tab page:** remove the big "corn" wordmark; a small Corny beside the tagline or the after-Flush one-liner; the search box moved up; stats and Vault shortcuts below | Claude | Seen on the emulator in dark and light, before and after a Flush |
+| [ ] | **Tab cards without a picture** (e.g. after Corn restarts): a large site badge (first letter on a colour), the site name and title, instead of blank placeholder lines. Nothing saved to disk, nothing fetched | Claude | Restored tabs are recognisable in the tab switcher and group rows |
+| [ ] | **Clean-up:** closing a tab (or a Flush) drops its picture and icon right away, instead of waiting for the tab list to forget them | Claude | Code path verified; memory not kept for closed tabs |
+| [ ] | **Group cards review:** several tabs in a group on the emulator; fix anything that reads badly at real size | Claude | Screenshots reviewed; fixes committed |
 
 ## Later: website and desktop (added 2026-11-13)
 
