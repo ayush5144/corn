@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-13 · **Last updated:** 2026-11-13, 11:40 IST
+> **Created:** 2026-11-13 · **Last updated:** 2026-11-13, 16:02 IST
 
 How Corn gets onto people's phones, how updates reach them, and what has to be in place first. Written for the founder in plain language; the decisions are in the decision log (Round 24).
 
@@ -83,6 +83,7 @@ How it's wired: `android/app/build.gradle.kts` reads `CORN_RELEASE_STORE_FILE`, 
 |---|---|---|---|---|
 | 0.2.0 (test builds) | 1 | the **debug key** | Founder's phone, emulator | Testing only; can't be updated by signed releases |
 | **0.2.1** | 2 | Corn's release key (SHA-256 e4b31db3…) | [GitHub pre-release v0.2.1](https://github.com/ayush5144/corn/releases/tag/v0.2.1) | First signed release (2026-11-13). Moving from 0.2.0 needs one uninstall (data cleared once) |
+| **0.2.2** | 4 | Corn's release key | [GitHub pre-release v0.2.2](https://github.com/ayush5144/corn/releases/tag/v0.2.2) | 2026-11-13: Favourites, Corny above a yellow tagline, new address bar, Vault export, Android share icon, corner sizes. Installs over 0.2.1 keeping data. (versionCode 3 was a local-only build, never published) |
 
 Branches: `main` is Corn (releases are tagged from it); the parked Flush rename lives on `flush`.
 

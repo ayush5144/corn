@@ -290,3 +290,4 @@
 - Favourites (agent branch merged): database version 5 (`favorites`, `favorite_icons`), new-tab row, View all drawer, Add sheet, icons per site; docs written by the agent (features, PRD, storage, glossary, checklist, decision log).
 - `docs/01-product/03-features.md` New-tab Layout: Corny above a yellow tagline, Favourites row then Stats.
 - `AGENTS.md`: engineering agents row lists the export and favourites briefs.
+- Released 0.2.2 (versionCode 4): `docs/03-planning/05-releasing-and-updates.md` Releases table.
