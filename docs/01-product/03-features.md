@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 15:41 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 16:01 IST
 
 Every feature in the Android app today, what it does for the user, and the evidence behind it. Nothing here is planned-only; planned work lives in the [checklist](../03-planning/02-checklist.md).
 
@@ -206,7 +206,7 @@ Every feature in the Android app today, what it does for the user, and the evide
 
 ## Home page
 
-- **Layout** ✅ (2026-11-13): no big logo or wordmark. The tagline ("Browse." / "Save what matters." / "Flush the rest.", one sentence per line) or, after a Flush, its one-liner sits right above the search box with a small Corny after the last word; the search box is about a third of the way down. Stats and Vault shortcuts below.
+- **Layout** ✅ (2026-11-13): no big logo or wordmark. The tagline ("Browse." / "Save what matters." / "Flush the rest.", one sentence per line) or, after a Flush, its one-liner, in corn yellow, sits right above the search box with Corny (56 dp) above it, where the wordmark used to be; the search box is about a third of the way down. Below it the Favourites row (Vault tile first), then Stats.
 
 - **Favourites** ✅ (2026-11-13, layout A+)
   - *What:* a row under the search box: the Vault tile fixed at the start, a thin divider, then your favourites scrolling sideways, and a dashed **+ Favourite** tile last. Each tile shows the site's icon (or its coloured letter) and the name. The Vault and 4 favourites fit on a 360 dp phone; with 5 or more the edge tile is cut in half and fades, and **View all** (under the row, right) opens a bottom drawer: "Favourites (N)" with **+ Add**, every favourite 4 across. Tap a tile to open it in the current tab; long-press for **Move left**, **Move right**, **Remove from favourites**. With no favourites: just the Vault tile and + Favourite, centred.

@@ -284,3 +284,9 @@
 
 - Code: `core/crates/corn-vault` (database version 5: `favorites` and `favorite_icons` tables, `add_favorite`, `remove_favorite`, `favorites`, `move_favorite`, `set_favorite_icon`, `favorite_icon_wanted`, `favorite_icons`, `site_host`; tests), `corn-ffi` (exposed), `data/CornData.kt`, `data/FavoriteIcons.kt` (64×64 PNG), `CornController.kt` (sheets, add/remove/move, `onIcon`), `browser/CornTab.kt` (`TabHost.onIcon` from WebView's icon), `ui/BrowserScreen.kt` (row, "+ Favourite" tile, View all drawer grid; the "recent Vault links" tiles removed), `ui/Sheets.kt` (Vault link long-press sheet with Add to favourites, tile sheet, Add sheet), `ui/FavoriteInput.kt`, `ui/Icons.kt` (Star, StarOff, ChevLeft); unit tests `FavoriteTileWidthTest`, `FavoriteInputTest`.
 - Updated `docs/01-product/03-features.md` (Favourites; Delete a saved link), `docs/01-product/01-prd.md` (Vault replaces bookmarks reworded; Favourites row), `docs/01-product/02-decision-log.md` (Round 26: favourites are their own list), `docs/02-technical/10-storage.md` (version 5, favourites and icons), `GLOSSARY.md` (Favourite), `docs/03-planning/02-checklist.md` (Favourites section), `.claude/agents/corn-favourites-engineer.md` (brief brought up to date with the founder's changes).
+
+## 2026-11-13 — Favourites merged; new-tab docs synced
+
+- Favourites (agent branch merged): database version 5 (`favorites`, `favorite_icons`), new-tab row, View all drawer, Add sheet, icons per site; docs written by the agent (features, PRD, storage, glossary, checklist, decision log).
+- `docs/01-product/03-features.md` New-tab Layout: Corny above a yellow tagline, Favourites row then Stats.
+- `AGENTS.md`: engineering agents row lists the export and favourites briefs.
