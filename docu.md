@@ -299,3 +299,4 @@
 - Code: `SplitState.afterSwitch` (new rule, replaces `show`), `TabManager.parkedSplit`, `CornController.newTabInGroup` (background-add workaround and `TabManager.addToGroupInBackground` removed); `SplitStateTest` updated.
 - Docs: features (Split screen), `docs/02-technical/03-android.md` (Split screen), checklist (old Round 20 row replaced, new row), decision log Round 26.
 - Released 0.2.4 (versionCode 6): Releases table in `docs/03-planning/05-releasing-and-updates.md`.
+- Features: Tab Groups and Vault verified on the emulator (✅ with evidence); checklist: letter-icon "E" for en.wikipedia.org.

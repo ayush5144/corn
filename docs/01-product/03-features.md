@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 23:58 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-14, 00:25 IST
 
 Every feature in the Android app today, what it does for the user, and the evidence behind it. Nothing here is planned-only; planned work lives in the [checklist](../03-planning/02-checklist.md).
 
@@ -110,9 +110,9 @@ Every feature in the Android app today, what it does for the user, and the evide
 
 ## Tabs
 
-- **Tab Groups with the Tab Group Strip** 🔨
+- **Tab Groups with the Tab Group Strip** ✅
   - *What:* open a link in a new tab group (or a new tab in the current group); the strip shows each tab's real favicon for one-tap switching; `^` opens the group with previews, rename, colour, "Save group to Vault".
-  - *Evidence:* built; not yet seen on a device.
+  - *Evidence (emulator, 2026-11-14, screenshots in the video project's `02-rabbit-hole` captures):* long-press → "Open in new tab group" kept the page and showed the strip; on a grouped page the menu reads "Open in new tab in group"; 5 tabs, 5 icons. Strip switch: a tab kept in memory showed at once (drawn at 0.5 s); one never loaded was blank at ~1 s and loaded by 3 s. `^` → sheet with previews; the name field renamed it to "Biology"; tapping the dot changed the colour. "Save group to Vault" → toast "Saved 5 links to "Biology"", a Biology Collection with 5 links.
 
 - **Main buttons stay visible** ✅: on the Tabs screen, a slim "Done with all of these?" bar with the Flush button (bottom right, as in the toolbar) is pinned at the bottom; the group sheet, Save to Vault and the split-screen picker keep their buttons pinned while their content scrolls. Verified with 13 tabs: the Flush bar, "Save group to Vault"/"New tab in group" and the picker's "New tab" stayed in place while the lists scrolled. Not pinned on purpose: Settings, History, Passwords, Vault (actions already in fixed headers) and short sheets.
 
@@ -145,10 +145,10 @@ Every feature in the Android app today, what it does for the user, and the evide
 
 ## Vault
 
-- **Vault with Collections and tags** 🔨
+- **Vault with Collections and tags** ✅
   - *What:* save the current page from the address bar (or a link from its long-press menu), optionally into a Collection, with optional tags. **All** shows every saved link; each link is stored once. Browse Collections, search titles, addresses and tags. Tiles in a row share one height.
   - *Upgrade:* links that were in the old "Unsorted" Collection moved to no Collection and show in All (verified: the emulator's database upgraded to version 2 and "Unsorted" was removed; unit-tested with tags kept).
-  - *Evidence:* built; save flow fixed today (a typed new Collection is now used when you tap Save). Not yet seen end to end on a device.
+  - *Evidence:* save flow fixed earlier (a typed new Collection is used when you tap Save). Seen on the emulator 2026-11-14: the address-bar Vault icon opens "Save to Vault" (title, Collection chips, tags, Save); a saved group appeared as its own Collection. Known flaw: Vault rows show the letter of the host, so en.wikipedia.org links show "E" instead of "W" (checklist).
 
 - **Delete a saved link** ✅
   - *What:* long-press a link in a Collection → a sheet with the link, **Add to favourites** (or Remove from favourites) and **Delete** (removed permanently).

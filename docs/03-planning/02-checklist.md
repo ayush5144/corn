@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 23:58 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-14, 00:25 IST
 
 The single list of what's done, what's next and who owns it. Product decisions live in the [decision log](../01-product/02-decision-log.md); this file tracks **work**.
 
@@ -232,6 +232,12 @@ The founder has been testing on a real phone and reports it working well. These 
 | [x] | **Upgrade keeps data:** install over the released build's database | Claude | Emulator: version 4 → 5, 5 Vault links, 2 Collections, 3 logins and tags kept; `items` unchanged |
 | [ ] | Founder: try it on a phone; decide whether "+ Favourite" stays the only add path on the new tab | Founder | Decided |
 | [ ] | **Later:** include favourites in the Vault export (a "Favourites" folder in the HTML bookmarks file). Founder: not needed for now | Claude | Decided |
+
+## Small fixes found 2026-11-14
+
+| ✓ | Task | Owner | Done when |
+|---|---|---|---|
+| [ ] | Letter icons use the host's first letter, so en.wikipedia.org shows "E" (Vault rows, suggestions, tab cards). Skip a leading language or "m." subdomain (or use the site name) so it shows "W" | Claude | Wikipedia shows W everywhere |
 
 ## Later: website and desktop (added 2026-11-13)
 
