@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Storage test</title>
+<style>
+  body { font: 20px/1.5 system-ui, sans-serif; margin: 24px; background: #fff; color: #111; }
+  b { font-family: monospace; }
+</style>
+</head>
+<body>
+<!--
+  Keep List test (what survives a Flush). Open with ?set=1 to save a value in a cookie, local
+  storage and IndexedDB for this site; open without it to read them back. Each result line reads
+  "cookie=<value or none>" and so on, so a script can read the page text.
+-->
+<h1>Storage test</h1>
+<p id="site"></p>
+<p id="cookie">cookie=…</p>
+<p id="local">local=…</p>
+<p id="idb">idb=…</p>
+<script>
+  const set = new URLSearchParams(location.search).has('set');
+  const stamp = set ? 'v' + Date.now() : null;
+  document.getElementById('site').textContent = 'site=' + location.host + (set ? ' (saving)' : ' (reading)');
+
+  if (set) document.cookie = 'corn_test=' + stamp + '; Max-Age=31536000; Path=/; SameSite=Lax';
+  const c = document.cookie.split('; ').find(x => x.startsWith('corn_test='));
+  document.getElementById('cookie').textContent = 'cookie=' + (c ? c.split('=')[1] : 'none');
+
+  if (set) localStorage.setItem('corn_test', stamp);
+  document.getElementById('local').textContent = 'local=' + (localStorage.getItem('corn_test') || 'none');
+
+  const open = indexedDB.open('corn_test_db', 1);
+  open.onupgradeneeded = () => open.result.createObjectStore('kv');
+  open.onerror = () => { document.getElementById('idb').textContent = 'idb=error'; };
+  open.onsuccess = () => {
+    const db = open.result;
+    const tx = db.transaction('kv', 'readwrite');
+    const store = tx.objectStore('kv');
+    if (set) store.put(stamp, 'corn_test');
+    const get = store.get('corn_test');
+    get.onsuccess = () => { document.getElementById('idb').textContent = 'idb=' + (get.result || 'none'); };
+  };
+</script>
+</body>
+</html>
