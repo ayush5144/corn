@@ -226,3 +226,9 @@
 
 - `ui/Icons.kt`: Vault / VaultAdd / VaultSaved are the Kernel Safe (corner + and corner ✓, door outline open around the badge); per-path stroke width ("1.6|M…"); old safe paths removed.
 - Updated `docs/01-product/02-decision-log.md` (Round 23).
+
+## 2026-11-13 — No age gate; releasing and updates
+
+- `ui/OnboardingScreen.kt`: button "Start browsing" (no 18+ gate). `.gitignore`: signing key files.
+- Added `docs/03-planning/05-releasing-and-updates.md` (signing keys, the debug key, release channels, updates, the plan); indexed in `docs/README.md`.
+- Updated decision log (Round 24), PRD (first-launch row), features (onboarding), roadmap (step 6), checklist (onboarding row; release key, version numbers, GitHub testers + Obtainium, Play App Signing, content rating, in-app update check, F-Droid).

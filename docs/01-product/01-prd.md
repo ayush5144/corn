@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 01:12 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 11:00 IST
 
 - **Status:** Draft v2, being shaped through Q&A rounds ([02-decision-log.md](02-decision-log.md))
 - **Last updated:** 2026-11-01 (after Round 1)
@@ -166,7 +166,7 @@ Adults (18+), where adult content is legal, browsing on their **phones**. ✅ Mo
 | **No notifications while Corn is closed**; media controls (if background playback is on) show only "Corn — playing" | ✅ |
 | **No backups of any kind**: Corn turns off Android's automatic Google Drive backup | ✅ |
 | Kept Session data stored in app-private SQLite (not separately encrypted) | ✅ |
-| One-time, lightweight 18+ confirmation on first launch | ✅ |
+| No age gate on first launch (Round 24: a self-declared 18+ tap protects no one); Safe Search is offered in onboarding instead | ✅ |
 | Disguised app icon | ⏭️ |
 
 ### 6.7 Out of scope

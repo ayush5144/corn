@@ -83,7 +83,9 @@ fun OnboardingScreen(settings: app.cornbrowser.data.CornSettings, onStart: () ->
         }
         T("You can change both any time in Settings.", 12.5.sp, C.Muted, modifier = Modifier.padding(top = 8.dp, start = 4.dp))
         Spacer(Modifier.height(24.dp))
-        BigButton("I'm 18 or older · Start browsing", onStart)
+        // No age gate (founder, 2026-11-13, decision log Round 24): a self-declared "18+" tap protects
+        // no one and frames Corn as an adult-content app; Safe Search above is the useful control.
+        BigButton("Start browsing", onStart)
         T(
             "Nothing you browse leaves this phone. No account needed.", 13.sp, C.Muted,
             modifier = Modifier.fillMaxWidth().padding(top = 12.dp),

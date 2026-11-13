@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 02:23 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 11:00 IST
 
 ## Platform order
 
@@ -47,7 +47,7 @@ Spike result
 | 3 | Multiple tabs + tab manager (freeze policy) | 20+ tabs without crashes |
 | 4 | Flush model (button, background, idle timer, Keep list) | Flush tests in [05](../02-technical/05-flush-model.md) pass |
 | 5 | Vault (`corn-vault`, PIN/biometric lock) | Save, search, lock, export, delete work |
-| 6 | Polish: onboarding + 18+ gate, privacy screen, update checker, theme | Internal beta |
+| 6 | Polish: onboarding (no age gate, Round 24), privacy screen, update checker, theme | Internal beta |
 | 7 | Small adult-only test group | Real-world compatibility list |
 
 ## Later

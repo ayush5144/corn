@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-12, 12:44 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 11:00 IST
 
 The single list of what's done, what's next and who owns it. Product decisions live in the [decision log](../01-product/02-decision-log.md); this file tracks **work**.
 
@@ -108,7 +108,7 @@ The single list of what's done, what's next and who owns it. Product decisions l
 | [x] | Background tabs load at once; saved picture while reloading; pauseTimers in background. Verified with server timings | Claude | Background tab loaded before tap; no blank reload; 0 timers in background |
 | [ ] | **Vault**: save link + title, optional tags, **Collections**, PIN/biometric lock | Claude | Save, find, lock, delete all work |
 | [ ] | Privacy: black recents screen, optional App Lock, no notifications while closed | Claude | Verified on a real phone |
-| [ ] | Onboarding: 18+ confirmation, privacy explainer, fun tone. **Built, awaiting founder approval** | Claude | Founder approves the flow |
+| [ ] | Onboarding: privacy explainer, Safe Browsing / Safe Search choices, fun tone; no 18+ gate (Round 24). **Built, awaiting founder approval** | Claude | Founder approves the flow |
 | [ ] | Settings screen for every option above | Claude | Every setting in the PRD is reachable |
 | [ ] | In-app update check + signed release APK (release build works: 8.6 MB, R8, tested with a debug-key signature) | Both | Founder installs a signed build |
 | [x] | Decide Google Safe Browsing default, onboarding mention and setting: on by default, onboarding line, Settings switch (built) | Founder | Recorded in the decision log |
@@ -148,8 +148,11 @@ The founder has been testing on a real phone and reports it working well. These 
 | [ ] | **Must · Real-phone checks that need data:** passwords with the phone's StrongBox chip; 20+ tabs, background tabs and memory; a Keep List site still logged in after Flush (real login); cookie-banner closer on a real banner | Both | Each verified on the founder's phone and noted here |
 | [ ] | **Must · Independent security review** of the password store, PIN and data clearing | Founder | Review notes committed; findings fixed or accepted |
 | [ ] | **Must · Limit wrong PIN attempts** (password review #1; was "later" in the backlog): growing wait after a few wrong tries, PIN checked with a Keystore key | Claude | Brute-forcing the PIN on the phone is slowed; unit-tested |
-| [ ] | **Must · Signed release:** real upload key, Play App Signing, version code/name scheme (today's "test" APK is signed with the debug key) | Both | A release build signed with the real key installs |
-| [ ] | **Must · Play Store requirements:** privacy policy page, Data Safety form, content rating questionnaire, store listing (text, screenshots, icon) | Founder | Play Console shows no blocking items |
+| [ ] | **Must · Release key:** the founder creates Corn's release key (`keytool`, password kept private, backed up outside this Mac); key files git-ignored; release builds signed with it (password read from `~/.gradle/gradle.properties`). Today's "test" APK is signed with the debug key. See [05-releasing-and-updates](05-releasing-and-updates.md) | Both | A release build signed with the real key installs over the previous one and keeps its data |
+| [ ] | **Must · Version numbers:** raise `versionCode` on every release (today 1) | Claude | Each GitHub/Play release has a higher `versionCode` |
+| [ ] | **Must · Testers via GitHub Releases:** each build as a pre-release with the signed APK and install steps; testers told to use Obtainium for update notices | Both | A tester updates from one release to the next without losing data |
+| [ ] | **Must · Play App Signing with the same key** at launch ("use my existing key"), so GitHub and Play installs share one seal | Founder | Play Console shows the app signing key matches the release key |
+| [ ] | **Must · Play Store requirements:** privacy policy page, Data Safety form, content rating questionnaire (answer honestly: a browser with unrestricted internet access; the listing can say Corn is made for adults; no in-app age gate, Round 24), store listing (text, screenshots, icon) | Founder | Play Console shows no blocking items |
 | [ ] | **Must · Licences screen in the app:** credits for uBlock Origin lists and scriptlets (GPL-3.0), Brave's adblock-rust (MPL-2.0), DuckDuckGo autoconsent, UniFFI, fonts (SIL OFL) and Corn's own MPL-2.0 | Claude | Settings → About → Licences lists every component with its licence |
 | [ ] | **Must · Name and trademark:** trademark search for the launch name; domain registered | Founder | Search done; domain owned |
 | [ ] | **Must · Delete a collection** (no way today) | Claude | A collection can be removed; its links stay in All |
@@ -157,7 +160,8 @@ The founder has been testing on a real phone and reports it working well. These 
 | [ ] | Should · Accessibility pass: TalkBack labels, large font sizes, contrast | Claude | TalkBack reads every control; XL font size doesn't break layouts |
 | [ ] | Should · Privacy-respecting crash reports (local only or opt-in) | Both | A crash on the phone can be seen and shared by the user |
 | [ ] | Should · Downloads screen (recommended: list of Corn's downloads, cleared by Flush, files stay) | Founder | Founder decides |
-| [ ] | Should · In-app update check (needed if distributed outside the Play Store) | Claude | An older build sees the new version |
+| [ ] | Should · In-app update check for the GitHub build only: asks GitHub for the latest release, "Update available", downloads and opens Android's installer; explained in Settings (GitHub sees the IP) and switchable off; off in the Play build (Play forbids self-updates) | Claude | An older GitHub build offers the new version; the Play build never checks |
+| [ ] | Later · F-Droid listing (Corn is open source; F-Droid builds it from the public code) | Founder | Corn installable and updatable from F-Droid |
 | [ ] | Should · Vector redraw of the Corny logo (today an AI draft) | Founder | SVG master in `brand/` |
 | [ ] | Should · Founder's check of History and onboarding (marked "awaiting founder" above) | Founder | Approved or changes listed |
 | [x] | Long-press on search results: full link menu (with Open in new tab group, Save link to Vault, Share link) even when the link contains a site icon; image actions only for real pictures; titles from the link's heading. Verified on Google (3 results × title and icon) and by the QA check `search-result-link-menu` | Claude | Done |

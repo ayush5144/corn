@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-12, 12:44 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 11:00 IST
 
 Every feature in the Android app today, what it does for the user, and the evidence behind it. Nothing here is planned-only; planned work lives in the [checklist](../03-planning/02-checklist.md).
 
@@ -166,7 +166,7 @@ Every feature in the Android app today, what it does for the user, and the evide
 - **No logs of browsing** ✅: audited. Corn's 5 log messages contain no URLs; page console messages are kept out of Android's log; there's no record of what was blocked where.
 - **WebView usage metrics opted out** ✅: `MetricsOptOut` in the manifest.
 - **Safe Browsing switch** 🔨: Settings → Privacy, on by default.
-- **Onboarding privacy choices** ✅: onboarding shows Safe Browsing (On) and Safe Search (Off) with a switch each. Verified on a fresh install: tapping Safe Search turned the label to "On" and saved `safe_search = true`. Google Safe Browsing warns before malware and phishing pages; Google receives hashed address fragments, not full URLs. Applies to open tabs immediately.
+- **Onboarding privacy choices** ✅: onboarding shows Safe Browsing (On) and Safe Search (Off) with a switch each, then **Start browsing** (no age gate since Round 24). Verified on a fresh install: tapping Safe Search turned the label to "On" and saved `safe_search = true`. Google Safe Browsing warns before malware and phishing pages; Google receives hashed address fragments, not full URLs. Applies to open tabs immediately.
 
 ## Search and navigation
 

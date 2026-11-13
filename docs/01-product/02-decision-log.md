@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-12, 18:01 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 11:00 IST
 
 Every product question asked and the founder's answer, in order. Settled answers flow into [01-prd.md](01-prd.md). New rounds are appended at the bottom.
 
@@ -438,6 +438,10 @@ Every product question asked and the founder's answer, in order. Settled answers
 - **Question:** a better Flush Button icon while the app is still Corn (not renamed to Flush).
 - **Answer:** option A, a **water swirl**: three arms of water spiralling into a drain, on the yellow pill. It says "flush" without a toilet and works under either name. Replaces the toilet icon everywhere (toolbar, Flush confirmation, Tabs screen, onboarding). A single-line spiral was tried first and read as a snail/hypnosis swirl, so the three-arm vortex was used.
 - **Also answered:** Titanium Browser (jqssun) is a full Chromium fork (Vanadium-based, GPL-2.0), not WebView; its time-range "Delete browsing data" is Chrome's own. Using the Corny mascot in the app proposed.
+
+### Round 24 — No age gate; how Corn is released and updated (2026-11-13)
+- **Age gate:** onboarding no longer asks "I'm 18 or older"; the button is **Start browsing**. Reasons: a self-declared tap verifies no one and satisfies no age-verification law (those target sites that host adult content, not browsers); Chrome, Brave, DuckDuckGo and Firefox have none; as the first screen it frames Corn as an adult-content app. Kept: the Safe Search switch in onboarding. The Play content-rating questionnaire is answered honestly and the listing can still say Corn is made for adults. Replaces Round 0's "18+ confirmation" (kept above as history). Not legal advice: if Corn ever hosts or curates adult content itself, revisit with a lawyer.
+- **Releases and updates:** the repo is public. Plan: the founder creates a release key (never in the repo, backed up); every release raises `versionCode`; testers get GitHub pre-releases and use Obtainium for update notices; before launch, an in-app update check for the GitHub build only (explained, switchable off, off in the Play build); at launch, Google Play with Play App Signing using the same key; F-Droid later. Explained in [05-releasing-and-updates](../03-planning/05-releasing-and-updates.md).
 
 ### Round 23 — Kernel Safe is the Vault icon (2026-11-12)
 - **Answer:** the Vault icon is the **Kernel Safe** in line style (safe door, two hinges, a corn kernel holding a keyhole), traced from the AI concept. **Save to Vault** adds a small + tucked into the door's corner (the outline leaves a gap around it); **Saved** turns the + into a ✓ (shown in corn yellow in the address bar). Chosen from `mockups/icons/line-icons.html` (round 3). The Pop button's icon is still open.

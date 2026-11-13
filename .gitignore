@@ -10,3 +10,8 @@ target/
 # Claude Code agent worktrees (temporary working copies)
 .claude/worktrees/
 __pycache__/
+
+# Signing keys: never commit (the repo is public). See docs/03-planning/05-releasing-and-updates.md
+*.jks
+*.keystore
+keystore.properties

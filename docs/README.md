@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-05, 03:00 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-13, 11:01 IST
 
 Read in folder order. Start with the product, then the technical plan.
 
@@ -41,6 +41,7 @@ Read in folder order. Start with the product, then the technical plan.
 | 02 | [Checklist](03-planning/02-checklist.md) | Every task by phase, with owner and "done when"; backlog |
 | 03 | [Spike results](03-planning/03-spike-results.md) | What the WebView + Brave-engine proof measured, what's left to test |
 | 04 | [Testing on a phone](03-planning/04-testing-on-a-phone.md) | Build the test APK, install it on a phone, what to test first |
+| 05 | [Releasing and updates](03-planning/05-releasing-and-updates.md) | Signing keys and the debug key, ways to release (GitHub, Play, F-Droid…), how updates reach phones, the plan |
 
 ## 04 — Reference
 
