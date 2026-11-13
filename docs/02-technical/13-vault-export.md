@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-13 · **Last updated:** 2026-11-13, 12:17 IST
+> **Created:** 2026-11-13 · **Last updated:** 2026-11-13, 13:26 IST
 
 Your Vault is yours: Corn lets you take every saved link and password out, in formats other browsers and password managers import. Decided in the decision log (Round 25). Import and a full Corn backup come later.
 
@@ -21,7 +21,7 @@ Your Vault is yours: Corn lets you take every saved link and password out, in fo
 
 | What | Formats | Where in the app |
 |---|---|---|
-| **Saved links** (titles, addresses, Collections, tags, dates) | **HTML bookmarks file** (recommended) or **CSV** | Vault → ⋮ → Export links |
+| **Saved links** (titles, addresses, Collections, tags, dates) | **HTML bookmarks file** (recommended) or **CSV** | Vault → ⋮ → Export links: pick one (radio options, HTML pre-selected), then **Export** (Cancel beside it) |
 | **Saved passwords** (site, username, password) | **CSV** (Chrome's format) | Vault → Passwords → Export passwords, at the bottom of the list (PIN + warning) |
 
 ### Why HTML for links, and why CSV too

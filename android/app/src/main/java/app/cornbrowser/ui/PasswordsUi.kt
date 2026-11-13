@@ -174,7 +174,7 @@ private fun ExportWarningSheet(c: CornController, kind: PasswordSheet.ExportWarn
         Spacer(Modifier.width(12.dp))
         T("I understand the file isn't encrypted", 15.sp, weight = FontWeight.SemiBold)
     }
-    BigButton("Export passwords", { if (understood) c.passwords.export() }, icon = CornIcons.Download, enabled = understood)
+    BigButton("Export passwords", { if (understood) c.passwords.export() }, icon = CornIcons.Export, enabled = understood)
     Spacer(Modifier.height(10.dp))
     BigButton("Cancel", { c.sheet = null }, ghost = true)
 }
@@ -329,7 +329,7 @@ private fun PasswordList(c: CornController, logins: List<SavedLogin>, unreadable
             if (query.isBlank()) {
                 Spacer(Modifier.height(12.dp))
                 // Disabled with nothing to export. PIN, then the plain-text warning, then "Save to…".
-                Row50(CornIcons.Download, "Export passwords", onExport, hint = "CSV", enabled = logins.isNotEmpty())
+                Row50(CornIcons.Export, "Export passwords", onExport, hint = "CSV", enabled = logins.isNotEmpty())
             }
         }
     }

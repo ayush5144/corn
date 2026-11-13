@@ -22,6 +22,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.ui.semantics.Role
+import androidx.compose.foundation.border
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -389,26 +392,51 @@ private fun ConfirmFlushSheet(c: CornController) {
 /** Vault → ⋮. */
 @Composable
 private fun VaultMenuSheet(c: CornController) {
-    Row50(CornIcons.Download, "Export links", { c.sheet = Sheet.ExportLinks })
+    Row50(CornIcons.Export, "Export links", { c.sheet = Sheet.ExportLinks })
 }
 
-/** Vault → ⋮ → Export links: pick a format, then Android's "Save to…" (docs/02-technical/13-vault-export.md). */
+/**
+ * Vault → ⋮ → Export links: pick a format (radio options, HTML pre-selected), then Export opens
+ * Android's "Save to…" (docs/02-technical/13-vault-export.md). Tapping an option only selects it.
+ */
 @Composable
 private fun ExportLinksSheet(c: CornController) {
     val total = remember { c.data.itemCount() }
+    var format by remember { mutableStateOf(VaultExport.LinksFormat.HTML) }
     SheetTitle("Export links", "Every saved link ($total), with its Collection, tags and date. You choose where the file goes.")
-    SettingRow(
+    RadioOption(
         "Bookmarks file (HTML)", "Recommended. Chrome, Firefox, Safari, Edge and Brave import it. Collections become folders.",
-        onClick = { c.exportLinks(VaultExport.LinksFormat.HTML) },
-        leading = { CornIcon(CornIcons.Vault, tint = C.Accent) },
-    )
-    SettingRow(
-        "Spreadsheet (CSV)", "For spreadsheets and apps that take CSV.",
-        onClick = { c.exportLinks(VaultExport.LinksFormat.CSV) },
-        leading = { CornIcon(CornIcons.Folder, tint = C.Muted) },
-    )
-    Spacer(Modifier.height(10.dp))
-    BigButton("Cancel", { c.sheet = null }, ghost = true)
+        selected = format == VaultExport.LinksFormat.HTML,
+    ) { format = VaultExport.LinksFormat.HTML }
+    RadioOption("Spreadsheet (CSV)", "For spreadsheets and apps that take CSV.", selected = format == VaultExport.LinksFormat.CSV) {
+        format = VaultExport.LinksFormat.CSV
+    }
+    Spacer(Modifier.height(14.dp))
+    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        BigButton("Cancel", { c.sheet = null }, ghost = true, modifier = Modifier.weight(1f))
+        BigButton("Export", { c.exportLinks(format) }, icon = CornIcons.Export, modifier = Modifier.weight(1f))
+    }
+}
+
+/** One choice of a single-choice list: a ring that fills when selected, a title and a line under it. */
+@Composable
+private fun RadioOption(title: String, sub: String, selected: Boolean, onSelect: () -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp))
+            .selectable(selected = selected, role = Role.RadioButton, onClick = onSelect)
+            .padding(vertical = 10.dp, horizontal = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            Modifier.size(22.dp).clip(CircleShape).border(2.dp, if (selected) C.Corn else C.Muted, CircleShape),
+            contentAlignment = Alignment.Center,
+        ) { if (selected) Box(Modifier.size(11.dp).clip(CircleShape).background(C.Corn)) }
+        Spacer(Modifier.width(14.dp))
+        Column(Modifier.weight(1f)) {
+            T(title, 16.sp, weight = FontWeight.SemiBold)
+            T(sub, 13.sp, C.Muted)
+        }
+    }
 }
 
 @Composable

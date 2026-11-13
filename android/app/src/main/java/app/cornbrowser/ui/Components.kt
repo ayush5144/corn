@@ -356,7 +356,8 @@ fun PinPad(entered: Int, onDigit: (Char) -> Unit, onBackspace: () -> Unit, onFin
                     row.forEach { k ->
                         Box(
                             Modifier.width(72.dp).height(60.dp).clip(RoundedCornerShape(18.dp))
-                                .background(if (k == "fp" && onFingerprint == null) Color.Transparent else C.Surface)
+                                // Digits sit on a key; erase is just its icon (founder, 2026-11-13), same tap area.
+                                .background(if (k == "del" || (k == "fp" && onFingerprint == null)) Color.Transparent else C.Surface)
                                 .clickable(enabled = !(k == "fp" && onFingerprint == null)) {
                                     when (k) {
                                         "fp" -> onFingerprint?.invoke()

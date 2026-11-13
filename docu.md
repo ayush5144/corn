@@ -256,3 +256,10 @@
 - `corn-ffi`: `export_links_html`, `export_links_csv`, `export_passwords_csv(rows)`, `Login.password_changed_at`, `update_login(…, password_changed)`.
 - Android: Vault → ⋮ → Export links (HTML recommended / CSV); Passwords → Export passwords (PIN every time, plain-text warning with checkbox, then "Save to…"); `ACTION_CREATE_DOCUMENT` launcher in `MainActivity`, `CornController.chooseExportPlace/exportLinks`, `Passwords.export`, `data/VaultExport.kt` (file names) + JVM test. Every `updateLogin` call says whether the password changed.
 - Updated `docs/02-technical/13-vault-export.md` (where the code adds detail), `12-security.md` (Exporting), `10-storage.md` (version 4), `docs/01-product/03-features.md`, `01-prd.md`, checklist.
+
+## 2026-11-13 — Export sheet and icons polish
+
+- `ui/Icons.kt`: new `Export` icon (arrow up out of the tray) for Export links and Export passwords; Download stays for downloads.
+- `ui/Sheets.kt`: Export links is a single choice (radio options, HTML pre-selected) with Cancel and a corn-yellow Export.
+- `ui/Components.kt`: the PIN pad's erase key has no key background.
+- Updated `docs/02-technical/13-vault-export.md` (where-in-the-app row).
