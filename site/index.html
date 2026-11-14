@@ -103,8 +103,8 @@
   .pp { width: 44px; height: 44px; padding: 0; display: grid; place-items: center; color: var(--text); background: transparent; border: 1px solid var(--line); border-radius: 999px; cursor: pointer; }
   .pp:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .pp[hidden] { display: none; }
-  .stops .pp-li { margin-left: 6px; }
-  .stops .pp-row { width: 38px; height: 38px; }
+  .tour { position: relative; }
+  .pp-top { position: absolute; right: 20px; bottom: 84px; }
   @media (min-width: 821px) { .ppwrap { display: none; } }
   .stops button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .stops button { position: relative; overflow: hidden; isolation: isolate; }
@@ -186,7 +186,7 @@
     .say { right: 58px; bottom: auto; top: -8px; margin: 0; max-width: none; white-space: nowrap; border-radius: 14px 14px 4px 14px; }
     .ppwrap { margin-top: 26px; width: 100%; }
     .tour .eyebrow { display: none; }
-    .stops .pp-li { display: none; }
+    .pp-top { display: none !important; }
     .demo { gap: 36px; }
     .shotwrap { margin: 0; }
     .demo-copy { padding-top: 0; }
@@ -282,7 +282,7 @@
       <div class="pops" id="pops"></div>
       <div class="ppwrap"><button type="button" class="pp" id="tourPlay" aria-label="Pause the tour" aria-pressed="false"><svg class="i-pause" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg><svg class="i-play" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="display:none"><path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button></div>
     </div>
-    <div>
+    <div class="tour-copy">
       <p class="eyebrow">Tab groups &amp; split screen</p>
       <h2 class="display">Down the rabbit hole. <span class="y">Neatly.</span></h2>
       <p class="sub">One tap jumps between tabs on the strip, split screen shows two at once, and when the "homework" is done, one Flush clears the lot. Every frame here is a real screenshot of Corn.</p>
@@ -293,9 +293,9 @@
         <li><button type="button" data-go="5"><span class="fill" aria-hidden="true"></span><span class="lbl">Split</span><span class="ink" aria-hidden="true">Split</span></button></li>
         <li><button type="button" data-go="6"><span class="fill" aria-hidden="true"></span><span class="lbl">Group</span><span class="ink" aria-hidden="true">Group</span></button></li>
         <li><button type="button" data-go="7"><span class="fill" aria-hidden="true"></span><span class="lbl">Flush</span><span class="ink" aria-hidden="true">Flush</span></button></li>
-        <li class="pp-li"><button type="button" class="pp pp-row" aria-label="Pause the tour" aria-pressed="false"><svg class="i-pause" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg><svg class="i-play" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="display:none"><path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button></li>
       </ul>
     </div>
+    <button type="button" class="pp pp-row pp-top" aria-label="Pause the tour" aria-pressed="false"><svg class="i-pause" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg><svg class="i-play" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="display:none"><path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button>
   </div>
 </section>
 
