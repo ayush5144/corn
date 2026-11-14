@@ -99,10 +99,13 @@
   .tour .sub { max-width: 42ch; }
   .stops { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
   .stops button { font: inherit; font-size: 14px; font-weight: 700; color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  .stops .pp { width: 36px; height: 36px; padding: 0; display: grid; place-items: center; color: var(--text); }
+  .stops .pp[hidden] { display: none; }
+  .stops button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .stops button[aria-current="true"] { background: var(--corn); border-color: var(--corn); color: var(--ink); }
   .stage { position: relative; width: min(390px, 100%); justify-self: center; padding: 0 0 8px; }
   .tphone { position: relative; width: min(270px, 66vw); margin: 0 auto; aspect-ratio: 540 / 1200; border-radius: 34px; overflow: hidden; border: 1px solid var(--line); background: #0F0E0B; box-shadow: 0 24px 60px rgba(0, 0, 0, .35); }
-  .tphone img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .45s ease; }
+  .tphone img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .3s ease; }
   .tphone img.on { opacity: 1; }
   .vortex { position: absolute; left: 50%; top: 55%; width: 200%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; opacity: 0; pointer-events: none;
     background: repeating-conic-gradient(from 0deg, #FFC83D 0 22deg, #120d02 22deg 40deg, #ffdf7a 40deg 46deg, #120d02 46deg 60deg);
@@ -156,7 +159,12 @@
     .hero, .demo, .promise, .tour { grid-template-columns: 1fr; }
     .tour { gap: 32px; }
     .tour > div:last-child { order: -1; }
-    .peek { width: 84px; right: 0; } .peek .cob { width: 84px; }
+    .stops { justify-content: center; }
+    .tour > div:last-child { text-align: left; }
+    .peek { position: relative; right: auto; bottom: auto; width: auto; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 14px; }
+    .peek .cob { width: 72px; flex: none; }
+    .say { position: static; order: 2; margin: 0; max-width: none; white-space: nowrap; border-radius: 14px 14px 14px 4px; }
+    .tcap { margin-top: 8px; }
     .demo { gap: 36px; }
     .shotwrap { margin: 0; }
     .demo-copy { padding-top: 0; }
@@ -259,6 +267,7 @@
         <li><button type="button" data-go="5">Split</button></li>
         <li><button type="button" data-go="6">Group</button></li>
         <li><button type="button" data-go="7">Flush</button></li>
+        <li><button type="button" class="pp" id="tourPlay" aria-label="Pause the tour" aria-pressed="false"><svg class="i-pause" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg><svg class="i-play" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="display:none"><path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button></li>
       </ul>
     </div>
   </div>
@@ -391,15 +400,15 @@
   // The tour: real screenshots of Corn on a loop, with a wiggle, popping kernels and Corny reacting.
   (() => {
     const F = [
-      { cap: "Tabs pile up.", sub: "Open a link in a tab group and it lands on the Tab Group Strip.", m: "smug", say: "Just two tabs. Innocent.", t: 2600, stop: 0 },
-      { cap: "…and up.", sub: "Each one gets a round icon on the strip.", m: "nerd", say: "Research. Obviously.", t: 2000, stop: 0 },
-      { cap: "…and up.", sub: "YouTube, Reddit, X: the usual suspects.", m: "nervous", say: "Uh. Four?", t: 2000, stop: 0 },
-      { cap: "Five deep in “Homework”.", sub: "It happens to the best of us.", m: "shock", say: "FIVE?!", t: 2600, stop: 0 },
-      { cap: "One tap to switch.", sub: "Tap an icon on the strip and you're there. No hunting.", m: "cheer", say: "Boom. Back.", t: 2800, stop: 1 },
-      { cap: "Two at once.", sub: "Menu → Split screen: two tabs, top and bottom.", m: "smug", say: "Multitasking. Sure.", t: 3200, stop: 2 },
-      { cap: "The whole group, one tap away.", sub: "Tap ^ to see every tab, save the group to the Vault or add a tab.", m: "nerd", say: "Very organised.", t: 3000, stop: 3 },
-      { cap: "Done? Flush.", sub: "One tap wipes every tab and group.", m: "nervous", say: "Someone's coming…", t: 2200, stop: 4 },
-      { cap: "Clean slate.", sub: "Your Vault, favourites and Keep List stay put.", m: "angel", say: "Phew.", t: 3400, stop: 4 },
+      { cap: "Tabs pile up.", sub: "Open a link in a tab group and it lands on the Tab Group Strip.", m: "smug", say: "Just two tabs. Innocent.", t: 1900, stop: 0 },
+      { cap: "…and up.", sub: "Each one gets a round icon on the strip.", m: "nerd", say: "Research. Obviously.", t: 1400, stop: 0 },
+      { cap: "…and up.", sub: "YouTube, Reddit, X: the usual suspects.", m: "nervous", say: "Uh. Four?", t: 1400, stop: 0 },
+      { cap: "Five deep in “Homework”.", sub: "It happens to the best of us.", m: "shock", say: "FIVE?!", t: 1900, stop: 0 },
+      { cap: "One tap to switch.", sub: "Tap an icon on the strip and you're there. No hunting.", m: "cheer", say: "Boom. Back.", t: 2200, stop: 1 },
+      { cap: "Two at once.", sub: "Menu → Split screen: two tabs, top and bottom.", m: "smug", say: "Multitasking. Sure.", t: 2600, stop: 2 },
+      { cap: "The whole group, one tap away.", sub: "Tap ^ to see every tab, save the group to the Vault or add a tab.", m: "nerd", say: "Very organised.", t: 2400, stop: 3 },
+      { cap: "Done? Flush.", sub: "One tap wipes every tab and group.", m: "nervous", say: "Someone's coming…", t: 1700, stop: 4 },
+      { cap: "Clean slate.", sub: "Your Vault, favourites and Keep List stay put.", m: "angel", say: "Phew.", t: 2700, stop: 4 },
     ];
     const phone = document.getElementById("tphone"), imgs = [...phone.querySelectorAll("img")];
     const tcap = document.getElementById("tcap"), say = document.getElementById("say"), face = document.getElementById("face");
@@ -428,7 +437,7 @@
           { transform: "translate(0,0) scale(.3) rotate(0)", opacity: 1 },
           { transform: `translate(${dx}px, ${dy}px) scale(1) rotate(${rot / 2}deg)`, opacity: 1, offset: 0.55 },
           { transform: `translate(${dx * 1.15}px, ${dy + 90}px) scale(.8) rotate(${rot}deg)`, opacity: 0 },
-        ], { duration: 900 + Math.random() * 300, easing: "cubic-bezier(.2,.7,.3,1)" }).onfinish = () => el.remove();
+        ], { duration: 650 + Math.random() * 250, easing: "cubic-bezier(.2,.7,.3,1)" }).onfinish = () => el.remove();
       }
     }
 
@@ -445,17 +454,17 @@
       if (n === 8 && prev === 7) {
         imgs[7].classList.add("on");
         imgs[7].animate([{ transform: "none", opacity: 1 }, { transform: "rotate(-260deg) scale(.04)", opacity: 0 }],
-          { duration: 1000, easing: "cubic-bezier(.55,0,.75,.1)" }).onfinish = () => imgs[7].classList.remove("on");
+          { duration: 800, easing: "cubic-bezier(.55,0,.75,.1)" }).onfinish = () => imgs[7].classList.remove("on");
         vortex.animate([{ opacity: 0, transform: "rotate(0) scale(.5)" }, { opacity: .9, offset: .3 }, { opacity: 0, transform: "rotate(-540deg) scale(1.2)" }],
-          { duration: 1200, easing: "ease-out" });
+          { duration: 950, easing: "ease-out" });
       } else {
-        phone.animate(wiggles[n % wiggles.length], { duration: 650, easing: "cubic-bezier(.3,1.4,.5,1)" });
+        phone.animate(wiggles[n % wiggles.length], { duration: 480, easing: "cubic-bezier(.3,1.4,.5,1)" });
       }
       if (n <= 4) imgs[n].animate([{ transform: "scale(1)" }, { transform: "scale(1.05)" }], { duration: f.t, easing: "ease-out", fill: "forwards" });
       tcap.animate([{ transform: "scale(.6) rotate(-4deg)", opacity: 0 }, { transform: "scale(1.08) rotate(1deg)", opacity: 1, offset: .6 }, { transform: "none", opacity: 1 }],
-        { duration: 520, easing: "ease-out" });
+        { duration: 380, easing: "ease-out" });
       peek.animate([{ transform: "translate(30px, 10px) rotate(14deg)", opacity: 0 }, { transform: "translate(-4px, -8px) rotate(-6deg)", opacity: 1, offset: .6 }, { transform: "none", opacity: 1 }],
-        { duration: 600, easing: "cubic-bezier(.3,1.4,.5,1)" });
+        { duration: 450, easing: "cubic-bezier(.3,1.4,.5,1)" });
       popKernels();
     }
 
@@ -466,14 +475,22 @@
     }
 
     stops.forEach(b => b.addEventListener("click", () => { show(+b.dataset.go, !still); tick(); }));
-    stage.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") { paused = true; tick(); } });
-    stage.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") { paused = false; tick(); } });
+    const pp = document.getElementById("tourPlay");
+    function setPaused(v) {
+      paused = v;
+      pp.setAttribute("aria-label", v ? "Play the tour" : "Pause the tour");
+      pp.setAttribute("aria-pressed", String(v));
+      pp.querySelector(".i-pause").style.display = v ? "none" : "";
+      pp.querySelector(".i-play").style.display = v ? "" : "none";
+      tick();
+    }
+    pp.addEventListener("click", () => setPaused(!paused));
+    if (still) pp.hidden = true;
     let x0 = null;
-    stage.addEventListener("touchstart", e => { x0 = e.touches[0].clientX; paused = true; tick(); }, { passive: true });
+    stage.addEventListener("touchstart", e => { x0 = e.touches[0].clientX; }, { passive: true });
     stage.addEventListener("touchend", e => {
       const dx = x0 == null ? 0 : e.changedTouches[0].clientX - x0; x0 = null;
-      if (Math.abs(dx) > 40) show((i + (dx < 0 ? 1 : F.length - 1)) % F.length, !still);
-      paused = false; tick();
+      if (Math.abs(dx) > 40) { show((i + (dx < 0 ? 1 : F.length - 1)) % F.length, !still); tick(); }
     }, { passive: true });
     new IntersectionObserver(es => { visible = es[0].isIntersecting; tick(); }, { threshold: 0.25 }).observe(stage);
     document.addEventListener("visibilitychange", () => { visible = !document.hidden; tick(); });
