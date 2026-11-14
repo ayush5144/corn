@@ -49,7 +49,7 @@
   .kicker { display: inline-flex; gap: 8px; align-items: center; font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; }
   .kicker .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--leaf); }
   h1 { font-size: clamp(42px, 7vw, 76px); line-height: 1.0; margin: 18px 0 18px; font-weight: 800; }
-  h1 .y { color: var(--accent); }
+  h1 .y, h2 .y { color: var(--accent); }
   .lede { font-size: 19px; color: var(--muted); max-width: 34ch; margin: 0 0 28px; }
   .lede b { color: var(--text); font-weight: 600; }
   .ctas { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
@@ -99,7 +99,7 @@
   .tour .sub { max-width: 42ch; }
   .stops { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
   .stops button { font: inherit; font-size: 14px; font-weight: 700; color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
-  .ppwrap { display: flex; justify-content: center; margin-top: 12px; }
+  .ppwrap { display: flex; justify-content: flex-end; width: min(270px, 66vw); margin: 12px auto 0; }
   .pp { width: 44px; height: 44px; padding: 0; display: grid; place-items: center; color: var(--text); background: transparent; border: 1px solid var(--line); border-radius: 999px; cursor: pointer; }
   .pp:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .pp[hidden] { display: none; }
@@ -181,7 +181,8 @@
     .peek { top: -30px; right: -24px; bottom: auto; width: 62px; }
     .peek .cob { width: 62px; }
     .say { right: 58px; bottom: auto; top: -8px; margin: 0; max-width: none; white-space: nowrap; border-radius: 14px 14px 4px 14px; }
-    .ppwrap { margin-top: 32px; }
+    .ppwrap { margin-top: 26px; width: min(66vw, 24.5svh); }
+    .tour .eyebrow { display: none; }
     .demo { gap: 36px; }
     .shotwrap { margin: 0; }
     .demo-copy { padding-top: 0; }
@@ -279,7 +280,7 @@
     </div>
     <div>
       <p class="eyebrow">Tab groups &amp; split screen</p>
-      <h2 class="display">Down the rabbit hole. Neatly.</h2>
+      <h2 class="display">Down the rabbit hole. <span class="y">Neatly.</span></h2>
       <p class="sub">One tap jumps between tabs on the strip, split screen shows two at once, and when the "homework" is done, one Flush clears the lot. Every frame here is a real screenshot of Corn.</p>
       <p class="sub sub-m">Every frame is a real screenshot of Corn.</p>
       <ul class="stops" id="stops">
