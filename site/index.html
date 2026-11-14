@@ -91,7 +91,7 @@
   @keyframes swirl { 0% { opacity: 0; transform: rotate(0) scale(.4); } 30% { opacity: .95; } 100% { opacity: 0; transform: rotate(-540deg) scale(1.3); } }
   .flushbtn { display: inline-flex; align-items: center; gap: 12px; padding: 18px 28px; border-radius: 999px; font-size: 20px; }
   .flushbtn svg { width: 26px; height: 26px; }
-  .hint { color: var(--muted); font-size: 14px; margin-top: 12px; }
+  .hint { color: var(--muted); font-size: 14px; margin-top: 12px; min-height: 1.5em; }
 
   /* tour: real screenshots on a loop */
   #tour { overflow-x: clip; }
@@ -99,10 +99,15 @@
   .tour .sub { max-width: 42ch; }
   .stops { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
   .stops button { font: inherit; font-size: 14px; font-weight: 700; color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
-  .stops .pp { width: 36px; height: 36px; padding: 0; display: grid; place-items: center; color: var(--text); }
-  .stops .pp[hidden] { display: none; }
+  .ppwrap { display: flex; justify-content: center; margin-top: 12px; }
+  .pp { width: 44px; height: 44px; padding: 0; display: grid; place-items: center; color: var(--text); background: transparent; border: 1px solid var(--line); border-radius: 999px; cursor: pointer; }
+  .pp:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .pp[hidden] { display: none; }
   .stops button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .stops button[aria-current="true"] { background: var(--corn); border-color: var(--corn); color: var(--ink); }
+  .stops button { position: relative; overflow: hidden; isolation: isolate; }
+  .stops .fill { position: absolute; inset: 0; z-index: -1; background: var(--corn); transform-origin: left center; transform: scaleX(0); }
+  .stops .ink { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--ink); clip-path: inset(0 100% 0 0); }
+  .stops button[aria-current="true"] { border-color: var(--corn); color: var(--text); }
   .stage { position: relative; width: min(390px, 100%); justify-self: center; padding: 0 0 8px; }
   .tphone { position: relative; width: min(270px, 66vw); margin: 0 auto; aspect-ratio: 540 / 1200; border-radius: 34px; overflow: hidden; border: 1px solid var(--line); background: #0F0E0B; box-shadow: 0 24px 60px rgba(0, 0, 0, .35); }
   .tphone img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .3s ease; }
@@ -160,7 +165,10 @@
     .tour { gap: 32px; }
     .tour > div:last-child { order: -1; }
     .stops { justify-content: center; }
-    .tour > div:last-child { text-align: left; }
+    .hero > div:first-child, .tour > div:last-child, .demo-copy, #features .wrap > .eyebrow, #features .wrap > h2, #features .wrap > .sub,
+    #install .wrap > .eyebrow, #install .wrap > h2, #install .wrap > .sub { text-align: center; }
+    .lede, .sub { margin-left: auto; margin-right: auto; }
+    .ctas, .fine, .more { justify-content: center; }
     .peek { position: relative; right: auto; bottom: auto; width: auto; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 14px; }
     .peek .cob { width: 72px; flex: none; }
     .say { position: static; order: 2; margin: 0; max-width: none; white-space: nowrap; border-radius: 14px 14px 14px 4px; }
@@ -236,7 +244,7 @@
         <img src="assets/screens/strip-split.webp" width="540" height="1200" loading="lazy" decoding="async" alt="Split screen: a made-up StudyHub page, Biology 101: Late Night, on top and r/OnePiece below">
         <img src="assets/screens/strip-sheet.webp" width="540" height="1200" loading="lazy" decoding="async" alt="The group sheet for the Homework group: 5 tabs with previews, Save group to Vault and New tab in group">
         <img src="assets/screens/before-flush.webp" width="540" height="1200" loading="lazy" decoding="async" alt="The Tabs screen with 7 tabs: the Homework group and four other tabs">
-        <img src="assets/screens/after-flush.webp" width="540" height="1200" loading="lazy" decoding="async" alt="Right after a Flush: a fresh new tab saying Flushed. Nobody saw nothing.">
+        <img src="assets/screens/after-flush.webp" width="540" height="1200" loading="lazy" decoding="async" alt="Right after a Flush: a fresh new tab saying Squeaky clean. Like it never happened.">
         <div class="vortex" id="vortex"></div>
       </div>
       <div class="pops" id="pops"></div>
@@ -249,25 +257,25 @@
             <g class="m-smug"><ellipse cx="300" cy="530" rx="50" ry="28" fill="#ff6b6b" opacity=".5"/><ellipse cx="724" cy="530" rx="50" ry="28" fill="#ff6b6b" opacity=".5"/><path d="M297 416Q370 368 437 452" stroke="#251a04" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M575 400L730 390" stroke="#251a04" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M620 398A36 36 0 0 0 692 394Z" fill="#251a04"/><path d="M425 555Q512 635 600 555" stroke="#251a04" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g>
             <g class="m-shock"><ellipse cx="375" cy="430" rx="62" ry="70" fill="#fff" stroke="#251a04" stroke-width="18"/><circle cx="375" cy="436" r="20" fill="#251a04"/><ellipse cx="650" cy="430" rx="62" ry="70" fill="#fff" stroke="#251a04" stroke-width="18"/><circle cx="650" cy="436" r="20" fill="#251a04"/><ellipse cx="512" cy="580" rx="42" ry="56" fill="#251a04"/><path d="M790 250Q850 340 815 382Q770 410 748 368Q738 320 790 250Z" fill="#7fd3ff" stroke="#251a04" stroke-width="16"/></g>
             <g class="m-nervous"><ellipse cx="375" cy="430" rx="30" ry="40" fill="#251a04"/><ellipse cx="650" cy="430" rx="30" ry="40" fill="#251a04"/><path d="M317 326L427 352M708 326L598 352" stroke="#251a04" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none"/><rect x="410" y="545" width="205" height="70" rx="30" fill="#fff" stroke="#251a04" stroke-width="18"/><path d="M452 547V613M492 547V613M532 547V613M572 547V613" stroke="#251a04" stroke-width="10"/><path d="M790 250Q850 340 815 382Q770 410 748 368Q738 320 790 250Z" fill="#7fd3ff" stroke="#251a04" stroke-width="16"/></g>
-            <g class="m-nerd"><ellipse cx="375" cy="430" rx="30" ry="40" fill="#251a04"/><ellipse cx="650" cy="430" rx="30" ry="40" fill="#251a04"/><path d="M425 555Q512 635 600 555" stroke="#251a04" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none"/><g stroke="#251a04" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-width="20"><circle cx="375" cy="430" r="88" fill="rgba(255,255,255,.22)"/><circle cx="650" cy="430" r="88" fill="rgba(255,255,255,.22)"/><path d="M463 424Q512 390 562 424"/></g></g>
+            <g class="m-nerd"><ellipse cx="375" cy="430" rx="30" ry="40" fill="#251a04"/><ellipse cx="650" cy="430" rx="30" ry="40" fill="#251a04"/><path d="M425 555Q512 635 600 555" stroke="#251a04" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none"/><g stroke="#251a04" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" fill="none"><circle cx="375" cy="430" r="88" fill="rgba(255,255,255,.22)"/><circle cx="650" cy="430" r="88" fill="rgba(255,255,255,.22)"/><path d="M463 424Q512 390 562 424"/></g></g>
             <g class="m-cheer"><ellipse cx="300" cy="530" rx="50" ry="28" fill="#ff6b6b" opacity=".5"/><ellipse cx="724" cy="530" rx="50" ry="28" fill="#ff6b6b" opacity=".5"/><path d="M297 416Q370 368 437 452" stroke="#251a04" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none"/><ellipse cx="650" cy="430" rx="30" ry="40" fill="#251a04"/><path d="M415 550Q512 670 610 550Z" fill="#fff" stroke="#251a04" stroke-width="22" stroke-linejoin="round"/></g>
             <g class="m-angel"><ellipse cx="512" cy="-30" rx="230" ry="48" fill="none" stroke="#FFF3B0" stroke-width="34"/><ellipse cx="300" cy="530" rx="50" ry="28" fill="#ff6b6b" opacity=".5"/><ellipse cx="724" cy="530" rx="50" ry="28" fill="#ff6b6b" opacity=".5"/><path d="M317 448Q375 384 433 448M592 448Q650 384 708 448" stroke="#251a04" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M425 555Q512 635 600 555" stroke="#251a04" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g>
           </svg>
         </div>
       </div>
       <p class="tcap" id="tcap" aria-live="polite"><b>Tabs pile up.</b><span>Open a link in a tab group and it lands on the Tab Group Strip.</span></p>
+      <div class="ppwrap"><button type="button" class="pp" id="tourPlay" aria-label="Pause the tour" aria-pressed="false"><svg class="i-pause" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg><svg class="i-play" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="display:none"><path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button></div>
     </div>
     <div>
       <p class="eyebrow">Tab groups &amp; split screen</p>
       <h2 class="display">Down the rabbit hole. Neatly.</h2>
       <p class="sub">One tap jumps between tabs on the strip, split screen shows two at once, and when the "homework" is done, one Flush clears the lot. Every frame here is a real screenshot of Corn.</p>
       <ul class="stops" id="stops">
-        <li><button type="button" data-go="0" aria-current="true">Pile up</button></li>
-        <li><button type="button" data-go="4">Switch</button></li>
-        <li><button type="button" data-go="5">Split</button></li>
-        <li><button type="button" data-go="6">Group</button></li>
-        <li><button type="button" data-go="7">Flush</button></li>
-        <li><button type="button" class="pp" id="tourPlay" aria-label="Pause the tour" aria-pressed="false"><svg class="i-pause" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg><svg class="i-play" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="display:none"><path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button></li>
+        <li><button type="button" data-go="0" aria-current="true"><span class="fill" aria-hidden="true"></span><span class="lbl">Pile up</span><span class="ink" aria-hidden="true">Pile up</span></button></li>
+        <li><button type="button" data-go="4"><span class="fill" aria-hidden="true"></span><span class="lbl">Switch</span><span class="ink" aria-hidden="true">Switch</span></button></li>
+        <li><button type="button" data-go="5"><span class="fill" aria-hidden="true"></span><span class="lbl">Split</span><span class="ink" aria-hidden="true">Split</span></button></li>
+        <li><button type="button" data-go="6"><span class="fill" aria-hidden="true"></span><span class="lbl">Group</span><span class="ink" aria-hidden="true">Group</span></button></li>
+        <li><button type="button" data-go="7"><span class="fill" aria-hidden="true"></span><span class="lbl">Flush</span><span class="ink" aria-hidden="true">Flush</span></button></li>
       </ul>
     </div>
   </div>
@@ -283,11 +291,11 @@
         <svg aria-hidden="true"><use href="#i-flush"/></svg>
         <span id="flushLabel">Flush</span>
       </button>
-      <p class="hint" id="flushHint">Corn asks first, unless you tell it not to.</p>
+      <p class="hint" id="flushHint" aria-live="polite"></p>
     </div>
     <figure class="shotwrap">
       <div class="shot" id="phone">
-        <img class="after" src="assets/screens/after-flush.webp" width="540" height="1200" loading="lazy" alt="Corn right after a Flush: a fresh new tab saying 'Flushed. Nobody saw nothing.', with the favourites and Vault still there">
+        <img class="after" src="assets/screens/after-flush.webp" width="540" height="1200" loading="lazy" alt="Corn right after a Flush: a fresh new tab saying 'Squeaky clean. Like it never happened.', with the favourites and Vault still there">
         <img class="before" src="assets/screens/before-flush.webp" width="540" height="1200" loading="lazy" alt="Corn's Tabs screen before a Flush, 7 tabs: a group called Homework (a made-up StudyHub page, Wikipedia's Maize article and a Google Images search for a cat wearing a tiny hat) plus YouTube, a made-up mattress review #47, r/OnePiece on Reddit and made-up cheap flights at 2 a.m.">
         <svg class="swirl" aria-hidden="true"><use href="#i-flush"/></svg>
       </div>
@@ -421,7 +429,7 @@
       [{ transform: "translateY(-16px) scale(1.03)" }, { transform: "translateY(4px) scale(.99)" }, { transform: "none" }],
       [{ transform: "scale(.94, 1.05)" }, { transform: "scale(1.03, .97)" }, { transform: "none" }],
     ];
-    let i = 0, timer = 0, paused = false, visible = true;
+    let i = 0, paused = false, visible = true;
 
     function popKernels() {
       const r = phone.getBoundingClientRect(), s = stage.getBoundingClientRect();
@@ -450,6 +458,7 @@
       say.textContent = f.say;
       face.dataset.m = f.m;
       stops.forEach((b, k) => b.setAttribute("aria-current", String(k === f.stop)));
+      runFill(n);
       if (!animate) return;
       if (n === 8 && prev === 7) {
         imgs[7].classList.add("on");
@@ -468,13 +477,27 @@
       popKernels();
     }
 
-    function tick() {
-      clearTimeout(timer);
-      if (still || paused || !visible) return;
-      timer = setTimeout(() => { show((i + 1) % F.length, true); tick(); }, F[i].t);
+    // Progress: one segment per step button; the fill's own animation moves the tour on, so pausing freezes both.
+    const fills = [...document.querySelectorAll("#stops .fill")], inks = [...document.querySelectorAll("#stops .ink")];
+    let fill = null, inkA = null;
+    const clip = p => `inset(0 ${(100 - p * 100).toFixed(2)}% 0 0)`;
+    function runFill(n) {
+      if (fill) { fill.onfinish = null; fill.cancel(); inkA.cancel(); fill = inkA = null; }
+      const st = F[n].stop, idx = F.map((_, j) => j).filter(j => F[j].stop === st);
+      const total = idx.reduce((a, j) => a + F[j].t, 0), before = idx.filter(j => j < n).reduce((a, j) => a + F[j].t, 0);
+      fills.forEach((b, k) => { b.style.transform = `scaleX(${k < st ? 1 : 0})`; b.style.opacity = k < st ? ".28" : "1"; });
+      inks.forEach(b => b.style.clipPath = clip(0));
+      if (still) { fills[st].style.transform = "scaleX(1)"; inks[st].style.clipPath = clip(1); return; }
+      const from = before / total, to = (before + F[n].t) / total, o = { duration: F[n].t, easing: "linear" };
+      fills[st].style.transform = `scaleX(${to})`; inks[st].style.clipPath = clip(to);
+      fill = fills[st].animate([{ transform: `scaleX(${from})` }, { transform: `scaleX(${to})` }], o);
+      inkA = inks[st].animate([{ clipPath: clip(from) }, { clipPath: clip(to) }], o);
+      fill.onfinish = () => show((i + 1) % F.length, true);
+      tick();
     }
+    function tick() { if (fill) (paused || !visible) ? (fill.pause(), inkA.pause()) : (fill.play(), inkA.play()); }
 
-    stops.forEach(b => b.addEventListener("click", () => { show(+b.dataset.go, !still); tick(); }));
+    stops.forEach(b => b.addEventListener("click", () => show(+b.dataset.go, !still)));
     const pp = document.getElementById("tourPlay");
     function setPaused(v) {
       paused = v;
@@ -490,11 +513,11 @@
     stage.addEventListener("touchstart", e => { x0 = e.touches[0].clientX; }, { passive: true });
     stage.addEventListener("touchend", e => {
       const dx = x0 == null ? 0 : e.changedTouches[0].clientX - x0; x0 = null;
-      if (Math.abs(dx) > 40) { show((i + (dx < 0 ? 1 : F.length - 1)) % F.length, !still); tick(); }
+      if (Math.abs(dx) > 40) show((i + (dx < 0 ? 1 : F.length - 1)) % F.length, !still);
     }, { passive: true });
     new IntersectionObserver(es => { visible = es[0].isIntersecting; tick(); }, { threshold: 0.25 }).observe(stage);
     document.addEventListener("visibilitychange", () => { visible = !document.hidden; tick(); });
-    if (still) show(5, false); else tick();
+    show(still ? 5 : 0, false);
   })();
 
   // The Flush demo: real screenshots of Corn, before and right after a Flush.
@@ -506,7 +529,7 @@
     shot.classList.toggle("flushing", flushed);
     label.textContent = flushed ? "Browse again" : "Flush";
     cap.textContent = flushed ? "Real screenshot: right after the Flush" : "Real screenshot: 7 tabs, 1 “Homework” group";
-    hint.textContent = flushed ? "“Homework” gone. Favourites and Vault untouched. That's the whole idea." : "Corn asks first, unless you tell it not to.";
+    hint.textContent = flushed ? "“Homework” gone. Favourites and Vault untouched. That's the whole idea." : "";
   });
 </script>
 </body>
