@@ -46,7 +46,7 @@ if ask "Commit the version bump and tag v$NAME?"; then
   git commit -q -am "Release $NAME (versionCode $NEW_CODE)"; git tag -a "v$NAME" -m "Corn $NAME"
   if ask "Push the commit and tag to GitHub?"; then git push -q && git push -q origin "v$NAME"; fi
   if ask "Create a GitHub pre-release v$NAME with the APK attached (public)?"; then
-    gh release create "v$NAME" "$OUT#Corn-$NAME.apk" --prerelease --title "Corn $NAME (test build)" --notes "Test build of Corn, the private browser.
+    gh release create "v$NAME" "$OUT#Corn-$NAME.apk" --prerelease --title "Corn $NAME (beta)" --notes "Beta build of Corn, the private browser. Website: https://ayush5144.github.io/corn/
 
 **Install on Android:** open this page on your phone, tap Corn-$NAME.apk, allow installs from your browser when asked, then tap Install.
 **Updating:** install a newer release the same way; your Vault and settings are kept. To be told about new versions, use Obtainium (add github.com/ayush5144/corn).

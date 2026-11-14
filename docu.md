@@ -302,3 +302,10 @@
 - Features: Tab Groups and Vault verified on the emulator (✅ with evidence); checklist: letter-icon "E" for en.wikipedia.org.
 - Letter icons: `ui/SiteLetter.kt` (main-name letter: en.wikipedia.org → W) used by `LetterIcon` and the favourite tile fallback; checklist ticked, features note updated.
 - Landing page: `site/` (one page, brand fonts and Corny, Flush demo, newest-APK button) published to GitHub Pages by `.github/workflows/pages.yml`; releasing doc "Landing page" section; README link.
+
+## 2026-11-14 — Beta launch: 0.2.5 released; docs synced
+
+- Released 0.2.5 (versionCode 7, beta): letter icons use the site's main name (`ui/SiteLetter.kt`); releases table updated in `docs/03-planning/05-releasing-and-updates.md`.
+- `scripts/release.sh`: GitHub releases are now titled "beta" and link the website.
+- `AGENTS.md`: landing page row (`site/`, Pages workflow, site agent brief).
+- Website changes since the last entry (real screenshots, moving tour, StudyHub joke, Beta wording) are recorded in their commits and the decision log only.
