@@ -309,3 +309,4 @@
 - `scripts/release.sh`: GitHub releases are now titled "beta" and link the website.
 - `AGENTS.md`: landing page row (`site/`, Pages workflow, site agent brief).
 - Website changes since the last entry (real screenshots, moving tour, StudyHub joke, Beta wording) are recorded in their commits and the decision log only.
+- `docs/01-product/03-features.md`: Auto-Flush, Black screen in recent apps, App Lock and Address bar top or bottom checked on the emulator (2026-11-15) and marked ✅ with evidence.

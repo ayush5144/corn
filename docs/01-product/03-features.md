@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-14, 00:43 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-15, 01:13 IST
 
 Every feature in the Android app today, what it does for the user, and the evidence behind it. Nothing here is planned-only; planned work lives in the [checklist](../03-planning/02-checklist.md).
 
@@ -92,9 +92,9 @@ Every feature in the Android app today, what it does for the user, and the evide
   - *What:* your tabs and groups are saved when you leave Corn and restored next time, until you flush.
   - *Evidence:* built; restore after closing the app not yet checked.
 
-- **Auto-Flush** 🔨
+- **Auto-Flush** ✅
   - *What:* optional: flush when you leave Corn, 5 or 30 minutes after leaving, or after 10/30/60 minutes of inactivity. A playing video counts as activity.
-  - *Evidence:* built; timers not yet checked on a device.
+  - *Evidence* (emulator, 2026-11-15): Settings → "Flush when I leave Corn", 2 tabs open (Wikipedia, OpenStreetMap), Home: Corn's process ended within seconds; reopening showed 1 new tab and History said "Nothing here". Done twice. The Vault (10 links, 3 passwords) and Favourites stayed. The 5/30-minute and inactivity timers weren't timed (same code path, longer waits).
 
 - **Keep List** ✅
   - *What:* sites that stay logged in after a Flush. Their cookies are left untouched in WebView's cookie database (DuckDuckGo's method), so expiry and security flags stay as the site set them, and their IndexedDB (site databases) is kept. Add or remove the site you're on with one tap: shield → **Stay logged in after Flush**; or in Settings → Keep List. Details: [11-keep-list](../02-technical/11-keep-list.md).
@@ -160,8 +160,10 @@ Every feature in the Android app today, what it does for the user, and the evide
 
 ## Discretion
 
-- **Black screen in recent apps** 🔨: Android 13+ `setRecentsScreenshotEnabled(false)`, on by default. Not yet checked visually.
-- **App Lock** 🔨: optional PIN to open Corn (same PIN as the Vault).
+- **Black screen in recent apps** ✅: Android 13+ `setRecentsScreenshotEnabled(false)`, on by default.
+  - *Evidence* (emulator, Android 16, 2026-11-15): with a page open in Corn, switching to another app and opening recent apps showed Corn's card blank (plain dark grey), next to other apps' normal previews. Known limit: opening recent apps straight from Corn shows Corn's live window (the launcher's "live tile") until you move away; the saved preview is blank.
+- **App Lock** ✅: optional PIN to open Corn (same PIN as the Vault).
+  - *Evidence* (emulator, 2026-11-15): turned on in Settings → Privacy; after Home and reopening, and again after a force-stop, Corn showed "Corn is locked · Enter your PIN"; the PIN opened it where it was (the Kept Session tab came back after the force-stop).
 - **No notifications while closed** ✅: Corn has no notification code at all.
 - **No backups** ✅: `allowBackup="false"` plus rules excluding all data from cloud backup and device transfer.
 - **No logs of browsing** ✅: audited. Corn's 5 log messages contain no URLs; page console messages are kept out of Android's log; there's no record of what was blocked where.
@@ -174,7 +176,8 @@ Every feature in the Android app today, what it does for the user, and the evide
 - **Safe Search switch** 🧪: Settings → Search, off by default. Off adds each engine's "safe search off" parameter (`kp=-2`, `safe=off`, `safesearch=off`, `adlt=off`); on adds the strict one (`kp=1`, `safe=active`, `safesearch=strict`, `adlt=strict`). Startpage has no URL parameter, so its own setting applies. 3 unit tests (13 address checks).
 - **Five search engines with a one-tap switcher** ✅: DuckDuckGo (default), Google, Brave Search, Startpage, Bing, each with its favicon (bundled, never fetched). Seen in the address bar and the engine sheet.
 - **Full address in the address bar** ✅: always shows the page's full URL (e.g. `https://duckduckgo.com/?q=corn+browser`), like Brave.
-- **Address bar top or bottom** 🔨: a Settings choice.
+- **Address bar top or bottom** ✅: a Settings choice (Settings → Appearance → Address bar: Top / Bottom).
+  - *Evidence* (emulator, 2026-11-15): Bottom showed the toast "Address bar moved to the bottom" and put the bar just above the toolbar on a Wikipedia page and on the new tab; Top put it back.
 - **Light and dark mode** ✅: Settings → Appearance: Dark (default), Light, or Phone (follows the phone's dark mode). Sites see the user's preference (`prefers-color-scheme`), so sites with a dark mode follow it; pages are otherwise shown as the site designed them, on the web's white default background, and a site's own light/dark switch works. **Darken all websites** (off by default) makes WebView also darken light-only pages in dark mode (`setAlgorithmicDarkeningAllowed`). Verified 2026-11-05: a site's own switch to light shows white on screen (was black); a beige light-only page shows its beige (was near-black). Switching rebuilds open pages so they change immediately.
 - **Typed addresses fall back to http** ✅: typing `example.com` starts from `http://` and Corn's HTTPS upgrade tries https first. Verified: `httpforever.com` (https fails with a handshake error, checked from the Mac) opened at `http://httpforever.com/`; before, it showed a connection error. Unit-tested.
 - **Corn's error page** ✅: a site that can't load shows "Can't open this page" with a plain-language reason and Try again, instead of WebView's grey page. Verified with an address that can't exist (`.invalid`): "Corn couldn't find this site. Check the address, or your connection."
