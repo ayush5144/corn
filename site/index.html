@@ -124,6 +124,8 @@
   .face g { display: none; }
   .face[data-m="smug"] .m-smug, .face[data-m="shock"] .m-shock, .face[data-m="nervous"] .m-nervous, .face[data-m="nerd"] .m-nerd, .face[data-m="cheer"] .m-cheer, .face[data-m="angel"] .m-angel { display: inline; }
   .say { position: absolute; right: 8px; bottom: 100%; margin-bottom: 4px; width: max-content; max-width: 150px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px 14px 4px 14px; padding: 7px 11px; font-size: 13px; font-weight: 700; box-shadow: 0 8px 24px rgba(0, 0, 0, .25); }
+  .sub-m { display: none; }
+  .phwrap .tcap { width: 390px; max-width: none; margin-left: calc(50% - 195px); padding: 0 40px; box-sizing: border-box; }
   .tcap { text-align: center; margin: 18px auto 0; min-height: 4.2em; max-width: 30ch; }
   .tcap b { display: block; font-family: "Bricolage", system-ui, sans-serif; font-size: 26px; line-height: 1.1; letter-spacing: -0.02em; color: var(--accent); }
   .tcap span { display: block; color: var(--muted); font-size: 14.5px; margin-top: 6px; }
@@ -171,13 +173,15 @@
     .lede, .sub { margin-left: auto; margin-right: auto; }
     .ctas, .fine, .more { justify-content: center; }
     .stage { display: flex; flex-direction: column; align-items: center; }
-    .tcap { order: -1; margin: 0 auto 12px; min-height: 4.6em; }
-    .tcap b { font-size: 22px; }
+    .tour .sub { display: none; } .tour .sub.sub-m { display: block; margin-bottom: 20px; }
+    .phwrap .tcap { position: absolute; left: 50%; bottom: -17px; translate: -50% 0; width: max-content; max-width: 92vw; margin: 0; min-height: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 5px 14px; box-shadow: 0 6px 18px rgba(0,0,0,.3); }
+    .tcap b { font-size: 15px; }
+    .tcap span { display: none; }
     .phwrap { width: min(66vw, 24.5svh); margin-top: 44px; }
     .peek { top: -30px; right: -24px; bottom: auto; width: 62px; }
     .peek .cob { width: 62px; }
     .say { right: 58px; bottom: auto; top: -8px; margin: 0; max-width: none; white-space: nowrap; border-radius: 14px 14px 4px 14px; }
-    .ppwrap { margin-top: 14px; }
+    .ppwrap { margin-top: 32px; }
     .demo { gap: 36px; }
     .shotwrap { margin: 0; }
     .demo-copy { padding-top: 0; }
@@ -268,15 +272,16 @@
           </svg>
         </div>
       </div>
+        <p class="tcap" id="tcap" aria-live="polite"><b>Tabs pile up.</b><span>Open a link in a tab group and it lands on the Tab Group Strip.</span></p>
       </div>
       <div class="pops" id="pops"></div>
-      <p class="tcap" id="tcap" aria-live="polite"><b>Tabs pile up.</b><span>Open a link in a tab group and it lands on the Tab Group Strip.</span></p>
       <div class="ppwrap"><button type="button" class="pp" id="tourPlay" aria-label="Pause the tour" aria-pressed="false"><svg class="i-pause" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg><svg class="i-play" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="display:none"><path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button></div>
     </div>
     <div>
       <p class="eyebrow">Tab groups &amp; split screen</p>
       <h2 class="display">Down the rabbit hole. Neatly.</h2>
       <p class="sub">One tap jumps between tabs on the strip, split screen shows two at once, and when the "homework" is done, one Flush clears the lot. Every frame here is a real screenshot of Corn.</p>
+      <p class="sub sub-m">Every frame is a real screenshot of Corn.</p>
       <ul class="stops" id="stops">
         <li><button type="button" data-go="0" aria-current="true"><span class="fill" aria-hidden="true"></span><span class="lbl">Pile up</span><span class="ink" aria-hidden="true">Pile up</span></button></li>
         <li><button type="button" data-go="4"><span class="fill" aria-hidden="true"></span><span class="lbl">Switch</span><span class="ink" aria-hidden="true">Switch</span></button></li>
