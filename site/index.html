@@ -170,9 +170,9 @@
   @media (max-width: 820px) {
     .hero, .demo, .promise, .tour { grid-template-columns: 1fr; }
     .tour { gap: 32px; }
-    .tour > div:last-child { order: -1; }
+    .tour > .tour-copy { order: -1; } /* text block above the phone on narrow screens */
     .stops { justify-content: center; }
-    .hero > div:first-child, .tour > div:last-child, .demo-copy, #features .wrap > .eyebrow, #features .wrap > h2, #features .wrap > .sub,
+    .hero > div:first-child, .tour > .tour-copy, .demo-copy, #features .wrap > .eyebrow, #features .wrap > h2, #features .wrap > .sub,
     #install .wrap > .eyebrow, #install .wrap > h2, #install .wrap > .sub { text-align: center; }
     .lede, .sub { margin-left: auto; margin-right: auto; }
     .ctas, .fine, .more { justify-content: center; }
@@ -287,7 +287,7 @@
       <p class="eyebrow">Tab groups &amp; split screen</p>
       <h2 class="display">Down the rabbit hole. <span class="y">Neatly.</span></h2>
       <p class="sub">One tap jumps between tabs on the strip, split screen shows two at once, and when the "homework" is done, one Flush clears the lot. Every frame here is a real screenshot of Corn.</p>
-      <p class="sub sub-m">Every frame is a real screenshot of Corn.</p>
+      <p class="sub sub-m">Tab groups, one-tap switching and split screen.</p>
       <ul class="stops" id="stops">
         <li><button type="button" data-go="0" aria-current="true"><span class="fill" aria-hidden="true"></span><span class="lbl">Pile up</span><span class="ink" aria-hidden="true">Pile up</span></button></li>
         <li><button type="button" data-go="4"><span class="fill" aria-hidden="true"></span><span class="lbl">Switch</span><span class="ink" aria-hidden="true">Switch</span></button></li>
