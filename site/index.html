@@ -103,6 +103,9 @@
   .pp { width: 44px; height: 44px; padding: 0; display: grid; place-items: center; color: var(--text); background: transparent; border: 1px solid var(--line); border-radius: 999px; cursor: pointer; }
   .pp:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .pp[hidden] { display: none; }
+  .stops .pp-li { margin-left: 6px; }
+  .stops .pp-row { width: 38px; height: 38px; }
+  @media (min-width: 821px) { .ppwrap { display: none; } }
   .stops button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .stops button { position: relative; overflow: hidden; isolation: isolate; }
   .stops .fill { position: absolute; inset: 0; z-index: -1; background: var(--corn); transform-origin: left center; transform: scaleX(0); }
@@ -183,6 +186,7 @@
     .say { right: 58px; bottom: auto; top: -8px; margin: 0; max-width: none; white-space: nowrap; border-radius: 14px 14px 4px 14px; }
     .ppwrap { margin-top: 26px; width: 100%; }
     .tour .eyebrow { display: none; }
+    .stops .pp-li { display: none; }
     .demo { gap: 36px; }
     .shotwrap { margin: 0; }
     .demo-copy { padding-top: 0; }
@@ -289,6 +293,7 @@
         <li><button type="button" data-go="5"><span class="fill" aria-hidden="true"></span><span class="lbl">Split</span><span class="ink" aria-hidden="true">Split</span></button></li>
         <li><button type="button" data-go="6"><span class="fill" aria-hidden="true"></span><span class="lbl">Group</span><span class="ink" aria-hidden="true">Group</span></button></li>
         <li><button type="button" data-go="7"><span class="fill" aria-hidden="true"></span><span class="lbl">Flush</span><span class="ink" aria-hidden="true">Flush</span></button></li>
+        <li class="pp-li"><button type="button" class="pp pp-row" aria-label="Pause the tour" aria-pressed="false"><svg class="i-pause" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg><svg class="i-play" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="display:none"><path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button></li>
       </ul>
     </div>
   </div>
@@ -511,17 +516,18 @@
     function tick() { if (fill) (paused || !visible) ? (fill.pause(), inkA.pause()) : (fill.play(), inkA.play()); }
 
     stops.forEach(b => b.addEventListener("click", () => show(+b.dataset.go, !still)));
-    const pp = document.getElementById("tourPlay");
+    const pps = [...document.querySelectorAll(".pp")];
     function setPaused(v) {
       paused = v;
-      pp.setAttribute("aria-label", v ? "Play the tour" : "Pause the tour");
-      pp.setAttribute("aria-pressed", String(v));
-      pp.querySelector(".i-pause").style.display = v ? "none" : "";
-      pp.querySelector(".i-play").style.display = v ? "" : "none";
+      pps.forEach(pp => {
+        pp.setAttribute("aria-label", v ? "Play the tour" : "Pause the tour");
+        pp.setAttribute("aria-pressed", String(v));
+        pp.querySelector(".i-pause").style.display = v ? "none" : "";
+        pp.querySelector(".i-play").style.display = v ? "" : "none";
+      });
       tick();
     }
-    pp.addEventListener("click", () => setPaused(!paused));
-    if (still) pp.hidden = true;
+    pps.forEach(pp => { pp.addEventListener("click", () => setPaused(!paused)); if (still) pp.hidden = true; });
     let x0 = null;
     stage.addEventListener("touchstart", e => { x0 = e.touches[0].clientX; }, { passive: true });
     stage.addEventListener("touchend", e => {
