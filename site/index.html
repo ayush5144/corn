@@ -196,6 +196,7 @@
     .say { right: 58px; bottom: auto; top: -8px; margin: 0; max-width: none; white-space: nowrap; border-radius: 14px 14px 4px 14px; }
     .ppwrap { margin-top: 26px; width: 100%; }
     .tour .eyebrow { display: none; }
+    .rot .alt { max-width: 10em; justify-self: center; }
     .pp-top { display: none !important; }
     .demo { gap: 36px; }
     .shotwrap { margin: 0; }
@@ -207,6 +208,7 @@
     .navlinks .opt { display: none; }
     .promise { padding: 24px; }
   }
+  @media (max-width: 413px) { .rot .alt { max-width: 7em; } }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
   }
@@ -246,9 +248,9 @@ if (!matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentEl
 
   <header class="hero" id="top">
     <div>
-      <span class="kicker"><span class="dot"></span>Free · Android · Beta</span>
+      <span class="kicker"><span class="dot"></span>Free · Private · Android · Beta</span>
       <div class="rot" id="rot">
-        <p class="display alt" aria-hidden="true">A private browser for tabs you'd <span class="y">rather not explain.</span></p>
+        <p class="display alt" aria-hidden="true">A browser for tabs you'd <span class="y">rather not explain.</span></p>
         <h1 class="display">Browse.<br>Save what matters.<br><span class="y">Flush the rest.</span></h1>
       </div>
       <p class="lede">Your browser has seen things. One tap flushes them: tabs, cookies, history. Your <b>PIN-locked Vault</b> keeps the good stuff. Tab groups and split screen for multitasking ;) Ads and trackers blocked. <b>Free, open source, no account.</b></p>
