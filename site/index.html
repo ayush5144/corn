@@ -93,6 +93,32 @@
   .flushbtn svg { width: 26px; height: 26px; }
   .hint { color: var(--muted); font-size: 14px; margin-top: 12px; }
 
+  /* tour: real screenshots on a loop */
+  #tour { overflow-x: clip; }
+  .tour { display: grid; grid-template-columns: 390px minmax(0, 1fr); gap: 64px; align-items: center; }
+  .tour .sub { max-width: 42ch; }
+  .stops { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .stops button { font: inherit; font-size: 14px; font-weight: 700; color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  .stops button[aria-current="true"] { background: var(--corn); border-color: var(--corn); color: var(--ink); }
+  .stage { position: relative; width: min(390px, 100%); justify-self: center; padding: 0 0 8px; }
+  .tphone { position: relative; width: min(270px, 66vw); margin: 0 auto; aspect-ratio: 540 / 1200; border-radius: 34px; overflow: hidden; border: 1px solid var(--line); background: #0F0E0B; box-shadow: 0 24px 60px rgba(0, 0, 0, .35); }
+  .tphone img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .45s ease; }
+  .tphone img.on { opacity: 1; }
+  .vortex { position: absolute; left: 50%; top: 55%; width: 200%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; opacity: 0; pointer-events: none;
+    background: repeating-conic-gradient(from 0deg, #FFC83D 0 22deg, #120d02 22deg 40deg, #ffdf7a 40deg 46deg, #120d02 46deg 60deg);
+    -webkit-mask-image: radial-gradient(circle, #000 6%, rgba(0,0,0,.55) 35%, transparent 62%); mask-image: radial-gradient(circle, #000 6%, rgba(0,0,0,.55) 35%, transparent 62%); }
+  .pops { position: absolute; inset: 0; pointer-events: none; }
+  .kern { position: absolute; width: 13px; height: 15px; border-radius: 45% 45% 40% 40%; background: radial-gradient(circle at 35% 30%, #fff3b8, #FFC83D 55%, #d99400); box-shadow: inset -2px -3px 0 rgba(120, 70, 0, .35); }
+  .peek { position: absolute; right: -24px; bottom: 34%; width: 104px; }
+  .peek .cob { position: relative; width: 104px; aspect-ratio: 1; }
+  .peek .cob img, .peek .cob svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .face g { display: none; }
+  .face[data-m="smug"] .m-smug, .face[data-m="shock"] .m-shock, .face[data-m="nervous"] .m-nervous, .face[data-m="nerd"] .m-nerd, .face[data-m="cheer"] .m-cheer, .face[data-m="angel"] .m-angel { display: inline; }
+  .say { position: absolute; right: 8px; bottom: 100%; margin-bottom: 4px; width: max-content; max-width: 150px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px 14px 4px 14px; padding: 7px 11px; font-size: 13px; font-weight: 700; box-shadow: 0 8px 24px rgba(0, 0, 0, .25); }
+  .tcap { text-align: center; margin: 18px auto 0; min-height: 4.2em; max-width: 30ch; }
+  .tcap b { display: block; font-family: "Bricolage", system-ui, sans-serif; font-size: 26px; line-height: 1.1; letter-spacing: -0.02em; color: var(--accent); }
+  .tcap span { display: block; color: var(--muted); font-size: 14.5px; margin-top: 6px; }
+
   /* features */
   .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
   .card { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 24px; }
@@ -127,7 +153,10 @@
   footer a:hover { color: var(--text); }
 
   @media (max-width: 820px) {
-    .hero, .demo, .promise { grid-template-columns: 1fr; }
+    .hero, .demo, .promise, .tour { grid-template-columns: 1fr; }
+    .tour { gap: 32px; }
+    .tour > div:last-child { order: -1; }
+    .peek { width: 84px; right: 0; } .peek .cob { width: 84px; }
     .demo { gap: 36px; }
     .shotwrap { margin: 0; }
     .demo-copy { padding-top: 0; }
@@ -187,12 +216,60 @@
   </header>
 </div>
 
+<section id="tour">
+  <div class="wrap tour">
+    <div class="stage" id="stage">
+      <div class="tphone" id="tphone" role="img" aria-label="Real screenshots of Corn: tab groups, the Tab Group Strip, split screen and a Flush">
+        <img src="assets/screens/strip-2.webp" width="540" height="1200" loading="lazy" decoding="async" alt="Corn showing r/OnePiece on Reddit, with the Tab Group Strip at the bottom holding 2 tabs" class="on">
+        <img src="assets/screens/strip-3.webp" width="540" height="1200" loading="lazy" decoding="async" alt="A YouTube search for how to fold a fitted sheet; the Tab Group Strip now holds 3 tabs">
+        <img src="assets/screens/strip-4.webp" width="540" height="1200" loading="lazy" decoding="async" alt="NASA's profile on X; the Tab Group Strip holds 4 tabs">
+        <img src="assets/screens/strip-5.webp" width="540" height="1200" loading="lazy" decoding="async" alt="A made-up StudyHub page, Professor's Office Hours (Private); the strip holds 5 tabs">
+        <img src="assets/screens/strip-switch.webp" width="540" height="1200" loading="lazy" decoding="async" alt="Back on r/OnePiece after one tap on its icon in the Tab Group Strip">
+        <img src="assets/screens/strip-split.webp" width="540" height="1200" loading="lazy" decoding="async" alt="Split screen: a made-up StudyHub page, Biology 101: Late Night, on top and r/OnePiece below">
+        <img src="assets/screens/strip-sheet.webp" width="540" height="1200" loading="lazy" decoding="async" alt="The group sheet for the Homework group: 5 tabs with previews, Save group to Vault and New tab in group">
+        <img src="assets/screens/before-flush.webp" width="540" height="1200" loading="lazy" decoding="async" alt="The Tabs screen with 7 tabs: the Homework group and four other tabs">
+        <img src="assets/screens/after-flush.webp" width="540" height="1200" loading="lazy" decoding="async" alt="Right after a Flush: a fresh new tab saying Flushed. Nobody saw nothing.">
+        <div class="vortex" id="vortex"></div>
+      </div>
+      <div class="pops" id="pops"></div>
+      <div class="peek" id="peek" aria-hidden="true">
+        <div class="say" id="say">Just two tabs. Innocent.</div>
+        <div class="cob">
+          <!-- Corny blank: made from Corn's own logo in the video project (Corn-video-agent/assets/corny, SOURCES.md: ours); faces after its CornMoji kit -->
+          <img src="assets/corny/corny-blank.webp" width="320" height="320" alt="" loading="lazy">
+          <svg class="face" id="face" data-m="smug" viewBox="0 0 1024 1024" aria-hidden="true" style="overflow:visible">
+            <g class="m-smug"><ellipse cx="300" cy="530" rx="50" ry="28" fill="#ff6b6b" opacity=".5"/><ellipse cx="724" cy="530" rx="50" ry="28" fill="#ff6b6b" opacity=".5"/><path d="M297 416Q370 368 437 452" stroke="#251a04" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M575 400L730 390" stroke="#251a04" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M620 398A36 36 0 0 0 692 394Z" fill="#251a04"/><path d="M425 555Q512 635 600 555" stroke="#251a04" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g>
+            <g class="m-shock"><ellipse cx="375" cy="430" rx="62" ry="70" fill="#fff" stroke="#251a04" stroke-width="18"/><circle cx="375" cy="436" r="20" fill="#251a04"/><ellipse cx="650" cy="430" rx="62" ry="70" fill="#fff" stroke="#251a04" stroke-width="18"/><circle cx="650" cy="436" r="20" fill="#251a04"/><ellipse cx="512" cy="580" rx="42" ry="56" fill="#251a04"/><path d="M790 250Q850 340 815 382Q770 410 748 368Q738 320 790 250Z" fill="#7fd3ff" stroke="#251a04" stroke-width="16"/></g>
+            <g class="m-nervous"><ellipse cx="375" cy="430" rx="30" ry="40" fill="#251a04"/><ellipse cx="650" cy="430" rx="30" ry="40" fill="#251a04"/><path d="M317 326L427 352M708 326L598 352" stroke="#251a04" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none"/><rect x="410" y="545" width="205" height="70" rx="30" fill="#fff" stroke="#251a04" stroke-width="18"/><path d="M452 547V613M492 547V613M532 547V613M572 547V613" stroke="#251a04" stroke-width="10"/><path d="M790 250Q850 340 815 382Q770 410 748 368Q738 320 790 250Z" fill="#7fd3ff" stroke="#251a04" stroke-width="16"/></g>
+            <g class="m-nerd"><ellipse cx="375" cy="430" rx="30" ry="40" fill="#251a04"/><ellipse cx="650" cy="430" rx="30" ry="40" fill="#251a04"/><path d="M425 555Q512 635 600 555" stroke="#251a04" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none"/><g stroke="#251a04" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-width="20"><circle cx="375" cy="430" r="88" fill="rgba(255,255,255,.22)"/><circle cx="650" cy="430" r="88" fill="rgba(255,255,255,.22)"/><path d="M463 424Q512 390 562 424"/></g></g>
+            <g class="m-cheer"><ellipse cx="300" cy="530" rx="50" ry="28" fill="#ff6b6b" opacity=".5"/><ellipse cx="724" cy="530" rx="50" ry="28" fill="#ff6b6b" opacity=".5"/><path d="M297 416Q370 368 437 452" stroke="#251a04" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none"/><ellipse cx="650" cy="430" rx="30" ry="40" fill="#251a04"/><path d="M415 550Q512 670 610 550Z" fill="#fff" stroke="#251a04" stroke-width="22" stroke-linejoin="round"/></g>
+            <g class="m-angel"><ellipse cx="512" cy="-30" rx="230" ry="48" fill="none" stroke="#FFF3B0" stroke-width="34"/><ellipse cx="300" cy="530" rx="50" ry="28" fill="#ff6b6b" opacity=".5"/><ellipse cx="724" cy="530" rx="50" ry="28" fill="#ff6b6b" opacity=".5"/><path d="M317 448Q375 384 433 448M592 448Q650 384 708 448" stroke="#251a04" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M425 555Q512 635 600 555" stroke="#251a04" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g>
+          </svg>
+        </div>
+      </div>
+      <p class="tcap" id="tcap" aria-live="polite"><b>Tabs pile up.</b><span>Open a link in a tab group and it lands on the Tab Group Strip.</span></p>
+    </div>
+    <div>
+      <p class="eyebrow">Tab groups &amp; split screen</p>
+      <h2 class="display">Down the rabbit hole. Neatly.</h2>
+      <p class="sub">One tap jumps between tabs on the strip, split screen shows two at once, and when the "homework" is done, one Flush clears the lot. Every frame here is a real screenshot of Corn.</p>
+      <ul class="stops" id="stops">
+        <li><button type="button" data-go="0" aria-current="true">Pile up</button></li>
+        <li><button type="button" data-go="4">Switch</button></li>
+        <li><button type="button" data-go="5">Split</button></li>
+        <li><button type="button" data-go="6">Group</button></li>
+        <li><button type="button" data-go="7">Flush</button></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
 <section id="flush">
   <div class="wrap demo">
     <div class="demo-copy">
       <p class="eyebrow">The Flush button</p>
       <h2 class="display">One tap.<br>Down the drain.</h2>
-      <p class="sub">Tabs, groups, cookies, cache and history: gone. Your Vault and the sites you keep logged in stay put. Go on, try it.</p>
+      <p class="sub">The “homework”, mattress review #47, flights you searched at 2 a.m.: one tap and the tabs, groups, cookies, cache and history are gone. Your Vault and the sites you keep logged in stay put. Go on, try it.</p>
       <button class="btn btn-corn flushbtn" id="flushBtn" type="button">
         <svg aria-hidden="true"><use href="#i-flush"/></svg>
         <span id="flushLabel">Flush</span>
@@ -201,11 +278,11 @@
     </div>
     <figure class="shotwrap">
       <div class="shot" id="phone">
-        <img class="after" src="assets/screens/after-flush.jpg" width="540" height="1200" loading="lazy" alt="Corn right after a Flush: a fresh new tab saying 'Flushed. Nobody saw nothing.', with the favourites and Vault still there">
-        <img class="before" src="assets/screens/before-flush.jpg" width="540" height="1200" loading="lazy" alt="Corn's Tabs screen before a Flush: a Biology tab group and four other tabs">
+        <img class="after" src="assets/screens/after-flush.webp" width="540" height="1200" loading="lazy" alt="Corn right after a Flush: a fresh new tab saying 'Flushed. Nobody saw nothing.', with the favourites and Vault still there">
+        <img class="before" src="assets/screens/before-flush.webp" width="540" height="1200" loading="lazy" alt="Corn's Tabs screen before a Flush, 7 tabs: a group called Homework (a made-up StudyHub page, Wikipedia's Maize article and a Google Images search for a cat wearing a tiny hat) plus YouTube, a made-up mattress review #47, r/OnePiece on Reddit and made-up cheap flights at 2 a.m.">
         <svg class="swirl" aria-hidden="true"><use href="#i-flush"/></svg>
       </div>
-      <figcaption id="shotCap" aria-live="polite">Real screenshot: 9 tabs open</figcaption>
+      <figcaption id="shotCap" aria-live="polite">Real screenshot: 7 tabs, 1 “Homework” group</figcaption>
     </figure>
   </div>
 </section>
@@ -219,7 +296,7 @@
       <div class="card">
         <div class="badge"><svg aria-hidden="true"><use href="#i-vault"/></svg></div>
         <h3>The Vault</h3>
-        <p>Save links into Collections with tags, behind your PIN. Passwords live there too. It survives every Flush, and you can export it any time.</p>
+        <p>Save links into Collections with tags, behind your PIN. Your saved passwords live there too, encrypted; Corn fills one only when you tap. The Vault survives every Flush, and you can export it any time.</p>
       </div>
       <div class="card">
         <div class="badge"><svg aria-hidden="true"><use href="#i-shield"/></svg></div>
@@ -268,7 +345,7 @@
     <p class="sub">Corn is in beta, so it installs straight from GitHub for now. App stores come later.</p>
     <div class="steps">
       <div class="step"><b>Download the APK</b><span>Open this page on your Android phone and tap Download.</span></div>
-      <div class="step"><b>Allow the install</b><span>Android asks once to allow installs from your browser. Say yes.</span></div>
+      <div class="step"><b>Allow the install</b><span>Android asks once to allow installs from your browser. Say yes; it's just being careful.</span></div>
       <div class="step"><b>Tap Install</b><span>Updates install the same way and keep your Vault. Tip: Obtainium can tell you when there's a new one.</span></div>
     </div>
     <div class="final">
@@ -307,9 +384,101 @@
     .catch(() => {});
 
   // Corny's speech bubble.
-  const lines = ["Psst. Nobody needs to know.", "Your Vault's safe with me.", "Ads? Never heard of them.", "Clean slate, same great corn."];
+  const lines = ["Psst. Nobody needs to know.", "Your Vault's safe with me.", "Ads? Never heard of them.", "Clean slate, same great corn.", "Just one more tab? Sure, sure.", "Gift ideas? My lips are sealed."];
   let li = 0;
   setInterval(() => { li = (li + 1) % lines.length; document.getElementById("bubble").textContent = lines[li]; }, 3500);
+
+  // The tour: real screenshots of Corn on a loop, with a wiggle, popping kernels and Corny reacting.
+  (() => {
+    const F = [
+      { cap: "Tabs pile up.", sub: "Open a link in a tab group and it lands on the Tab Group Strip.", m: "smug", say: "Just two tabs. Innocent.", t: 2600, stop: 0 },
+      { cap: "…and up.", sub: "Each one gets a round icon on the strip.", m: "nerd", say: "Research. Obviously.", t: 2000, stop: 0 },
+      { cap: "…and up.", sub: "YouTube, Reddit, X: the usual suspects.", m: "nervous", say: "Uh. Four?", t: 2000, stop: 0 },
+      { cap: "Five deep in “Homework”.", sub: "It happens to the best of us.", m: "shock", say: "FIVE?!", t: 2600, stop: 0 },
+      { cap: "One tap to switch.", sub: "Tap an icon on the strip and you're there. No hunting.", m: "cheer", say: "Boom. Back.", t: 2800, stop: 1 },
+      { cap: "Two at once.", sub: "Menu → Split screen: two tabs, top and bottom.", m: "smug", say: "Multitasking. Sure.", t: 3200, stop: 2 },
+      { cap: "The whole group, one tap away.", sub: "Tap ^ to see every tab, save the group to the Vault or add a tab.", m: "nerd", say: "Very organised.", t: 3000, stop: 3 },
+      { cap: "Done? Flush.", sub: "One tap wipes every tab and group.", m: "nervous", say: "Someone's coming…", t: 2200, stop: 4 },
+      { cap: "Clean slate.", sub: "Your Vault, favourites and Keep List stay put.", m: "angel", say: "Phew.", t: 3400, stop: 4 },
+    ];
+    const phone = document.getElementById("tphone"), imgs = [...phone.querySelectorAll("img")];
+    const tcap = document.getElementById("tcap"), say = document.getElementById("say"), face = document.getElementById("face");
+    const peek = document.getElementById("peek"), pops = document.getElementById("pops"), vortex = document.getElementById("vortex");
+    const stops = [...document.querySelectorAll("#stops button")], stage = document.getElementById("stage");
+    const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const wiggles = [
+      [{ transform: "translateX(18px) rotate(5deg)" }, { transform: "translateX(-6px) rotate(-2deg)" }, { transform: "none" }],
+      [{ transform: "translateX(-18px) rotate(-5deg)" }, { transform: "translateX(6px) rotate(2deg)" }, { transform: "none" }],
+      [{ transform: "translateY(-16px) scale(1.03)" }, { transform: "translateY(4px) scale(.99)" }, { transform: "none" }],
+      [{ transform: "scale(.94, 1.05)" }, { transform: "scale(1.03, .97)" }, { transform: "none" }],
+    ];
+    let i = 0, timer = 0, paused = false, visible = true;
+
+    function popKernels() {
+      const r = phone.getBoundingClientRect(), s = stage.getBoundingClientRect();
+      const cx = r.left - s.left + r.width / 2, cy = r.top - s.top + r.height * 0.9;
+      for (let k = 0; k < 12; k++) {
+        const el = document.createElement("i");
+        el.className = "kern";
+        el.style.left = cx + "px"; el.style.top = cy + "px";
+        pops.appendChild(el);
+        const a = -Math.PI / 2 + (Math.random() - 0.5) * 2.4, d = 70 + Math.random() * 90;
+        const dx = Math.cos(a) * d * 1.3, dy = Math.sin(a) * d, rot = (Math.random() - 0.5) * 540;
+        el.animate([
+          { transform: "translate(0,0) scale(.3) rotate(0)", opacity: 1 },
+          { transform: `translate(${dx}px, ${dy}px) scale(1) rotate(${rot / 2}deg)`, opacity: 1, offset: 0.55 },
+          { transform: `translate(${dx * 1.15}px, ${dy + 90}px) scale(.8) rotate(${rot}deg)`, opacity: 0 },
+        ], { duration: 900 + Math.random() * 300, easing: "cubic-bezier(.2,.7,.3,1)" }).onfinish = () => el.remove();
+      }
+    }
+
+    function show(n, animate) {
+      const prev = i; i = n;
+      const f = F[n];
+      imgs.forEach((im, k) => im.classList.toggle("on", k === n));
+      tcap.querySelector("b").textContent = f.cap;
+      tcap.querySelector("span").textContent = f.sub;
+      say.textContent = f.say;
+      face.dataset.m = f.m;
+      stops.forEach((b, k) => b.setAttribute("aria-current", String(k === f.stop)));
+      if (!animate) return;
+      if (n === 8 && prev === 7) {
+        imgs[7].classList.add("on");
+        imgs[7].animate([{ transform: "none", opacity: 1 }, { transform: "rotate(-260deg) scale(.04)", opacity: 0 }],
+          { duration: 1000, easing: "cubic-bezier(.55,0,.75,.1)" }).onfinish = () => imgs[7].classList.remove("on");
+        vortex.animate([{ opacity: 0, transform: "rotate(0) scale(.5)" }, { opacity: .9, offset: .3 }, { opacity: 0, transform: "rotate(-540deg) scale(1.2)" }],
+          { duration: 1200, easing: "ease-out" });
+      } else {
+        phone.animate(wiggles[n % wiggles.length], { duration: 650, easing: "cubic-bezier(.3,1.4,.5,1)" });
+      }
+      if (n <= 4) imgs[n].animate([{ transform: "scale(1)" }, { transform: "scale(1.05)" }], { duration: f.t, easing: "ease-out", fill: "forwards" });
+      tcap.animate([{ transform: "scale(.6) rotate(-4deg)", opacity: 0 }, { transform: "scale(1.08) rotate(1deg)", opacity: 1, offset: .6 }, { transform: "none", opacity: 1 }],
+        { duration: 520, easing: "ease-out" });
+      peek.animate([{ transform: "translate(30px, 10px) rotate(14deg)", opacity: 0 }, { transform: "translate(-4px, -8px) rotate(-6deg)", opacity: 1, offset: .6 }, { transform: "none", opacity: 1 }],
+        { duration: 600, easing: "cubic-bezier(.3,1.4,.5,1)" });
+      popKernels();
+    }
+
+    function tick() {
+      clearTimeout(timer);
+      if (still || paused || !visible) return;
+      timer = setTimeout(() => { show((i + 1) % F.length, true); tick(); }, F[i].t);
+    }
+
+    stops.forEach(b => b.addEventListener("click", () => { show(+b.dataset.go, !still); tick(); }));
+    stage.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") { paused = true; tick(); } });
+    stage.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") { paused = false; tick(); } });
+    let x0 = null;
+    stage.addEventListener("touchstart", e => { x0 = e.touches[0].clientX; paused = true; tick(); }, { passive: true });
+    stage.addEventListener("touchend", e => {
+      const dx = x0 == null ? 0 : e.changedTouches[0].clientX - x0; x0 = null;
+      if (Math.abs(dx) > 40) show((i + (dx < 0 ? 1 : F.length - 1)) % F.length, !still);
+      paused = false; tick();
+    }, { passive: true });
+    new IntersectionObserver(es => { visible = es[0].isIntersecting; tick(); }, { threshold: 0.25 }).observe(stage);
+    document.addEventListener("visibilitychange", () => { visible = !document.hidden; tick(); });
+    if (still) show(5, false); else tick();
+  })();
 
   // The Flush demo: real screenshots of Corn, before and right after a Flush.
   const shot = document.getElementById("phone"), cap = document.getElementById("shotCap");
@@ -319,8 +488,8 @@
     flushed = !flushed;
     shot.classList.toggle("flushing", flushed);
     label.textContent = flushed ? "Browse again" : "Flush";
-    cap.textContent = flushed ? "Real screenshot: right after the Flush" : "Real screenshot: 9 tabs open";
-    hint.textContent = flushed ? "Tabs gone. Favourites and Vault untouched. That's the whole idea." : "Corn asks first, unless you tell it not to.";
+    cap.textContent = flushed ? "Real screenshot: right after the Flush" : "Real screenshot: 7 tabs, 1 “Homework” group";
+    hint.textContent = flushed ? "“Homework” gone. Favourites and Vault untouched. That's the whole idea." : "Corn asks first, unless you tell it not to.";
   });
 </script>
 </body>
