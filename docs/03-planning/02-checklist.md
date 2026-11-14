@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-14, 11:18 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-15, 01:14 IST
 
 The single list of what's done, what's next and who owns it. Product decisions live in the [decision log](../01-product/02-decision-log.md); this file tracks **work**.
 
@@ -239,6 +239,8 @@ The founder has been testing on a real phone and reports it working well. These 
 |---|---|---|---|
 | [x] | Fixed 2026-11-14 (`ui/SiteLetter.kt`, 4 unit tests; seen on the emulator: the Biology Collection's en.wikipedia.org rows show W). Was: letter icons use the host's first letter, so en.wikipedia.org shows "E" (Vault rows, suggestions, tab cards). Skip a leading language or "m." subdomain (or use the site name) so it shows "W" | Claude | Wikipedia shows W everywhere |
 | [ ] | **Later, if needed: AdGuard's list** (uBlock Origin flavour, includes EasyList) in place of EasyList, **download-only** (GPL-3.0; never in the APK's starter copy). Measured 2026-11-14 on the Mac: engine 3.9 → 7.7 MB stored, +25 MB memory, ~4 µs per request; it blocks the video-ad file and adds the pre-roll cookie rules EasyList lacks. Still to measure on a phone before adding. Founder: skip for now | Claude | Decided |
+| [ ] | **Shield switch vs Keep List (found 2026-11-15):** the page's "Stay logged in after Flush" switch checks the exact host (`ui/Sheets.kt`: `host in keepList()`), but the Flush keeps subdomains too (`DataClearing.isKept`). So with wikipedia.org kept, en.wikipedia.org shows the switch off while its cookies do survive. Use the same rule (isKept) for the switch | Claude | The switch is on wherever the Flush keeps the site |
+| [ ] | **Edit a Vault link's tags (found 2026-11-15):** there's no way to change tags on a saved link; saving it again makes a second copy | Founder | Decided (edit sheet, or Save updates the existing link) |
 
 ## Later: website and desktop (added 2026-11-13)
 
