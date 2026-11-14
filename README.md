@@ -4,6 +4,8 @@
 
 Every session can start empty, one tap flushes it, and a locked local Vault keeps only what you choose to save. Ads, trackers, pop-ups and redirect abuse are blocked by default, and nothing about your browsing leaves your device.
 
+**Website and download:** https://ayush5144.github.io/corn/
+
 ## Status
 
 Early build. The Rust core and an Android proof-of-concept exist; the product is still being shaped. The product is being shaped through Q&A rounds, recorded in the [decision log](docs/01-product/02-decision-log.md).

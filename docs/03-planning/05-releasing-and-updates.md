@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-13 · **Last updated:** 2026-11-14, 00:01 IST
+> **Created:** 2026-11-13 · **Last updated:** 2026-11-14, 10:55 IST
 
 How Corn gets onto people's phones, how updates reach them, and what has to be in place first. Written for the founder in plain language; the decisions are in the decision log (Round 24).
 
@@ -88,6 +88,14 @@ How it's wired: `android/app/build.gradle.kts` reads `CORN_RELEASE_STORE_FILE`, 
 | **0.2.4** | 6 | Corn's release key | [GitHub pre-release v0.2.4](https://github.com/ayush5144/corn/releases/tag/v0.2.4) | 2026-11-14: split screen as a pair (other tabs open full screen, the pair comes back). Installs over 0.2.1–0.2.3 keeping data |
 
 Branches: `main` is Corn (releases are tagged from it); the parked Flush rename lives on `flush`.
+
+## Landing page
+
+**https://ayush5144.github.io/corn/**: a one-page site for links in bios and posts (`site/index.html`, published by `.github/workflows/pages.yml` whenever `site/` changes on `main`).
+
+- Its Download buttons ask GitHub for the newest release with an APK and link straight to that file. GitHub's own "latest release" link (`/releases/latest`) doesn't work for Corn yet: every release so far is a **pre-release**, and GitHub skips those, so that link only opens the releases list.
+- No trackers, no analytics, fonts and images served from the site itself. The one outside request is to GitHub's API for the newest release.
+- Link previews (LinkedIn and others) use `site/assets/og.png`.
 
 ## Installing an APK on a phone (for testers)
 

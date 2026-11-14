@@ -301,3 +301,4 @@
 - Released 0.2.4 (versionCode 6): Releases table in `docs/03-planning/05-releasing-and-updates.md`.
 - Features: Tab Groups and Vault verified on the emulator (✅ with evidence); checklist: letter-icon "E" for en.wikipedia.org.
 - Letter icons: `ui/SiteLetter.kt` (main-name letter: en.wikipedia.org → W) used by `LetterIcon` and the favourite tile fallback; checklist ticked, features note updated.
+- Landing page: `site/` (one page, brand fonts and Corny, Flush demo, newest-APK button) published to GitHub Pages by `.github/workflows/pages.yml`; releasing doc "Landing page" section; README link.
