@@ -109,7 +109,7 @@
   .stops .ink { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--ink); clip-path: inset(0 100% 0 0); }
   .stops button[aria-current="true"] { border-color: var(--corn); color: var(--text); }
   .stage { position: relative; width: min(390px, 100%); justify-self: center; padding: 0 0 8px; }
-  .tphone { position: relative; width: min(270px, 66vw); margin: 0 auto; aspect-ratio: 540 / 1200; border-radius: 34px; overflow: hidden; border: 1px solid var(--line); background: #0F0E0B; box-shadow: 0 24px 60px rgba(0, 0, 0, .35); }
+  .tphone { position: relative; width: 100%; aspect-ratio: 540 / 1200; border-radius: 34px; overflow: hidden; border: 1px solid var(--line); background: #0F0E0B; box-shadow: 0 24px 60px rgba(0, 0, 0, .35); }
   .tphone img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .3s ease; }
   .tphone img.on { opacity: 1; }
   .vortex { position: absolute; left: 50%; top: 55%; width: 200%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; opacity: 0; pointer-events: none;
@@ -117,7 +117,8 @@
     -webkit-mask-image: radial-gradient(circle, #000 6%, rgba(0,0,0,.55) 35%, transparent 62%); mask-image: radial-gradient(circle, #000 6%, rgba(0,0,0,.55) 35%, transparent 62%); }
   .pops { position: absolute; inset: 0; pointer-events: none; }
   .kern { position: absolute; width: 13px; height: 15px; border-radius: 45% 45% 40% 40%; background: radial-gradient(circle at 35% 30%, #fff3b8, #FFC83D 55%, #d99400); box-shadow: inset -2px -3px 0 rgba(120, 70, 0, .35); }
-  .peek { position: absolute; right: -24px; bottom: 34%; width: 104px; }
+  .phwrap { position: relative; width: min(270px, 66vw); margin: 0 auto; }
+  .peek { position: absolute; right: -84px; bottom: 30%; width: 104px; }
   .peek .cob { position: relative; width: 104px; aspect-ratio: 1; }
   .peek .cob img, .peek .cob svg { position: absolute; inset: 0; width: 100%; height: 100%; }
   .face g { display: none; }
@@ -169,10 +170,14 @@
     #install .wrap > .eyebrow, #install .wrap > h2, #install .wrap > .sub { text-align: center; }
     .lede, .sub { margin-left: auto; margin-right: auto; }
     .ctas, .fine, .more { justify-content: center; }
-    .peek { position: relative; right: auto; bottom: auto; width: auto; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 14px; }
-    .peek .cob { width: 72px; flex: none; }
-    .say { position: static; order: 2; margin: 0; max-width: none; white-space: nowrap; border-radius: 14px 14px 14px 4px; }
-    .tcap { margin-top: 8px; }
+    .stage { display: flex; flex-direction: column; align-items: center; }
+    .tcap { order: -1; margin: 0 auto 12px; min-height: 4.6em; }
+    .tcap b { font-size: 22px; }
+    .phwrap { width: min(66vw, 24.5svh); margin-top: 44px; }
+    .peek { top: -30px; right: -24px; bottom: auto; width: 62px; }
+    .peek .cob { width: 62px; }
+    .say { right: 58px; bottom: auto; top: -8px; margin: 0; max-width: none; white-space: nowrap; border-radius: 14px 14px 4px 14px; }
+    .ppwrap { margin-top: 14px; }
     .demo { gap: 36px; }
     .shotwrap { margin: 0; }
     .demo-copy { padding-top: 0; }
@@ -235,6 +240,7 @@
 <section id="tour">
   <div class="wrap tour">
     <div class="stage" id="stage">
+      <div class="phwrap">
       <div class="tphone" id="tphone" role="img" aria-label="Real screenshots of Corn: tab groups, the Tab Group Strip, split screen and a Flush">
         <img src="assets/screens/strip-2.webp" width="540" height="1200" loading="lazy" decoding="async" alt="Corn showing r/OnePiece on Reddit, with the Tab Group Strip at the bottom holding 2 tabs" class="on">
         <img src="assets/screens/strip-3.webp" width="540" height="1200" loading="lazy" decoding="async" alt="A YouTube search for how to fold a fitted sheet; the Tab Group Strip now holds 3 tabs">
@@ -247,7 +253,6 @@
         <img src="assets/screens/after-flush.webp" width="540" height="1200" loading="lazy" decoding="async" alt="Right after a Flush: a fresh new tab saying Squeaky clean. Like it never happened.">
         <div class="vortex" id="vortex"></div>
       </div>
-      <div class="pops" id="pops"></div>
       <div class="peek" id="peek" aria-hidden="true">
         <div class="say" id="say">Just two tabs. Innocent.</div>
         <div class="cob">
@@ -263,6 +268,8 @@
           </svg>
         </div>
       </div>
+      </div>
+      <div class="pops" id="pops"></div>
       <p class="tcap" id="tcap" aria-live="polite"><b>Tabs pile up.</b><span>Open a link in a tab group and it lands on the Tab Group Strip.</span></p>
       <div class="ppwrap"><button type="button" class="pp" id="tourPlay" aria-label="Pause the tour" aria-pressed="false"><svg class="i-pause" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg><svg class="i-play" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="display:none"><path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button></div>
     </div>
