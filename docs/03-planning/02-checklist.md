@@ -2,7 +2,7 @@
 
 > **For developers and AI Agents-Claude and Codex etc.** This file helps developers understand the code. The code is always the source of truth: if this file and the code disagree, trust the code. This file may be out of date.
 >
-> **Created:** 2026-11-01 · **Last updated:** 2026-11-14, 00:43 IST
+> **Created:** 2026-11-01 · **Last updated:** 2026-11-14, 11:18 IST
 
 The single list of what's done, what's next and who owns it. Product decisions live in the [decision log](../01-product/02-decision-log.md); this file tracks **work**.
 
@@ -238,6 +238,7 @@ The founder has been testing on a real phone and reports it working well. These 
 | ✓ | Task | Owner | Done when |
 |---|---|---|---|
 | [x] | Fixed 2026-11-14 (`ui/SiteLetter.kt`, 4 unit tests; seen on the emulator: the Biology Collection's en.wikipedia.org rows show W). Was: letter icons use the host's first letter, so en.wikipedia.org shows "E" (Vault rows, suggestions, tab cards). Skip a leading language or "m." subdomain (or use the site name) so it shows "W" | Claude | Wikipedia shows W everywhere |
+| [ ] | **Later, if needed: AdGuard's list** (uBlock Origin flavour, includes EasyList) in place of EasyList, **download-only** (GPL-3.0; never in the APK's starter copy). Measured 2026-11-14 on the Mac: engine 3.9 → 7.7 MB stored, +25 MB memory, ~4 µs per request; it blocks the video-ad file and adds the pre-roll cookie rules EasyList lacks. Still to measure on a phone before adding. Founder: skip for now | Claude | Decided |
 
 ## Later: website and desktop (added 2026-11-13)
 
