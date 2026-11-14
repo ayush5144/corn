@@ -18,7 +18,7 @@ Corn is a free, private, mobile-first browser for adults. Start with `README.md`
 | Logo / brand explorations and the agents that made them | `mockups/brand-compare.html`, `design-agents/`, `.claude/agents/` |
 | Releasing: signing key, version numbers, GitHub releases, updates | `docs/03-planning/05-releasing-and-updates.md`; `scripts/create-release-key.sh`, `scripts/release.sh <version>`. The key and its password live only on the founder's Mac (`~/corn-release.jks`, `~/.gradle/gradle.properties`): never in the repo |
 | Emulator QA suite (run before calling a fix done) | `scripts/qa-run.sh` (`--list` for checks), pages in `qa/pages/`, how-to in `qa/README.md` |
-| Landing page (https://ayush5144.github.io/corn/) | `site/` (published by `.github/workflows/pages.yml`); agent brief `.claude/agents/corn-site-designer.md`; tone decisions in the decision log |
+| Landing page (https://cornbrowser.xyz/) | `site/` (published by `.github/workflows/pages.yml`); agent brief `.claude/agents/corn-site-designer.md`; tone decisions in the decision log |
 | Engineering agents (scriptlets, QA suite, Vault export, Favourites) | `.claude/agents/corn-scriptlet-engineer.md`, `.claude/agents/corn-qa-engineer.md`, `.claude/agents/corn-export-engineer.md`, `.claude/agents/corn-favourites-engineer.md` |
 
 ## Rules

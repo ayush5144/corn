@@ -92,7 +92,9 @@ Branches: `main` is Corn (releases are tagged from it); the parked Flush rename 
 
 ## Landing page
 
-**https://ayush5144.github.io/corn/**: a one-page site for links in bios and posts (`site/index.html`, published by `.github/workflows/pages.yml` whenever `site/` changes on `main`).
+**Domain:** `cornbrowser.xyz` (registered at Spaceship, 2026-11-14). DNS at Spaceship: four A records for `@` → GitHub Pages (185.199.108.153, .109, .110, .111) and a CNAME `www` → `ayush5144.github.io`; the custom domain is set in the repo's Pages settings with HTTPS enforced. The old `ayush5144.github.io/corn/` address redirects to it. `site/robots.txt` and `site/sitemap.xml` are for search engines (Search Console verified by a DNS TXT record, no script on the page).
+
+**https://cornbrowser.xyz/**: a one-page site for links in bios and posts (`site/index.html`, published by `.github/workflows/pages.yml` whenever `site/` changes on `main`).
 
 - Its Download buttons ask GitHub for the newest release with an APK and link straight to that file. GitHub's own "latest release" link (`/releases/latest`) doesn't work for Corn yet: every release so far is a **pre-release**, and GitHub skips those, so that link only opens the releases list.
 - No trackers, no analytics, fonts and images served from the site itself. The one outside request is to GitHub's API for the newest release.
