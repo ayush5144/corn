@@ -57,7 +57,7 @@
   .rot .alt { display: none; font-size: clamp(42px, 7vw, 76px); line-height: 1.0; font-weight: 800; }
   html.rot-on .rot .alt { display: block; }
   html.rot-on .rot > * { transition: opacity .5s ease, transform .5s cubic-bezier(.2, .7, .3, 1); }
-  html.rot-on .rot h1 { opacity: 0; transform: translateY(28px); }
+  html.rot-on .rot > * { opacity: 0; transform: translateY(28px); } /* both lines start below, hidden; .on slides one in */
   html.rot-on .rot > .on { opacity: 1; transform: none; }
   html.rot-on .rot > .out { opacity: 0; transform: translateY(-28px); }
   .lede { font-size: 19px; color: var(--muted); max-width: 34ch; margin: 0 0 28px; }
@@ -196,7 +196,7 @@
     .say { right: 58px; bottom: auto; top: -8px; margin: 0; max-width: none; white-space: nowrap; border-radius: 14px 14px 4px 14px; }
     .ppwrap { margin-top: 26px; width: 100%; }
     .tour .eyebrow { display: none; }
-    .rot .alt { max-width: 10em; justify-self: center; }
+    .rot .alt { justify-self: center; }
     .pp-top { display: none !important; }
     .demo { gap: 36px; }
     .shotwrap { margin: 0; }
@@ -208,7 +208,6 @@
     .navlinks .opt { display: none; }
     .promise { padding: 24px; }
   }
-  @media (max-width: 413px) { .rot .alt { max-width: 7em; } }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
   }
@@ -250,7 +249,7 @@ if (!matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentEl
     <div>
       <span class="kicker"><span class="dot"></span>Free · Private · Android · Beta</span>
       <div class="rot" id="rot">
-        <p class="display alt" aria-hidden="true">A browser for tabs you'd <span class="y">rather not explain.</span></p>
+        <p class="display alt" aria-hidden="true">A browser<br>for tabs<br>you'd <span class="y">rather<br>not explain.</span></p>
         <h1 class="display">Browse.<br>Save what matters.<br><span class="y">Flush the rest.</span></h1>
       </div>
       <p class="lede">Your browser has seen things. One tap flushes them: tabs, cookies, history. Your <b>PIN-locked Vault</b> keeps the good stuff. Tab groups and split screen for multitasking ;) Ads and trackers blocked. <b>Free, open source, no account.</b></p>
