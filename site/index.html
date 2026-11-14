@@ -201,7 +201,16 @@
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
   }
+  /* scroll: gentle snap + reveal (hidden only once JS has opted in; never with reduced motion) */
+  html { scroll-snap-type: y proximity; }
+  body > .wrap:first-of-type, section { scroll-snap-align: start; }
+  html.rv-on section :is(.eyebrow, h2, .sub, .stops, .stage, .shotwrap, .card, .chip, .promise li, .step, .final > *) { opacity: 0; transform: translateY(20px); }
+  html.rv-on section :is(.eyebrow, h2, .sub, .stops, .stage, .shotwrap, .card, .chip, .promise li, .step, .final > *).in { opacity: 1; transform: none; transition: opacity .5s ease, transform .5s cubic-bezier(.2, .7, .3, 1); }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-snap-type: none; }
+  }
 </style>
+<script>if (!matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) document.documentElement.classList.add("rv-on");</script>
 </head>
 <body>
 <!-- Icons: the app's own (android/app/src/main/java/app/cornbrowser/ui/Icons.kt), same paths, 1.9 stroke, round caps. -->
@@ -402,6 +411,22 @@
   </div>
 </footer>
 
+<script>
+  // Reveal on scroll: each section's pieces ease in once, text first, then visuals, lightly staggered.
+  (() => {
+    if (!document.documentElement.classList.contains("rv-on")) return;
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (!e.isIntersecting) return;
+      e.target.classList.add("in"); io.unobserve(e.target);
+    }), { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
+    document.querySelectorAll("section").forEach(sec => {
+      [...sec.querySelectorAll(".eyebrow, h2, .sub, .stops, .stage, .shotwrap, .card, .chip, .promise li, .step, .final > *")].forEach((el, k) => {
+        el.style.transitionDelay = Math.min(k * 70, 490) + "ms";
+        io.observe(el);
+      });
+    });
+  })();
+</script>
 <script>
   // Newest APK: ask GitHub for the latest release (beta builds are pre-releases, which GitHub's
   // "latest" link skips). If the request fails, the buttons keep pointing at the releases page.
