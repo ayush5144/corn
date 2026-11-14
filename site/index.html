@@ -50,7 +50,16 @@
   .kicker { display: inline-flex; gap: 8px; align-items: center; font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; }
   .kicker .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--leaf); }
   h1 { font-size: clamp(42px, 7vw, 76px); line-height: 1.0; margin: 18px 0 18px; font-weight: 800; }
-  h1 .y, h2 .y { color: var(--accent); }
+  h1 .y, h2 .y, .alt .y { color: var(--accent); }
+  /* hero headline: two lines share one grid cell, so the taller one sets the height and nothing below moves */
+  .rot { display: grid; margin: 18px 0; }
+  .rot > * { grid-area: 1 / 1; margin: 0; }
+  .rot .alt { display: none; font-size: clamp(42px, 7vw, 76px); line-height: 1.0; font-weight: 800; }
+  html.rot-on .rot .alt { display: block; }
+  html.rot-on .rot > * { transition: opacity .5s ease, transform .5s cubic-bezier(.2, .7, .3, 1); }
+  html.rot-on .rot h1 { opacity: 0; transform: translateY(28px); }
+  html.rot-on .rot > .on { opacity: 1; transform: none; }
+  html.rot-on .rot > .out { opacity: 0; transform: translateY(-28px); }
   .lede { font-size: 19px; color: var(--muted); max-width: 34ch; margin: 0 0 28px; }
   .lede b { color: var(--text); font-weight: 600; }
   .ctas { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
@@ -210,7 +219,8 @@
     html { scroll-snap-type: none; }
   }
 </style>
-<script>if (!matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) document.documentElement.classList.add("rv-on");</script>
+<script>if (!matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) document.documentElement.classList.add("rv-on");
+if (!matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("rot-on");</script>
 </head>
 <body>
 <!-- Icons: the app's own (android/app/src/main/java/app/cornbrowser/ui/Icons.kt), same paths, 1.9 stroke, round caps. -->
@@ -237,8 +247,11 @@
   <header class="hero" id="top">
     <div>
       <span class="kicker"><span class="dot"></span>Free · Android · Beta</span>
-      <h1 class="display">Browse.<br>Save what matters.<br><span class="y">Flush the rest.</span></h1>
-      <p class="lede">Corn is a <b>free, private browser</b>. One tap wipes your session, a <b>PIN-locked Vault</b> keeps only what you choose, and ads, trackers and pop-ups are blocked before they load.</p>
+      <div class="rot" id="rot">
+        <p class="display alt" aria-hidden="true">A private browser for tabs you'd <span class="y">rather not explain.</span></p>
+        <h1 class="display">Browse.<br>Save what matters.<br><span class="y">Flush the rest.</span></h1>
+      </div>
+      <p class="lede">Your browser has seen things. One tap flushes them: tabs, cookies, history. Your <b>PIN-locked Vault</b> keeps the good stuff. Tab groups and split screen for multitasking ;) Ads and trackers blocked. <b>Free, open source, no account.</b></p>
       <div class="ctas">
         <a class="btn btn-corn download" href="https://github.com/ayush5144/corn/releases">
           <svg width="22" height="22" aria-hidden="true"><use href="#i-download"/></svg>
@@ -411,6 +424,25 @@
   </div>
 </footer>
 
+<script>
+  // Hero headline: alternate a decorative line with the real <h1>; paused off screen and in background tabs.
+  (() => {
+    if (!document.documentElement.classList.contains("rot-on")) return;
+    const box = document.getElementById("rot"), a = box.querySelector(".alt"), b = box.querySelector("h1");
+    let showA = true, t = 0, vis = true;
+    a.classList.add("on");
+    function swap() {
+      const out = showA ? a : b, inn = showA ? b : a;
+      out.classList.remove("on"); out.classList.add("out");
+      inn.style.transition = "none"; inn.classList.remove("out", "on"); void inn.offsetWidth; inn.style.transition = "";
+      inn.classList.add("on");
+      showA = !showA; schedule();
+    }
+    function schedule() { clearTimeout(t); if (vis && !document.hidden) t = setTimeout(swap, showA ? 4000 : 5000); }
+    new IntersectionObserver(es => { vis = es[0].isIntersecting; schedule(); }).observe(box);
+    document.addEventListener("visibilitychange", schedule);
+  })();
+</script>
 <script>
   // Reveal on scroll: each section's pieces ease in once, text first, then visuals, lightly staggered.
   (() => {
