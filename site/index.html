@@ -75,23 +75,14 @@
 
   /* flush demo */
   .demo { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: center; }
-  .phone { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 32px; padding: 18px; min-height: 420px; overflow: hidden; }
-  .phone .bar { height: 40px; border-radius: 16px; background: var(--surface2); display: flex; align-items: center; padding: 0 14px; color: var(--muted); font-size: 14px; margin-bottom: 16px; }
-  .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .tab { background: var(--bg); border: 1px solid var(--line); border-radius: 16px; padding: 12px; min-height: 92px; font-size: 13.5px; transition: transform .9s cubic-bezier(.5, 0, .75, 0), opacity .9s ease; }
-  .tab .ic { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 13px; margin-bottom: 8px; }
-  .tab .t { font-weight: 600; }
-  .tab .h { color: var(--muted); font-size: 12px; }
-  .phone.flushing .tab { transform: translate(var(--dx), 260px) rotate(var(--rot)) scale(.2); opacity: 0; }
-  .vaultnote { margin-top: 14px; display: flex; gap: 10px; align-items: center; font-size: 13.5px; color: var(--muted); }
-  .vaultnote .lock { width: 26px; height: 26px; border-radius: 8px; background: var(--surface2); display: grid; place-items: center; }
-  .after { position: absolute; inset: 70px 18px 18px; display: grid; place-items: center; text-align: center; opacity: 0; transition: opacity .5s ease .7s; pointer-events: none; }
-  .phone.flushed .after { opacity: 1; }
-  .after img { width: 74px; height: 74px; }
-  .after p { font-family: "Bricolage", system-ui, sans-serif; font-weight: 700; font-size: 21px; color: var(--accent); margin: 10px 0 0; line-height: 1.25; }
-  .swirl { position: absolute; left: 50%; bottom: 40px; width: 120px; height: 120px; margin-left: -60px; opacity: 0; pointer-events: none; }
-  .phone.flushing .swirl { animation: swirl 1.1s ease-out; }
-  @keyframes swirl { 0% { opacity: 0; transform: rotate(0) scale(.4); } 30% { opacity: .9; } 100% { opacity: 0; transform: rotate(-540deg) scale(1.2); } }
+  .shot { position: relative; justify-self: center; width: min(320px, 82vw); aspect-ratio: 540 / 1200; margin: 0; border-radius: 34px; overflow: hidden; border: 1px solid var(--line); background: #0F0E0B; box-shadow: 0 24px 60px rgba(0, 0, 0, .35); }
+  .shot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .shot .before { transform-origin: 50% 62%; transition: transform 1s cubic-bezier(.55, 0, .75, .1), opacity .9s ease, filter .9s ease; }
+  .shot.flushing .before { transform: rotate(-260deg) scale(.04); opacity: 0; filter: blur(2px); }
+  .shot figcaption { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); background: rgba(15, 14, 11, .82); color: #F5F0E1; font-size: 12.5px; font-weight: 600; padding: 6px 12px; border-radius: 999px; white-space: nowrap; }
+  .swirl { position: absolute; left: 50%; top: 62%; width: 120px; height: 120px; margin: -60px 0 0 -60px; color: #FFC83D; opacity: 0; pointer-events: none; }
+  .shot.flushing .swirl { animation: swirl 1.1s ease-out; }
+  @keyframes swirl { 0% { opacity: 0; transform: rotate(0) scale(.4); } 30% { opacity: .95; } 100% { opacity: 0; transform: rotate(-540deg) scale(1.3); } }
   .flushbtn { display: inline-flex; align-items: center; gap: 12px; padding: 18px 28px; border-radius: 999px; font-size: 20px; }
   .flushbtn svg { width: 26px; height: 26px; }
   .hint { color: var(--muted); font-size: 14px; margin-top: 12px; }
@@ -100,7 +91,7 @@
   .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
   .card { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 24px; }
   .card .badge { width: 46px; height: 46px; border-radius: 14px; background: var(--surface2); display: grid; place-items: center; margin-bottom: 16px; }
-  .card .badge svg { width: 24px; height: 24px; stroke: var(--accent); }
+  .card .badge svg { width: 24px; height: 24px; color: var(--accent); }
   .card h3 { font-family: "Bricolage", system-ui, sans-serif; font-size: 22px; margin: 0 0 8px; letter-spacing: -0.01em; }
   .card p { margin: 0; color: var(--muted); font-size: 15.5px; }
   .more { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
@@ -144,6 +135,16 @@
 </style>
 </head>
 <body>
+<!-- Icons: the app's own (android/app/src/main/java/app/cornbrowser/ui/Icons.kt), same paths, 1.9 stroke, round caps. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-flush" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12.00 3.95 L13.27 4.26 L14.43 4.77 L15.47 5.44 L16.36 6.26 L17.08 7.18 L17.61 8.18 L17.97 9.23 L18.13 10.29 L18.12 11.32 L17.94 12.31 L17.60 13.22 L17.14 14.03 L16.56 14.73 L15.90 15.29 L15.18 15.72 L14.43 16.01 L13.67 16.15 L12.93 16.16 L12.23 16.05 L11.60 15.82 L11.04 15.50 L10.58 15.11 L10.21 14.66 L9.95 14.19"/><path d="M18.97 16.02 L18.07 16.97 L17.05 17.72 L15.94 18.28 L14.79 18.65 L13.63 18.80 L12.50 18.77 L11.42 18.55 L10.42 18.17 L9.53 17.64 L8.76 16.99 L8.14 16.24 L7.67 15.43 L7.36 14.58 L7.20 13.73 L7.19 12.89 L7.32 12.10 L7.57 11.37 L7.93 10.73 L8.38 10.18 L8.89 9.74 L9.45 9.42 L10.02 9.21 L10.59 9.12 L11.13 9.13"/><path d="M5.03 16.03 L4.67 14.77 L4.52 13.51 L4.59 12.27 L4.85 11.10 L5.29 10.01 L5.89 9.05 L6.62 8.22 L7.45 7.55 L8.36 7.04 L9.30 6.70 L10.26 6.54 L11.19 6.53 L12.08 6.69 L12.90 6.98 L13.63 7.39 L14.26 7.90 L14.76 8.48 L15.14 9.11 L15.39 9.78 L15.51 10.44 L15.51 11.08 L15.41 11.68 L15.20 12.22 L14.92 12.69"/></g><path fill="currentColor" d="M13.3 12a1.3 1.3 0 1 1-2.6 0a1.3 1.3 0 1 1 2.6 0z"/></symbol>
+  <symbol id="i-vault" viewBox="0 0 24 24"><g transform="translate(12 12) scale(0.8944) translate(-12 -12)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path stroke-width="2.124" d="M7 3.5h10a3.5 3.5 0 0 1 3.5 3.5v10a3.5 3.5 0 0 1-3.5 3.5H7a3.5 3.5 0 0 1-3.5-3.5V7A3.5 3.5 0 0 1 7 3.5z"/><path stroke-width="1.789" d="M3.5 7.4H2.3V10.2H3.5M3.5 13.8H2.3V16.6H3.5"/><path stroke-width="2.124" d="M13.8 10.2a1.8 1.8 0 1 1-3.6 0 1.8 1.8 0 0 1 3.6 0zM12 12v3.4"/></g></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.4-7.5 9.5-4.3-1.1-7.5-4.9-7.5-9.5V6z"/><path d="M8.8 12.2l2.2 2.2 4.3-4.6"/></g></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="M7 10.5l5 5 5-5"/><path d="M5 20h14"/></g></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2z"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></g></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M5 12.5l4.5 4.5L19 7"/></symbol>
+</svg>
 <div class="wrap">
   <nav>
     <a class="brand display" href="#top" aria-label="Corn home"><img src="assets/icon-192.png" alt="">Corn</a>
@@ -162,7 +163,7 @@
       <p class="lede">Corn is a <b>free, private browser</b>. One tap wipes your session, a <b>PIN-locked Vault</b> keeps only what you choose, and ads, trackers and pop-ups are blocked before they load.</p>
       <div class="ctas">
         <a class="btn btn-corn download" href="https://github.com/ayush5144/corn/releases">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg>
+          <svg width="22" height="22" aria-hidden="true"><use href="#i-download"/></svg>
           <span class="dl-label">Download for Android</span>
         </a>
         <a class="btn btn-ghost" href="https://github.com/ayush5144/corn">View the code</a>
@@ -184,18 +185,17 @@
       <h2 class="display">One tap.<br>Down the drain.</h2>
       <p class="sub">Tabs, groups, cookies, cache and history: gone. Your Vault and the sites you keep logged in stay put. Go on, try it.</p>
       <button class="btn btn-corn flushbtn" id="flushBtn" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 12m-1.6 0a1.6 1.6 0 1 0 3.2 0a1.6 1.6 0 1 0-3.2 0"/><path d="M12 3.5c4.7 0 8.5 3.8 8.5 8.5"/><path d="M4.6 16.3A8.5 8.5 0 0 1 9 4.1"/><path d="M19.2 16.6A8.5 8.5 0 0 1 7.6 19.4"/></svg>
+        <svg aria-hidden="true"><use href="#i-flush"/></svg>
         <span id="flushLabel">Flush</span>
       </button>
       <p class="hint" id="flushHint">Corn asks first, unless you tell it not to.</p>
     </div>
-    <div class="phone" id="phone" aria-live="polite">
-      <div class="bar">Search or type a site</div>
-      <div class="tabs" id="tabs"></div>
-      <div class="vaultnote"><span class="lock">🔒</span>Vault: 12 saved links, untouched</div>
-      <svg class="swirl" viewBox="0 0 24 24" fill="none" stroke="#FFC83D" stroke-width="1.6" stroke-linecap="round"><path d="M12 3.5c4.7 0 8.5 3.8 8.5 8.5"/><path d="M4.6 16.3A8.5 8.5 0 0 1 9 4.1"/><path d="M19.2 16.6A8.5 8.5 0 0 1 7.6 19.4"/></svg>
-      <div class="after"><div><img src="assets/icon-192.png" alt=""><p id="quip">All gone.<br>Fresh as a new cob.</p></div></div>
-    </div>
+    <figure class="shot" id="phone" aria-live="polite">
+      <img class="after" src="assets/screens/after-flush.jpg" width="540" height="1200" loading="lazy" alt="Corn right after a Flush: a fresh new tab saying 'Flushed. Nobody saw nothing.', with the favourites and Vault still there">
+      <img class="before" src="assets/screens/before-flush.jpg" width="540" height="1200" loading="lazy" alt="Corn's Tabs screen before a Flush: a Biology tab group and four other tabs">
+      <svg class="swirl" aria-hidden="true"><use href="#i-flush"/></svg>
+      <figcaption id="shotCap">Real screen: 9 tabs open</figcaption>
+    </figure>
   </div>
 </section>
 
@@ -206,17 +206,17 @@
     <p class="sub">Everything you'd expect from a browser, minus the bits that follow you around.</p>
     <div class="grid3">
       <div class="card">
-        <div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3.5" width="16" height="17" rx="3"/><path d="M13.8 10.2a1.8 1.8 0 1 1-3.6 0 1.8 1.8 0 0 1 3.6 0zM12 12v3.4"/></svg></div>
+        <div class="badge"><svg aria-hidden="true"><use href="#i-vault"/></svg></div>
         <h3>The Vault</h3>
         <p>Save links into Collections with tags, behind your PIN. Passwords live there too. It survives every Flush, and you can export it any time.</p>
       </div>
       <div class="card">
-        <div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.6-3 8.4-7 10-4-1.6-7-5.4-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <div class="badge"><svg aria-hidden="true"><use href="#i-shield"/></svg></div>
         <h3>Blocks the junk</h3>
         <p>Ads, trackers, pop-ups and sneaky redirects are stopped before they load, using Brave's open-source blocking engine and public filter lists.</p>
       </div>
       <div class="card">
-        <div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></div>
+        <div class="badge"><svg aria-hidden="true"><use href="#i-heart"/></svg></div>
         <h3>Keep what you love</h3>
         <p>Favourites sit on the new tab. Sites on your Keep List stay logged in after a Flush. Everything else starts fresh.</p>
       </div>
@@ -241,9 +241,9 @@
         <p class="sub" style="margin:0">No account, no ads, no tracking. Corn is free and open source, kept alive by donations, not by your data.</p>
       </div>
       <ul>
-        <li><span class="ok">✓</span><span>No account, no sign-up, no sync to anyone's server</span></li>
-        <li><span class="ok">✓</span><span>No analytics or crash reporting of its own</span></li>
-        <li><span class="ok">✓</span><span>History, Vault and passwords stored only on the phone</span></li>
+        <li><span class="ok"><svg width="20" height="20" aria-hidden="true"><use href="#i-check"/></svg></span><span>No account, no sign-up, no sync to anyone's server</span></li>
+        <li><span class="ok"><svg width="20" height="20" aria-hidden="true"><use href="#i-check"/></svg></span><span>No analytics or crash reporting of its own</span></li>
+        <li><span class="ok"><svg width="20" height="20" aria-hidden="true"><use href="#i-check"/></svg></span><span>History, Vault and passwords stored only on the phone</span></li>
         <li><span class="na">i</span><span>Corn does go online for filter-list updates and, if you leave it on, Google Safe Browsing warnings. Both are explained in Settings.</span></li>
       </ul>
     </div>
@@ -263,7 +263,7 @@
     <div class="final">
       <h2 class="display">Ready for a clean slate?</h2>
       <a class="btn btn-corn download" href="https://github.com/ayush5144/corn/releases">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg>
+        <svg width="22" height="22" aria-hidden="true"><use href="#i-download"/></svg>
         <span class="dl-label">Download for Android</span>
       </a>
       <p class="fine"><span class="dl-meta">APK from GitHub</span><span>Free forever</span></p>
@@ -300,34 +300,16 @@
   let li = 0;
   setInterval(() => { li = (li + 1) % lines.length; document.getElementById("bubble").textContent = lines[li]; }, 3500);
 
-  // The Flush demo: the same one-liners the app shows after a Flush.
-  const quips = ["All gone.<br>Fresh as a new cob.", "Flushed.<br>Nobody saw nothing.", "Squeaky clean.<br>Like it never happened.", "Session down the drain.<br>Your Vault's safe.", "Poof.<br>Clean slate, same great corn."];
-  const tabs = [
-    ["F", "#3B6FD8", "Cheap flights to Goa", "flights.example"],
-    ["R", "#2E8B6A", "Quiet pasta, 20 min", "recipes.example"],
-    ["S", "#C2453B", "Gift ideas (shh)", "shop.example"],
-    ["N", "#7A55C9", "That article from lunch", "news.example"],
-    ["W", "#B07A1C", "Weekend weather", "weather.example"],
-    ["T", "#3D8FB0", "47 tabs about mattresses", "sleep.example"],
-  ];
-  const tabsEl = document.getElementById("tabs"), phone = document.getElementById("phone");
+  // The Flush demo: real screenshots of Corn, before and right after a Flush.
+  const shot = document.getElementById("phone"), cap = document.getElementById("shotCap");
   const btn = document.getElementById("flushBtn"), label = document.getElementById("flushLabel"), hint = document.getElementById("flushHint");
-  function fill() {
-    tabsEl.innerHTML = tabs.map(([l, c, t, h], i) =>
-      `<div class="tab" style="--dx:${(i % 2 ? -1 : 1) * (40 + i * 12)}px;--rot:${(i % 2 ? 1 : -1) * (120 + i * 40)}deg"><div class="ic" style="background:${c}">${l}</div><div class="t">${t}</div><div class="h">${h}</div></div>`).join("");
-  }
-  fill();
-  let flushed = false, qi = 0;
+  let flushed = false;
   btn.addEventListener("click", () => {
-    if (!flushed) {
-      document.getElementById("quip").innerHTML = quips[qi++ % quips.length];
-      phone.classList.add("flushing");
-      setTimeout(() => { phone.classList.add("flushed"); }, 600);
-      flushed = true; label.textContent = "Browse again"; hint.textContent = "Tabs gone. Vault untouched. That's the whole idea.";
-    } else {
-      phone.classList.remove("flushing", "flushed"); fill();
-      flushed = false; label.textContent = "Flush"; hint.textContent = "Corn asks first, unless you tell it not to.";
-    }
+    flushed = !flushed;
+    shot.classList.toggle("flushing", flushed);
+    label.textContent = flushed ? "Browse again" : "Flush";
+    cap.textContent = flushed ? "Real screen: right after the Flush" : "Real screen: 9 tabs open";
+    hint.textContent = flushed ? "Tabs gone. Favourites and Vault untouched. That's the whole idea." : "Corn asks first, unless you tell it not to.";
   });
 </script>
 </body>
